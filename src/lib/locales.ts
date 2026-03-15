@@ -28,6 +28,14 @@ export const DICT = {
     register_sub: "Rejoignez les commerçants qui optimisent leurs ventes",
     already_member: "Déjà membre ?",
     login_link: "Se connecter",
+    link_not_found: "Lien introuvable",
+    stats_for: "Statistiques pour",
+    clicks_registered: "clics enregistrés",
+    destination_label: "Destination :",
+    cta_stats_title: "Gardez le contrôle sur vos liens",
+    cta_stats_desc: "Inscrivez-vous pour sauvegarder ce lien, personnaliser vos URLs et obtenir des graphiques détaillés.",
+    create_free_account: "Créer un compte gratuit",
+    back_to_home: "Retour à l'accueil",
   },
   en: {
     welcome: "Welcome back! 👋",
@@ -59,5 +67,13 @@ export const DICT = {
     register_sub: "Join the merchants optimizing their sales",
     already_member: "Already a member?",
     login_link: "Sign in",
+     link_not_found: "Link not found",
+    stats_for: "Statistics for",
+    clicks_registered: "clicks registered",
+    destination_label: "Destination:",
+    cta_stats_title: "Take control of your links",
+    cta_stats_desc: "Sign up to save this link, customize your URLs, and get detailed analytics.",
+    create_free_account: "Create a free account",
+    back_to_home: "Back to home",
   }
 };
