@@ -32,7 +32,7 @@ const DICT = {
       { id: "bc", title: "Barcode Expert", desc: "Générez des codes-barres EAN-13 et Code 128 pro pour la gestion de vos stocks.", link: "https://baadjis-utilitybox.hf.space/barcode-tab", icon: Barcode },
       { id: "vcard", title: "VCard Contact", desc: "Créez un QR Code de contact pour permettre à vos clients d'enregistrer votre fiche d'un scan.", link: "https://baadjis-utilitybox.hf.space/vcard", icon: Contact },
       { id: "wa", title: "QR WhatsApp", desc: "Générez un lien QR direct pour ouvrir instantanément une discussion avec vos clients.", link: "https://baadjis-utilitybox.hf.space/whatsapp-qr", icon: MessageCircle },
-      { id: "short", title: "Shortener Pro", desc: "Réduisez vos URLs de boutique et suivez le nombre de clics sur rtbx.space.", link: "/shortener", icon: Link2 },
+      { id: "short", title: "Shortener Pro", desc: "Réduisez vos URLs de boutique et suivez le nombre de clics sur rtbx.space.", link: "https://baadjis-utilitybox.hf.space/shortener/shortener", icon: Link2 },
       { id: "bg", title: "RemBg IA", desc: "Supprimez automatiquement le fond de vos photos produits pour Shopify ou Vinted.", link: "https://baadjis-utilitybox.hf.space/rembg-tab", icon: ImageIcon },
       { id: "wifi", title: "Accès Wi-Fi", desc: "Offrez une connexion Wi-Fi sécurisée à vos clients sans saisie de mot de passe.", link: "https://baadjis-utilitybox.hf.space/wifi-qr", icon: Wifi },
     ]
@@ -59,7 +59,7 @@ const DICT = {
       { id: "bc", title: "Barcode Expert", desc: "Generate professional EAN-13 and Code 128 barcodes for inventory.", link: "https://baadjis-utilitybox.hf.space/barcode-tab", icon: Barcode },
       { id: "vcard", title: "VCard Contact", desc: "Create a contact QR Code to allow clients to save your info with one scan.", link: "https://baadjis-utilitybox.hf.space/vcard", icon: Contact },
       { id: "wa", title: "QR WhatsApp", desc: "Generate a direct QR link to instantly open a chat with your customers.", link: "https://baadjis-utilitybox.hf.space/whatsapp-qr", icon: MessageCircle },
-      { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "/shortener", icon: Link2 },
+      { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "https://baadjis-utilitybox.hf.space/shortener", icon: Link2 },
       { id: "bg", title: "AI RemBg", desc: "Automatically remove backgrounds from product photos for Shopify or Vinted.", link: "https://baadjis-utilitybox.hf.space/rembg-tab", icon: ImageIcon },
       { id: "wifi", title: "Wi-Fi Access", desc: "Offer secure Wi-Fi connection to your customers without manual password entry.", link: "https://baadjis-utilitybox.hf.space/wifi-qr", icon: Wifi },
     ]
