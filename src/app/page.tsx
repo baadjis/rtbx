@@ -1,13 +1,13 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import { BrandLogo } from '@/components/BrandLogo';
 import { 
   ArrowRight, Zap, Shield, Globe, 
   Users, QrCode, Tag, Barcode, 
   Contact, MessageCircle, Image as ImageIcon, 
-  Wifi, Link2, Newspaper, BookOpen, HelpCircle, Info
+  Wifi, Link2 
 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 const DICT = {
   fr: {
@@ -23,7 +23,7 @@ const DICT = {
     feat1_title: "Rapide & Gratuit",
     feat1_desc: "Outils optimisés pour une utilisation instantanée sans aucun délai.",
     feat2_title: "Conforme RGPD",
-    feat2_desc: "La protection de vos données est notre priorité. Zéro stockage serveur.",
+    feat2_desc: "Transparence et sécurité. Nous stockons uniquement l'essentiel pour vos statistiques et outils pro.",
     feat3_title: "Haute Définition",
     feat3_desc: "Fichiers conformes aux standards pro pour une impression parfaite.",
     services_list: [
@@ -50,8 +50,8 @@ const DICT = {
     btn_open: "Open Tool",
     feat1_title: "Fast & Free",
     feat1_desc: "High-performance tools optimized for instant results.",
-    feat2_title: "GDPR Compliant",
-    feat2_desc: "Your data privacy is our priority. Zero server storage.",
+    feat2_title: "Conforme RGPD",
+    feat2_desc: "Transparence et sécurité. Nous stockons uniquement l'essentiel pour vos statistiques et outils pro.",
     feat3_title: "High Definition",
     feat3_desc: "Professional standard files ready for perfect printing.",
     services_list: [
@@ -61,7 +61,7 @@ const DICT = {
       { id: "bc", title: "Barcode Expert", desc: "Generate professional EAN-13 and Code 128 barcodes for inventory.", link: "/tools/barcode", icon: Barcode },
       { id: "vcard", title: "VCard Contact", desc: "Create a contact QR Code to allow clients to save your info with one scan.", link: "/tools/vcard", icon: Contact },
       { id: "wa", title: "QR WhatsApp", desc: "Generate a direct QR link to instantly open a chat with your customers.", link: "/tools/whatsapp", icon: MessageCircle },
-      { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "tools/shortener", icon: Link2 },
+      { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "/tools/shortener", icon: Link2 },
       { id: "bg", title: "AI RemBg", desc: "Automatically remove backgrounds from product photos for Shopify or Vinted.", link: "/tools/rembg", icon: ImageIcon },
       { id: "wifi", title: "Wi-Fi Access", desc: "Offer secure Wi-Fi connection without manual password entry.", link: "/tools/wifi", icon: Wifi },
     ]
@@ -70,35 +70,18 @@ const DICT = {
 
 export default async function Home() {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
   const t = DICT[lang];
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-300" 
-         style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.08) 0px, transparent 50%)'}}>
+         style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%)'}}>
       
-      {/* NAVIGATION */}
-      <nav className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center relative z-10 border-b border-gray-50 dark:border-slate-900">
-        <BrandLogo />
-        
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
-            <Link href="/blog" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_blog}</Link>
-            <Link href="/guide" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_guide}</Link>
-            <Link href="/faq" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_faq}</Link>
-            <Link href="/about" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_about}</Link>
-        </div>
-
-        <div className="flex items-center gap-4">
-            <Link href="/login" className="px-5 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all">
-                {t.cta_login}
-            </Link>
-        </div>
-      </nav>
+      <Header/>
 
       <main className="relative z-10">
-        {/* HERO */}
-        <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
+        {/* HERO SECTION */}
+        <section className="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center md:pt-24 md:pb-32">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-[1.1] bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent italic">
                   {t.hero_title}
@@ -124,18 +107,22 @@ export default async function Home() {
         <section className="bg-slate-50/50 dark:bg-slate-900/30 py-24 border-y border-gray-100 dark:border-slate-800/50">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-20">
-                    <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">{t.services_title}</h2>
-                    <p className="text-gray-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">{t.services_sub}</p>
+                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">{t.services_title}</h2>
+                    <p className="text-lg text-gray-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">{t.services_sub}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {t.services_list.map((service) => (
                         <div key={service.id} className="group bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300 flex flex-col">
-                            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
-                                <service.icon className="w-7 h-7 text-indigo-600 dark:text-indigo-400 group-hover:text-white" />
+                            {/* ALIGNEMENT ICONE ET TITRE SUR LA MEME LIGNE */}
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300 flex-shrink-0">
+                                    <service.icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400 group-hover:text-white" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">{service.title}</h3>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{service.title}</h3>
-                            <p className="text-gray-500 dark:text-slate-400 text-sm leading-relaxed mb-8 flex-1">
+                            
+                            <p className="text-gray-500 dark:text-slate-400 text-sm leading-relaxed mb-8 flex-1 font-medium">
                                 {service.desc}
                             </p>
                             <Link href={service.link} className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl font-bold text-sm text-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
@@ -148,15 +135,17 @@ export default async function Home() {
         </section>
 
         {/* FEATURES GRID */}
-        <section className="max-w-7xl mx-auto px-6 py-24">
+        <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
                 {[
                     { icon: Zap, title: t.feat1_title, desc: t.feat1_desc },
                     { icon: Shield, title: t.feat2_title, desc: t.feat2_desc },
                     { icon: Globe, title: t.feat3_title, desc: t.feat3_desc },
                 ].map((feat, idx) => (
-                    <div key={idx} className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-1">
-                        <feat.icon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mb-6" />
+                    <div key={idx} className="relative p-8 bg-white dark:bg-slate-900 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-1">
+                        <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center mb-6">
+                            <feat.icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                        </div>
                         <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feat.title}</h3>
                         <p className="text-gray-500 dark:text-slate-400 font-medium leading-relaxed">{feat.desc}</p>
                     </div>

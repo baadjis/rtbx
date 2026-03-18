@@ -1,58 +1,102 @@
 import { cookies } from 'next/headers';
-import { BrandLogo } from '@/components/BrandLogo';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { Data } from './data';
+import { FileText, ShieldAlert, Scale } from 'lucide-react';
 
 export default async function TermsPage() {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const langValue = cookieStore.get('lang')?.value;
+  const lang = (langValue === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
-  const content = {
-    fr: {
-      title: "Conditions Générales d'Utilisation",
-      update: "Dernière mise à jour : Mars 2026",
-      s1: "1. Acceptation des services",
-      p1: "En accédant à RetailBox, vous acceptez d'utiliser nos outils de génération conformément aux présentes conditions. Le service est fourni gratuitement et 'en l'état'.",
-      s2: "2. Limitations techniques",
-      p2: "RetailBox ne peut être tenu responsable si un scanner tiers ne parvient pas à lire un code généré suite à une mauvaise configuration ou une impression de faible qualité.",
-      s3: "3. Usages Interdits",
-      p3: "Il est strictement interdit d'utiliser nos outils pour générer des contenus frauduleux, des liens de phishing, ou pour harceler des tiers via l'outil WhatsApp.",
-    },
-    en: {
-      title: "Terms of Service",
-      update: "Last updated: March 2026",
-      s1: "1. Acceptance of Services",
-      p1: "By accessing RetailBox, you agree to use our generation tools in accordance with these terms. The service is provided for free and 'as is'.",
-      s2: "2. Technical Limitations",
-      p2: "RetailBox cannot be held responsible if a third-party scanner fails to read a generated code due to improper configuration or low-quality printing.",
-      s3: "3. Prohibited Uses",
-      p3: "It is strictly forbidden to use our tools to generate fraudulent content, phishing links, or to harass third parties via the WhatsApp tool.",
-    }
-  }[lang];
+  const content = Data[lang];
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col">
-      <main className="flex-1 max-w-4xl mx-auto px-6 py-20 w-full">
-        <BrandLogo />
-        <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-gray-100">
-          <h1 className="text-4xl font-black mb-2 text-gray-900">{content.title}</h1>
-          <p className="text-gray-400 mb-10 font-medium">{content.update}</p>
-          
-          <div className="space-y-8">
-            <section>
-              <h4 className="text-xl font-bold text-gray-900 mb-3">{content.s1}</h4>
-              <p className="text-gray-600 leading-relaxed">{content.p1}</p>
-            </section>
-            <section>
-              <h4 className="text-xl font-bold text-gray-900 mb-3">{content.s2}</h4>
-              <p className="text-gray-600 leading-relaxed">{content.p2}</p>
-            </section>
-            <section>
-              <h4 className="text-xl font-bold text-gray-900 mb-3">{content.s3}</h4>
-              <p className="text-gray-600 leading-relaxed">{content.p3}</p>
-            </section>
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-300"
+         style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%)'}}>
+      
+      <Header />
+
+      <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10">
+        
+        {/* EN-TÊTE DE LA PAGE */}
+        <div className="max-w-4xl mx-auto mb-12 text-left">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+              <Scale className="text-indigo-600 dark:text-indigo-400 w-6 h-6" />
+            </div>
+            <span className="text-sm font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+              Legal
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+            {content.title}
+          </h1>
+          <p className="text-lg text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest">
+            {content.update}
+          </p>
+        </div>
+
+        {/* CONTENU DES CONDITIONS */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white dark:bg-slate-900 p-8 md:p-16 rounded-[3rem] shadow-sm border border-gray-100 dark:border-slate-800 transition-colors">
+            <div className="space-y-12">
+              
+              {/* Section 1 */}
+              <section className="group">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="w-2 h-8 bg-indigo-600 rounded-full group-hover:scale-y-125 transition-transform"></div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                        {content.s1}
+                    </h2>
+                </div>
+                <p className="text-gray-600 dark:text-slate-400 leading-relaxed text-lg font-medium pl-6">
+                  {content.p1}
+                </p>
+              </section>
+
+              {/* Section 2 */}
+              <section className="group">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="w-2 h-8 bg-indigo-600 rounded-full group-hover:scale-y-125 transition-transform"></div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                        {content.s2}
+                    </h2>
+                </div>
+                <p className="text-gray-600 dark:text-slate-400 leading-relaxed text-lg font-medium pl-6">
+                  {content.p2}
+                </p>
+              </section>
+
+              {/* Section 3 */}
+              <section className="group">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="w-2 h-8 bg-indigo-600 rounded-full group-hover:scale-y-125 transition-transform"></div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                        {content.s3}
+                    </h2>
+                </div>
+                <p className="text-gray-600 dark:text-slate-400 leading-relaxed text-lg font-medium pl-6">
+                  {content.p3}
+                </p>
+              </section>
+
+            </div>
+
+            {/* RAPPEL SÉCURITÉ BAS DE CARTE */}
+            <div className="mt-16 p-8 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-gray-100 dark:border-slate-700 flex items-start gap-4">
+                <ShieldAlert className="w-6 h-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-1" />
+                <p className="text-sm text-gray-500 dark:text-slate-400 font-medium leading-relaxed">
+                  {lang === 'fr' 
+                    ? "En utilisant nos outils, vous reconnaissez que RetailBox n'exerce aucun contrôle sur l'usage final des fichiers générés et décline toute responsabilité en cas d'utilisation frauduleuse."
+                    : "By using our tools, you acknowledge that RetailBox has no control over the end-use of generated files and disclaims any liability for fraudulent use."
+                  }
+                </p>
+            </div>
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );

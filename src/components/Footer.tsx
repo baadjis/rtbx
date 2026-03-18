@@ -4,7 +4,7 @@ import { Newspaper, BookOpen, HelpCircle, Info, Mail, Shield, UserCheck, Lock } 
 
 export default async function Footer() {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
   const t = {
     fr: { 

@@ -1,11 +1,12 @@
 import { cookies } from 'next/headers';
 import { BrandLogo } from '@/components/BrandLogo';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import { Store, Utensils, Users, ShieldCheck, Zap } from 'lucide-react';
 
 export default async function AboutPage() {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
   const content = {
     fr: {
@@ -53,65 +54,88 @@ export default async function AboutPage() {
   }[lang];
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col">
-      <main className="flex-1 max-w-5xl mx-auto px-6 py-20 w-full">
-        <BrandLogo />
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-300" 
+         style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%)'}}>
+      
+      <Header/>
+
+      <main className="max-w-7xl mx-auto px-6 py-16 md:py-24 w-full relative z-10">
         
         {/* HERO SECTION ABOUT */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent italic">
+        <div className="text-center mb-20">
+          <h1 className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent italic tracking-tight">
             {content.title}
           </h1>
-          <p className="text-xl text-gray-500 max-w-3xl mx-auto font-medium leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-500 dark:text-slate-400 max-w-3xl mx-auto font-medium leading-relaxed">
             {content.intro}
           </p>
         </div>
 
         {/* MISSION CARD */}
-        <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-sm border border-gray-100 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-            <Zap className="text-indigo-600 w-6 h-6" /> {content.mission_h}
+        <div className="bg-white dark:bg-slate-900 p-8 md:p-16 rounded-[3rem] shadow-sm border border-gray-100 dark:border-slate-800 mb-16 transition-colors">
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-4">
+            <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center">
+                <Zap className="text-indigo-600 dark:text-indigo-400 w-7 h-7" />
+            </div>
+            {content.mission_h}
           </h2>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <p className="text-gray-600 dark:text-slate-300 text-lg md:text-xl leading-relaxed font-medium">
             {content.mission_p}
           </p>
         </div>
 
         {/* SERVICES GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-            <Store className="w-10 h-10 text-indigo-600 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{content.service1_h}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{content.service1_p}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+          {/* Card 1 */}
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
+            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
+                <Store className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service1_h}</h3>
+            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service1_p}</p>
           </div>
           
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-            <Utensils className="w-10 h-10 text-indigo-600 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{content.service2_h}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{content.service2_p}</p>
+          {/* Card 2 */}
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
+            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
+                <Utensils className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service2_h}</h3>
+            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service2_p}</p>
           </div>
 
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-            <Users className="w-10 h-10 text-indigo-600 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{content.service3_h}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{content.service3_p}</p>
+          {/* Card 3 */}
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
+            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
+                <Users className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service3_h}</h3>
+            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service3_p}</p>
           </div>
 
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-            <ShieldCheck className="w-10 h-10 text-indigo-600 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{content.service4_h}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{content.service4_p}</p>
+          {/* Card 4 */}
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
+            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
+                <ShieldCheck className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service4_h}</h3>
+            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service4_p}</p>
           </div>
         </div>
 
         {/* PRIVACY COMMITMENT */}
-        <div className="bg-indigo-600 p-8 md:p-12 rounded-[3rem] text-white shadow-xl shadow-indigo-100">
-          <h2 className="text-2xl font-bold mb-6">{content.privacy_h}</h2>
-          <p className="text-indigo-100 text-lg leading-relaxed opacity-90">
-            {content.privacy_p}
-          </p>
+        <div className="bg-indigo-600 dark:bg-indigo-700 p-10 md:p-16 rounded-[3rem] text-white shadow-2xl shadow-indigo-500/20 relative overflow-hidden group">
+          <div className="relative z-10">
+            <h2 className="text-3xl md:text-4xl font-black mb-8 tracking-tight">{content.privacy_h}</h2>
+            <p className="text-indigo-100 text-xl leading-relaxed opacity-90 font-medium">
+                {content.privacy_p}
+            </p>
+          </div>
+          {/* Subtle decoration */}
+          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
         </div>
       </main>
+
       <Footer />
     </div>
   );
