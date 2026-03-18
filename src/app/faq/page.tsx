@@ -31,7 +31,7 @@ const Data = {
 
 export default async function FaqPage() {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
   const t = Data[lang];
 
   return (
