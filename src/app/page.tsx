@@ -5,12 +5,13 @@ import {
   ArrowRight, Zap, Shield, Globe, 
   Users, QrCode, Tag, Barcode, 
   Contact, MessageCircle, Image as ImageIcon, 
-  Wifi, Link2 
+  Wifi, Link2, Newspaper, BookOpen, HelpCircle, Info
 } from 'lucide-react';
 import Footer from '@/components/Footer';
 
 const DICT = {
   fr: {
+    nav_blog: "Blog", nav_guide: "Guide", nav_faq: "FAQ", nav_about: "À Propos",
     hero_title: "Générez et Transformez en un clic",
     hero_sub: "La boîte à outils indispensable pour les commerçants, entrepreneurs et créateurs.",
     cta_start: "Démarrer maintenant",
@@ -32,12 +33,13 @@ const DICT = {
       { id: "bc", title: "Barcode Expert", desc: "Générez des codes-barres EAN-13 et Code 128 pro pour la gestion de vos stocks.", link: "/tools/barcode", icon: Barcode },
       { id: "vcard", title: "VCard Contact", desc: "Créez un QR Code de contact pour permettre à vos clients d'enregistrer votre fiche d'un scan.", link: "/tools/vcard", icon: Contact },
       { id: "wa", title: "QR WhatsApp", desc: "Générez un lien QR direct pour ouvrir instantanément une discussion avec vos clients.", link: "/tools/whatsapp", icon: MessageCircle },
-      { id: "short", title: "Shortener Pro", desc: "Réduisez vos URLs de boutique et suivez le nombre de clics sur rtbx.space.", link: "/tools/shortener", icon: Link2 },
-      { id: "bg", title: "RemBg IA", desc: "Supprimez automatiquement le fond de vos photos produits pour Shopify ou Vinted.", link: "/tools/rembg", icon: ImageIcon },
+      { id: "short", title: "Shortener Pro", desc: "Réduisez vos URLs de boutique et suivez le nombre de clics sur rtbx.space.", link: "/shortener", icon: Link2 },
+      { id: "bg", title: "RemBg IA", desc: "Supprimez automatiquement le fond de vos photos produits (Shopify, Vinted).", link: "/tools/rembg", icon: ImageIcon },
       { id: "wifi", title: "Accès Wi-Fi", desc: "Offrez une connexion Wi-Fi sécurisée à vos clients sans saisie de mot de passe.", link: "/tools/wifi", icon: Wifi },
     ]
   },
   en: {
+    nav_blog: "Blog", nav_guide: "Guide", nav_faq: "FAQ", nav_about: "About",
     hero_title: "Generate and Transform in one click",
     hero_sub: "The essential toolkit for retailers, entrepreneurs, and creators.",
     cta_start: "Get Started Now",
@@ -59,9 +61,9 @@ const DICT = {
       { id: "bc", title: "Barcode Expert", desc: "Generate professional EAN-13 and Code 128 barcodes for inventory.", link: "/tools/barcode", icon: Barcode },
       { id: "vcard", title: "VCard Contact", desc: "Create a contact QR Code to allow clients to save your info with one scan.", link: "/tools/vcard", icon: Contact },
       { id: "wa", title: "QR WhatsApp", desc: "Generate a direct QR link to instantly open a chat with your customers.", link: "/tools/whatsapp", icon: MessageCircle },
-      { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "/tools/shortener", icon: Link2 },
+      { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "/shortener", icon: Link2 },
       { id: "bg", title: "AI RemBg", desc: "Automatically remove backgrounds from product photos for Shopify or Vinted.", link: "/tools/rembg", icon: ImageIcon },
-      { id: "wifi", title: "Wi-Fi Access", desc: "Offer secure Wi-Fi connection to your customers without manual password entry.", link: "/tools/wifi", icon: Wifi },
+      { id: "wifi", title: "Wi-Fi Access", desc: "Offer secure Wi-Fi connection without manual password entry.", link: "/tools/wifi", icon: Wifi },
     ]
   }
 };
@@ -76,19 +78,29 @@ export default async function Home() {
          style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.08) 0px, transparent 50%)'}}>
       
       {/* NAVIGATION */}
-      <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-10">
+      <nav className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center relative z-10 border-b border-gray-50 dark:border-slate-900">
         <BrandLogo />
-        <Link href="/login" className="text-sm font-bold text-gray-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors uppercase tracking-widest">
-          {t.cta_login}
-        </Link>
+        
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8">
+            <Link href="/blog" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_blog}</Link>
+            <Link href="/guide" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_guide}</Link>
+            <Link href="/faq" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_faq}</Link>
+            <Link href="/about" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-all">{t.nav_about}</Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+            <Link href="/login" className="px-5 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all">
+                {t.cta_login}
+            </Link>
+        </div>
       </nav>
 
-      {/* HERO SECTION */}
       <main className="relative z-10">
-        <section className="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center">
+        {/* HERO */}
+        <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
             <div className="max-w-4xl mx-auto">
-                {/* TITRE AVEC GRADIENT */}
-                <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-[1.1] bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-[1.1] bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent italic">
                   {t.hero_title}
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-500 dark:text-slate-400 font-medium mb-12 max-w-3xl mx-auto leading-relaxed">
@@ -96,10 +108,10 @@ export default async function Home() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="https://baadjis-utilitybox.hf.space" 
+                    <Link href="/tools/qrcode" 
                         className="w-full sm:w-auto px-10 py-5 bg-indigo-600 text-white rounded-2xl font-black text-lg shadow-2xl shadow-indigo-500/20 hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center gap-2">
                         {t.cta_start} <ArrowRight className="w-5 h-5" />
-                    </a>
+                    </Link>
                     <Link href="/register" 
                             className="w-full sm:w-auto px-10 py-5 bg-white dark:bg-slate-900 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-slate-800 rounded-2xl font-black text-lg hover:border-indigo-100 dark:hover:border-indigo-900 transition-all">
                         {t.cta_register}
@@ -108,11 +120,11 @@ export default async function Home() {
             </div>
         </section>
 
-        {/* SERVICES GRID SECTION - Nuance de fond pour le contraste */}
+        {/* SERVICES GRID SECTION */}
         <section className="bg-slate-50/50 dark:bg-slate-900/30 py-24 border-y border-gray-100 dark:border-slate-800/50">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-20">
-                    <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4">{t.services_title}</h2>
+                    <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">{t.services_title}</h2>
                     <p className="text-gray-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">{t.services_sub}</p>
                 </div>
 
@@ -126,9 +138,9 @@ export default async function Home() {
                             <p className="text-gray-500 dark:text-slate-400 text-sm leading-relaxed mb-8 flex-1">
                                 {service.desc}
                             </p>
-                            <a href={service.link} className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl font-bold text-sm text-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                            <Link href={service.link} className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl font-bold text-sm text-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
                                 {t.btn_open}
-                            </a>
+                            </Link>
                         </div>
                     ))}
                 </div>
@@ -143,7 +155,7 @@ export default async function Home() {
                     { icon: Shield, title: t.feat2_title, desc: t.feat2_desc },
                     { icon: Globe, title: t.feat3_title, desc: t.feat3_desc },
                 ].map((feat, idx) => (
-                    <div key={idx} className="relative p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-1">
+                    <div key={idx} className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-1">
                         <feat.icon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mb-6" />
                         <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feat.title}</h3>
                         <p className="text-gray-500 dark:text-slate-400 font-medium leading-relaxed">{feat.desc}</p>

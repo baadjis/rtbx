@@ -36,6 +36,9 @@ export const DICT = {
     cta_stats_desc: "Inscrivez-vous pour sauvegarder ce lien, personnaliser vos URLs et obtenir des graphiques détaillés.",
     create_free_account: "Créer un compte gratuit",
     back_to_home: "Retour à l'accueil",
+    home: "Accueil", blog: "Blog", guide: "Guide", faq: "FAQ", about: "À Propos", contact: "Contact",
+    cta_start: "Démarrer maintenant", cta_login: "Mon Espace Pro", cta_register: "S'inscrire gratuitement",
+    btn_open: "Ouvrir l'outil"
   },
   en: {
     welcome: "Welcome back! 👋",
@@ -56,7 +59,6 @@ export const DICT = {
     
     my_links: "My Links",
     analytics: "Analytics",
-
     brand: "RetailLink",
     back_to_tools: "Creation Tools",
     login_title: "Welcome to your pro space",
@@ -75,5 +77,8 @@ export const DICT = {
     cta_stats_desc: "Sign up to save this link, customize your URLs, and get detailed analytics.",
     create_free_account: "Create a free account",
     back_to_home: "Back to home",
+    home: "Home", blog: "Blog", guide: "Guide", faq: "FAQ", about: "About", contact: "Contact",
+    cta_start: "Get Started", cta_login: "Pro Dashboard", cta_register: "Sign up for free",
+    btn_open: "Open Tool"
   }
 };
