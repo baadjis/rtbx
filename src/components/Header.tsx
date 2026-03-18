@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Home as HomeIcon } from 'lucide-react';
+import LangSwitcher from './LangSwitch';
 
 const NAV_DICT = {
   fr: {
@@ -57,9 +58,10 @@ export default async function Header() {
             {t.about}
           </Link>
         </div>
-
+        <LangSwitcher currentLang={lang} />
         {/* Bouton Connexion / Dashboard */}
         <div className="flex items-center gap-4">
+
           <Link href="/login" className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-black hover:shadow-lg hover:shadow-indigo-200 dark:hover:shadow-none transition-all hover:scale-105 active:scale-95">
             {t.login}
           </Link>
