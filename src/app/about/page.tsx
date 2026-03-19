@@ -106,7 +106,7 @@ export default async function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {content.services.map((service, index) => (
             <div key={index} className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center  justify-center gap-4 mb-6">
               <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
                   <service.icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
               </div>
