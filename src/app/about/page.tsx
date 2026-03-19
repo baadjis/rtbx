@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers';
-import { BrandLogo } from '@/components/BrandLogo';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Store, Utensils, Users, ShieldCheck, Zap } from 'lucide-react';
