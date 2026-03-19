@@ -1,0 +1,37 @@
+export const Data={
+   
+fr: {
+  vcard_title: "Carte de Visite Digitale (VCard)",
+  vcard_sub: "Permettez à vos clients d'enregistrer vos coordonnées complètes d'un simple scan.",
+  sec_identity: "Identité",
+  sec_pro: "Professionnel",
+  sec_contact: "Contact & Digital",
+  label_fname: "Prénom",
+  label_lname: "Nom",
+  label_org: "Boutique / Entreprise",
+  label_job: "Poste / Fonction",
+  label_tel: "Téléphone Mobile",
+  label_email: "E-mail Professionnel",
+  label_web: "Site Web / Boutique",
+  label_adr: "Adresse physique (GPS)",
+  vcard_tip: "💡 Le format VCard est universel : il fonctionne sur tous les iPhone et Android sans application supplémentaire.",
+  btn_dl_vcard: "TÉLÉCHARGER MA VCARD QR",
+},
+en: {
+  vcard_title: "Digital Business Card (VCard)",
+  vcard_sub: "Allow your customers to save your full contact details with a single scan.",
+  sec_identity: "Identity",
+  sec_pro: "Professional",
+  sec_contact: "Contact & Digital",
+  label_fname: "First Name",
+  label_lname: "Last Name",
+  label_org: "Shop / Company",
+  label_job: "Job Title",
+  label_tel: "Mobile Number",
+  label_email: "Pro Email",
+  label_web: "Website / Shop",
+  label_adr: "Physical Address (GPS)",
+  vcard_tip: "💡 VCard format is universal: it works on all iPhones and Androids without any extra app.",
+  btn_dl_vcard: "DOWNLOAD MY VCARD QR",
+}
+  }

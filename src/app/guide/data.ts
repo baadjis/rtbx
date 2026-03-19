@@ -1,89 +1,89 @@
 export const Data = {
   fr: {
     guide_title: "Guide Complet d'Utilisation",
-    guide_sub: "Maîtrisez nos outils de génération pour booster votre activité commerciale.",
+    guide_sub: "Expertise technique et tutoriels pour optimiser vos opérations commerciales et votre visibilité digitale.",
     expert_title: "💡 Conseils d'Expert pour le Retail",
-    expert_p: "Pour obtenir des résultats professionnels, suivez ces recommandations techniques :",
+    expert_p: "Pour obtenir des résultats professionnels et maximiser vos taux de conversion, suivez ces recommandations :",
     guides: [
       { 
-        title: "Générer des QR Codes Pro", 
-        desc: "Pour vos menus de restaurant ou fiches produits, entrez l'URL ou vos données. Nous recommandons d'ajouter votre logo pour augmenter la confiance lors du scan. Nos codes sont en haute définition pour garantir une lecture parfaite même en basse lumière." 
+        title: "Générer des QR Codes Pro (Menus & Liens)", 
+        desc: "Pour numériser votre carte restaurant ou vos catalogues PDF, importez votre fichier sur un cloud (Drive, Dropbox) et collez le lien ici. Notre générateur utilise le niveau de correction d'erreur 'H' (High), ce qui permet d'intégrer votre logo au centre sans perdre en lisibilité. Conseil : utilisez des couleurs à fort contraste pour garantir un scan rapide, même sous les éclairages tamisés des salles de restaurant." 
       },
       { 
         title: "Identité Digitale (Social Card)", 
-        desc: "Centralisez votre présence en ligne. Sélectionnez vos réseaux (Instagram, TikTok, Shopify) et créez un point d'accès unique. C'est l'outil idéal à placer en bio ou sur vos cartes de visite pour convertir vos clients en abonnés." 
+        desc: "La Social Card résout le problème de la multiplicité des liens en bio. En regroupant Instagram, TikTok, Shopify et vos autres réseaux dans un seul QR, vous réduisez la friction pour vos abonnés. C'est l'outil parfait pour vos supports de communication physiques (vitrines, flyers) afin de transformer vos visiteurs anonymes en une communauté engagée sur toutes vos plateformes." 
       },
       { 
-        title: "VCard : Carte de Visite Digitale", 
-        desc: "Saisissez vos coordonnées professionnelles. Le QR Code généré au format VCard 3.0 permet à vos prospects d'enregistrer votre contact (nom, tel, email, adresse) dans leur répertoire d'un simple clic, sans erreur de saisie." 
+        title: "VCard : Carte de Visite 2.0", 
+        desc: "Une VCard RetailBox génère un fichier .vcf standard compatible avec 100% des smartphones. En saisissant vos coordonnées complètes (nom, fonction, adresse de boutique, profil LinkedIn), vous permettez à votre interlocuteur d'enregistrer votre fiche contact en un clic. C'est plus écologique que le papier, et cela garantit que votre prospect a vos informations exactes sans aucune erreur de saisie manuelle." 
       },
       { 
         title: "Étiquettes de Soldes & Planches A4", 
-        desc: "Indiquez le prix initial et le prix remisé. Le système génère une étiquette avec prix barré et code-barres EAN-13 conforme. Vous pouvez télécharger l'image seule ou une planche PDF A4 de 24 étiquettes prête à imprimer." 
+        desc: "La gestion des promotions demande de la clarté. Indiquez le prix d'origine et le prix remisé pour générer un visuel conforme aux normes d'affichage. Pour gagner du temps, nous générons automatiquement une planche PDF A4 calibrée pour les formats d'autocollants standards (24 étiquettes par page). Cela vous permet d'étiqueter tout un stock en quelques minutes avec un rendu professionnel 'prêt pour le rayon'." 
       },
       { 
-        title: "Codes-barres EAN-13 et Code 128", 
-        desc: "Utilisez l'EAN-13 pour les produits destinés à la vente au détail. Pour la logistique interne ou l'inventaire, préférez le Code 128 qui accepte les caractères alphanumériques. Nos codes respectent les standards internationaux de lecture laser." 
+        title: "Barcodes EAN-13 et Code 128", 
+        desc: "L'EAN-13 est indispensable pour la vente en caisse, tandis que le Code 128 est idéal pour la logistique interne et l'inventaire grâce à son support alphanumérique. Notre moteur calcule automatiquement le 13ème chiffre de contrôle (checksum) pour garantir la conformité de vos codes. Assurez-vous d'imprimer sur un support non réfléchissant pour éviter que les lasers des douchettes de caisse ne rebondissent." 
       },
       { 
-        title: "QR WhatsApp Direct", 
-        desc: "Automatisez vos prises de commandes. Entrez votre numéro et un message prédéfini (ex: 'Je souhaite commander'). Le client n'a plus qu'à scanner et envoyer le message pour démarrer la discussion avec votre boutique." 
+        title: "QR WhatsApp Direct & Commandes", 
+        desc: "Le 'Click-to-Chat' via QR Code est un levier de conversion massif. En pré-remplissant un message (ex: 'Bonjour, je souhaite commander l'article X'), vous facilitez la tâche du client. Il n'a plus à enregistrer votre numéro : il scanne, il envoie le message, et la vente commence. C'est l'outil idéal pour le service après-vente ou les pré-commandes en boutique physique." 
       },
       { 
-        title: "Détourage Image par IA (RemBg)", 
-        desc: "Téléchargez vos photos produits. Notre Intelligence Artificielle identifie le sujet et supprime l'arrière-plan instantanément. Vous obtenez un PNG transparent de qualité studio pour vos catalogues Shopify, Amazon ou Vinted." 
+        title: "Détourage Image par IA (Studio)", 
+        desc: "La qualité de vos photos produits sur Shopify, Vinted ou Amazon influence directement vos ventes. Notre IA 'RemBg' utilise des réseaux de neurones pour supprimer l'arrière-plan avec une précision chirurgicale (cheveux, contours fins). Vous obtenez un PNG transparent 32-bit de qualité studio. Astuce : photographiez vos produits sur un fond uni pour aider l'IA à isoler parfaitement le sujet en moins de 10 secondes." 
       },
       { 
-        title: "Accès Wi-Fi Client", 
-        desc: "Simplifiez l'expérience en magasin. Générez un QR code avec le nom de votre réseau et la clé. Vos clients se connectent automatiquement sans avoir à taper de mot de passe complexe, améliorant ainsi leur satisfaction." 
+        title: "Accès Wi-Fi Client Automatique", 
+        desc: "Donner le mot de passe Wi-Fi 50 fois par jour est une perte de temps. Notre générateur crée un code suivant le protocole chiffré WIFI:S:. En scannant ce code, vos clients se connectent instantanément à votre réseau invité sans aucune manipulation. C'est une petite attention qui améliore considérablement l'expérience client et la satisfaction en boutique ou en salle d'attente." 
       },
       { 
-        title: "RetailLink : URL Shortener", 
-        desc: "Transformez vos liens longs en URLs courtes 'rtbx.space/s/votre-nom'. Suivez le nombre de clics en temps réel pour mesurer l'efficacité de vos campagnes marketing tout en respectant la vie privée de vos clients (RGPD)." 
+        title: "RetailLink : Analytics & RGPD", 
+        desc: "Transformez vos URLs Shopify interminables en liens courts du type 'rtbx.space/s/votre-boutique'. RetailLink vous permet de suivre le nombre de clics en temps réel pour mesurer l'efficacité de vos campagnes réseaux sociaux. Contrairement à d'autres services, nous respectons le RGPD en ne collectant aucune donnée personnelle (IP) lors du clic : seule la performance brute compte." 
       }
     ]
   },
   en: {
     guide_title: "Complete User Guide",
-    guide_sub: "Master our generation tools to boost your business growth.",
+    guide_sub: "Technical expertise and tutorials to optimize your business operations and digital visibility.",
     expert_title: "💡 Expert Retail Advice",
-    expert_p: "To achieve professional results, follow these technical recommendations:",
+    expert_p: "To achieve professional results and maximize your conversion rates, follow these recommendations:",
     guides: [
       { 
-        title: "Pro QR Code Generation", 
-        desc: "For your restaurant menus or product sheets, enter the destination URL. We recommend adding your logo to increase trust. Our codes are high-definition to ensure perfect scanning even in low-light conditions." 
+        title: "Pro QR Code Generation (Menus & Links)", 
+        desc: "To digitize your restaurant menu or PDF catalogs, upload your file to a cloud service (Drive, Dropbox) and paste the link here. Our generator uses 'H' level error correction, allowing you to embed your logo in the center without losing readability. Tip: use high-contrast colors to ensure fast scanning, even in dim restaurant lighting." 
       },
       { 
         title: "Digital Identity (Social Card)", 
-        desc: "Centralize your online presence. Select your networks (Instagram, TikTok, Shopify) and create a single access point. It is the perfect tool for your bio or business cards to turn customers into followers." 
+        desc: "The Social Card solves the issue of having too many links in your bio. By grouping Instagram, TikTok, Shopify, and other networks into one QR, you reduce friction for your followers. It's the perfect tool for physical marketing (storefronts, flyers) to turn anonymous visitors into an engaged community across all platforms." 
       },
       { 
-        title: "VCard: Digital Business Card", 
-        desc: "Enter your professional details. The generated VCard 3.0 QR code allows prospects to save your contact info (name, phone, email, address) to their address book with one click, eliminating typing errors." 
+        title: "VCard: 2.0 Business Card", 
+        desc: "A RetailBox VCard generates a standard .vcf file compatible with 100% of smartphones. By entering your full details (name, role, shop address, LinkedIn), you allow your contact to save your info in one click. It's more eco-friendly than paper and ensures your prospect gets your exact information without any manual typing errors." 
       },
       { 
         title: "Sale Labels & A4 Sheets", 
-        desc: "Enter the original and discounted prices. The system generates a label with a crossed-out price and a compliant EAN-13 barcode. Download as a single image or a 24-label A4 PDF sheet ready for printing." 
+        desc: "Sale management requires clarity. Enter the original and discounted prices to generate a visual compliant with display standards. To save time, we automatically generate an A4 PDF sheet calibrated for standard sticker formats (24 labels per page). This allows you to label an entire stock in minutes with a pro 'shelf-ready' look." 
       },
       { 
         title: "EAN-13 & Code 128 Barcodes", 
-        desc: "Use EAN-13 for retail products. For internal logistics or inventory, use Code 128 which supports alphanumeric characters. Our codes comply with international laser scanning standards." 
+        desc: "EAN-13 is essential for retail checkout, while Code 128 is ideal for internal logistics and inventory due to its alphanumeric support. Our engine automatically calculates the 13th check digit to ensure code compliance. Make sure to print on non-reflective material to prevent checkout scanners from failing." 
       },
       { 
-        title: "Direct WhatsApp QR", 
-        desc: "Automate your ordering process. Enter your number and a predefined message (e.g., 'I want to order'). The customer just scans and sends the message to start a conversation with your shop." 
+        title: "Direct WhatsApp QR & Orders", 
+        desc: "'Click-to-Chat' via QR Code is a massive conversion lever. By pre-filling a message (e.g., 'Hello, I'd like to order item X'), you make the customer's job easier. They no longer have to save your number: they scan, send, and the sale begins. Perfect for customer service or pre-orders in physical stores." 
       },
       { 
-        title: "AI Background Removal (RemBg)", 
-        desc: "Upload your product photos. Our AI identifies the subject and removes the background instantly. You get a studio-quality transparent PNG for your Shopify, Amazon, or Vinted catalogs." 
+        title: "AI Background Removal (Studio)", 
+        desc: "Product photo quality on Shopify, Vinted, or Amazon directly impacts sales. Our 'RemBg' AI uses neural networks to remove backgrounds with surgical precision (hair, fine edges). You get a studio-quality 32-bit transparent PNG. Pro tip: photograph products on a plain background to help the AI isolate the subject perfectly in under 10 seconds." 
       },
       { 
-        title: "Customer Wi-Fi Access", 
-        desc: "Simplify the in-store experience. Generate a QR code with your network name and key. Your customers connect automatically without typing complex passwords, increasing their satisfaction." 
+        title: "Automatic Customer Wi-Fi Access", 
+        desc: "Giving out the Wi-Fi password 50 times a day is a waste of time. Our generator creates a code following the WIFI:S: encrypted protocol. By scanning this code, your customers instantly connect to your guest network with no manual steps. It's a small touch that significantly boosts customer satisfaction in-store or in waiting rooms." 
       },
       { 
-        title: "RetailLink: URL Shortener", 
-        desc: "Turn long links into short 'rtbx.space/s/your-name' URLs. Track clicks in real-time to measure marketing effectiveness while respecting customer privacy (GDPR compliant)." 
+        title: "RetailLink: Analytics & GDPR", 
+        desc: "Turn endless Shopify URLs into short 'rtbx.space/s/your-shop' links. RetailLink lets you track clicks in real-time to measure social media campaign effectiveness. Unlike other services, we are GDPR compliant by collecting no personal data (IP) during the click: only raw performance counts." 
       }
     ]
   }

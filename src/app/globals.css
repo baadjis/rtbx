@@ -29,3 +29,41 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+
+
+/* Force le header à coller au plafond */
+header {
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+
+/* --- STYLE POUR LES LIENS DANS LA FAQ --- */
+.faq-link {
+  color: #4f46e5 !important; /* Couleur Indigo Primary */
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(79, 70, 229, 0.3) !important; /* Soulignement léger */
+  text-underline-offset: 4px;
+  transition: all 0.2s ease;
+}
+
+.faq-link:hover {
+  color: #9333ea !important; /* Change vers Violet au survol */
+  text-decoration-color: #9333ea !important;
+  background-color: rgba(79, 70, 229, 0.05); /* Léger fond au survol */
+  border-radius: 4px;
+}
+
+/* Adaptation Dark Mode pour iPhone/Android */
+@media (prefers-color-scheme: dark) {
+  .faq-link {
+    color: #818cf8 !important; /* Indigo plus clair pour le mode sombre */
+    text-decoration-color: rgba(129, 140, 248, 0.4) !important;
+  }
+  .faq-link:hover {
+    color: #a78bfa !important;
+    background-color: rgba(129, 140, 248, 0.1);
+  }
+}

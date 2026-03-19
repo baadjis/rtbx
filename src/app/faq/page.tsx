@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers';
 import Footer from '@/components/Footer';
-import { BrandLogo } from '@/components/BrandLogo';
 import { HelpCircle, ChevronDown } from 'lucide-react';
 import Header from '@/components/Header';
 import { Data } from './data';
