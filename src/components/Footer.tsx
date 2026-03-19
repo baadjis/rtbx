@@ -11,14 +11,16 @@ export default async function Footer() {
         about: "À Propos", terms: "Conditions", privacy: "Vie Privée", 
         ugc: "Droits UGC", contact: "Contact", blog: "Blog", 
         faq: "FAQ", guide: "Guide Complet",
-        safety: "Sécurité", safety_desc: "Traitement en mémoire vive. Zéro stockage de vos fichiers.",
+        safety: "Sécurité", safety_desc: "Traitement en mémoire vive. Zéro stockage de vos fichiers.Pour votre Espace Pro, nous sécurisons uniquement les données essentielles à votre activité (e-mail, statistiques de clics)",
         nav_title: "Navigation Rapide"
     },
     en: { 
         about: "About Us", terms: "Terms", privacy: "Privacy Policy", 
         ugc: "UGC Rights", contact: "Contact", blog: "Blog", 
         faq: "FAQ", guide: "Full Guide",
-        safety: "Security", safety_desc: "RAM-based processing. Zero file storage on our servers.",
+        safety: "Security",
+        safety_desc: 
+        "RAM-based processing. Zero file storage on our servers. For your Pro Space, we only secure data essential to your business (email, click analytics)",
         nav_title: "Quick Links"
     }
   }[lang];

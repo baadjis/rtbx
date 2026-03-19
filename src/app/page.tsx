@@ -143,10 +143,12 @@ export default async function Home() {
                     { icon: Globe, title: t.feat3_title, desc: t.feat3_desc },
                 ].map((feat, idx) => (
                     <div key={idx} className="relative p-8 bg-white dark:bg-slate-900 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-transform hover:-translate-y-1">
+                        <div className="flex items-center gap-4 mb-6">
                         <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center mb-6">
                             <feat.icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                         </div>
                         <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feat.title}</h3>
+                        </div>
                         <p className="text-gray-500 dark:text-slate-400 font-medium leading-relaxed">{feat.desc}</p>
                     </div>
                 ))}

@@ -6,7 +6,8 @@ import { Store, Utensils, Users, ShieldCheck, Zap } from 'lucide-react';
 
 export default async function AboutPage() {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
+  const langValue = cookieStore.get('lang')?.value;
+  const lang = (langValue === 'en' ? 'en' : 'fr') as 'en' | 'fr';
 
   const content = {
     fr: {
@@ -14,42 +15,60 @@ export default async function AboutPage() {
       intro: "RetailBox est une suite d'outils techniques dédiée à l'optimisation des opérations pour le commerce moderne et les Small Businesses.",
       mission_h: "Accompagner la croissance des entreprises",
       mission_p: "Nous centralisons les ressources critiques pour les entrepreneurs et gestionnaires de points de vente. De la boutique physique au site e-commerce, nous fournissons les standards technologiques indispensables pour rester compétitifs.",
-      
-      service1_h: "Gestion de Stock",
-      service1_p: "Nous simplifions la logistique avec des générateurs de codes-barres conformes (EAN-13, Code 128).",
-      
-      service2_h: "Solutions Restaurants",
-      service2_p: "Nous modernisons l'expérience client grâce à des QR Codes de menu fluides et professionnels.",
-      
-      service3_h: "Identité Digitale",
-      service3_p: "Nous créons un point d'entrée unique pour regrouper vos réseaux sociaux et vos canaux de vente.",
-      
-      service4_h: "Optimisation Produit",
-      service4_p: "Nous valorisons vos articles grâce à notre IA de détourage haute précision (qualité studio).",
-      
-      privacy_h: "Notre engagement pour vos données",
-      privacy_p: "Nous appliquons une politique de confidentialité rigoureuse. Chaque traitement technique est exécuté en mémoire vive (RAM). Nous ne conservons aucune donnée commerciale ou photo sur nos serveurs."
+      services: [
+        {
+          h: "Gestion de Stock",
+          p: "Nous simplifions la logistique avec des générateurs de codes-barres conformes (EAN-13, Code 128).",
+          icon: Store
+        },
+        {
+          h: "Solutions Restaurants",
+          p: "Nous modernisons l'expérience client grâce à des QR Codes de menu fluides et professionnels.",
+          icon: Utensils
+        },
+        {
+          h: "Identité Digitale",
+          p: "Nous créons un point d'entrée unique pour regrouper vos réseaux sociaux et vos canaux de vente.",
+          icon: Users
+        },
+        {
+          h: "Optimisation Produit",
+          p: "Nous valorisons vos articles grâce à notre IA de détourage haute précision (qualité studio).",
+          icon: ShieldCheck
+        }
+      ],
+     privacy_h: "Sécurité et Transparence des données",
+     privacy_p: "Nous appliquons une politique de confidentialité rigoureuse. Les processus techniques (IA, génération de codes) sont exécutés exclusivement en mémoire vive (RAM) et vos fichiers ne sont jamais stockés de manière permanente. Pour votre Espace Pro, nous sécurisons uniquement les données essentielles à votre activité (e-mail, statistiques de clics). Vous gardez le contrôle total sur vos données et votre propriété intellectuelle (UGC).",
     },
     en: {
       title: "About RetailBox",
       intro: "RetailBox is a technical toolset dedicated to optimizing operations for modern retail and Small Businesses.",
       mission_h: "Supporting Business Growth",
       mission_p: "We centralize critical resources for entrepreneurs and store managers. From physical shops to e-commerce sites, we provide the essential technological standards to stay competitive.",
-      
-      service1_h: "Inventory Management",
-      service1_p: "We simplify logistics with compliant barcode generators (EAN-13, Code 128).",
-      
-      service2_h: "Restaurant Solutions",
-      service2_p: "We modernize the customer experience with fluid and professional digital menu QR Codes.",
-      
-      service3_h: "Digital Identity",
-      service3_p: "We create a single point of entry to group your social networks and sales channels.",
-      
-      service4_h: "Product Optimization",
-      service4_p: "We enhance your sales items through our high-precision AI background removal (studio quality).",
-      
-      privacy_h: "Our Commitment to Your Data",
-      privacy_p: "We apply a rigorous privacy policy. Every technical process is executed in random access memory (RAM). We do not store any commercial data or photos on our servers."
+      services: [
+        {
+          h: "Inventory Management",
+          p: "We simplify logistics with compliant barcode generators (EAN-13, Code 128).",
+          icon: Store
+        },
+        {
+          h: "Restaurant Solutions",
+          p: "We modernize the customer experience with fluid and professional digital menu QR Codes.",
+          icon: Utensils
+        },
+        {
+          h: "Digital Identity",
+          p: "We create a single point of entry to group your social networks and sales channels.",
+          icon: Users
+        },
+        {
+          h: "Product Optimization",
+          p: "We enhance your sales items through our high-precision AI background removal (studio quality).",
+          icon: ShieldCheck
+        }
+      ],
+      privacy_h: "Data Security & Transparency",
+      privacy_p: "We apply a rigorous privacy policy built on transparency. Technical processes (AI, code generation) are executed exclusively in random access memory (RAM), and your files are never permanently stored. For your Pro Space, we only secure data essential to your business (email, click analytics). You maintain full control over your data and intellectual property (UGC).",
     }
   }[lang];
 
@@ -84,43 +103,19 @@ export default async function AboutPage() {
           </p>
         </div>
 
-        {/* SERVICES GRID */}
+        {/* SERVICES GRID (MAPPING DYNAMIQUE) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {/* Card 1 */}
-          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
-            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
-                <Store className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          {content.services.map((service, index) => (
+            <div key={index} className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
+              <div className="flex items-center gap-4 mb-6">
+              <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
+                  <service.icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{service.h}</h3>
+              </div>
+              <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{service.p}</p>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service1_h}</h3>
-            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service1_p}</p>
-          </div>
-          
-          {/* Card 2 */}
-          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
-            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
-                <Utensils className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service2_h}</h3>
-            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service2_p}</p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
-            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
-                <Users className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service3_h}</h3>
-            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service3_p}</p>
-          </div>
-
-          {/* Card 4 */}
-          <div className="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
-            <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mb-6">
-                <ShieldCheck className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{content.service4_h}</h3>
-            <p className="text-gray-500 dark:text-slate-400 text-lg leading-relaxed font-medium">{content.service4_p}</p>
-          </div>
+          ))}
         </div>
 
         {/* PRIVACY COMMITMENT */}
