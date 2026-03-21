@@ -3,52 +3,12 @@ import { useState, useCallback } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { Download, Palette, Type, ArrowLeft, Plus, Trash2, Settings2, FileText, Upload, X } from 'lucide-react'
 import Link from 'next/link'
+import { Data } from './data'
 
-const DICT = {
-  fr: {
-    title: "Générateur QR Code Pro",
-    sub: "Personnalisez votre QR Code pour vos menus, boutiques ou fiches techniques.",
-    label_mode: "Type de contenu",
-    opt_url: "Lien URL Simple",
-    opt_kv: "Fiche de données (Clé:Valeur)",
-    label_text: "Lien URL",
-    ph_text: "https://votre-site.com",
-    label_kv: "Détails de la fiche",
-    ph_key: "Clé (ex: Prix)",
-    ph_val: "Valeur (ex: 19.99€)",
-    btn_add: "Ajouter une ligne",
-    label_qr: "Couleur du QR",
-    label_bg: "Couleur du Fond",
-    label_logo: "Logo central (Optionnel)",
-    preview: "Aperçu en direct",
-    preview_sub: "Mise à jour instantanée",
-    btn_dl: "TÉLÉCHARGER PNG HD",
-    back: "Retour"
-  },
-  en: {
-    title: "Pro QR Code Generator",
-    sub: "Customize your QR Code for menus, shops, or technical sheets.",
-    label_mode: "Content Type",
-    opt_url: "Simple URL Link",
-    opt_kv: "Data Sheet (Key:Value)",
-    label_text: "URL Link",
-    ph_text: "https://your-website.com",
-    label_kv: "Data details",
-    ph_key: "Key (e.g. Price)",
-    ph_val: "Value (e.g. $19.99)",
-    btn_add: "Add a row",
-    label_qr: "QR Color",
-    label_bg: "Background Color",
-    label_logo: "Center Logo (Optional)",
-    preview: "Live Preview",
-    preview_sub: "Instant update",
-    btn_dl: "DOWNLOAD HD PNG",
-    back: "Back"
-  }
-}
+
 
 export default function QRCodeForm({ lang }: { lang: 'fr' | 'en' }) {
-  const t = DICT[lang]
+  const t = Data[lang]
   
   // États
   const [mode, setMode] = useState<'url' | 'kv'>('url')

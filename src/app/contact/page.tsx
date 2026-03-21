@@ -1,50 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
-import { useState } from 'react';
-import { BrandLogo } from '@/components/BrandLogo';
+import { cookies } from 'next/headers';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import ContactForm from './ContactForm';
 
-export default function ContactPage() {
-  const [status, setStatus] = useState<string | null>(null);
-  const FORMSPREE_ID =process.env.FORMSPREE_ID!
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    
-    setStatus("sending");
-    const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-      method: "POST", body: data, headers: { 'Accept': 'application/json' }
-    });
-
-    if (response.ok) {
-      setStatus("success");
-      form.reset();
-    } else {
-      setStatus("error");
-    }
-  };
+export default async function ContactPage() {
+  const cookieStore = await cookies();
+  const langValue = cookieStore.get('lang')?.value;
+  const lang = (langValue === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-20 px-6">
-      <div className="max-w-xl mx-auto bg-white p-10 rounded-[2.5rem] shadow-xl border border-gray-100">
-        <BrandLogo />
-        <h1 className="text-2xl font-black text-center mb-8">Contactez-nous</h1>
-        
-        {status === "success" && (
-          <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-2xl font-bold border border-green-100 text-center">
-            ✅ Message envoyé ! Nous vous répondons sous 48h.
-          </div>
-        )}
+    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300"
+         style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%)'}}>
+      
+      <Header />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input name="email" type="email" placeholder="Votre email" required className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium" />
-          <textarea name="message" placeholder="Votre message" rows={5} required className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium"></textarea>
-          <button type="submit" disabled={status === "sending"} className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 disabled:opacity-50">
-            {status === "sending" ? "Envoi..." : "Envoyer le message"}
-          </button>
-        </form>
-      </div>
+      <main className="max-w-7xl mx-auto px-6 py-16 md:py-24 relative z-10">
+        <ContactForm lang={lang} formId={process.env.FORMSPREE_ID || ""} />
+      </main>
+
+      <Footer />
     </div>
   );
 }

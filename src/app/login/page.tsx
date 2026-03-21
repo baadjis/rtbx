@@ -7,7 +7,7 @@ export default async function LoginPage() {
   const langValue = cookieStore.get('lang')?.value;
   
   // On définit la langue par défaut si le cookie n'existe pas encore
-  const lang = (langValue === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (langValue === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
   return <LoginForm lang={lang} />;
 }

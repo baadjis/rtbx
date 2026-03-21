@@ -1,0 +1,31 @@
+export const Data={
+    // À ajouter dans DICT.fr et DICT.en
+fr: {
+  wifi_title: "QR Code Accès Wi-Fi",
+  wifi_sub: "Offrez une connexion instantanée à vos clients sans saisie de mot de passe.",
+  label_ssid: "Nom du réseau (SSID)",
+  ph_ssid: "Ex: Wi-Fi_Boutique",
+  label_password: "Mot de passe",
+  ph_password: "Clé de sécurité",
+  label_encryption: "Sécurité",
+  opt_wpa: "WPA / WPA2 (Standard)",
+  opt_wep: "WEP (Ancien)",
+  opt_none: "Aucune (Ouvert)",
+  wifi_tip: "💡 Conseil : Les clients n'ont qu'à scanner ce code avec l'appareil photo de leur smartphone pour rejoindre le réseau.",
+  btn_dl_wifi: "TÉLÉCHARGER LE QR WI-FI",
+},
+en: {
+  wifi_title: "Wi-Fi Access QR Code",
+  wifi_sub: "Provide instant connection to your customers without password entry.",
+  label_ssid: "Network Name (SSID)",
+  ph_ssid: "e.g. Shop_WiFi",
+  label_password: "Password",
+  ph_password: "Security key",
+  label_encryption: "Security",
+  opt_wpa: "WPA / WPA2 (Standard)",
+  opt_wep: "WEP (Old)",
+  opt_none: "None (Open)",
+  wifi_tip: "💡 Tip: Customers just need to scan this code with their smartphone camera to join the network.",
+  btn_dl_wifi: "DOWNLOAD WI-FI QR",
+}
+  }

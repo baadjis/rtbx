@@ -2,13 +2,15 @@ import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { DICT } from '@/lib/locales';
 import Link from 'next/link';
-import { BarChart3, ArrowRight, MousePointer2 } from 'lucide-react';
+import { BarChart3, ArrowRight, MousePointer2, Link2, ArrowLeft } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default async function PublicStatsPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const supabase = await createClient();
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
   const t = DICT[lang];
 
   // Récupérer les infos du lien
@@ -20,70 +22,89 @@ export default async function PublicStatsPage({ params }: { params: Promise<{ co
 
   if (!link) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">{t.link_not_found}</h1>
-          <Link href="/" className="text-indigo-600 mt-4 block font-bold">{t.back_to_home}</Link>
-        </div>
+      <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col transition-colors duration-300">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-6">
+            <div className="text-center p-10 bg-gray-50 dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800">
+              <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-4">{t.link_not_found}</h1>
+              <Link href="/" className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold no-underline hover:underline">
+                <ArrowLeft size={18} /> {t.back_to_home}
+              </Link>
+            </div>
+        </main>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] p-6 flex flex-col items-center justify-center"
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-300"
          style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%)'}}>
       
-      <div className="max-w-2xl w-full space-y-8">
+      <Header />
+
+      <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10 flex flex-col items-center">
         
-        {/* CARD STATS - DESIGN MODERNE */}
-        <div className="bg-white p-10 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 text-center relative overflow-hidden">
-          <div className="inline-flex p-4 bg-indigo-50 rounded-2xl mb-6 relative z-10">
-            <BarChart3 className="w-8 h-8 text-indigo-600" />
-          </div>
-          <h1 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-2 relative z-10">
-            {t.stats_for} /{code}
-          </h1>
-          <div className="text-8xl font-black text-gray-900 mb-4 tracking-tighter relative z-10">
-            {link.clicks}
-          </div>
-          <p className="text-gray-400 font-bold uppercase text-xs tracking-widest mb-8 relative z-10">
-            {t.clicks_registered}
-          </p>
+        <div className="max-w-2xl w-full space-y-8 md:space-y-12">
           
-          <div className="p-5 bg-gray-50 rounded-2xl text-sm text-gray-500 font-medium break-all border border-gray-100 relative z-10">
-             <span className="text-gray-400 mr-2">{t.destination_label}</span> 
-             <span className="text-gray-900">{link.long_url}</span>
-          </div>
-
-          {/* Décoration subtile en arrière-plan de la carte */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-50/50 rounded-full blur-3xl"></div>
-        </div>
-
-        {/* CTA : LE PIÈGE À ABONNÉS (DYNAMIQUE) */}
-        <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-10 rounded-[3rem] text-white shadow-2xl shadow-indigo-200 relative overflow-hidden group">
-          <div className="relative z-10">
-            <h2 className="text-2xl md:text-3xl font-black mb-3 leading-tight">
-                {t.cta_stats_title}
-            </h2>
-            <p className="text-indigo-100 mb-8 text-base font-medium leading-relaxed opacity-90">
-                {t.cta_stats_desc}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/register" className="bg-white text-indigo-600 px-8 py-4 rounded-2xl font-black text-center hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-lg">
-                {t.create_free_account} <ArrowRight className="w-5 h-5" />
-              </Link>
+          {/* CARD STATS - DESIGN MODERNE & ADAPTATIF */}
+          <div className="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-slate-800 text-center relative overflow-hidden transition-colors">
+            
+            <div className="inline-flex p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl mb-8 relative z-10">
+              <BarChart3 className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
             </div>
-          </div>
-          
-          {/* Icône décorative géante */}
-          <MousePointer2 className="absolute -right-6 -bottom-6 w-48 h-48 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
-        </div>
 
-        {/* FOOTER LINK */}
-        <Link href="/" className="flex items-center justify-center gap-2 text-gray-400 font-bold hover:text-indigo-600 transition-colors uppercase text-xs tracking-widest">
-           {t.back_to_home}
-        </Link>
-      </div>
+            <h1 className="text-xs md:text-sm font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.25em] mb-4 relative z-10">
+              {t.stats_for} <span className="text-indigo-600 dark:text-indigo-400">/{code}</span>
+            </h1>
+
+            {/* Chiffre dynamique et responsive */}
+            <div className="text-7xl md:text-9xl font-black text-gray-900 dark:text-white mb-4 tracking-tighter relative z-10">
+              {link.clicks}
+            </div>
+
+            <p className="text-gray-400 dark:text-slate-500 font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] mb-10 relative z-10">
+              {t.clicks_registered}
+            </p>
+            
+            {/* Destination URL Box */}
+            <div className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-2xl text-sm text-gray-600 dark:text-slate-400 font-medium break-all border border-gray-100 dark:border-slate-800 relative z-10 flex items-center justify-center gap-2">
+               <Link2 size={16} className="text-gray-400 flex-shrink-0" />
+               <span className="truncate">{link.long_url}</span>
+            </div>
+
+            {/* Décoration de fond (Blur effect) */}
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-full blur-3xl"></div>
+          </div>
+
+          {/* CTA : CONVERSION (DYNAMIQUE) */}
+          <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-10 md:p-12 rounded-[3rem] text-white shadow-2xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group">
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-black mb-4 leading-tight tracking-tight">
+                  {t.cta_stats_title}
+              </h2>
+              <p className="text-indigo-100 mb-10 text-base md:text-lg font-medium leading-relaxed opacity-90">
+                  {t.cta_stats_desc}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/register" className="bg-white text-indigo-600 px-8 py-4 rounded-2xl font-black text-center hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-lg no-underline">
+                  {t.create_free_account} <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
+            </div>
+            
+            {/* Icône décorative animée */}
+            <MousePointer2 className="absolute -right-6 -bottom-6 w-48 h-48 text-white/10 rotate-12 group-hover:rotate-0 group-hover:scale-110 transition-all duration-700" />
+          </div>
+
+          {/* RETOUR ACCUEIL */}
+          <Link href="/" className="flex items-center justify-center gap-2 text-gray-400 dark:text-slate-500 font-bold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors uppercase text-[10px] tracking-[0.2em] no-underline">
+             {t.back_to_home}
+          </Link>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
