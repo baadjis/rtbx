@@ -13,7 +13,7 @@ export default async function ToolsLayout({ children }: { children: ReactNode })
   // 2. Langue
   const cookieStore = await cookies();
   const langValue = cookieStore.get('lang')?.value;
-  const lang = (langValue === 'fr' ? 'fr' : 'fr') as 'en' | 'fr';
+  const lang = (langValue === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
   const t = DICT[lang];
 
   const navItems = [
