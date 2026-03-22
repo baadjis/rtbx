@@ -42,7 +42,20 @@ export const Data = {
                 content: `Le networking professionnel subit une révolution silencieuse. La carte de visite papier, bien que traditionnelle, souffre d'un défaut majeur : elle oblige le destinataire à recopier manuellement les informations dans son smartphone, une étape où 80% des contacts sont perdus. Le QR Code VCard (Virtual Contact File) élimine cette barrière.
 
                 En utilisant le standard VCard 3.0, RetailBox génère un fichier compatible avec tous les systèmes d'exploitation (iOS, Android). Lors d'un scan, le téléphone propose immédiatement d'ajouter le contact avec le nom, le poste, le nom de la boutique, le lien LinkedIn et même l'adresse physique pour le GPS. C'est un outil écologique, sans coût d'impression, et surtout dynamique : vous pouvez mettre à jour vos coordonnées et régénérer votre code instantanément. Pour un entrepreneur moderne, c'est l'assurance de ne plus jamais rater une opportunité de suivi après une rencontre commerciale.`
-            }
+            },
+            {
+    "id": "google-reviews-seo-strategy",
+    "title": "Avis Google : Le levier n°1 pour votre SEO local en 2026",
+    "intro": "Découvrez comment transformer un simple passage en caisse en un boost immédiat pour votre visibilité sur Google Maps.",
+    "content": `
+        En 2026, la bataille pour apparaître dans le 'Local Pack' de Google (le top 3 des résultats sur la carte) ne se gagne plus seulement avec des mots-clés, mais avec la preuve sociale. Pour un restaurant ou une boutique, la note moyenne et le nombre d'avis récents sont les critères prioritaires de l'algorithme de recherche. Cependant, la plupart des commerçants perdent des opportunités car le processus pour laisser un avis est trop complexe pour le client.
+
+        La friction est l'ennemi de la conversion. Demander à un client de chercher votre nom sur Maps, puis de trouver l'onglet 'Avis', puis de cliquer sur 'Rédiger' est un parcours où vous perdez 90% de vos chances. La solution réside dans l'automatisation technique via le 'Place ID'. En identifiant l'identifiant unique de votre établissement sur les serveurs de Google, RetailBox permet de générer un lien direct qui ouvre instantanément la fenêtre de rédaction avec les 5 étoiles pré-cochées.
+
+        L'impact sur votre business est double : non seulement vous augmentez votre score de confiance auprès des nouveaux prospects, mais vous envoyez également des signaux de fraîcheur à Google. Un établissement qui reçoit des avis réguliers est jugé plus pertinent et remonte mécaniquement dans les résultats de recherche. Placez votre QR Code Booster d'Avis sur vos tables, vos comptoirs ou vos tickets de caisse pour transformer chaque client satisfait en un ambassadeur digital de votre marque.
+    `
+},
+            
         ],
     },
     en: {
@@ -78,7 +91,20 @@ export const Data = {
                 title: "The End of Paper Business Cards: The QR VCard Strategic Advantage",
                 intro: "Why 80% of business cards end up in the trash and how the VCard 3.0 format changes the game.",
                 content: "Professional networking is undergoing a silent revolution. The traditional paper business card, while classic, suffers from a major flaw: it requires manual effort from the recipient to copy information into their smartphone—a step where 80% of contacts are lost. The VCard (Virtual Contact File) QR Code eliminates this barrier.\n\nUsing the VCard 3.0 standard, RetailBox generates a standard .vcf file compatible with 100% of modern operating systems (iOS, Android). Upon scanning, the phone immediately suggests adding the contact with name, title, shop name, LinkedIn link, and even the physical address for GPS navigation. It is eco-friendly, involves no printing costs, and is dynamic: you can update your details and regenerate your code instantly. For the modern entrepreneur, it ensures you never miss a follow-up opportunity after a business meeting."
-            }
+            },
+            {
+    "id": "google-reviews-seo-strategy",
+    "title": "Google Reviews: The #1 Lever for Your Local SEO in 2026",
+    "intro": "Learn how to turn a simple checkout into an immediate visibility boost on Google Maps.",
+    "content": `
+        By 2026, the battle to appear in Google's 'Local Pack' (the top 3 results on the map) is no longer won just with keywords, but with social proof. For a restaurant or a shop, the average rating and the volume of recent reviews are the primary criteria for the search algorithm. However, most merchants miss opportunities because the process of leaving a review is too cumbersome for the customer.
+
+        Friction is the enemy of conversion. Asking a customer to search for your name on Maps, then find the 'Reviews' tab, then click 'Write' is a journey where you lose 90% of your chances. The solution lies in technical automation via the 'Place ID'. By identifying your establishment's unique identifier on Google's servers, RetailBox allows you to generate a direct link that instantly opens the review window with 5 stars pre-selected.
+
+        The impact on your business is two-fold: not only do you increase your trust score with new prospects, but you also send 'freshness' signals to Google. A business that receives regular reviews is judged more relevant and mechanically rises in search results. Place your Review Booster QR Code on your tables, counters, or receipts to transform every satisfied customer into a digital ambassador for your brand.
+    `
+},
+
         ],
     }
 }

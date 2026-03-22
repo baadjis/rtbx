@@ -34,7 +34,11 @@ export const Data = {
       {
         q: "Puis-je connecter mes clients au Wi-Fi de ma boutique automatiquement ?",
         a: "Oui, grâce au protocole <strong>WIFI:S:</strong>. En utilisant notre <a href='/tools/wifi' class='faq-link'>Générateur QR Wi-Fi</a>, vous créez un accès crypté. Le client scanne, appuie sur 'Rejoindre', et son téléphone se configure seul. C'est un gain de temps pour vos équipes et un service premium pour vos clients, particulièrement apprécié dans les cafés et salles d'attente."
-      }
+      },
+        {
+    q: "Comment fonctionne le QR Code pour les avis Google ?",
+    a: "Notre outil identifie votre <strong>Place ID</strong> unique via l'API Google Maps pour générer un lien 'magique'. Contrairement à un lien classique vers votre fiche qui oblige le client à chercher le bouton, notre QR code ouvre <strong>directement la fenêtre de rédaction</strong> avec les 5 étoiles prêtes à être cochées. C'est le moyen le plus efficace pour booster votre SEO local et votre e-réputation en magasin via notre <a href='/tools/google-reviews' class='faq-link'>Booster d'Avis Google</a>."
+},
     ]
   },
   en: {
@@ -64,7 +68,12 @@ export const Data = {
       {
         q: "What is a VCard and how can it be used for networking?",
         a: "A <strong>VCard (Virtual Contact File)</strong> is a standard file format recognized by 100% of smartphones. By generating a <a href='/tools/vcard' class='faq-link'>VCard QR Code</a>, you allow a prospect to instantly save your name, phone, email, and even your LinkedIn profile to their address book. It is the ultimate tool to replace paper business cards."
-      }
+      },
+      {
+    q: "How does the Google Review QR Code work?",
+    a: "Our tool identifies your unique <strong>Place ID</strong> via the Google Maps API to generate a 'magic' link. Unlike a standard link to your business profile that forces customers to search for the review button, our QR code <strong>instantly opens the review form</strong> with 5 stars ready to be selected. It is the most effective way to boost your local SEO and in-store online reputation using our <a href='/tools/google-reviews' class='faq-link'>Google Review Booster</a>."
+},
+    
     ]
   }
 }

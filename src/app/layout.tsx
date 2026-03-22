@@ -36,6 +36,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t.title,
     description: t.description,
+    alternates: {
+    canonical: 'https://rtbx.space',
+  },
     other:{
       "google-adsense-account" :"ca-pub-4081303157053373"
     },
@@ -44,6 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t.title,
       description: t.description,
       url: 'https://rtbx.space',
+      
       siteName: 'RetailBox',
       images: [
         {

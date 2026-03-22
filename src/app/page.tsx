@@ -4,7 +4,8 @@ import {
   ArrowRight, Zap, Shield, Globe, 
   Users, QrCode, Tag, Barcode, 
   Contact, MessageCircle, Image as ImageIcon, 
-  Wifi, Link2 
+  Wifi, Link2, 
+  Star
 } from 'lucide-react';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -36,6 +37,7 @@ const DICT = {
       { id: "short", title: "Shortener Pro", desc: "Réduisez vos URLs de boutique et suivez le nombre de clics sur rtbx.space.", link: "/tools/shortener", icon: Link2 },
       { id: "bg", title: "RemBg IA", desc: "Supprimez automatiquement le fond de vos photos produits (Shopify, Vinted).", link: "/tools/rembg", icon: ImageIcon },
       { id: "wifi", title: "Accès Wi-Fi", desc: "Offrez une connexion Wi-Fi sécurisée à vos clients sans saisie de mot de passe.", link: "/tools/wifi", icon: Wifi },
+      { id: "google-review", title: "Booster d'Avis Google", desc: "Générez un QR Code direct pour récolter instantanément des avis 5 étoiles sur votre fiche Google Maps.", link: "/tools/google-reviews", icon: Star }
     ]
   },
   en: {
@@ -51,7 +53,7 @@ const DICT = {
     feat1_title: "Fast & Free",
     feat1_desc: "High-performance tools optimized for instant results.",
    feat2_title: "GDPR Compliant",
-feat2_desc: "Transparency and security. We only store the essentials for your analytics and pro tools.",
+   feat2_desc: "Transparency and security. We only store the essentials for your analytics and pro tools.",
     feat3_title: "High Definition",
     feat3_desc: "Professional standard files ready for perfect printing.",
     services_list: [
@@ -64,6 +66,8 @@ feat2_desc: "Transparency and security. We only store the essentials for your an
       { id: "short", title: "Shortener Pro", desc: "Shorten your store URLs and track clicks in real-time on rtbx.space.", link: "/tools/shortener", icon: Link2 },
       { id: "bg", title: "AI RemBg", desc: "Automatically remove backgrounds from product photos for Shopify or Vinted.", link: "/tools/rembg", icon: ImageIcon },
       { id: "wifi", title: "Wi-Fi Access", desc: "Offer secure Wi-Fi connection without manual password entry.", link: "/tools/wifi", icon: Wifi },
+      { id: "google-review", title: "Google Review Booster", desc: "Generate a direct QR Code to instantly collect 5-star reviews on your Google Maps business profile.", link: "/tools/google-reviews", icon: Star }
+
     ]
   }
 };

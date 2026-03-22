@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { 
   Users, QrCode, Tag, Barcode, 
   Contact, MessageCircle, Image as ImageIcon, 
-  Wifi, Link2, ArrowRight
+  Wifi, Link2, ArrowRight,
+  Star
 } from 'lucide-react';
 
 export default async function ToolsPage() {
@@ -21,6 +22,13 @@ export default async function ToolsPage() {
     { title: "Shortener Pro", en: "URL Shortener", link: "/tools/shortener", icon: Link2, color: "bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400" },
     { title: "RemBg IA", en: "AI RemBg", link: "/tools/rembg", icon: ImageIcon, color: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400" },
     { title: "Accès Wi-Fi", en: "Wi-Fi Access", link: "/tools/wifi", icon: Wifi, color: "bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-400" },
+    { 
+  title: "Avis Google", 
+  en: "Google Reviews", 
+  link: "/tools/google-reviews", 
+  icon: Star, 
+  color: "bg-yellow-50 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400" 
+}
   ];
 
   return (

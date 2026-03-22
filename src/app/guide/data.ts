@@ -40,7 +40,11 @@ export const Data = {
       { 
         title: "RetailLink : Analytics & RGPD", 
         desc: "Transformez vos URLs Shopify interminables en liens courts du type 'rtbx.space/s/votre-boutique'. RetailLink vous permet de suivre le nombre de clics en temps réel pour mesurer l'efficacité de vos campagnes réseaux sociaux. Contrairement à d'autres services, nous respectons le RGPD en ne collectant aucune donnée personnelle (IP) lors du clic : seule la performance brute compte." 
-      }
+      },
+      { 
+  title: "Booster d'Avis Google Maps", 
+  desc: "Augmentez votre note moyenne et votre référencement local. Utilisez notre moteur de recherche pour identifier votre établissement et extraire votre 'Place ID' unique. Le QR Code généré crée un lien magique qui ouvre directement la fenêtre de rédaction d'avis avec 5 étoiles pré-sélectionnées sur le smartphone de vos clients, supprimant toute friction lors du passage en caisse." 
+},
     ]
   },
   en: {
@@ -84,7 +88,11 @@ export const Data = {
       { 
         title: "RetailLink: Analytics & GDPR", 
         desc: "Turn endless Shopify URLs into short 'rtbx.space/s/your-shop' links. RetailLink lets you track clicks in real-time to measure social media campaign effectiveness. Unlike other services, we are GDPR compliant by collecting no personal data (IP) during the click: only raw performance counts." 
-      }
+      },
+      { 
+  title: "Google Review Booster", 
+  desc: "Improve your average rating and local SEO. Use our search engine to identify your business and extract your unique 'Place ID'. The generated QR Code creates a magic link that instantly opens the review writing window with 5 stars pre-selected on your customers' smartphones, removing all friction at the point of sale." 
+},
     ]
   }
 };
