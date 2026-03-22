@@ -50,8 +50,8 @@ const DICT = {
     btn_open: "Open Tool",
     feat1_title: "Fast & Free",
     feat1_desc: "High-performance tools optimized for instant results.",
-    feat2_title: "Conforme RGPD",
-    feat2_desc: "Transparence et sécurité. Nous stockons uniquement l'essentiel pour vos statistiques et outils pro.",
+   feat2_title: "GDPR Compliant",
+feat2_desc: "Transparency and security. We only store the essentials for your analytics and pro tools.",
     feat3_title: "High Definition",
     feat3_desc: "Professional standard files ready for perfect printing.",
     services_list: [
