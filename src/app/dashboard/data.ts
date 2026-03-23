@@ -1,4 +1,4 @@
-export const DICT = {
+export const Data = {
   fr: {
     dashboard: "Tableau de bord",
     my_links: "Mes Liens",
