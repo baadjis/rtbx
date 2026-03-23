@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies();
   const langValue = cookieStore.get("lang")?.value;
@@ -42,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
     
     // --- SEO TECHNIQUE AVANCÉ ---
     alternates: {
-      canonical: 'https://www.rtbx.space',
+      canonical: 'https://rtbx.space',
       languages: {
         'fr-FR': 'https://www.rtbx.space/?lang=fr',
         'en-US': 'https://www.rtbx.space/?lang=en',
@@ -64,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: t.title,
       description: t.desc,
-      url: 'https://rtbx.space',
+      url: 'https://www.rtbx.space',
       siteName: 'RetailBox',
       images: [
         {
