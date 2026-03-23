@@ -51,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'RetailBox',
       images: [
         {
-          url: 'https://baadjis-utilitybox.hf.space/og-banner.png?v=5',
+          url: `https://www.rtbx.space/og-banner.png?v=5`,
           width: 1200,
           height: 630,
         },
