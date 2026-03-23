@@ -1,28 +1,40 @@
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
 
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get('code')
-  
-  // On récupère le paramètre 'next' ou on force /dashboard
-  const next = requestUrl.searchParams.get('next') ?? '/dashboard'
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  // On peut passer un paramètre "next" pour choisir où aller après (par défaut /dashboard)
+  const next = searchParams.get('next') ?? '/dashboard'
 
   if (code) {
-    const supabase = await createClient()
-    // On échange le code contre une session réelle
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch { /* Géré par le middleware */ }
+          },
+        },
+      }
+    )
+
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
-      // On crée une URL de redirection PROPRE sans les paramètres ?code=
-      const protocol = request.headers.get('x-forwarded-proto') || 'https'
-      const host = request.headers.get('host')
-      const redirectUrl = new URL(next, `${protocol}://${host}`)
-      
-      return NextResponse.redirect(redirectUrl)
+      // Succès : Redirection vers le Dashboard sans les paramètres dans l'URL
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // En cas d'erreur (code expiré ou invalide), retour au login avec un message
-  return NextResponse.redirect(new URL('/login?error=auth-code-error', request.url))
+  // Erreur : Retour au login avec un message
+  return NextResponse.redirect(`${origin}/login?error=auth-failed`)
 }
