@@ -35,5 +35,5 @@ export async function GET(
   }
 
   // Si le code est invalide : retour vers le site principal Hugging Face
-  return redirect('https://baadjis-utilitybox.hf.space');
+  return redirect('/');
 }
