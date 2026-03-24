@@ -24,44 +24,50 @@ export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
   )
 
   // Fonction pour sauvegarder le business en base de données
-  const saveToDatabase = async (place: any) => {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (user && place.place_id) {
-      const { error } = await supabase
-        .from('businesses')
-        .upsert({
-          user_id: user.id,
-          place_id: place.place_id,
-          name: place.name,
-          address: place.formatted_address
-        }, { onConflict: 'user_id, place_id' }) // Évite les doublons pour le même utilisateur
+  // 1. Dans la fonction initAutocomplete, ajoute "types" dans les fields :
+const initAutocomplete = () => {
+  if (!autoCompleteRef.current || !window.google) return
 
-      if (!error) setIsSaved(true)
+  const autocomplete = new window.google.maps.places.Autocomplete(autoCompleteRef.current, {
+    fields: ["place_id", "name", "formatted_address", "types"], // AJOUT DE "types" ICI
+    types: ["establishment"]
+  })
+
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace()
+    if (place.place_id) {
+      // On récupère le type principal (souvent le premier de la liste)
+      const primaryType = place.types ? place.types[0] : 'establishment';
+      
+      setPlaceId(place.place_id)
+      setBusinessName(place.name || '')
+      setAddress(place.formatted_address || '')
+      
+      // On envoie le type à la fonction de sauvegarde
+      saveToDatabase({
+        place_id: place.place_id,
+        name: place.name,
+        formatted_address: place.formatted_address,
+        business_type: primaryType // ON PASSE LE TYPE
+      })
     }
+  })
+}
+
+// 2. Met à jour la fonction saveToDatabase :
+const saveToDatabase = async (place: any) => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user && place.place_id) {
+    await supabase.from('businesses').upsert({
+      user_id: user.id,
+      place_id: place.place_id,
+      name: place.name,
+      address: place.formatted_address,
+      business_type: place.business_type // SAUVEGARDE EN BASE
+    }, { onConflict: 'user_id, place_id' })
+    setIsSaved(true)
   }
-
-  const initAutocomplete = () => {
-    if (!autoCompleteRef.current || !window.google) return
-
-    const autocomplete = new window.google.maps.places.Autocomplete(autoCompleteRef.current, {
-      fields: ["place_id", "name", "formatted_address"],
-      types: ["establishment"]
-    })
-
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace()
-      if (place.place_id) {
-        setPlaceId(place.place_id)
-        setBusinessName(place.name || '')
-        setAddress(place.formatted_address || '')
-        setIsSaved(false)
-        
-        // Sauvegarde automatique si connecté
-        saveToDatabase(place)
-      }
-    })
-  }
+}
 
   const downloadQR = () => {
     const canvas = document.getElementById('review-qr-canvas') as HTMLCanvasElement
