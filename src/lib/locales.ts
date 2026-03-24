@@ -38,7 +38,18 @@ export const DICT = {
     back_to_home: "Retour à l'accueil",
     home: "Accueil", blog: "Blog", guide: "Guide", faq: "FAQ", about: "À Propos", contact: "Contact",
     cta_start: "Démarrer maintenant", cta_login: "Mon Espace Pro", cta_register: "S'inscrire gratuitement",
-    btn_open: "Ouvrir l'outil"
+    btn_open: "Ouvrir l'outil",
+    my_retail_spaces: "Mes Espaces Retail",
+average_rating: "Note Globale",
+linked_businesses: "Commerces liés",
+view_all_biz: "Gérer mes boutiques",
+  my_businesses: "Mes Établissements",
+  no_businesses: "Aucun établissement lié pour le moment.",
+  add_business: "Lier un commerce",
+  business_total: "établissements enregistrés",
+  manage: "Gérer",
+
+
   },
   en: {
     welcome: "Welcome back! 👋",
@@ -79,6 +90,15 @@ export const DICT = {
     back_to_home: "Back to home",
     home: "Home", blog: "Blog", guide: "Guide", faq: "FAQ", about: "About", contact: "Contact",
     cta_start: "Get Started", cta_login: "Pro Dashboard", cta_register: "Sign up for free",
-    btn_open: "Open Tool"
+    btn_open: "Open Tool",
+    my_retail_spaces: "My Retail Spaces",
+average_rating: "Global Rating",
+linked_businesses: "Linked Businesses",
+view_all_biz: "Manage my shops",
+  my_businesses: "My Businesses",
+  no_businesses: "No business linked yet.",
+  add_business: "Link a business",
+  business_total: "registered businesses",
+  manage: "Manage",
   }
 };

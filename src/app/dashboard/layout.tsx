@@ -1,10 +1,11 @@
 import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
-import { DICT } from '@/lib/locales';
+import { Data} from './data';
 import { 
   LayoutDashboard, Link2, BarChart3, 
   Settings, LogOut, Wrench, Star, 
-  Home, ChevronRight 
+  Home, ChevronRight, 
+  Store
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
@@ -16,13 +17,14 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const { data: { user } } = await supabase.auth.getUser();
   const cookieStore = await cookies();
   const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
-  const t = DICT[lang];
+  const t = Data[lang];
 
   // 2. Navigation du Dashboard (Seulement liens internes)
   const navItems = [
     { name: t.dashboard, icon: LayoutDashboard, href: '/dashboard' },
     { name: lang === 'fr' ? "Mes Liens" : "My Links", icon: Link2, href: '/dashboard/links' },
     { name: lang === 'fr' ? "Avis Google" : "Google Reviews", icon: Star, href: '/tools/google-reviews' },
+    { name: t.my_businesses, icon: Store, href: '/dashboard/businesses' },
     { name: t.analytics, icon: BarChart3, href: '#', badge: "Beta" },
     { name: t.settings, icon: Settings, href: '#' },
   ];
