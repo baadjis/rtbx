@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
-import { Download, Search, Star, MapPin, ArrowLeft } from 'lucide-react'
+import { Download, Search, Star, MapPin, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
-import Script from 'next/script' // Utilisation du composant natif Next.js
+import Script from 'next/script'
+import { createBrowserClient } from '@supabase/ssr' // Ajout de Supabase
 import { Data } from './data'
 
 export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
@@ -12,9 +14,33 @@ export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
   const [businessName, setBusinessName] = useState('')
   const [address, setAddress] = useState('')
   const [isScriptReady, setIsScriptReady] = useState(false)
+  const [isSaved, setIsSaved] = useState(false) // Etat pour confirmer la sauvegarde
   const autoCompleteRef = useRef<HTMLInputElement>(null)
 
-  // Fonction d'initialisation appelée quand le script Google est chargé
+  // Initialisation du client Supabase
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  // Fonction pour sauvegarder le business en base de données
+  const saveToDatabase = async (place: any) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user && place.place_id) {
+      const { error } = await supabase
+        .from('businesses')
+        .upsert({
+          user_id: user.id,
+          place_id: place.place_id,
+          name: place.name,
+          address: place.formatted_address
+        }, { onConflict: 'user_id, place_id' }) // Évite les doublons pour le même utilisateur
+
+      if (!error) setIsSaved(true)
+    }
+  }
+
   const initAutocomplete = () => {
     if (!autoCompleteRef.current || !window.google) return
 
@@ -29,6 +55,10 @@ export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
         setPlaceId(place.place_id)
         setBusinessName(place.name || '')
         setAddress(place.formatted_address || '')
+        setIsSaved(false)
+        
+        // Sauvegarde automatique si connecté
+        saveToDatabase(place)
       }
     })
   }
@@ -45,7 +75,6 @@ export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
-      {/* CHARGEMENT DU SCRIPT GOOGLE MAPS */}
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
         strategy="afterInteractive"
@@ -73,6 +102,7 @@ export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
             </div>
 
             <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-slate-800 space-y-6 transition-colors">
+              
               <div className="space-y-3">
                 <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
                   <Search className="w-4 h-4" /> {t.label_search}
@@ -90,9 +120,17 @@ export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
               </div>
 
               {businessName && (
-                <div className="p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-[2rem] border border-indigo-100 dark:border-indigo-800 animate-in fade-in slide-in-from-left-4">
-                    <h4 className="font-black text-indigo-600 dark:text-indigo-400 mb-1">{businessName}</h4>
-                    <p className="text-xs text-indigo-400 font-medium">{address}</p>
+                <div className="p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-[2rem] border border-indigo-100 dark:border-indigo-800 animate-in fade-in slide-in-from-left-4 flex justify-between items-center">
+                    <div>
+                        <h4 className="font-black text-indigo-600 dark:text-indigo-400 mb-1">{businessName}</h4>
+                        <p className="text-xs text-indigo-400 font-medium">{address}</p>
+                    </div>
+                    {isSaved && (
+                        <div className="flex flex-col items-center text-green-500">
+                            <CheckCircle2 size={20} />
+                            <span className="text-[10px] font-black uppercase mt-1">Sauvé</span>
+                        </div>
+                    )}
                 </div>
               )}
 
