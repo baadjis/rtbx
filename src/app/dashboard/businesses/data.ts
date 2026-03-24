@@ -5,6 +5,14 @@ export const Data={fr: {
   add_business: "Lier un commerce",
   business_total: "établissements enregistrés",
   manage: "Gérer",
+   biz_details: "Gestion de l'établissement",
+  latest_reviews: "Derniers avis clients",
+  no_reviews: "Aucun avis récent trouvé.",
+  view_on_maps: "Voir sur Google Maps",
+  average_rating: "Note moyenne",
+  total_reviews: "avis au total",
+  stats_section: "Statistiques de réputation",
+
 },
 en: {
   my_businesses: "My Businesses",
@@ -12,4 +20,11 @@ en: {
   add_business: "Link a business",
   business_total: "registered businesses",
   manage: "Manage",
+   biz_details: "Business Management",
+  latest_reviews: "Latest customer reviews",
+  no_reviews: "No recent reviews found.",
+  view_on_maps: "View on Google Maps",
+  average_rating: "Average rating",
+  total_reviews: "total reviews",
+  stats_section: "Reputation Analytics",
 }}
