@@ -9,7 +9,11 @@ export const Data = {
     brand: "RetailLink",
     back_to_tools: "Outils Création",
     workspace: "Espace Pro",
-    beta: "Bientôt"
+    beta: "Bientôt",
+    business_title:"Mon Commerce",
+    qwick_acces:"Accés Rapide",
+    search:"Lancer la recherche"
+    
   },
   en: {
     dashboard: "Dashboard",
@@ -21,6 +25,9 @@ export const Data = {
     brand: "RetailLink",
     back_to_tools: "Creation Tools",
     workspace: "Pro Space",
-    beta: "Beta"
+    beta: "Beta",
+    business_title:"My Business",
+    qwick_access:"Qwick Acces",
+    search:'Search'
   }
 };

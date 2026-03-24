@@ -157,7 +157,7 @@ export default async function DashboardPage() {
 
         {/* Section Commerce (Prend 1 colonne) */}
         <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-8">Mon Commerce</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-8">{lang=='fr'?"Mon Commerce":"My business"}</h2>
             
             {business ? (
                 <div className="space-y-6 flex-1">
@@ -173,7 +173,7 @@ export default async function DashboardPage() {
                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Accès Rapides</p>
                         <Link href="/tools/wifi" className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all no-underline text-gray-600 dark:text-slate-300 font-bold group">
                             <div className="flex items-center gap-3">
-                                <Wifi size={18} className="group-hover:text-indigo-600" /> Imprimer Wi-Fi
+                                <Wifi size={18} className="group-hover:text-indigo-600" /> { lang=='fr' ?"Imprimer le Qrcode Wi-Fi":"Print your Wi-Fi Qrcode"}
                             </div>
                             <ChevronRight size={16} />
                         </Link>
@@ -198,7 +198,7 @@ export default async function DashboardPage() {
             )}
             
             <div className="mt-8 pt-6 border-t border-gray-50 dark:border-slate-800">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-4 text-center">Propulsé par Google Maps API</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-4 text-center">{lang=='fr'?"Propulsé par Google Maps API":"Powered by Google Maps API"}</p>
             </div>
         </div>
 
