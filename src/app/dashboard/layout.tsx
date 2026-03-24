@@ -85,11 +85,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         {/* FOOTER SIDEBAR (USER) */}
         <div className="p-6 mt-auto border-t border-gray-50 dark:border-slate-800">
           <form action="/auth/signout" method="post">
-            <button className="flex items-center gap-3 px-4 py-3 w-full text-gray-400 dark:text-slate-500 font-bold hover:text-red-600 dark:hover:text-red-400 transition-colors group">
-              <LogOut className="w-5 h-5 text-gray-300 dark:text-slate-600 group-hover:text-red-500" />
-              {t.logout}
-            </button>
-          </form>
+  <button type="submit" className="flex items-center gap-3 px-4 py-3 w-full text-gray-400 font-bold hover:text-red-600 transition-colors group">
+    <LogOut className="w-5 h-5 text-gray-300 group-hover:text-red-500" />
+    {t.logout}
+  </button>
+</form>
         </div>
       </aside>
 
