@@ -171,38 +171,48 @@ export default async function DashboardPage() {
             </div>
             
             {businesses.length > 0 ? (
-                <div className="space-y-4 flex-1">
-                    {businesses.slice(0, 3).map((biz) => {
-                        const config = getBusinessConfig(biz.business_type);
-                        return (
-                            <div key={biz.id} className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-[2rem] border border-gray-100 dark:border-slate-800 group hover:border-indigo-100 dark:hover:border-indigo-900 transition-all">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`p-2 rounded-lg shadow-sm ${config.color}`}>
-                                            {config.icon}
-                                        </div>
-                                        <span className="font-bold text-gray-900 dark:text-white truncate max-w-[120px]">{biz.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-yellow-500 font-black text-xs">
-                                        <Star size={12} fill="currentColor" /> 4.8
-                                    </div>
+    <div className="space-y-4 flex-1">
+        {businesses.slice(0, 3).map((biz) => {
+            const config = getBusinessConfig(biz.business_type);
+            return (
+                <div key={biz.id} className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-[2rem] border border-gray-100 dark:border-slate-800 group hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300">
+                    
+                    {/* LE HAUT DU BLOC : REDIRECTION VERS LES DÉTAILS */}
+                    <Link href={`/dashboard/businesses/${biz.id}`} className="no-underline block group/item">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                                <div className={`p-2 rounded-lg shadow-sm transition-transform duration-300 group-hover/item:scale-110 ${config.color}`}>
+                                    {config.icon}
                                 </div>
-                                <div className="flex gap-2 mt-4">
-                                    <Link href="/tools/google-reviews" className="flex-1 py-2 bg-white dark:bg-slate-800 rounded-xl text-[10px] font-black text-center text-gray-500 dark:text-slate-400 border border-gray-100 dark:border-slate-700 hover:text-indigo-600 transition-all no-underline">
-                                        Avis QR
-                                    </Link>
-                                    <Link href="/tools/wifi" className="flex-1 py-2 bg-white dark:bg-slate-900 rounded-xl text-[10px] font-black text-center text-gray-500 dark:text-slate-400 border border-gray-100 dark:border-slate-700 hover:text-indigo-600 transition-all no-underline">
-                                        WiFi QR
-                                    </Link>
-                                </div>
+                                <span className="font-bold text-gray-900 dark:text-white truncate max-w-[120px] group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400 transition-colors">
+                                    {biz.name}
+                                </span>
                             </div>
-                        );
-                    })}
-                    <Link href="/tools/google-reviews" className="w-full py-4 mt-4 border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-gray-400 hover:text-indigo-600 hover:border-indigo-200 transition-all no-underline font-bold text-sm bg-transparent">
-                        <Plus size={16} /> {t.add_business}
+                            <div className="flex items-center gap-1 text-yellow-500 font-black text-xs">
+                                <Star size={12} fill="currentColor" /> 4.8
+                            </div>
+                        </div>
                     </Link>
+
+                    {/* LES BOUTONS D'ACTION RAPIDE */}
+                    <div className="flex gap-2 mt-4">
+                        <Link href="/tools/google-reviews" className="flex-1 py-2 bg-white dark:bg-slate-800 rounded-xl text-[10px] font-black text-center text-gray-500 dark:text-slate-400 border border-gray-100 dark:border-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-100 dark:hover:border-indigo-900 transition-all no-underline">
+                            {lang === 'fr' ? 'Avis QR' : 'Review QR'}
+                        </Link>
+                        <Link href="/tools/wifi" className="flex-1 py-2 bg-white dark:bg-slate-800 rounded-xl text-[10px] font-black text-center text-gray-500 dark:text-slate-400 border border-gray-100 dark:border-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-100 dark:hover:border-indigo-900 transition-all no-underline">
+                            WiFi QR
+                        </Link>
+                    </div>
                 </div>
-            ) : (
+            );
+        })}
+        
+        {/* BOUTON AJOUTER UN COMMERCE */}
+        <Link href="/tools/google-reviews" className="w-full py-4 mt-2 border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-gray-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all no-underline font-bold text-sm bg-transparent">
+            <Plus size={16} /> {t.add_business}
+        </Link>
+    </div>
+) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 py-12">
                     <Store size={40} className="text-gray-200 dark:text-slate-800" />
                     <p className="text-sm text-gray-400 font-medium italic">{t.no_businesses}</p>
