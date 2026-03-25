@@ -217,7 +217,7 @@ export default async function DashboardPage() {
                     <Store size={40} className="text-gray-200 dark:text-slate-800" />
                     <p className="text-sm text-gray-400 font-medium italic">{t.no_businesses}</p>
                     <Link href="/tools/google-reviews" className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:underline no-underline">
-                        Lier mon premier commerce
+                       { lang=='fr'? "Lier mon premier commerce":"Link your first business"}
                     </Link>
                 </div>
             )}
