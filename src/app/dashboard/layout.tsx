@@ -18,13 +18,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
   const t = Data[lang];
 
-  const navItems = [
-    { name: t.dashboard, icon: LayoutDashboard, href: '/dashboard' },
-    { name: lang === 'fr' ? "Mes Liens" : "My Links", icon: Link2, href: '/dashboard/links' },
-    { name: lang === 'fr' ? "Avis Google" : "Google Reviews", icon: Star, href: '/tools/google-reviews' },
-    { name: t.my_businesses, icon: Store, href: '/dashboard/businesses' },
-    { name: t.analytics, icon: BarChart3, href: '#', badge: "Beta" },
-    { name: t.settings, icon: Settings, href: '#' },
+   const navItems = [
+    { name: t.dashboard, iconName: 'dashboard', href: '/dashboard' },
+    { name: lang === 'fr' ? "Mes Liens" : "My Links", iconName: 'links', href: '/dashboard/links' },
+    { name: lang === 'fr' ? "Avis Google" : "Google Reviews", iconName: 'star', href: '/tools/google-reviews' },
+    { name: t.my_businesses, iconName: 'store', href: '/dashboard/businesses' },
+    { name: t.analytics, iconName: 'analytics', href: '#', badge: "Beta" },
+    { name: t.settings, iconName: 'settings', href: '#' },
   ];
 
   return (
