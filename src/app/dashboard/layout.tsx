@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
 import { Data } from './data';
 import { 
   LayoutDashboard, Link2, BarChart3, 
   Settings, LogOut, Wrench, Star, 
-  Home, ChevronRight, 
-  Store,
-  
+  Home, Store
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
@@ -15,14 +12,12 @@ import { BrandLogo } from '@/components/BrandLogo';
 import DashboardSidebar from '@/components/DashboardSidebar';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  // 1. Authentification & Langue
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const cookieStore = await cookies();
   const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
   const t = Data[lang];
 
-  // 2. Navigation du Dashboard
   const navItems = [
     { name: t.dashboard, icon: LayoutDashboard, href: '/dashboard' },
     { name: lang === 'fr' ? "Mes Liens" : "My Links", icon: Link2, href: '/dashboard/links' },
@@ -30,16 +25,15 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     { name: t.my_businesses, icon: Store, href: '/dashboard/businesses' },
     { name: t.analytics, icon: BarChart3, href: '#', badge: "Beta" },
     { name: t.settings, icon: Settings, href: '#' },
-  ] ;
+  ];
 
   return (
-     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       
-      {/* SIDEBAR RÉUTILISABLE (CLIENT COMPONENT) */}
       <DashboardSidebar navItems={navItems} t={t} lang={lang} />
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Mobile Header (Inchangé) */}
+        {/* Mobile Header */}
         <header className="lg:hidden sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-slate-800 p-4">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
                 <Link href="/" className="no-underline"><BrandLogo /></Link>
@@ -49,12 +43,12 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             </div>
         </header>
 
-        <div className="h-full overflow-y-auto pb-24 lg:pb-8">
-            <div className="max-w-7xl mx-auto">
+        {/* Content Area - Aligné max-w-7xl pour cohérence avec le reste du site */}
+        <div className="h-full overflow-y-auto pb-28 lg:pb-8">
+            <div className="max-w-7xl mx-auto px-4 md:px-8">
                 {children}
             </div>
         </div>
-
 
         {/* --- BOTTOM NAV MOBILE (App UX) --- */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-gray-100 dark:border-slate-800 px-4 py-3 pb-8 flex justify-between items-center transition-colors shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
@@ -74,8 +68,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 <Link2 size={20} />
                 <span className="text-[10px] font-black uppercase tracking-tighter">Links</span>
             </Link>
-            
-            {/* LOGOUT MOBILE : Via Formulaire POST pour la sécurité */}
             <form action="/auth/signout" method="post" className="flex flex-col items-center">
                 <button type="submit" className="flex flex-col items-center gap-1 bg-transparent border-none p-0 m-0 text-gray-400 dark:text-slate-500 hover:text-red-500 transition-colors">
                     <LogOut size={20} />
@@ -83,7 +75,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 </button>
             </form>
         </nav>
-
       </main>
     </div>
   );
