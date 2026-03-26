@@ -39,35 +39,41 @@ export default async function BlogPage() {
         </div>
 
         {/* GRILLE D'ARTICLES */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {t.posts.map((p: any) => (
-            <Link 
-              key={p.id} 
-              href={`/blog/${p.id}`} 
-              className="group bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-500 flex flex-col justify-between"
-            >
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300">
-                  {p.title}
-                </h2>
-                <p className="text-gray-500 dark:text-slate-400 mb-10 line-clamp-3 font-medium text-lg leading-relaxed">
-                  {p.intro}
-                </p>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <span className="text-indigo-600 dark:text-indigo-400 font-black uppercase text-xs tracking-widest border-b-2 border-indigo-600/20 group-hover:border-indigo-600 transition-all pb-1">
-                  {lang === 'fr' ? 'Lire l\'article' : 'Read more'}
-                </span>
-                <div className="w-6 h-6 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center group-hover:translate-x-2 transition-transform duration-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600 dark:text-indigo-400">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </div>
-              </div>
-            </Link>
-          ))}
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+  {/* On crée une copie de la liste et on l'inverse pour avoir les plus récents en premier */}
+  {[...t.posts].reverse().map((p: any) => (
+    <Link 
+      key={p.id} 
+      href={`/blog/${p.id}`} 
+      className="group bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-500 flex flex-col justify-between no-underline"
+    >
+      <div>
+        {/* Affichage de la date en petit au-dessus du titre */}
+        <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em] mb-4 block">
+          {p.date}
+        </span>
+        
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300">
+          {p.title}
+        </h2>
+        <p className="text-gray-500 dark:text-slate-400 mb-10 line-clamp-3 font-medium text-lg leading-relaxed">
+          {p.intro}
+        </p>
+      </div>
+      
+      <div className="flex items-center gap-3">
+        <span className="text-indigo-600 dark:text-indigo-400 font-black uppercase text-xs tracking-widest border-b-2 border-indigo-600/20 group-hover:border-indigo-600 transition-all pb-1">
+          {lang === 'fr' ? 'Lire l\'article' : 'Read more'}
+        </span>
+        <div className="w-6 h-6 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center group-hover:translate-x-2 transition-transform duration-300">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600 dark:text-indigo-400">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
         </div>
+      </div>
+    </Link>
+  ))}
+</div>
 
         {/* SECTION CTA BAS DE PAGE */}
         <div className="mt-24 p-10 md:p-16 bg-slate-50 dark:bg-slate-900/50 rounded-[3rem] border border-gray-100 dark:border-slate-800 text-center transition-colors">
