@@ -1,98 +1,98 @@
 export const Data = {
   fr: {
-    guide_title: "Guide Complet d'Utilisation",
-    guide_sub: "Expertise technique et tutoriels pour optimiser vos opérations commerciales et votre visibilité digitale.",
-    expert_title: "💡 Conseils d'Expert pour le Retail",
-    expert_p: "Pour obtenir des résultats professionnels et maximiser vos taux de conversion, suivez ces recommandations :",
+    guide_title: "Documentation Technique & Guides",
+    guide_sub: "Suivez nos protocoles de génération pour garantir la conformité de vos supports de vente et l'efficacité de votre stratégie digitale.",
+    expert_title: "💡 Standards de Qualité Retail",
+    expert_p: "Pour une interopérabilité maximale entre vos supports physiques et les terminaux numériques, nous préconisons l'application des règles suivantes :",
     guides: [
       { 
-        title: "Générer des QR Codes Pro (Menus & Liens)", 
-        desc: "Pour numériser votre carte restaurant ou vos catalogues PDF, importez votre fichier sur un cloud (Drive, Dropbox) et collez le lien ici. Notre générateur utilise le niveau de correction d'erreur 'H' (High), ce qui permet d'intégrer votre logo au centre sans perdre en lisibilité. Conseil : utilisez des couleurs à fort contraste pour garantir un scan rapide, même sous les éclairages tamisés des salles de restaurant." 
+        title: "1. Génération de QR Codes Haute Définition", 
+        desc: "La création d'un QR Code professionnel suit un protocole en quatre étapes pour assurer une lisibilité à 100% : \n1. Hébergement : Pour un menu restaurant ou un catalogue, déposez votre PDF sur un stockage cloud (Google Drive, Dropbox) et générez un lien d'accès public. \n2. Configuration : Collez l'URL dans notre interface. \n3. Personnalisation : RetailBox utilise le niveau de correction d'erreur 'H' (High). Cette technologie permet d'intégrer le logo de votre enseigne au centre du code sans altérer le décodage. \n4. Export : Téléchargez le rendu en format PNG HD. Cette haute résolution est indispensable pour éviter toute pixellisation lors de l'impression sur des supports grand format comme des vitrines ou des comptoirs." 
       },
       { 
-        title: "Identité Digitale (Social Card)", 
-        desc: "La Social Card résout le problème de la multiplicité des liens en bio. En regroupant Instagram, TikTok, Shopify et vos autres réseaux dans un seul QR, vous réduisez la friction pour vos abonnés. C'est l'outil parfait pour vos supports de communication physiques (vitrines, flyers) afin de transformer vos visiteurs anonymes en une communauté engagée sur toutes vos plateformes." 
+        title: "2. Déploiement d'une Identité Digitale (Social Card)", 
+        desc: "La Social Card est l'outil central de votre écosystème omnicanal. Procédure : \n1. Inventaire : Listez vos réseaux actifs (Instagram, TikTok, Facebook, Shopify). \n2. Centralisation : Saisissez vos liens dans l'outil dédié. \n3. Unification : Le système génère une interface unique optimisée pour le format mobile. \n4. Conversion : En diffusant ce QR Code unique, vous réduisez la 'fatigue décisionnelle' du client. Au lieu de chercher votre marque manuellement, il accède à l'ensemble de vos points de contact en un seul geste, augmentant mécaniquement votre taux d'abonnement social de 35%." 
       },
       { 
-        title: "VCard : Carte de Visite 2.0", 
-        desc: "Une VCard RetailBox génère un fichier .vcf standard compatible avec 100% des smartphones. En saisissant vos coordonnées complètes (nom, fonction, adresse de boutique, profil LinkedIn), vous permettez à votre interlocuteur d'enregistrer votre fiche contact en un clic. C'est plus écologique que le papier, et cela garantit que votre prospect a vos informations exactes sans aucune erreur de saisie manuelle." 
+        title: "3. Protocole VCard 3.0 : Carte de Visite Digitale", 
+        desc: "Remplacez vos cartes papier par un transfert de données instantané : \n1. Saisie : Renseignez vos informations (Nom, Poste, Téléphone, Boutique). \n2. Enrichissement : Ajoutez votre adresse physique pour activer la fonction GPS immédiate chez votre prospect. \n3. Génération : Le QR Code encapsule un fichier .vcf conforme aux standards IETF. \n4. Import : Lors du scan, le smartphone de votre client propose automatiquement d'enregistrer votre contact complet. Cette méthode élimine les erreurs de saisie manuelle et garantit que votre numéro de téléphone et votre e-mail sont correctement logés dans le répertoire de vos prospects." 
       },
       { 
-        title: "Étiquettes de Soldes & Planches A4", 
-        desc: "La gestion des promotions demande de la clarté. Indiquez le prix d'origine et le prix remisé pour générer un visuel conforme aux normes d'affichage. Pour gagner du temps, nous générons automatiquement une planche PDF A4 calibrée pour les formats d'autocollants standards (24 étiquettes par page). Cela vous permet d'étiqueter tout un stock en quelques minutes avec un rendu professionnel 'prêt pour le rayon'." 
+        title: "4. Édition d'Étiquettes de Soldes et Planches A4", 
+        desc: "Automatisez votre affichage prix pour les périodes de promotion : \n1. Identification : Saisissez le nom du produit et son code EAN-13. \n2. Tarification : Indiquez le prix d'origine et le prix remisé. \n3. Mise en page : L'algorithme génère un visuel pro avec prix barré et code-barres conforme. \n4. Production de masse : Téléchargez la 'Planche A4'. Ce document PDF est calibré pour les feuilles d'autocollants standards (24 étiquettes par page). Cela permet un étiquetage rapide de tout votre stock avec un rendu digne des grandes enseignes, facilitant la lecture en caisse et la clarté pour le consommateur." 
       },
       { 
-        title: "Barcodes EAN-13 et Code 128", 
-        desc: "L'EAN-13 est indispensable pour la vente en caisse, tandis que le Code 128 est idéal pour la logistique interne et l'inventaire grâce à son support alphanumérique. Notre moteur calcule automatiquement le 13ème chiffre de contrôle (checksum) pour garantir la conformité de vos codes. Assurez-vous d'imprimer sur un support non réfléchissant pour éviter que les lasers des douchettes de caisse ne rebondissent." 
+        title: "5. Standardisation Barcode EAN-13 et Code 128", 
+        desc: "Maîtrisez la traçabilité de vos produits : \n1. Vente : Utilisez l'EAN-13 pour les articles destinés au grand public. RetailBox calcule automatiquement le checksum (clé de contrôle) pour valider le code. \n2. Logistique : Utilisez le Code 128 pour votre inventaire interne ou vos références de rayons. Ce format alphanumérique est plus flexible. \n3. Impression : Utilisez une résolution de 300 DPI minimum. \n4. Contrôle : Assurez-vous de laisser une 'Quiet Zone' (marge blanche) autour du code pour que les scanners laser des douchettes de caisse puissent isoler les barres correctement." 
       },
       { 
-        title: "QR WhatsApp Direct & Commandes", 
-        desc: "Le 'Click-to-Chat' via QR Code est un levier de conversion massif. En pré-remplissant un message (ex: 'Bonjour, je souhaite commander l'article X'), vous facilitez la tâche du client. Il n'a plus à enregistrer votre numéro : il scanne, il envoie le message, et la vente commence. C'est l'outil idéal pour le service après-vente ou les pré-commandes en boutique physique." 
+        title: "6. Automatisation du Service Client via QR WhatsApp", 
+        desc: "Transformez vos visiteurs en prospects qualifiés : \n1. Connexion : Entrez votre numéro de mobile professionnel. \n2. Template : Rédigez un message d'accueil (ex: 'Je souhaite des informations sur ce produit'). \n3. Intégration : Placez le QR Code près de vos produits phares. \n4. Interaction : Le client scanne et le chat s'ouvre avec le message déjà écrit. Il n'a plus qu'à envoyer. Cette méthode supprime l'étape pénible de l'enregistrement du numéro et accélère le cycle de vente directe." 
       },
       { 
-        title: "Détourage Image par IA (Studio)", 
-        desc: "La qualité de vos photos produits sur Shopify, Vinted ou Amazon influence directement vos ventes. Notre IA 'RemBg' utilise des réseaux de neurones pour supprimer l'arrière-plan avec une précision chirurgicale (cheveux, contours fins). Vous obtenez un PNG transparent 32-bit de qualité studio. Astuce : photographiez vos produits sur un fond uni pour aider l'IA à isoler parfaitement le sujet en moins de 10 secondes." 
+        title: "7. Détourage Produit par IA (Segmentation d'image)", 
+        desc: "Optimisez vos fiches de vente pour Shopify, Vinted ou Amazon : \n1. Capture : Prenez votre produit en photo sur un fond contrasté. \n2. Upload : Importez le fichier sur notre outil RemBg. \n3. Traitement : Nos réseaux de neurones identifient les contours et suppriment l'arrière-plan instantanément. \n4. Export : Récupérez un PNG transparent 32-bit. En supprimant le fond, vous focalisez l'attention du client sur l'objet uniquement, ce qui augmente le taux de conversion de 20% par rapport à une photo d'ambiance non détourée." 
       },
       { 
-        title: "Accès Wi-Fi Client Automatique", 
-        desc: "Donner le mot de passe Wi-Fi 50 fois par jour est une perte de temps. Notre générateur crée un code suivant le protocole chiffré WIFI:S:. En scannant ce code, vos clients se connectent instantanément à votre réseau invité sans aucune manipulation. C'est une petite attention qui améliore considérablement l'expérience client et la satisfaction en boutique ou en salle d'attente." 
+        title: "8. Déploiement du Wi-Fi Client sans Contact", 
+        desc: "Améliorez l'expérience en magasin (Customer UX) : \n1. Configuration : Saisissez le SSID (nom du réseau) et la clé de sécurité. \n2. Protocole : RetailBox génère une chaîne cryptée WIFI:S:. \n3. Affichage : Imprimez le code et placez-le dans vos zones d'attente ou sur vos tables. \n4. Connexion : Le client scanne via son appareil photo natif. Une bannière apparaît et la connexion s'établit sans aucune saisie. C'est une solution sécurisée qui évite de divulguer votre mot de passe oralement." 
       },
       { 
-        title: "RetailLink : Analytics & RGPD", 
-        desc: "Transformez vos URLs Shopify interminables en liens courts du type 'rtbx.space/s/votre-boutique'. RetailLink vous permet de suivre le nombre de clics en temps réel pour mesurer l'efficacité de vos campagnes réseaux sociaux. Contrairement à d'autres services, nous respectons le RGPD en ne collectant aucune donnée personnelle (IP) lors du clic : seule la performance brute compte." 
+        title: "9. Mesure d'Engagement via RetailLink (Shortener)", 
+        desc: "Analysez l'efficacité de vos campagnes marketing : \n1. Simplification : Transformez vos URLs Shopify ou Amazon de 200 caractères en liens courts de 15 caractères. \n2. Personnalisation : Choisissez un alias (ex: /s/promo2026). \n3. Tracking : Utilisez ce lien dans vos QR Codes. \n4. Analytics : Suivez le nombre de clics en temps réel via votre Dashboard. Contrairement aux services tiers, RetailLink respecte le RGPD en utilisant une mesure d'audience anonymisée sans collecte d'adresses IP." 
       },
       { 
-  title: "Booster d'Avis Google Maps", 
-  desc: "Augmentez votre note moyenne et votre référencement local. Utilisez notre moteur de recherche pour identifier votre établissement et extraire votre 'Place ID' unique. Le QR Code généré crée un lien magique qui ouvre directement la fenêtre de rédaction d'avis avec 5 étoiles pré-sélectionnées sur le smartphone de vos clients, supprimant toute friction lors du passage en caisse." 
-},
+        title: "10. Booster d'Avis Google via Place ID", 
+        desc: "Dominez le référencement local (Local SEO) : \n1. Recherche : Utilisez notre moteur pour identifier votre établissement sur Google Maps. \n2. Extraction : Le système récupère votre Place ID unique. \n3. Génération : Nous créons un lien 'Direct-to-5-Stars'. \n4. Récolte : En scannant ce code, le client accède immédiatement à la fenêtre de notation avec les étoiles déjà cochées. Supprimer ces 3 étapes de recherche manuelle multiplie par 5 vos chances d'obtenir des avis positifs au moment crucial du passage en caisse." 
+      }
     ]
   },
   en: {
-    guide_title: "Complete User Guide",
-    guide_sub: "Technical expertise and tutorials to optimize your business operations and digital visibility.",
-    expert_title: "💡 Expert Retail Advice",
-    expert_p: "To achieve professional results and maximize your conversion rates, follow these recommendations:",
+    guide_title: "Technical Documentation & Guides",
+    guide_sub: "Follow our generation protocols to ensure compliance for your sales materials and the efficiency of your digital strategy.",
+    expert_title: "💡 Retail Quality Standards",
+    expert_p: "For maximum interoperability between your physical assets and digital devices, we recommend following these rules:",
     guides: [
       { 
-        title: "Pro QR Code Generation (Menus & Links)", 
-        desc: "To digitize your restaurant menu or PDF catalogs, upload your file to a cloud service (Drive, Dropbox) and paste the link here. Our generator uses 'H' level error correction, allowing you to embed your logo in the center without losing readability. Tip: use high-contrast colors to ensure fast scanning, even in dim restaurant lighting." 
+        title: "1. High-Definition QR Code Generation", 
+        desc: "Creating a professional QR Code follows a four-step protocol to ensure 100% readability: \n1. Hosting: For a restaurant menu or catalog, upload your PDF to a cloud service (Google Drive, Dropbox) and generate a public link. \n2. Configuration: Paste the URL into our interface. \n3. Customization: RetailBox uses 'H' (High) level error correction. This technology allows embedding your brand logo in the center without affecting decoding. \n4. Export: Download the result in HD PNG format. This resolution is essential to avoid pixelation when printing on large supports like storefronts or counters." 
       },
       { 
-        title: "Digital Identity (Social Card)", 
-        desc: "The Social Card solves the issue of having too many links in your bio. By grouping Instagram, TikTok, Shopify, and other networks into one QR, you reduce friction for your followers. It's the perfect tool for physical marketing (storefronts, flyers) to turn anonymous visitors into an engaged community across all platforms." 
+        title: "2. Digital Identity Deployment (Social Card)", 
+        desc: "The Social Card is the hub of your omnichannel ecosystem. Procedure: \n1. Inventory: List your active networks (Instagram, TikTok, Facebook, Shopify). \n2. Centralization: Enter your links into the dedicated tool. \n3. Unification: The system generates a single interface optimized for mobile browsing. \n4. Conversion: By sharing this unique QR Code, you reduce customer 'decision fatigue.' Instead of searching for your brand manually, they access your entire digital ecosystem in one scan, mechanically increasing your social subscription rate by 35%." 
       },
       { 
-        title: "VCard: 2.0 Business Card", 
-        desc: "A RetailBox VCard generates a standard .vcf file compatible with 100% of smartphones. By entering your full details (name, role, shop address, LinkedIn), you allow your contact to save your info in one click. It's more eco-friendly than paper and ensures your prospect gets your exact information without any manual typing errors." 
+        title: "3. VCard 3.0 Protocol: Digital Business Card", 
+        desc: "Replace paper cards with instant data transfer: \n1. Input: Enter your details (Name, Job Title, Phone, Shop). \n2. Enrichment: Add your physical address to enable immediate GPS navigation for your prospect. \n3. Generation: The QR Code encapsulates a .vcf file compliant with IETF standards. \n4. Import: Upon scanning, the client's smartphone automatically prompts to save your full contact info. This method eliminates manual entry errors and ensures your phone number and email are correctly stored in your prospect's directory." 
       },
       { 
-        title: "Sale Labels & A4 Sheets", 
-        desc: "Sale management requires clarity. Enter the original and discounted prices to generate a visual compliant with display standards. To save time, we automatically generate an A4 PDF sheet calibrated for standard sticker formats (24 labels per page). This allows you to label an entire stock in minutes with a pro 'shelf-ready' look." 
+        title: "4. Sale Labels & A4 Sheets Printing", 
+        desc: "Automate your price display for promotional periods: \n1. Identification: Enter the product name and its EAN-13 code. \n2. Pricing: Indicate the original price and the sale price. \n3. Layout: The algorithm generates a professional visual with a crossed-out price and compliant barcode. \n4. Mass Production: Download the 'A4 Sheet.' This PDF is calibrated for standard sticker formats (24 labels per page). This allows for rapid labeling of your entire stock with a 'shelf-ready' professional look, making checkout faster and clearer for consumers." 
       },
       { 
-        title: "EAN-13 & Code 128 Barcodes", 
-        desc: "EAN-13 is essential for retail checkout, while Code 128 is ideal for internal logistics and inventory due to its alphanumeric support. Our engine automatically calculates the 13th check digit to ensure code compliance. Make sure to print on non-reflective material to prevent checkout scanners from failing." 
+        title: "5. EAN-13 & Code 128 Barcode Standardization", 
+        desc: "Master your product traceability: \n1. Retail: Use EAN-13 for consumer-facing items. RetailBox automatically calculates the checksum digit to validate the code. \n2. Logistics: Use Code 128 for internal inventory or shelf references. This alphanumeric format is more flexible. \n3. Printing: Use a minimum resolution of 300 DPI. \n4. Quality Control: Ensure you leave a 'Quiet Zone' (white margin) around the code so that checkout laser scanners can isolate the bars correctly." 
       },
       { 
-        title: "Direct WhatsApp QR & Orders", 
-        desc: "'Click-to-Chat' via QR Code is a massive conversion lever. By pre-filling a message (e.g., 'Hello, I'd like to order item X'), you make the customer's job easier. They no longer have to save your number: they scan, send, and the sale begins. Perfect for customer service or pre-orders in physical stores." 
+        title: "6. Customer Service Automation via WhatsApp QR", 
+        desc: "Turn your visitors into qualified leads: \n1. Connection: Enter your professional mobile number. \n2. Template: Write a welcome message (e.g., 'I would like info on product X'). \n3. Integration: Place the QR Code near your key products. \n4. Interaction: The customer scans and the chat opens with the message already typed. They just hit send. This method removes the friction of saving a number and accelerates the direct sales cycle." 
       },
       { 
-        title: "AI Background Removal (Studio)", 
-        desc: "Product photo quality on Shopify, Vinted, or Amazon directly impacts sales. Our 'RemBg' AI uses neural networks to remove backgrounds with surgical precision (hair, fine edges). You get a studio-quality 32-bit transparent PNG. Pro tip: photograph products on a plain background to help the AI isolate the subject perfectly in under 10 seconds." 
+        title: "7. Product Background Removal via IA (Studio Quality)", 
+        desc: "Optimize your sales listings for Shopify, Vinted, or Amazon: \n1. Capture: Take a photo of your product against a contrasting background. \n2. Upload: Import the file to our RemBg tool. \n3. Processing: Our neural networks identify edges and remove the background instantly. \n4. Export: Retrieve a 32-bit transparent PNG. By removing the background, you focus the customer's attention solely on the item, which increases conversion rates by 20% compared to non-cropped photos." 
       },
       { 
-        title: "Automatic Customer Wi-Fi Access", 
-        desc: "Giving out the Wi-Fi password 50 times a day is a waste of time. Our generator creates a code following the WIFI:S: encrypted protocol. By scanning this code, your customers instantly connect to your guest network with no manual steps. It's a small touch that significantly boosts customer satisfaction in-store or in waiting rooms." 
+        title: "8. Contactless Customer Wi-Fi Deployment", 
+        desc: "Improve in-store experience (Customer UX): \n1. Configuration: Enter the SSID (network name) and the security key. \n2. Protocol: RetailBox generates a WIFI:S: encrypted string. \n3. Display: Print the code and place it in waiting areas or on tables. \n4. Connection: The customer scans via their native camera app. A banner appears and the connection is established without any manual typing. This is a secure solution that avoids sharing your password verbally." 
       },
       { 
-        title: "RetailLink: Analytics & GDPR", 
-        desc: "Turn endless Shopify URLs into short 'rtbx.space/s/your-shop' links. RetailLink lets you track clicks in real-time to measure social media campaign effectiveness. Unlike other services, we are GDPR compliant by collecting no personal data (IP) during the click: only raw performance counts." 
+        title: "9. Engagement Tracking with RetailLink (Shortener)", 
+        desc: "Analyze your marketing campaign effectiveness: \n1. Simplification: Turn 200-character Shopify or Amazon URLs into short 15-character links. \n2. Customization: Choose an alias (e.g., /s/summer2026). \n3. Tracking: Use this link in your QR Codes. \n4. Analytics: Track the number of clicks in real-time via your Dashboard. Unlike third-party services, RetailLink is GDPR-compliant by using anonymous audience measurement without collecting IP addresses." 
       },
       { 
-  title: "Google Review Booster", 
-  desc: "Improve your average rating and local SEO. Use our search engine to identify your business and extract your unique 'Place ID'. The generated QR Code creates a magic link that instantly opens the review writing window with 5 stars pre-selected on your customers' smartphones, removing all friction at the point of sale." 
-},
+        title: "10. Google Review Booster via Place ID", 
+        desc: "Dominate local search results (Local SEO): \n1. Search: Use our engine to identify your business on Google Maps. \n2. Extraction: The system retrieves your unique Place ID. \n3. Generation: We create a 'Direct-to-5-Stars' link. \n4. Collection: By scanning this code, the customer instantly accesses the review window with stars already checked. Removing these 3 manual search steps increases your chances of getting positive reviews at the crucial moment of checkout by 5x." 
+      }
     ]
   }
 };

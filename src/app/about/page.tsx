@@ -12,7 +12,7 @@ export default async function AboutPage() {
   const content = {
     fr: {
       title: "L'Univers RetailBox",
-      intro: "Nous bâtissons les ponts technologiques de demain entre vos espaces physiques et votre présence digitale.",
+      intro: "Chez RetailBox, nous bâtissons les ponts technologiques de demain entre vos espaces physiques et votre présence digitale. Nous croyons fermement que chaque commerçant, artisan et créateur possède un talent unique qui mérite une visibilité à sa juste mesure. Notre ambition est de démocratiser le SEO local et l'intelligence artificielle pour simplifier votre logistique quotidienne. Nous nous engageons dans un développement continu pour offrir une suite d'outils performants, sécurisés et accessibles, permettant à votre expertise de briller là où vos clients vous cherchent.",
       
       philosophy_h: "Notre Philosophie : Le Phygital accessible",
       philosophy_p: "RetailBox est né d'un constat simple : le monde physique et le monde numérique ne doivent plus être deux univers séparés. Nous croyons fermement que chaque talent, chaque petit commerçant et chaque créateur mérite une visibilité à la hauteur de son excellence. Notre mission est de démocratiser les outils de haute technologie pour que la complexité technique ne soit plus un frein à votre succès. Nous créons des outils qui transforment un simple scan ou une photo en une opportunité de croissance réelle.",
@@ -63,8 +63,7 @@ export default async function AboutPage() {
     },
     en: {
       title: "The RetailBox Universe",
-      intro: "We are building tomorrow's technological bridges between your physical spaces and your digital presence.",
-      
+      intro: "At RetailBox, we are building tomorrow's technological bridges between your physical spaces and your digital presence. We firmly believe that every merchant, artisan, and creator possesses a unique talent that deserves visibility proportional to its excellence. Our ambition is to democratize local SEO and artificial intelligence to simplify your daily logistics and operations. We are committed to continuous development, offering a suite of high-performance, secure, and accessible tools designed to let your expertise shine exactly where your customers are looking.",
       philosophy_h: "Our Philosophy: Accessible Phygital",
       philosophy_p: "RetailBox was born from a simple observation: the physical and digital worlds should no longer be separate universes. We firmly believe that every talent, every small merchant, and every creator deserves visibility that matches their excellence. Our mission is to democratize high-tech tools so that technical complexity is no longer a barrier to your success. We create tools that transform a simple scan or photo into a real growth opportunity.",
       
@@ -130,7 +129,7 @@ export default async function AboutPage() {
           <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent italic tracking-tight">
             {content.title}
           </h1>
-          <p className="text-xl md:text-3xl text-gray-500 dark:text-slate-400 max-w-4xl mx-auto font-medium leading-relaxed">
+        <p className="text-xl md:text-2xl text-gray-500 dark:text-slate-400 max-w-4xl mx-auto font-medium leading-relaxed">
             {content.intro}
           </p>
         </div>

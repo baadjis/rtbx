@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies();
   const langValue = cookieStore.get("lang")?.value;
-  const lang = (langValue === "en" ? "en" : "fr") as "en" | "fr";
+  const lang = (langValue === "fr" ? "fr" : "en") as "en" | "fr";
 
   const translations = {
     fr: {
@@ -96,12 +96,18 @@ export async function generateMetadata(): Promise<Metadata> {
       "google-adsense-account": "ca-pub-4081303157053373",
       "apple-mobile-web-app-title": "RetailBox",
     },
-    viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-    themeColor: [
-      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-      { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
-    ],
+    
   };
+}
+
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 export default function RootLayout({

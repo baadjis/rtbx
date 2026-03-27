@@ -78,7 +78,7 @@ export default async function BlogPage() {
         {/* SECTION CTA BAS DE PAGE */}
         <div className="mt-24 p-10 md:p-16 bg-slate-50 dark:bg-slate-900/50 rounded-[3rem] border border-gray-100 dark:border-slate-800 text-center transition-colors">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                {lang === 'fr' ? "Prêt à digitaliser votre boutique ?" : "Ready to digitalize your shop?"}
+                {lang === 'fr' ? "Prêt à digitaliser votre Business ?" : "Ready to digitalize your Business?"}
             </h3>
             <p className="text-gray-500 dark:text-slate-400 mb-8 max-w-xl mx-auto font-medium">
                 {lang === 'fr' 
