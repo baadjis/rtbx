@@ -1,6 +1,8 @@
 export const Data={
     // À ajouter dans DICT.fr et DICT.en
 fr: {
+    title: "Paramètres de votre Espace",
+    sub: "Gérez votre identité professionnelle et la sécurité de votre compte.",
    tab_profile: "Profil Public",
     tab_account: "Compte & Sécurité",
     profile_sec: "Identité Professionnelle",
@@ -29,7 +31,10 @@ fr: {
   
 },
 en: {
+  title: "Space Settings",
+  sub: "Manage your professional identity and account security.",
  tab_profile: "Public Profile",
+
     tab_account: "Account & Security",
     profile_sec: "Professional Identity",
     profile_sub: "This information will be used for your VCards and Digital Identity.",
