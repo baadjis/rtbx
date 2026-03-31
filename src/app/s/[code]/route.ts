@@ -7,39 +7,57 @@ export async function GET(
 ) {
   const { code } = await params;
 
-  // 1. Validation rapide du code (sécurité anti-injection)
+  // 1. Validation de sécurité
   if (!code || code.length > 20) {
     return NextResponse.redirect(new URL('/not-found', request.url));
   }
 
-  // Initialisation Supabase avec la clé service_role (bypass RLS pour la rapidité)
+  // Initialisation Supabase avec service_role pour bypasser le RLS
   const supabase = createClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_KEY!
   );
 
   try {
-    // 2. Récupération de l'URL d'un seul coup
+    // 2. On récupère les infos du lien (on a besoin de l'ID pour le log)
     const { data, error } = await supabase
       .from('links')
-      .select('long_url, clicks')
+      .select('id, long_url, clicks')
       .eq('short_code', code)
       .single();
 
-    // 3. Si le lien existe, on lance la magie
     if (data && data.long_url) {
+      // --- LOGIQUE DE TRACKING PRO (Non-bloquante) ---
       
-      // MISE À JOUR DES CLICS (Non-blocking)
-      // On ne met pas 'await' pour que l'utilisateur n'attende pas la base de données
-      supabase
-        .from('links')
-        .update({ clicks: (data.clicks || 0) + 1 })
-        .eq('short_code', code)
-        .then(({ error }) => {
-            if (error) console.error("Erreur stats clics:", error);
-        });
+      const userAgent = request.headers.get('user-agent') || '';
+      const isMobile = /iPhone|Android|iPad|Mobile/i.test(userAgent);
+      
+      // ASTUCE PRO : Vercel fournit le pays via ce header automatiquement
+      const country = request.headers.get('x-vercel-ip-country') || 'Unknown';
+      const referrer = request.headers.get('referer') || 'Direct';
 
-      // REDIRECTION INSTANTANÉE (307 Temporary Redirect pour ne pas polluer le cache navigateur)
+      // On lance les deux mises à jour en parallèle sans "await" 
+      // pour que la redirection soit instantanée
+      Promise.all([
+        // A. Incrémenter le compteur global sur 'links'
+        supabase
+          .from('links')
+          .update({ clicks: (data.clicks || 0) + 1 })
+          .eq('id', data.id),
+
+        // B. Ajouter une ligne détaillée dans 'link_logs'
+        supabase
+          .from('link_logs')
+          .insert({
+            link_id: data.id,
+            device: isMobile ? 'Mobile' : 'Desktop',
+            country: country,
+            referrer: referrer,
+            browser: userAgent.split(' ')[0] || 'Unknown'
+          })
+      ]).catch(e => console.error("Erreur log/stats:", e));
+
+      // 3. REDIRECTION IMMÉDIATE (307 pour éviter le cache navigateur)
       return NextResponse.redirect(new URL(data.long_url), {
         status: 307,
         headers: {
@@ -51,7 +69,6 @@ export async function GET(
     console.error("Erreur système redirection:", err);
   }
 
-  // 4. SI ÉCHEC : On redirige vers une page "Lien Invalide" pro (ou la 404 qu'on a créée)
-  // Cela permet de faire de la pub pour RetailBox au lieu d'afficher une erreur
+  // 4. Fallback si le lien n'existe pas
   return NextResponse.redirect(new URL('/not-found', request.url));
 }
