@@ -13,6 +13,9 @@ fr: {
   opt_none: "Aucune (Ouvert)",
   wifi_tip: "💡 Conseil : Les clients n'ont qu'à scanner ce code avec l'appareil photo de leur smartphone pour rejoindre le réseau.",
   btn_dl_wifi: "TÉLÉCHARGER LE QR WI-FI",
+  label_style: "QR Code Style",
+  opt_classic: "Classic (Square)",
+  opt_modern: "Modern (Rounded)",
 },
 en: {
   wifi_title: "Wi-Fi Access QR Code",
@@ -27,5 +30,8 @@ en: {
   opt_none: "None (Open)",
   wifi_tip: "💡 Tip: Customers just need to scan this code with their smartphone camera to join the network.",
   btn_dl_wifi: "DOWNLOAD WI-FI QR",
+  label_style: "Style du QR Code",
+  opt_classic: "Classique (Carré)",
+  opt_modern: "Moderne (Arrondi)",
 }
   }
