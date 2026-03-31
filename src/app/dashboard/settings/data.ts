@@ -1,9 +1,22 @@
 export const Data={
     // À ajouter dans DICT.fr et DICT.en
 fr: {
+   tab_profile: "Profil Public",
+    tab_account: "Compte & Sécurité",
+    profile_sec: "Identité Professionnelle",
+    profile_sub: "Ces informations seront utilisées pour vos VCards et votre Identité Digitale.",
+    label_fname: "Prénom",
+    label_lname: "Nom",
+    label_job: "Poste / Titre",
+    label_company: "Boutique / Entreprise",
+    label_phone: "Téléphone pro",
+    label_web: "Site internet",
+    label_linkedin: "URL LinkedIn",
+    btn_save_profile: "Sauvegarder le profil",
+    update_success: "Mises à jour enregistrées !",
   settings_title: "Paramètres du compte",
   settings_sub: "Gérez vos informations personnelles et vos préférences de sécurité.",
-  profile_sec: "Profil",
+
   connexion_sec: "Connexion & Sécurité",
   label_display_name: "Nom complet",
   label_email: "Adresse e-mail",
@@ -13,12 +26,25 @@ fr: {
   danger_zone: "Zone de danger",
   delete_account: "Supprimer mon compte",
   delete_warn: "Cette action est irréversible. Toutes vos données (liens, commerces) seront supprimées.",
-  update_success: "✅ Profil mis à jour avec succès.",
+  
 },
 en: {
+ tab_profile: "Public Profile",
+    tab_account: "Account & Security",
+    profile_sec: "Professional Identity",
+    profile_sub: "This information will be used for your VCards and Digital Identity.",
+    label_fname: "First Name",
+    label_lname: "Last Name",
+    label_job: "Job Title",
+    label_company: "Shop / Company",
+    label_phone: "Pro Phone",
+    label_web: "Website",
+    label_linkedin: "LinkedIn URL",
+    btn_save_profile: "Save Profile",
+    update_success: "Updates saved!",
   settings_title: "Account Settings",
   settings_sub: "Manage your personal information and security preferences.",
-  profile_sec: "Profile",
+
   connexion_sec: "Connection & Security",
   label_display_name: "Full Name",
   label_email: "Email Address",
@@ -28,6 +54,6 @@ en: {
   danger_zone: "Danger Zone",
   delete_account: "Delete my account",
   delete_warn: "This action is irreversible. All your data (links, businesses) will be deleted.",
-  update_success: "✅ Profile updated successfully.",
+  
 }
 }

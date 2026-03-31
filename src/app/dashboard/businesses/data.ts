@@ -12,6 +12,10 @@ export const Data={fr: {
   average_rating: "Note moyenne",
   total_reviews: "avis au total",
   stats_section: "Statistiques de réputation",
+  loyalty_title: "Gestion Fidélité" ,
+  total_customers: "Clients Fidèles" ,
+  total_points: "Points Distribués",
+  recent_activity: "Activité Récente"
 
 },
 en: {
@@ -27,4 +31,8 @@ en: {
   average_rating: "Average rating",
   total_reviews: "total reviews",
   stats_section: "Reputation Analytics",
+  loyalty_title: "Loyalty Management" ,
+  total_customers: "Loyal Customers" ,
+  total_points: "Total Points",
+  recent_activity: "Recent Activity"
 }}

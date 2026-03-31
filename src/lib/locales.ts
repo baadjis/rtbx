@@ -48,6 +48,11 @@ view_all_biz: "Gérer mes commerces",
   add_business: "Lier un commerce",
   business_total: "établissements enregistrés",
   manage: "Gérer",
+    my_rewards: "Mes Fidélités",
+  points_label: "points cumulés",
+  reward_ready: "Cadeau disponible !",
+  no_points_yet: "Vous n'avez pas encore de cartes de fidélité.",
+  visit_merchant: "Visitez vos commerces favoris pour gagner des points."
 
 
   },
@@ -100,5 +105,10 @@ view_all_biz: "Manage my Businesses",
   add_business: "Link a business",
   business_total: "registered businesses",
   manage: "Manage",
+  my_rewards: "My Rewards",
+  points_label: "points collected",
+  reward_ready: "Reward available!",
+  no_points_yet: "You don't have any loyalty cards yet.",
+  visit_merchant: "Visit your favorite stores to earn points."
   }
 };
