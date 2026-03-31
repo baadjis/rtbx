@@ -34,6 +34,10 @@ fr: {
     btn_add_social: "+ Ajouter un réseau",
     label_platform: "Plateforme",
     label_link: "Lien ou Identifiant",
+
+    label_confirm_pass: "Confirmer le mot de passe",
+    
+    pass_success: "Mot de passe modifié !",
   
 },
 en: {
@@ -71,6 +75,10 @@ en: {
   btn_add_social: "+ Add a network",
   label_platform: "Platform",
   label_link: "Link or Handle",
+   
+    label_confirm_pass: "Confirm Password",
+    pass_success: "Password updated!",
+  
   
 }
 }
