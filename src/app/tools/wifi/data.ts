@@ -16,6 +16,9 @@ fr: {
   label_style: "QR Code Style",
   opt_classic: "Classic (Square)",
   opt_modern: "Modern (Rounded)",
+  btn_dl_plaque: "✨ TÉLÉCHARGER LA PLAQUE PRO",
+  plaque_title: "ACCÈS WI-FI GRATUIT",
+  plaque_footer: "Scannez pour vous connecter",
 },
 en: {
   wifi_title: "Wi-Fi Access QR Code",
@@ -31,7 +34,11 @@ en: {
   wifi_tip: "💡 Tip: Customers just need to scan this code with their smartphone camera to join the network.",
   btn_dl_wifi: "DOWNLOAD WI-FI QR",
   label_style: "Style du QR Code",
-  opt_classic: "Classique (Carré)",
-  opt_modern: "Moderne (Arrondi)",
+  opt_classic: "Classique (Squared)",
+  opt_modern: "Moderne (Rounded)",
+   btn_dl_plaque: "✨ DOWNLOAD PRO POSTER",
+  plaque_title: "FREE WI-FI ACCESS",
+  plaque_footer: "Scan to connect",
+
 }
   }
