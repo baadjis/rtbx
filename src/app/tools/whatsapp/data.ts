@@ -8,6 +8,9 @@ fr: {
   ph_wa_msg: "Ex: Bonjour, je souhaite commander un article...",
   wa_tip: "💡 Conseil : Le message s'écrira automatiquement dans le téléphone du client lorsqu'il scannera le code.",
   btn_dl_wa: "TÉLÉCHARGER LE QR WHATSAPP",
+   btn_dl_plaque: "✨ TÉLÉCHARGER LA PLAQUE PRO",
+  plaque_title: "CONTACTEZ-NOUS SUR WHATSAPP",
+  plaque_footer: "Scannez pour démarrer la discussion",
 },
 en: {
   wa_title: "Direct WhatsApp QR",
@@ -18,4 +21,7 @@ en: {
   ph_wa_msg: "e.g. Hello, I would like to order an item...",
   wa_tip: "💡 Tip: The message will be automatically typed in the customer's phone when they scan the code.",
   btn_dl_wa: "DOWNLOAD WHATSAPP QR",
+  btn_dl_plaque: "✨ DOWNLOAD PRO POSTER",
+  plaque_title: "CONTACT US ON WHATSAPP",
+  plaque_footer: "Scan to start chatting",
 }}
