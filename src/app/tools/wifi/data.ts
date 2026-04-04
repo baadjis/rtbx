@@ -19,6 +19,10 @@ fr: {
   btn_dl_plaque: "✨ TÉLÉCHARGER LA PLAQUE PRO",
   plaque_title: "ACCÈS WI-FI GRATUIT",
   plaque_footer: "Scannez pour vous connecter",
+  label_biz_name: "Nom de l'établissement (Optionnel)",
+  ph_biz_name: "Ex: Ma Boutique Bio",
+  label_logo: "Votre Logo (Optionnel)",
+  
 },
 en: {
   wifi_title: "Wi-Fi Access QR Code",
@@ -39,6 +43,10 @@ en: {
    btn_dl_plaque: "✨ DOWNLOAD PRO POSTER",
   plaque_title: "FREE WI-FI ACCESS",
   plaque_footer: "Scan to connect",
+   label_biz_name: "Business Name (Optional)",
+  ph_biz_name: "e.g. My Green Shop",
+  label_logo: "Your Logo (Optional)",
+  
 
 }
   }

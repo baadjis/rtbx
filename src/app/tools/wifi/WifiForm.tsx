@@ -1,10 +1,10 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, ChangeEvent } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { 
   Download, Wifi, Lock, ShieldCheck, 
   ArrowLeft, Settings2, Eye, EyeOff, 
-  Palette, Printer 
+  Palette, Printer, Store, Upload, X 
 } from 'lucide-react'
 import Link from 'next/link'
 import { Data } from './data'
@@ -18,15 +18,29 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
   const t = Data[lang]
   const plaqueRef = useRef<HTMLDivElement>(null)
   
-  // États de configuration
+  // --- ÉTATS DE CONFIGURATION ---
   const [ssid, setSsid] = useState('WiFi_Boutique')
   const [password, setPassword] = useState('')
   const [encryption, setEncryption] = useState('WPA')
   const [showPassword, setShowPassword] = useState(false)
   
-  // États de Design
+  // --- ÉTATS DE BRANDING (Nouveau) ---
+  const [bizName, setBizName] = useState('')
+  const [logo, setLogo] = useState<string | null>(null)
+  
+  // --- ÉTATS DE DESIGN ---
   const [fgColor, setFgColor] = useState('#4f46e5')
   const [bgColor, setBgColor] = useState('#ffffff')
+
+  // Logique d'upload du logo
+  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => setLogo(reader.result as string)
+      reader.readAsDataURL(file)
+    }
+  }
 
   // Données Wi-Fi formatées
   const getWifiData = () => {
@@ -34,10 +48,8 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
     return `WIFI:T:${enc};S:${ssid};P:${password};;`
   }
 
-  // Validation des champs
   const isValid = ssid.trim() !== '' && (encryption === 'nopass' || password.trim() !== '');
 
-  // Action : Télécharger le QR seul
   const handleDownloadQR = () => {
     const canvas = document.getElementById('wifi-qr-canvas') as HTMLCanvasElement
     if (!canvas) return
@@ -47,7 +59,6 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
     link.click()
   }
 
-  // Action : Télécharger le Poster Pro (via utilitaire réutilisable)
   const handleDownloadPlaque = () => {
     downloadPoster(plaqueRef, `plaque-wifi-${ssid.replace(/\s+/g, '_')}`)
   }
@@ -56,12 +67,11 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 py-8 md:py-12 relative z-10">
         
-        {/* RETOUR */}
         <Link href="/" className="group inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 font-bold mb-10 no-underline border-none">
           <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
             <ArrowLeft size={18} />
           </div>
-          {lang === 'fr' ? 'Retour aux outils' : 'Back to tools'}
+          {lang === 'fr' ? 'Retour' : 'Back'}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -69,16 +79,40 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
           {/* --- COLONNE GAUCHE : FORMULAIRE --- */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent italic tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent italic tracking-tight leading-tight">
                 {t.wifi_title}
               </h1>
-              <p className="text-lg text-gray-500 dark:text-slate-400 font-medium leading-relaxed">
-                {t.wifi_sub}
-              </p>
+              <p className="text-lg text-gray-500 dark:text-slate-400 font-medium leading-relaxed">{t.wifi_sub}</p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 p-8 md:p-10 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-slate-800 space-y-8">
+            <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-slate-800 space-y-8 transition-colors">
               
+              {/* SECTION BRANDING (NOUVEAU) */}
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                    <Store size={16}/> {t.label_biz_name}
+                  </label>
+                  <input type="text" value={bizName} onChange={(e) => setBizName(e.target.value)} placeholder={t.ph_biz_name} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white transition-colors" />
+                </div>
+                
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex justify-between">
+                    {t.label_logo}
+                    {logo && <button onClick={() => setLogo(null)} className="text-red-500 flex items-center gap-1 text-[10px] font-bold hover:underline border-none bg-transparent cursor-pointer"><X size={12}/> Supprimer</button>}
+                  </label>
+                  <div className="relative group">
+                    <input type="file" onChange={handleLogoUpload} accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <div className="p-4 bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl flex items-center justify-center gap-3 group-hover:border-indigo-400 transition-colors">
+                      <Upload size={20} className="text-gray-400" />
+                      <span className="text-sm font-bold text-gray-500 dark:text-slate-400 italic">{logo ? (lang === 'fr' ? "Changer le logo" : "Change logo") : "Uploader un logo (PNG/JPG)"}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px bg-gray-50 dark:bg-slate-800" />
+
               {/* SSID */}
               <div className="space-y-3">
                 <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -86,7 +120,7 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
                 </label>
                 <input 
                   type="text" value={ssid} onChange={(e) => setSsid(e.target.value)}
-                  className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-gray-900 dark:text-white"
+                  className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-gray-900 dark:text-white transition-colors"
                 />
               </div>
 
@@ -101,7 +135,7 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
                       type={showPassword ? "text" : "password"} value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={encryption === 'nopass'}
-                      className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white disabled:opacity-30"
+                      className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white disabled:opacity-30 transition-colors"
                     />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 bg-transparent border-none p-0 cursor-pointer">
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -112,7 +146,7 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
                   <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Settings2 className="w-4 h-4 text-indigo-600" /> {t.label_encryption}
                   </label>
-                  <select value={encryption} onChange={(e) => setEncryption(e.target.value)} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-gray-900 dark:text-white appearance-none">
+                  <select value={encryption} onChange={(e) => setEncryption(e.target.value)} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold text-gray-900 dark:text-white appearance-none transition-colors">
                     <option value="WPA">WPA / WPA2</option>
                     <option value="WEP">WEP</option>
                     <option value="nopass">{lang === 'fr' ? 'Ouvert' : 'Open'}</option>
@@ -121,18 +155,18 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
               </div>
 
               {/* COULEURS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-slate-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-50 dark:border-slate-800">
                 <div className="space-y-3">
-                  <label className="text-xs font-black text-gray-400 uppercase flex items-center gap-2"><Palette size={16}/> Couleur QR</label>
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Couleur QR</label>
                   <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
-                      <input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-12 h-10 rounded-lg cursor-pointer border-none bg-transparent" />
+                      <input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-10 h-8 rounded-lg cursor-pointer border-none bg-transparent" />
                       <span className="text-sm font-bold dark:text-white uppercase">{fgColor}</span>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <label className="text-xs font-black text-gray-400 uppercase flex items-center gap-2"><Palette size={16}/> Fond</label>
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Fond</label>
                   <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
-                      <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-12 h-10 rounded-lg cursor-pointer border-none bg-transparent" />
+                      <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-10 h-8 rounded-lg cursor-pointer border-none bg-transparent" />
                       <span className="text-sm font-bold dark:text-white uppercase">{bgColor}</span>
                   </div>
                 </div>
@@ -149,7 +183,7 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
           <div className="lg:sticky lg:top-24 h-fit">
             <div className="bg-white dark:bg-slate-900 rounded-[4rem] p-10 md:p-12 shadow-[0_40px_80px_rgba(79,70,229,0.12)] border border-gray-100 dark:border-slate-800 text-center flex flex-col items-center">
               
-              <div className="p-8 bg-white rounded-[3rem] mb-10 shadow-inner border border-gray-50 relative overflow-hidden">
+              <div className="p-8 bg-white rounded-[3rem] mb-10 shadow-inner border border-gray-50 relative group overflow-hidden">
                 <QRCodeCanvas 
                   id="wifi-qr-canvas" 
                   value={getWifiData()} 
@@ -169,7 +203,7 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
                 <button 
                   onClick={handleDownloadQR} 
                   disabled={!isValid} 
-                  className={`w-full py-4 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 rounded-2xl font-bold flex items-center justify-center gap-3 border border-gray-100 dark:border-slate-700 transition-all ${!isValid ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+                  className={`w-full py-4 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 rounded-2xl font-bold flex items-center justify-center gap-3 border border-gray-100 dark:border-slate-700 transition-all ${!isValid ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100 active:scale-95'}`}
                 >
                   <Download size={20} /> {t.btn_dl_wifi}
                 </button>
@@ -177,7 +211,7 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
                 <button 
                   onClick={handleDownloadPlaque} 
                   disabled={!isValid} 
-                  className={`w-full py-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 active:scale-95 border-none cursor-pointer ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
+                  className={`w-full py-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 active:scale-95 border-none cursor-pointer text-lg ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
                 >
                   <Printer size={20} /> {t.btn_dl_plaque}
                 </button>
@@ -191,11 +225,14 @@ export default function WifiForm({ lang }: { lang: 'fr' | 'en' }) {
       <MarketingPoster 
         innerRef={plaqueRef}
         title={t.plaque_title}
+        subtitle={lang === 'fr' ? "ACCÈS WI-FI GRATUIT" : "FREE WI-FI ACCESS"}
         qrValue={getWifiData()}
         displayValue={ssid}
         iconPath={ICON_PATHS.wifi}
         themeColor={fgColor}
         footerLabel={t.plaque_footer}
+        userLogo={logo}
+        businessName={bizName}
       />
     </div>
   )

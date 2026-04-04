@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script';
 import "./globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import BottomNav from "@/components/BottomNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,13 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t.title,
     description: t.desc,
     keywords: t.keywords,
+    manifest: '/manifest.json', // Lien vers le fichier créé au dessus
+    themeColor: '#4f46e5',
+    appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'RetailBox',
+  },
     
     // --- SEO TECHNIQUE AVANCÉ ---
     alternates: {
@@ -110,11 +118,13 @@ export const viewport = {
   maximumScale: 1,
 }
 
-export default function RootLayout({
+export default  async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("lang")?.value || "fr") as "en" | "fr";
   return (
     <html lang="en">
      
@@ -125,6 +135,7 @@ export default function RootLayout({
       >
         <GoogleAnalytics ga_id={process.env.NEXT_PUBLIC_GA_ID || ''} />
         {children}
+        <BottomNav lang={lang} />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4081303157053373"
