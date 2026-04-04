@@ -19,12 +19,17 @@ export default async function SettingsPage() {
   const t = Data[lang];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300 flex flex-col">
+    <div className="flex flex-col min-h-screen transition-colors duration-300">
       
-      {/* On garde le Header en haut pour la navigation */}
-      <Header />
+      {/* 
+         On n'affiche le Header Global QUE sur ordinateur (lg:block).
+         Sur mobile, c'est le header du DashboardLayout qui prend le relais.
+      */}
+      <div className="hidden lg:block">
+        <Header />
+      </div>
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-20 relative z-10 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 lg:py-20 relative z-10 w-full">
         
         {/* En-tête de la page Settings */}
         <div className="max-w-4xl mx-auto mb-10 md:mb-16">
@@ -41,14 +46,19 @@ export default async function SettingsPage() {
         
       </main>
 
-      {/* --- LOGIQUE DE VISIBILITÉ DU FOOTER --- */}
-      {/* hidden = masqué sur mobile | md:block = affiché sur ordinateur (Medium et +) */}
-      <div className="hidden md:block">
+      {/* 
+         On n'affiche le Footer Global QUE sur ordinateur (lg:block).
+         Sur mobile, on laisse l'espace libre pour la Bottom Nav.
+      */}
+      <div className="hidden lg:block">
         <Footer />
       </div>
       
-      {/* Espace de sécurité en bas pour mobile (à cause de la BottomNav) */}
-      <div className="h-20 md:hidden" />
+      {/* 
+         Espace de sécurité en bas pour mobile pour éviter que 
+         la BottomNav ne cache le bouton "Sauvegarder".
+      */}
+      <div className="h-24 lg:hidden" />
     </div>
   );
 }
