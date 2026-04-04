@@ -106,7 +106,7 @@ export default async function DashboardPage() {
             <Award className="w-6 h-6 text-yellow-500 fill-current" />
           </div>
           <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Mes Points' : 'My Points'}</p>
-          <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{points.length} <span className="text-sm text-gray-400">Cartes</span></h3>
+          <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{points.length} <span className="text-sm text-gray-400">{lang =='fr' ? 'Cartes':'Cards'}</span></h3>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all group">
