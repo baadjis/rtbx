@@ -18,6 +18,9 @@ export const Data = {
   add_business: "Lier un commerce",
   business_total: "établissements enregistrés",
   manage: "Gérer",
+  last_scan: "Dernier scan",
+today: "Aujourd'hui",
+no_loyalty_activity: "Aucune activité de fidélité pour le moment.",
     
   },
   en: {
@@ -39,5 +42,8 @@ export const Data = {
   add_business: "Link a business",
   business_total: "registered businesses",
   manage: "Manage",
+  last_scan: "Last scan",
+today: "Today",
+no_loyalty_activity: "No loyalty activity yet.",
   }
 };

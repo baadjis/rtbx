@@ -52,7 +52,11 @@ view_all_biz: "Gérer mes commerces",
   points_label: "points cumulés",
   reward_ready: "Cadeau disponible !",
   no_points_yet: "Vous n'avez pas encore de cartes de fidélité.",
-  visit_merchant: "Visitez vos commerces favoris pour gagner des points."
+  visit_merchant: "Visitez vos commerces favoris pour gagner des points.",
+  last_scan: "Dernier scan",
+  today: "Aujourd'hui",
+  no_loyalty_activity: "Aucune activité de fidélité pour le moment.",
+  
 
 
   },
@@ -109,6 +113,9 @@ view_all_biz: "Manage my Businesses",
   points_label: "points collected",
   reward_ready: "Reward available!",
   no_points_yet: "You don't have any loyalty cards yet.",
-  visit_merchant: "Visit your favorite stores to earn points."
+  visit_merchant: "Visit your favorite stores to earn points.",
+  last_scan: "Last scan",
+today: "Today",
+no_loyalty_activity: "No loyalty activity yet.",
   }
 };
