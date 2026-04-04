@@ -1,8 +1,6 @@
 import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import WalletSwitcher from './WalletSwitcher';
 
 export default async function WalletPage() {
@@ -21,17 +19,13 @@ export default async function WalletPage() {
     .single();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-300">
-      <Header />
-      <main className="max-w-7xl mx-auto px-6 py-12 flex flex-col items-center">
-        {/* On passe les données au composant interactif */}
+    /* Pas de Header, pas de Footer, pas de min-h-screen forcé */
+    <div className="py-6 md:py-10 flex flex-col items-center animate-in fade-in duration-500">
         <WalletSwitcher 
           user={user} 
           profile={profile} 
           lang={lang} 
         />
-      </main>
-      <Footer />
     </div>
   );
 }
