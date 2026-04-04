@@ -23,8 +23,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     { name: lang === 'fr' ? "Mes Liens" : "My Links", iconName: 'links', href: '/dashboard/links' },
     { name: lang === 'fr' ? "Avis Google" : "Google Reviews", iconName: 'star', href: '/tools/google-reviews' },
     { name: t.my_businesses, iconName: 'store', href: '/dashboard/businesses' },
+    { name: lang === 'fr' ? "Mes Points" : "My Points", iconName: 'award', href: '/dashboard/points' },
     { name: t.analytics, iconName: 'analytics', href: '#', badge: "Beta" },
     { name: t.settings, iconName: 'settings', href: '/dashboard/settings' },
+
   ];
 
   return (
