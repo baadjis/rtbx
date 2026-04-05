@@ -83,7 +83,7 @@ export default function SettingsForm({ lang, user }: { lang: 'fr' | 'en', user: 
             <div><h3 className="text-2xl font-black dark:text-white">{t.profile_sec}</h3><p className="text-sm text-gray-500">{t.profile_sub}</p></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[ ['fn', 'first_name'], ['ln', 'last_name'], ['company', 'company'], ['job', 'job_title'], ['tel', 'phone'], ['web', 'website'] ].map(([key, field]) => (
+            {[ ['fname', 'first_name'], ['lname', 'last_name'], ['company', 'company'], ['job', 'job_title'], ['phone', 'phone'], ['web', 'website'] ].map(([key, field]) => (
               <div key={field} className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
                 {/* @ts-ignore */}

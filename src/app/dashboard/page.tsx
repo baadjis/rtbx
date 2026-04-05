@@ -153,11 +153,14 @@ export default async function DashboardPage() {
                   <div className="flex items-center gap-4">
                     <div className="text-right mr-4">
                       <span className="block text-2xl font-black text-gray-900 dark:text-white leading-none">{link.clicks}</span>
-                      <span className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest">clics</span>
+                      <span className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest">clicks</span>
                     </div>
                     <Link href={`/stats/${link.short_code}`} className="p-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm">
                         <BarChart3 size={18} />
                     </Link>
+                    <a href={link.long_url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm">
+                        <ExternalLink size={18} />
+                     </a>
                   </div>
                 </div>
               ))}
@@ -219,31 +222,54 @@ export default async function DashboardPage() {
                         </Link>
                     ))}
                     <Link href="/dashboard/events/new" className="w-full py-4 mt-2 border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-gray-400 hover:text-indigo-600 transition-all no-underline font-bold text-sm bg-transparent">
-                        <Plus size={16} /> Créer un événement
+                        <Plus size={16} /> {lang=='fr'?"Créer un événement":"Create an event"}
                     </Link>
                 </div>
             </div>
-
-            {/* MES COMMERCES */}
-            <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
-                <div className="flex justify-between items-center mb-8 text-gray-900 dark:text-white">
-                    <h2 className="text-2xl font-black tracking-tight">{lang === 'fr' ? 'Mes Commerces' : 'My Businesses'}</h2>
+{/* MES COMMERCES */}
+            <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col h-fit lg:sticky lg:top-10">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                        {lang === 'fr' ? 'Mes Commerces' : 'My Businesses'}
+                    </h2>
+                    {/* LIEN VOIR TOUT RÉTABLI */}
+                    <Link href="/dashboard/businesses" className="text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest hover:underline no-underline">
+                        {lang === 'fr' ? 'Voir tout' : 'View all'}
+                    </Link>
                 </div>
-                <div className="space-y-4">
-                    {businesses.slice(0, 2).map((biz) => {
+                
+                <div className="space-y-4 flex-1">
+                    {businesses.slice(0, 3).map((biz) => {
                         const config = getBusinessConfig(biz.business_type);
                         return (
                             <Link key={biz.id} href={`/dashboard/businesses/${biz.id}`} className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-[2rem] border border-gray-100 dark:border-slate-800 group hover:border-indigo-100 dark:hover:border-indigo-900 transition-all duration-300 no-underline block">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className={`p-2 rounded-lg ${config.color}`}>{config.icon}</div>
-                                        <span className="font-bold text-gray-900 dark:text-white truncate max-w-[100px]">{biz.name}</span>
+                                        <div className={`p-2 rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-110 ${config.color}`}>
+                                            {config.icon}
+                                        </div>
+                                        <span className="font-bold text-gray-900 dark:text-white truncate max-w-[120px]">{biz.name}</span>
                                     </div>
-                                    <Star size={12} className="text-yellow-500 fill-current" />
+                                    <div className="flex items-center gap-1 text-yellow-500 font-black text-xs">
+                                        <Star size={12} fill="currentColor" /> 4.8
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <div className="flex-1 py-2 bg-white dark:bg-slate-800 rounded-xl text-[10px] font-black text-center text-gray-500 dark:text-slate-400 border border-gray-100 dark:border-slate-700">QR Avis</div>
+                                    <div className="flex-1 py-2 bg-white dark:bg-slate-800 rounded-xl text-[10px] font-black text-center text-gray-500 dark:text-slate-400 border border-gray-100 dark:border-slate-700">Scan</div>
                                 </div>
                             </Link>
                         );
                     })}
+
+                    {/* BOUTON AJOUTER RÉTABLI */}
+                    <Link href="/tools/google-reviews" className="w-full py-4 mt-2 border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-gray-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 transition-all no-underline font-bold text-sm bg-transparent">
+                        <Plus size={16} /> {lang === 'fr' ? 'Ajouter un business' : 'Add a business'}
+                    </Link>
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-gray-50 dark:border-slate-800 text-center">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Retail Box • {lang.toUpperCase()}</p>
                 </div>
             </div>
         </div>
