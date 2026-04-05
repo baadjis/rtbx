@@ -191,11 +191,11 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   <Link href={`/dashboard/wallet`} className="p-3 bg-white dark:bg-slate-700 rounded-xl text-indigo-600 dark:text-indigo-400 shadow-sm flex items-center gap-2 text-xs font-black uppercase tracking-widest no-underline">
-                    Voir QR <ChevronRight size={14} />
+                    {lang=="fr"?"Voir QR":"See QR"} <ChevronRight size={14} />
                   </Link>
                 </div>
               ))}
-              {attending.length === 0 && <div className="p-12 text-center text-gray-400 italic font-bold">Aucun ticket à venir.</div>}
+              {attending.length === 0 && <div className="p-12 text-center text-gray-400 italic font-bold">{lang=="fr"?"Aucun ticket à venir." :"No ticket yet"}</div>}
             </div>
           </div>
         </div>

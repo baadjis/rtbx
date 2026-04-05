@@ -1,7 +1,7 @@
 export const DICT = {
   fr: {
     welcome: "Content de vous revoir ! 👋",
-    sub_welcome: "Voici l'état actuel de vos liens rtbx.space",
+    sub_welcome: "Voici l'état actuel de vos activités",
     create_link: "Créer un lien",
     total_clicks: "Total Clics",
     active_links: "Liens Actifs",
@@ -62,7 +62,7 @@ view_all_biz: "Gérer mes commerces",
   },
   en: {
     welcome: "Welcome back! 👋",
-    sub_welcome: "Here is the current status of your rtbx.space links",
+    sub_welcome: "Here is the current status of your activities",
     create_link: "Create a link",
     total_clicks: "Total Clicks",
     active_links: "Active Links",
