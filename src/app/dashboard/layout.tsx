@@ -24,10 +24,24 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     { name: lang === 'fr' ? "Avis Google" : "Google Reviews", iconName: 'star', href: '/tools/google-reviews' },
     { name: t.my_businesses, iconName: 'store', href: '/dashboard/businesses' },
     { name: lang === 'fr' ? "Mes Points" : "My Points", iconName: 'award', href: '/dashboard/points' },
+    
+    // --- NOUVEAUX SERVICES ÉVÉNEMENTIELS ---
+    { 
+      name: lang === 'fr' ? "Événements" : "Events", 
+      iconName: 'calendar', 
+      href: '/dashboard/events', 
+      badge: "Beta" 
+    },
+    { 
+      name: lang === 'fr' ? "Mes Organisations" : "Organized Events", 
+      iconName: 'users', 
+      href: '/dashboard/events/organized', 
+      badge: "Beta" 
+    },
+    
     { name: t.analytics, iconName: 'analytics', href: '#', badge: "Beta" },
     { name: t.settings, iconName: 'settings', href: '/dashboard/settings' },
-
-  ];
+];
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">

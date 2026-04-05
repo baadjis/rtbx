@@ -6,7 +6,9 @@ import { usePathname } from 'next/navigation';
 import { 
   Link2, Wrench, ChevronLeft, ChevronRight, 
   LogOut, LayoutDashboard, Star, Store, BarChart3, Settings, 
-  Award
+  Award,
+  Calendar,
+  Users
 } from 'lucide-react';
 
 // 1. On crée le dictionnaire d'icônes côté CLIENT
@@ -15,7 +17,9 @@ const IconMap: { [key: string]: any } = {
   links: Link2,
   star: Star,
   store: Store,
-  award: Award, // <--- Vérifie bien cette ligne
+  award: Award,
+  calendar: Calendar, // Pour "Événements"
+  users: Users,       // Pour "Mes Organisations"
   analytics: BarChart3,
   settings: Settings
 };
