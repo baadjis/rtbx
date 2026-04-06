@@ -77,7 +77,8 @@ export const Data = {
   bulk_badge_title: "Envoi massif des badges",
   bulk_badge_desc: "Envoyer le ticket QR par e-mail à tous les inscrits.",
   btn_send_all: "🚀 Envoyer à {n} personnes",
-  msg_soon: "Module d'envoi d'emails en cours d'activation (Beta)"
+  msg_soon: "Module d'envoi d'emails en cours d'activation (Beta)",
+  no_programm:"Aucun programme défini."
 
   },
   en: {
@@ -158,6 +159,7 @@ export const Data = {
   bulk_badge_title: "Bulk Badge Sending",
   bulk_badge_desc: "Send the QR ticket by email to all registered participants.",
   btn_send_all: "🚀 Send to {n} people",
-  msg_soon: "Email sending module being activated (Beta)"
+  msg_soon: "Email sending module being activated (Beta)",
+  no_programm:"No programm defined yet"
   }
 };
