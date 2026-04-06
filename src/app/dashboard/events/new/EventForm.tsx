@@ -2,7 +2,11 @@
 import { useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
-import { Calendar, MapPin, Users, ArrowLeft, Loader2, FileText, CheckCircle2 } from 'lucide-react'
+import { 
+  Calendar, MapPin, Users, ArrowLeft, 
+  Loader2, CheckCircle2, Globe, Lock, 
+  Settings2, Ticket, MessageSquare, Tag 
+} from 'lucide-react'
 import Link from 'next/link'
 import { Data } from '../data'
 
@@ -17,20 +21,23 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     
     const formData = new FormData(e.currentTarget)
+    
     const eventData = {
       organizer_id: userId,
       title: formData.get('title'),
       description: formData.get('description'),
+      category: formData.get('category'),
+      visibility: formData.get('visibility'),
+      requires_registration: formData.get('requires_registration') === 'true',
       location: formData.get('location'),
       start_date: formData.get('start_date'),
       end_date: formData.get('end_date') || null,
       max_capacity: formData.get('max_capacity') ? parseInt(formData.get('max_capacity') as string) : null,
-      is_published: true // On publie directement
     }
 
     const { error } = await supabase.from('events').insert([eventData])
@@ -45,14 +52,14 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
-      <Link href="/dashboard/events" className="inline-flex items-center gap-2 text-gray-400 font-bold hover:text-indigo-600 transition-colors no-underline">
+      <Link href="/dashboard/events" className="group inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 font-bold hover:text-indigo-600 transition-colors no-underline">
         <ArrowLeft size={18} /> {lang === 'fr' ? 'Annuler' : 'Cancel'}
       </Link>
 
-      <div className="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800 transition-colors">
-        <div className="mb-10 text-center">
+      <div className="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] shadow-2xl border border-gray-100 dark:border-slate-800 transition-colors">
+        <div className="mb-12 text-center">
             <h1 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight italic bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
                 {t.new_title}
             </h1>
@@ -67,53 +74,92 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t.success_create}</h2>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-10">
             
-            {/* Titre */}
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_title}</label>
-              <input name="title" required placeholder="Ex: Masterclass E-commerce" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
+            {/* --- SECTION 1 : TYPE & VISIBILITÉ --- */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+                    <Tag size={14} /> {t.label_category}
+                  </label>
+                  <select name="category" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 appearance-none">
+                    <option value="sales">{t.cat_sales}</option>
+                    <option value="training">{t.cat_training}</option>
+                    <option value="networking">{t.cat_networking}</option>
+                    <option value="other">{t.cat_other}</option>
+                  </select>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+                    <Globe size={14} /> {t.label_visibility}
+                  </label>
+                  <select name="visibility" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 appearance-none text-indigo-600 dark:text-indigo-400">
+                    <option value="public">{t.opt_public}</option>
+                    <option value="private">{t.opt_private}</option>
+                  </select>
+                </div>
             </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_desc}</label>
-              <textarea name="description" rows={4} placeholder="Détaillez le programme..." className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium dark:text-white" />
+            {/* --- SECTION 2 : INFOS PRINCIPALES --- */}
+            <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_title}</label>
+                  <input name="title" required placeholder="Ex: Masterclass E-commerce" className="w-full p-5 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-lg dark:text-white" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_desc}</label>
+                  <textarea name="description" rows={5} placeholder="Détaillez le programme..." className="w-full p-5 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium dark:text-white leading-relaxed" />
+                </div>
             </div>
 
-            {/* Lieu */}
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_location}</label>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input name="location" required placeholder="Adresse ou lien visio" className="w-full p-4 pl-12 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
-              </div>
+            {/* --- SECTION 3 : LIEU & RÉSERVATIONS --- */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
+                    <MapPin size={14} /> {t.label_location}
+                  </label>
+                  <input name="location" required placeholder="Adresse ou lien visio" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
+                    <Ticket size={14} /> {t.label_registration}
+                  </label>
+                  <select name="requires_registration" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 appearance-none">
+                    <option value="true">{t.opt_reg_yes}</option>
+                    <option value="false">{t.opt_reg_no}</option>
+                  </select>
+                </div>
             </div>
 
-            {/* Dates */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* --- SECTION 4 : DATELINE --- */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-slate-50 dark:bg-slate-800/30 rounded-[2rem] border border-gray-100 dark:border-slate-800">
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_start}</label>
-                <input name="start_date" type="datetime-local" required className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
+                <label className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest ml-2">{t.label_start}</label>
+                <input name="start_date" type="datetime-local" required className="w-full p-4 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_end}</label>
-                <input name="end_date" type="datetime-local" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_end}</label>
+                <input name="end_date" type="datetime-local" className="w-full p-4 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
               </div>
             </div>
 
             {/* Capacité */}
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_capacity}</label>
-              <div className="relative">
-                <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input name="max_capacity" type="number" placeholder="Illimité" className="w-full p-4 pl-12 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold dark:text-white" />
-              </div>
+            <div className="space-y-2 max-w-xs">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
+                <Users size={14} /> {t.label_capacity}
+              </label>
+              <input name="max_capacity" type="number" placeholder="Illimité" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white" />
             </div>
 
-            <button disabled={loading} className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50">
-              {loading ? <Loader2 className="animate-spin mx-auto" /> : t.btn_create}
-            </button>
+            <div className="pt-6 border-t border-gray-100 dark:border-slate-800">
+                <button disabled={loading} className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 border-none">
+                {loading ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={24} />}
+                {t.btn_create}
+                </button>
+            </div>
           </form>
         )}
       </div>

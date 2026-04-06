@@ -14,24 +14,35 @@ export default function RegistrationForm({ eventId, lang, t }: { eventId: string
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  // Dans src/app/events/[id]/RegistrationForm.tsx
+
+const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     const formData = new FormData(e.currentTarget)
     
-    const ticketCode = `TKT-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+    try {
+      // GÉNÉRATION SÉCURISÉE DU CODE TICKET
+      // On prend une partie d'un UUID pour avoir un code court mais unique
+      const fullUuid = window.crypto.randomUUID()
+      const ticketCode = `TKT-${fullUuid.split('-')[0].toUpperCase()}`
 
-    const { error } = await supabase.from('event_registrations').insert([{
-      event_id: eventId,
-      full_name: formData.get('name'),
-      email: formData.get('email'),
-      ticket_code: ticketCode
-    }])
+      const { error } = await supabase.from('event_registrations').insert([{
+        event_id: eventId,
+        full_name: formData.get('name'),
+        email: formData.get('email'),
+        ticket_code: ticketCode
+      }])
 
-    if (!error) setTicket(ticketCode)
-    else alert(error.message)
-    setLoading(false)
-  }
+      if (error) throw error
+      setTicket(ticketCode)
+
+    } catch (err: any) {
+      alert(err.message)
+    } finally {
+      setLoading(false)
+    }
+}
 
   if (ticket) return (
     <div className="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] shadow-2xl border border-green-100 dark:border-green-900/30 text-center animate-in zoom-in duration-500">
