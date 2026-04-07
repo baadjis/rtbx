@@ -8,7 +8,7 @@ export default function ContactForm({ lang, formId }: { lang: 'fr' | 'en', formI
   const t = Data[lang];
   const [status, setStatus] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
