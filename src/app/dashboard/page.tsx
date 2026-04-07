@@ -31,7 +31,7 @@ export default async function DashboardPage() {
     
     // Modification ici : on simplifie le select pour tester
     supabase.from('events')
-      .select('*') // Prends tout pour l'instant
+      .select('*,event_registrations(count)') // Prends tout pour l'instant
       .eq('organizer_id', user.id)
       .order('start_date', { ascending: true }),
 
