@@ -85,7 +85,7 @@ setLoading(false);
     setLoading(false)
   }
 
-  const handleSendInvite = async (e: React.FormEvent) => {
+  const handleSendInvite = async (e: React.SubmitEvent) => {
     e.preventDefault()
     if (!inviteEmail) return
     setLoading(true)

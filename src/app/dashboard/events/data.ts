@@ -86,7 +86,9 @@ export const Data = {
   opt_immediate: "Envoi immédiat (dès l'inscription)",
   opt_scheduled: "Programmé (X heures avant début)",
   label_delay: "Délai avant l'événement (heures)",
-  save_automation: "Mettre à jour la stratégie"
+  save_automation: "Mettre à jour la stratégie",
+  btn_save_branding:"Enregistrer le branding"
+  
 
   },
   en: {
@@ -176,6 +178,7 @@ export const Data = {
   opt_immediate: "Immediate sending (after sign-up)",
   opt_scheduled: "Scheduled (X hours before start)",
   label_delay: "Time before event (hours)",
-  save_automation: "Update Strategy"
+  save_automation: "Update Strategy",
+  btn_save_branding:"Save branding"
   }
 };
