@@ -28,12 +28,18 @@ export default async function DashboardPage() {
     supabase.from('links').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('businesses').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('loyalty_points').select('*, businesses(name, business_type)').eq('user_id', user.id).order('updated_at', { ascending: false }),
-    // Événements que j'organise
-    supabase.from('events').select('*, event_registrations(count)').eq('organizer_id', user.id).order('start_date', { ascending: true }),
-    // Événements auxquels je participe
-    supabase.from('event_registrations').select('*, events(*)').eq('user_id', user.id).order('created_at', { ascending: false })
-  ]);
+    
+    // Modification ici : on simplifie le select pour tester
+    supabase.from('events')
+      .select('*') // Prends tout pour l'instant
+      .eq('organizer_id', user.id)
+      .order('start_date', { ascending: true }),
 
+    // Pour les tickets (participation)
+    supabase.from('event_registrations')
+      .select('*, events(*)')
+      .eq('user_id', user.id)
+]);
   const links = linksResponse.data || [];
   const businesses = businessesResponse.data || [];
   const points = pointsResponse.data || [];
@@ -206,7 +212,7 @@ export default async function DashboardPage() {
             {/* MES ORGANISATIONS (Beta) */}
             <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
                 <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Organisations</h2>
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{lang=='fr'?"Mes evenements":"My events"}</h2>
                     <span className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded font-black">BETA</span>
                 </div>
                 <div className="space-y-4">
