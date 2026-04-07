@@ -78,7 +78,15 @@ export const Data = {
   bulk_badge_desc: "Envoyer le ticket QR par e-mail à tous les inscrits.",
   btn_send_all: "🚀 Envoyer à {n} personnes",
   msg_soon: "Module d'envoi d'emails en cours d'activation (Beta)",
-  no_programm:"Aucun programme défini."
+  no_programm:"Aucun programme défini.",
+    btn_publish: "🚀 Publier l'événement",
+  btn_unpublish: "🛑 Passer en brouillon",
+  automation_title: "Stratégie d'envoi des badges",
+  opt_manual: "Envoi manuel (via bouton)",
+  opt_immediate: "Envoi immédiat (dès l'inscription)",
+  opt_scheduled: "Programmé (X heures avant début)",
+  label_delay: "Délai avant l'événement (heures)",
+  save_automation: "Mettre à jour la stratégie"
 
   },
   en: {
@@ -113,7 +121,7 @@ export const Data = {
   register_success: "Congratulations! You are registered. Your QR ticket has been generated.",
   event_full: "Sorry, this event is full.",
   back_to_events: "Back to list",
-    admin_title: "Event Dashboard",
+  admin_title: "Event Dashboard",
   stat_total: "Total Registered",
   stat_checked: "Checked-in",
   stat_capacity: "Capacity Rate",
@@ -160,6 +168,14 @@ export const Data = {
   bulk_badge_desc: "Send the QR ticket by email to all registered participants.",
   btn_send_all: "🚀 Send to {n} people",
   msg_soon: "Email sending module being activated (Beta)",
-  no_programm:"No programm defined yet"
+  no_programm:"No programm defined yet",
+   btn_publish: "🚀 Publish Event",
+  btn_unpublish: "🛑 Set to Draft",
+  automation_title: "Badge Sending Strategy",
+  opt_manual: "Manual sending (via button)",
+  opt_immediate: "Immediate sending (after sign-up)",
+  opt_scheduled: "Scheduled (X hours before start)",
+  label_delay: "Time before event (hours)",
+  save_automation: "Update Strategy"
   }
 };

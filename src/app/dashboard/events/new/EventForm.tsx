@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 import { 
   Calendar, MapPin, Users, ArrowLeft, 
   Loader2, CheckCircle2, Globe, Lock, 
-  Settings2, Ticket, MessageSquare, Tag 
+  Tag, Ticket, ArrowRight 
 } from 'lucide-react'
 import Link from 'next/link'
 import { Data } from '../data'
@@ -16,19 +16,13 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     
     const formData = new FormData(e.currentTarget)
     
-    const eventData = {
-      organizer_id: userId,
+    const payload = {
       title: formData.get('title'),
       description: formData.get('description'),
       category: formData.get('category'),
@@ -37,16 +31,27 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
       location: formData.get('location'),
       start_date: formData.get('start_date'),
       end_date: formData.get('end_date') || null,
-      max_capacity: formData.get('max_capacity') ? parseInt(formData.get('max_capacity') as string) : null,
+      max_capacity: formData.get('max_capacity'),
     }
 
-    const { error } = await supabase.from('events').insert([eventData])
+    try {
+      const response = await fetch('/api/events/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    if (!error) {
-      setSuccess(true)
-      setTimeout(() => router.push('/dashboard/events'), 1500)
-    } else {
-      alert(error.message)
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess(true)
+        // REDIRECTION DIRECTE VERS LA PAGE ADMIN DE L'ÉVÉNEMENT
+        setTimeout(() => router.push(`/dashboard/events/${result.id}`), 1500)
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (err: any) {
+      alert(lang === 'fr' ? "Erreur : " + err.message : "Error: " + err.message)
       setLoading(false)
     }
   }
@@ -72,11 +77,11 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
                 <CheckCircle2 size={48} className="text-green-500" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t.success_create}</h2>
+            <p className="text-gray-400 font-medium animate-pulse">Redirection</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-10">
             
-            {/* --- SECTION 1 : TYPE & VISIBILITÉ --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
@@ -101,7 +106,6 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
                 </div>
             </div>
 
-            {/* --- SECTION 2 : INFOS PRINCIPALES --- */}
             <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_title}</label>
@@ -114,7 +118,6 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
                 </div>
             </div>
 
-            {/* --- SECTION 3 : LIEU & RÉSERVATIONS --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
@@ -134,7 +137,6 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
                 </div>
             </div>
 
-            {/* --- SECTION 4 : DATELINE --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-slate-50 dark:bg-slate-800/30 rounded-[2rem] border border-gray-100 dark:border-slate-800">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest ml-2">{t.label_start}</label>
@@ -146,7 +148,6 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
               </div>
             </div>
 
-            {/* Capacité */}
             <div className="space-y-2 max-w-xs">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
                 <Users size={14} /> {t.label_capacity}
@@ -155,7 +156,7 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
             </div>
 
             <div className="pt-6 border-t border-gray-100 dark:border-slate-800">
-                <button disabled={loading} className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 border-none">
+                <button disabled={loading} className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 border-none cursor-pointer">
                 {loading ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={24} />}
                 {t.btn_create}
                 </button>
