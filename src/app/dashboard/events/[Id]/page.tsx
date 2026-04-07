@@ -27,7 +27,7 @@ export default async function EventAdminPage({ params }: { params: Promise<{ Id:
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
-      <Header />
+     
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
         <EventAdminTabs 
           lang={lang}
