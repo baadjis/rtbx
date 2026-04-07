@@ -29,11 +29,11 @@ export default async function DashboardPage() {
     supabase.from('businesses').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('loyalty_points').select('*, businesses(name, business_type)').eq('user_id', user.id).order('updated_at', { ascending: false }),
     
-    // Modification ici : on simplifie le select pour tester
-    supabase.from('events')
-      .select('*,event_registrations(count)') // Prends tout pour l'instant
-      .eq('organizer_id', user.id)
-      .order('start_date', { ascending: true }),
+   supabase.from('events')
+  .select('*, event_registrations(id)') // On récupère juste les IDs des inscrits
+  .eq('organizer_id', user.id)
+  .order('start_date', { ascending: true }) // Modification ici : on simplifie le select pour tester
+    ,
 
     // Pour les tickets (participation)
     supabase.from('event_registrations')
