@@ -45,6 +45,9 @@ export default async function DashboardPage() {
   const points = pointsResponse.data || [];
   const myEvents = myEventsResponse.data || [];
   const attending = attendingEventsResponse.data || [];
+
+console.log("Erreur MyEvents:", myEventsResponse.error);
+console.log("Données MyEvents:", myEventsResponse.data);
   
   const totalClicks = links.reduce((acc, curr) => acc + (curr.clicks || 0), 0);
 
