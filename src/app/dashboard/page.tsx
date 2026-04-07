@@ -223,7 +223,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
                         <Link key={ev.id} href={`/dashboard/events/${ev.id}`} className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-[2rem] border border-gray-100 dark:border-slate-800 block no-underline group hover:border-indigo-500 transition-all">
                             <h4 className="font-bold text-gray-900 dark:text-white truncate">{ev.title}</h4>
                             <div className="flex justify-between items-center mt-3">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{ev.event_registrations[0]?.count || 0} inscrits</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{ev?.event_registrations[0]?.count || 0} inscrits</span>
                                 <div className="w-8 h-8 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-indigo-600 transition-colors">
                                     <ArrowRight size={14} className="group-hover:text-white" />
                                 </div>
