@@ -87,7 +87,13 @@ export const Data = {
   opt_scheduled: "Programmé (X heures avant début)",
   label_delay: "Délai avant l'événement (heures)",
   save_automation: "Mettre à jour la stratégie",
-  btn_save_branding:"Enregistrer le branding"
+  btn_save_branding:"Enregistrer le branding",
+  label_badge_format: "Format d'impression du Badge",
+  opt_a6: "A6 - Format Poche (Standard)",
+  opt_a5: "A5 - Format Moyen",
+  opt_a4: "A4 - Format Pro (Pliable)",
+  format_desc_a4: "Idéal pour afficher le programme et les sponsors au verso.",
+  format_desc_a6: "Format classique pour porte-badge standard."
   
 
   },
@@ -179,6 +185,12 @@ export const Data = {
   opt_scheduled: "Scheduled (X hours before start)",
   label_delay: "Time before event (hours)",
   save_automation: "Update Strategy",
-  btn_save_branding:"Save branding"
+  btn_save_branding:"Save branding",
+   label_badge_format: "Badge Print Format",
+  opt_a6: "A6 - Pocket Size (Standard)",
+  opt_a5: "A5 - Medium Size",
+  opt_a4: "A4 - Pro Format (Foldable)",
+  format_desc_a4: "Perfect for displaying agenda and sponsors on the back.",
+  format_desc_a6: "Classic format for standard badge holders."
   }
 };
