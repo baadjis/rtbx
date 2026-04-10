@@ -8,33 +8,64 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { eventId, name, email, lang } = await request.json();
+    const { 
+      eventId, name, email, lang, origin, 
+      company_name, professional_role, custom_data 
+    } = await request.json();
+    
     const supabase = await createClient();
 
-    // 1. Récupérer les détails complets de l'événement (y compris le branding et l'automatisation)
+    // 1. Récupérer les détails de l'événement (Config Formulaire + Config Badge)
     const { data: event } = await supabase
       .from('events')
-      .select('title, start_date, location, badge_automation_type, org_logo_url, sponsors_data')
+      .select('*')
       .eq('id', eventId)
       .single();
 
     if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
 
-    // 2. Générer un code ticket unique
+    // 2. INSERTION 1 : Inscription (Données Marketing)
+    const { data: regData, error: regError } = await supabase
+      .from('event_registrations')
+      .insert([{
+        event_id: eventId,
+        full_name: name,
+        email: email,
+        company_name: company_name || null,
+        professional_role: professional_role || null,
+        custom_data: custom_data || {},
+        source_campaign: origin || 'direct',
+        status_at_registration: 'guest'
+      }])
+      .select().single();
+
+    if (regError) throw regError;
+
+    // 3. LOGIQUE CRM : Alimenter le Pool Global Discovery
+    await supabase.from('global_discovery_pool').upsert({
+        email: email,
+        first_name: name.split(' ')[0],
+        last_name: name.split(' ').slice(1).join(' '),
+        origin_type: 'event',
+        origin_id: eventId.toString(),
+        origin_name: origin || 'direct_link'
+    }, { onConflict: 'email' });
+
+    // 4. INSERTION 2 : Le Badge (Donnée Technique)
     const ticketCode = `TKT-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
+    const { data: badgeData, error: badgeError } = await supabase
+      .from('event_badges')
+      .insert([{
+        registration_id: regData.id,
+        event_id: eventId,
+        ticket_code: ticketCode,
+        access_level: 'participant'
+      }])
+      .select().single();
 
-    // 3. Insérer le participant dans la base de données
-    const { data: regData, error: insertError } = await supabase.from('event_registrations').insert([{
-      event_id: eventId,
-      full_name: name,
-      email: email,
-      ticket_code: ticketCode,
-      role: 'participant'
-    }]).select().single();
+    if (badgeError) throw badgeError;
 
-    if (insertError) throw insertError;
-
-    // 4. Préparer et envoyer l'e-mail de CONFIRMATION standard
+    // 5. ENVOI EMAIL : Confirmation Standard
     const dateFormatted = new Date(event.start_date).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
@@ -53,10 +84,9 @@ export async function POST(request: Request) {
       html: confirmationHtml
     });
 
-    // 5. LOGIQUE D'AUTOMATISATION : Envoi immédiat du BADGE si configuré
+    // 6. AUTOMATISATION : Envoi immédiat du Badge PDF (si configuré)
     if (event.badge_automation_type === 'immediate') {
       try {
-        // A. Appel à l'API Python pour générer le Badge PDF
         const pythonRes = await fetch("https://baadjis-utilitybox.hf.space/api/gen-event-badge", {
           method: "POST",
           headers: { 
@@ -65,51 +95,51 @@ export async function POST(request: Request) {
           },
           body: JSON.stringify({
             full_name: name,
+            company: company_name || "",
             role: 'participant',
             ticket_code: ticketCode,
             event_name: event.title,
             org_logo: event.org_logo_url,
-            sponsors: event.sponsors_data
+            sponsors: event.sponsors_data,
+            // Nouveaux paramètres synchronisés avec BadgeBuilder
+            format: event.badge_format || 'A6',
+            theme_color: event.theme_color || '#4f46e5',
+            badge_settings: event.badge_settings || {},
+            useful_info: event.useful_info || ""
           })
         });
 
         if (pythonRes.ok) {
           const { pdf_base64 } = await pythonRes.json();
-
-          // B. Préparer le template du mail de livraison de badge
           const badgeHtml = getBadgeDeliveryEmail({
             userName: name,
             eventTitle: event.title,
             ticketCode: ticketCode
           }, lang);
 
-          // C. Envoyer le mail avec le PDF en pièce jointe
           await resend.emails.send({
             from: 'RetailBox <events@rtbx.space>',
             to: email,
-            subject: lang === 'fr' ? `Votre Badge d'accès : ${event.title}` : `Your Access Badge: ${event.title}`,
+            subject: lang === 'fr' ? `Votre Badge : ${event.title}` : `Your Badge: ${event.title}`,
             html: badgeHtml,
-            attachments: [
-              {
-                filename: `badge-${ticketCode}.pdf`,
-                content: pdf_base64,
-              },
-            ],
+            attachments: [{
+              filename: `badge-${ticketCode}.pdf`,
+              content: pdf_base64,
+            }]
           });
 
-          // D. Marquer comme envoyé en DB
-          await supabase.from('event_registrations').update({ badge_sent: true }).eq('id', regData.id);
+          // Update statut badge_sent
+          await supabase.from('event_badges').update({ badge_sent: true }).eq('id', badgeData.id);
         }
-      } catch (badgeErr) {
-        // On ne bloque pas l'inscription si l'envoi du badge échoue (le cron de rattrapage s'en chargera)
-        console.error("Erreur envoi badge immédiat:", badgeErr);
+      } catch (err) {
+        console.error("Erreur badge immédiat (le cron prendra le relais):", err);
       }
     }
 
     return NextResponse.json({ success: true, ticketCode });
 
   } catch (err: any) {
-    console.error("Registration Error:", err.message);
+    console.error("Registration API Error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

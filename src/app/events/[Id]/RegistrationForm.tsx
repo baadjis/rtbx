@@ -3,36 +3,48 @@
 import { useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { QRCodeCanvas } from 'qrcode.react'
-import { Loader2, CheckCircle2, Send, Download, Printer } from 'lucide-react'
+import { Loader2, CheckCircle2, Send, Printer, Building2, UserSquare2, Info } from 'lucide-react'
 
-export default function RegistrationForm({ eventId, lang, t }: { eventId: string, lang: string, t: any }) {
+// Props : on ajoute 'eventConfig' qui contient les flags et la config JSON
+export default function RegistrationForm({ eventId, lang, t, eventConfig, origin }: { 
+  eventId: string, 
+  lang: string, 
+  t: any,
+  origin: string, // On reçoit l'origine en prop
+  eventConfig: any
+}) {
   const [loading, setLoading] = useState(false)
   const [ticket, setTicket] = useState<string | null>(null)
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
-  // Dans src/app/events/[id]/RegistrationForm.tsx
-
 
   const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     
+    // 1. Collecter les données standard
+   const payload: any = {
+      eventId,
+      name: formData.get('name'),
+      email: formData.get('email'),
+      lang,
+      origin, // ON ENVOIE L'ORIGINE À L'API
+      company_name: formData.get('company_name') || null,
+      professional_role: formData.get('professional_role') || null,
+      custom_data: {}
+    };
+
+    // 2. Collecter les champs dynamiques du FormBuilder
+    if (eventConfig.form_config) {
+      eventConfig.form_config.forEach((field: any) => {
+        payload.custom_data[field.label] = formData.get(`custom_${field.id}`);
+      });
+    }
+    
     try {
-      // APPEL DE TA NOUVELLE ROUTE API
       const response = await fetch('/api/events/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventId: eventId,
-          name: formData.get('name'),
-          email: formData.get('email'),
-          lang: lang
-        })
+        body: JSON.stringify(payload)
       });
 
       const result = await response.json();
@@ -61,30 +73,75 @@ export default function RegistrationForm({ eventId, lang, t }: { eventId: string
       </div>
       
       <p className="text-sm font-black text-indigo-600 dark:text-indigo-400 mb-8 uppercase tracking-widest">Ticket ID: {ticket}</p>
-      <button onClick={() => window.print()} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-black transition-all">
+      <button onClick={() => window.print()} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-black transition-all border-none cursor-pointer">
         <Printer size={20} /> {lang === 'fr' ? 'Imprimer / Capture' : 'Print / Screenshot'}
       </button>
     </div>
   )
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-8 md:p-10 rounded-[3rem] shadow-2xl border border-gray-100 dark:border-slate-800">
+    <div className="bg-white dark:bg-slate-900 p-8 md:p-10 rounded-[3rem] shadow-2xl border border-gray-100 dark:border-slate-800 transition-colors">
       <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-2">{t.register_title}</h2>
       <p className="text-gray-500 dark:text-slate-400 font-medium mb-8 text-sm">{t.register_sub}</p>
       
-      <form onSubmit={handleRegister} className="space-y-6">
+      <form onSubmit={handleRegister} className="space-y-5">
+        
+        {/* --- CHAMPS FIXES --- */}
         <div className="space-y-2">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_name}</label>
+            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2">{t.label_name}</label>
             <input name="name" required placeholder={t.ph_name} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 transition-colors" />
         </div>
+
         <div className="space-y-2">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Email</label>
+            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2">Email</label>
             <input name="email" type="email" required placeholder="nom@exemple.com" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 transition-colors" />
         </div>
-        <button disabled={loading} className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-          {loading ? <Loader2 className="animate-spin" /> : <Send size={18} />}
-          {t.btn_register}
-        </button>
+
+        {/* --- CHAMPS OPTIONNELS STANDARDS --- */}
+        {eventConfig.ask_company && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+               <Building2 size={12}/> {lang === 'fr' ? "Entreprise" : "Company"}
+            </label>
+            <input name="company_name" required className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 transition-colors" />
+          </div>
+        )}
+
+        {eventConfig.ask_professional_role && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+               <UserSquare2 size={12}/> {lang === 'fr' ? "Poste / Fonction" : "Job Title"}
+            </label>
+            <input name="professional_role" required className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 transition-colors" />
+          </div>
+        )}
+
+        {/* --- CHAMPS DYNAMIQUES (JSON CONFIG) --- */}
+        {eventConfig.form_config && eventConfig.form_config.map((field: any) => (
+          <div key={field.id} className="space-y-2 animate-in fade-in slide-in-from-top-2">
+            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2">
+               {field.label} {field.required && <span className="text-red-500">*</span>}
+            </label>
+            <input 
+              name={`custom_${field.id}`} 
+              type={field.type} 
+              required={field.required}
+              placeholder={field.label}
+              className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 transition-colors" 
+            />
+          </div>
+        ))}
+
+        <div className="pt-4">
+            <button disabled={loading} className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border-none cursor-pointer">
+            {loading ? <Loader2 className="animate-spin" /> : <Send size={18} />}
+            {t.btn_register}
+            </button>
+        </div>
+
+        <p className="text-[10px] text-gray-400 font-medium text-center italic mt-4">
+            <Info size={10} className="inline mr-1" /> {t.security_note}
+        </p>
       </form>
     </div>
   )

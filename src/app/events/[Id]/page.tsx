@@ -72,7 +72,17 @@ export default async function PublicEventPage({ params }: { params: Promise<{ Id
 
           {/* REGISTRATION FORM */}
           <div className="lg:sticky lg:top-32 h-fit">
-            <RegistrationForm eventId={event.id} lang={lang} t={t} />
+            
+<RegistrationForm 
+  eventId={event.id} 
+  lang={lang} 
+  t={t} 
+  eventConfig={{
+    ask_company: event.ask_company,
+    ask_professional_role: event.ask_professional_role,
+    form_config: event.form_config
+  }} 
+/>
           </div>
 
         </div>
