@@ -88,12 +88,43 @@ export const Data = {
   label_delay: "Délai avant l'événement (heures)",
   save_automation: "Mettre à jour la stratégie",
   btn_save_branding:"Enregistrer le branding",
+
+
   label_badge_format: "Format d'impression du Badge",
   opt_a6: "A6 - Format Poche (Standard)",
   opt_a5: "A5 - Format Moyen",
   opt_a4: "A4 - Format Pro (Pliable)",
-  format_desc_a4: "Idéal pour afficher le programme et les sponsors au verso.",
-  format_desc_a6: "Format classique pour porte-badge standard."
+   badge_builder_title: "Conception du Badge",
+  badge_builder_desc: "Définissez le format physique et les éléments visuels de vos accréditations.",
+ 
+  format_desc_a6: "105 x 148 mm - Idéal pour les porte-badges.",
+  
+  format_desc_a4: "210 x 297 mm - Inclut programme et sponsors au dos.",
+  opt_cr80: "Carte PVC (ID-1)",
+  format_desc_cr80: "86 x 54 mm - Format carte bancaire / Fidélité.",
+  badge_elements: "Éléments à afficher",
+  label_show_photo: "Emplacement Photo / Avatar",
+  label_show_company: "Afficher l'Entreprise",
+  label_show_role: "Afficher le Rôle",
+  label_color_theme: "Couleur d'accentuation",
+  theme_explain:"Le thème sera appliqué au bandeau de rôle et aux bordures du PDF.",
+  
+  form_settings_title: "Configuration du Formulaire",
+  form_settings_desc: "Choisissez les informations que vos participants doivent saisir lors de l'inscription.",
+  label_ask_company: "Demander le nom de l'entreprise",
+  label_ask_pro: "Demander le poste / titre professionnel",
+
+  form_builder_title: "Constructeur de Formulaire",
+  form_builder_desc: "Définissez les questions personnalisées pour vos participants.",
+  add_custom_field: "+ Ajouter un champ personnalisé",
+  field_label_ph: "Nom du champ (ex: Votre Pays)",
+  field_type_text: "Texte court",
+  field_type_number: "Nombre",
+  field_type_select: "Choix multiple",
+  label_required: "Obligatoire",
+
+  
+  
   
 
   },
@@ -186,11 +217,39 @@ export const Data = {
   label_delay: "Time before event (hours)",
   save_automation: "Update Strategy",
   btn_save_branding:"Save branding",
-   label_badge_format: "Badge Print Format",
+
+
+  label_badge_format: "Badge Print Format",
   opt_a6: "A6 - Pocket Size (Standard)",
   opt_a5: "A5 - Medium Size",
   opt_a4: "A4 - Pro Format (Foldable)",
-  format_desc_a4: "Perfect for displaying agenda and sponsors on the back.",
-  format_desc_a6: "Classic format for standard badge holders."
+  
+  badge_builder_desc: "Define the physical format and visual elements of your credentials.",
+  format_desc_a6: "105 x 148 mm - Ideal for badge holders.",
+  format_desc_a4: "210 x 297 mm - Includes agenda and sponsors on back.",
+  opt_cr80: "PVC Card (ID-1)",
+  format_desc_cr80: "86 x 54 mm - Credit card / Loyalty size.",
+  badge_elements: "Elements to display",
+  label_show_photo: "Photo / Avatar Placeholder",
+  label_show_company: "Show Company Name",
+  label_show_role: "Show Role / Title",
+  label_color_theme: "Accent Color",
+  theme_explain:"Theme will be applied on pdf border",
+
+
+
+  form_settings_title: "Form Configuration",
+  form_settings_desc: "Choose the information your participants must enter during registration.",
+  label_ask_company: "Ask for Company Name",
+  label_ask_pro: "Ask for Job Title / Role",
+  form_builder_title: "Form Builder",
+  form_builder_desc: "Define custom questions for your participants.",
+  add_custom_field: "+ Add custom field",
+  field_label_ph: "Field name (e.g. Your Country)",
+  field_type_text: "Short text",
+  field_type_number: "Number",
+  field_type_select: "Multiple choice",
+  label_required: "Required",
+ 
   }
 };

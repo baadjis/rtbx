@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
+'use client'
 import { useState } from 'react'
 import { 
   Zap, MousePointer2, Clock, CalendarRange, 
   CheckCircle2, Mail, ImageIcon, Send, 
   Loader2, Settings2, Upload, X, Info, 
-  Plus, FileText, Layout 
+  Plus, FileText, Layout, UserSquare2, Building2
 } from 'lucide-react'
+import FormBuilder from './FormBuilder'
+import BadgeBuilder from '@/components/shared/BadgeBuilder'
 
 export default function CommsTab({ event, participants, supabase, router, lang, t }: any) {
   const [loading, setLoading] = useState(false)
@@ -14,26 +17,43 @@ export default function CommsTab({ event, participants, supabase, router, lang, 
   
   // --- ÉTATS ---
   const [automationType, setAutomationType] = useState(event.badge_automation_type || 'manual')
-  const [badgeFormat, setBadgeFormat] = useState(event.badge_format || 'A6') // NOUVEAU
+  const [badgeFormat, setBadgeFormat] = useState(event.badge_format || 'A6')
+  const [badgeSettings, setBadgeSettings] = useState(event.badge_settings || {
+    showPhoto: false,
+    showCompany: true,
+    showRole: true
+})
   const [orgLogo, setOrgLogo] = useState<string | null>(event.org_logo_url || null)
   const [orgName, setOrgName] = useState(event.org_name || "")
   const [sponsors, setSponsors] = useState<string[]>(event.sponsors_data || [])
   const [usefulInfo, setUsefulInfo] = useState(event.useful_info || "")
 
-  const handleSaveBranding = async () => {
+  // --- NOUVEAUX ÉTATS POUR LA REGISTRATION ---
+  const [askCompany, setAskCompany] = useState(event.ask_company || false)
+  const [askProRole, setAskProRole] = useState(event.ask_professional_role || false)
+
+  const [customFields, setCustomFields] = useState(event.form_config || [])
+  const [themeColor, setThemeColor] = useState(event.theme_color || '#4f46e5')
+
+  const handleSaveSettings = async () => {
     setLoading(true)
     const { error } = await supabase.from('events').update({
       badge_automation_type: automationType,
-      badge_format: badgeFormat, // Sauvegarde du format
+      badge_format: badgeFormat,
       org_name: orgName,
       org_logo_url: orgLogo,
       sponsors_data: sponsors,
-      useful_info: usefulInfo
+      useful_info: usefulInfo,
+      // Mise à jour des champs de formulaire
+      badge_settings: badgeSettings,
+      form_config: customFields
     }).eq('id', event.id)
     
     if (!error) {
         alert(lang === 'fr' ? "Configuration sauvegardée !" : "Configuration saved!")
         router.refresh()
+    } else {
+        alert(error.message)
     }
     setLoading(false)
   }
@@ -54,7 +74,6 @@ export default function CommsTab({ event, participants, supabase, router, lang, 
     if (!confirm(lang === 'fr' ? "Lancer l'envoi groupé ?" : "Start bulk sending?")) return
     setSendingProgress('sending'); setLoading(true)
     
-    // On envoie aussi le 'badgeFormat' à l'API pour que le Python génère le bon PDF
     const res = await fetch("/api/events/send-badges", {
       method: "POST",
       body: JSON.stringify({ 
@@ -62,7 +81,7 @@ export default function CommsTab({ event, participants, supabase, router, lang, 
         orgLogo, 
         sponsors, 
         lang,
-        format: badgeFormat // TRANSMISSION DU FORMAT
+        format: badgeFormat
       })
     })
     if (res.ok) setSendingProgress('done')
@@ -73,62 +92,40 @@ export default function CommsTab({ event, participants, supabase, router, lang, 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in slide-in-from-right-8 duration-500 text-gray-900 dark:text-white">
       
-      {/* COLONNE GAUCHE : AUTOMATISATION & FORMAT */}
+      {/* COLONNE GAUCHE : AUTOMATISATION, FORMAT & FORMULAIRE */}
       <div className="space-y-6">
         
-        {/* 1. CHOIX DU FORMAT (NOUVEAU) */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[3.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-            <h3 className="text-xl font-black mb-6 flex items-center gap-3">
-                <Layout className="text-indigo-600" /> {t.label_badge_format}
-            </h3>
-            <div className="grid grid-cols-1 gap-3">
-                {[
-                    { id: 'A6', label: t.opt_a6, desc: t.format_desc_a6, icon: FileText },
-                    { id: 'A4', label: t.opt_a4, desc: t.format_desc_a4, icon: CalendarRange }
-                ].map((f) => (
-                    <button 
-                        key={f.id}
-                        onClick={() => setBadgeFormat(f.id)}
-                        className={`flex items-center justify-between p-5 rounded-[2rem] border-2 transition-all bg-transparent cursor-pointer ${badgeFormat === f.id ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20' : 'border-gray-50 dark:border-slate-800 opacity-60'}`}
-                    >
-                        <div className="flex items-center gap-4 text-left">
-                            <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm text-indigo-600"><f.icon size={20} /></div>
-                            <div>
-                                <p className="font-bold text-sm leading-none mb-1">{f.label}</p>
-                                <p className="text-[10px] text-gray-400 font-medium">{f.desc}</p>
-                            </div>
-                        </div>
-                        {badgeFormat === f.id && <CheckCircle2 size={18} className="text-indigo-600" />}
-                    </button>
-                ))}
-            </div>
-        </div>
+        {/* 1. CONFIGURATION DU FORMULAIRE (NOUVEAU) */}
+        <FormBuilder  lang ={lang} t={t} 
+  askCompany={askCompany} setAskCompany={setAskCompany}
+  askProRole={askProRole} setAskProRole={setAskProRole}
+  customFields={customFields} setCustomFields ={setCustomFields}/>
 
-        {/* 2. STRATÉGIE D'ENVOI */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[3.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
+        {/* 2. CHOIX DU FORMAT BADGE */}
+        <BadgeBuilder 
+    t={t}
+    badgeFormat={badgeFormat}
+    setBadgeFormat={setBadgeFormat}
+    badgeSettings={badgeSettings}
+    setBadgeSettings={setBadgeSettings}
+    themeColor={themeColor}
+    setThemeColor={setThemeColor}
+/>
+
+        {/* 3. STRATÉGIE D'ENVOI */}
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-sm">
           <h3 className="text-xl font-black mb-6 flex items-center gap-3"><Zap className="text-indigo-600" /> {t.automation_title}</h3>
           <div className="space-y-3">
             {[{ id: 'manual', label: t.opt_manual, icon: MousePointer2 }, { id: 'immediate', label: t.opt_immediate, icon: Zap }, { id: 'scheduled', label: t.opt_scheduled, icon: Clock }].map((opt) => (
               <button key={opt.id} onClick={() => setAutomationType(opt.id)} className={`w-full flex items-center justify-between p-5 rounded-[1.5rem] border-2 transition-all bg-transparent cursor-pointer ${automationType === opt.id ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20' : 'border-gray-50 dark:border-slate-800 opacity-60'}`}>
                 <div className="flex items-center gap-4">
-                  <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm"><opt.icon size={20} /></div>
+                  <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm text-gray-400"><opt.icon size={20} /></div>
                   <span className="font-bold text-sm">{opt.label}</span>
                 </div>
                 {automationType === opt.id && <CheckCircle2 size={18} className="text-indigo-600" />}
               </button>
             ))}
           </div>
-        </div>
-
-        {/* 3. ENVOI MASSIF */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-          <h3 className="text-xl font-black mb-4 flex items-center gap-3 text-gray-900 dark:text-white"><Send className="text-indigo-600" /> {t.bulk_badge_title}</h3>
-          <p className="text-sm text-gray-500 dark:text-slate-400 font-medium mb-8 leading-relaxed">{t.bulk_badge_desc}</p>
-          <button onClick={sendAllBadges} disabled={loading || participants.length === 0} className="w-full py-5 bg-indigo-600 text-white rounded-[2rem] font-black shadow-xl hover:bg-indigo-700 border-none cursor-pointer disabled:opacity-50 active:scale-95 transition-all">
-            {loading && sendingProgress === 'sending' ? <Loader2 className="animate-spin" /> : <Send size={20} />} 
-            {t.btn_send_all.replace('{n}', participants.length)}
-          </button>
-          {sendingProgress === 'done' && <p className="text-center text-green-500 font-bold mt-4 animate-bounce">✓ Emails envoyés !</p>}
         </div>
       </div>
 
@@ -174,12 +171,29 @@ export default function CommsTab({ event, participants, supabase, router, lang, 
         {/* INFOS UTILES */}
         <div className="space-y-3">
           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2"><Info size={14} /> {t.label_useful_info}</label>
-          <textarea value={usefulInfo} onChange={(e) => setUsefulInfo(e.target.value)} placeholder="WiFi, Parking, Accès..." rows={4} className="w-full p-5 bg-gray-50 dark:bg-slate-800 border-none rounded-3xl font-medium dark:text-white leading-relaxed focus:ring-2 focus:ring-indigo-500" />
+          <textarea value={usefulInfo} onChange={(e) => setUsefulInfo(e.target.value)} placeholder="WiFi, Parking, Accès..." rows={4} className="w-full p-5 bg-gray-50 dark:bg-slate-800 border-none rounded-3xl font-medium dark:text-white leading-relaxed focus:ring-2 focus:ring-indigo-500 transition-colors" />
         </div>
 
-        <button onClick={handleSaveBranding} disabled={loading} className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-[2rem] font-black shadow-xl hover:shadow-indigo-500/50 transition-all border-none cursor-pointer uppercase text-xs tracking-widest active:scale-95">
+        {/* BOUTON DE SAUVEGARDE GLOBAL */}
+        <button 
+          onClick={handleSaveSettings} 
+          disabled={loading} 
+          className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-[2rem] font-black shadow-xl hover:shadow-indigo-500/50 transition-all border-none cursor-pointer uppercase text-xs tracking-widest active:scale-95 disabled:opacity-50"
+        >
           {loading ? <Loader2 className="animate-spin mx-auto" /> : t.btn_save_branding}
         </button>
+
+        {/* BOUTON ENVOI MASSIF - Déplacé ici pour l'équilibre visuel */}
+        <div className="pt-6 border-t border-gray-50 dark:border-slate-800">
+            <button 
+              onClick={sendAllBadges} 
+              disabled={loading || participants.length === 0} 
+              className="w-full py-4 bg-white dark:bg-slate-800 text-indigo-600 border border-indigo-100 dark:border-indigo-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all flex items-center justify-center gap-3 disabled:opacity-30 cursor-pointer"
+            >
+              {loading && sendingProgress === 'sending' ? <Loader2 className="animate-spin" /> : <Send size={18} />} 
+              {t.btn_send_all.replace('{n}', participants.length)}
+            </button>
+        </div>
       </div>
     </div>
   )

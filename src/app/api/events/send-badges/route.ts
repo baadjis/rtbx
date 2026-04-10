@@ -2,30 +2,40 @@
 import { createClient } from '@/utils/supabase/server';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-// Import du template professionnel
 import { getBadgeDeliveryEmail } from '@/utils/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { eventId, orgLogo, sponsors, lang } = await request.json();
+    const { eventId, lang } = await request.json();
     const supabase = await createClient();
 
-    // 1. Récupérer les infos de l'événement et des participants
-    const { data: event } = await supabase.from('events').select('*').eq('id', eventId).single();
-    const { data: participants } = await supabase.from('event_registrations').select('*').eq('event_id', eventId);
+    // 1. Récupérer la configuration complète de l'événement (Branding & Design)
+    const { data: event } = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', eventId)
+      .single();
 
-    if (!event || !participants) {
+    // 2. Récupérer les badges liés aux participants (Jointure avec registrations)
+    const { data: badges } = await supabase
+      .from('event_badges')
+      .select('*, event_registrations(*)')
+      .eq('event_id', eventId);
+
+    if (!event || !badges) {
       return NextResponse.json({ error: "Data not found" }, { status: 404 });
     }
 
     const results = { sent: 0, failed: 0 };
 
-    // 2. Boucle d'envoi massif
-    for (const p of participants) {
+    // 3. Boucle d'envoi massif
+    for (const badge of badges) {
+      const participant = badge.event_registrations;
+      
       try {
-        // A. Appel à l'API Python pour générer le Badge PDF (Calcul lourd déporté)
+        // A. Appel à l'API Python avec les réglages de design du BadgeBuilder
         const pythonRes = await fetch("https://baadjis-utilitybox.hf.space/api/gen-event-badge", {
           method: "POST",
           headers: { 
@@ -33,13 +43,18 @@ export async function POST(request: Request) {
             "X-API-KEY": process.env.NEXT_PUBLIC_RTBX_API_SECRET_KEY || "" 
           },
           body: JSON.stringify({
-            full_name: p.full_name,
-            company: p.company || "",
-            role: p.role || "participant",
-            ticket_code: p.ticket_code,
+            full_name: participant.full_name,
+            company: participant.company_name || "",
+            role: badge.access_level || "participant",
+            ticket_code: badge.ticket_code,
             event_name: event.title,
-            org_logo: orgLogo,
-            sponsors: sponsors
+            org_logo: event.org_logo_url,
+            sponsors: event.sponsors_data,
+            // Nouveaux paramètres du BadgeBuilder :
+            format: event.badge_format || 'A6',
+            theme_color: event.theme_color,
+            badge_settings: event.badge_settings,
+            useful_info: event.useful_info
           })
         });
 
@@ -47,33 +62,33 @@ export async function POST(request: Request) {
         
         const { pdf_base64 } = await pythonRes.json();
 
-        // B. Génération du contenu HTML via le template "Splendide"
+        // B. Génération du contenu HTML de l'email
         const htmlContent = getBadgeDeliveryEmail({
-            userName: p.full_name,
+            userName: participant.full_name,
             eventTitle: event.title,
-            ticketCode: p.ticket_code
+            ticketCode: badge.ticket_code
         }, lang);
 
-        // C. Envoi via Resend (Domaine rtbx.space)
+        // C. Envoi via Resend (Domaine vérifié rtbx.space)
         await resend.emails.send({
-          from: 'RetailBox <contact@rtbx.space>', 
-          to: p.email,
+          from: 'RetailBox Events <events@rtbx.space>', 
+          to: participant.email,
           subject: lang === 'fr' ? `Votre Badge : ${event.title}` : `Your Badge: ${event.title}`,
           html: htmlContent,
           attachments: [
             {
-              filename: `badge-${p.ticket_code}.pdf`,
+              filename: `badge-${badge.ticket_code}.pdf`,
               content: pdf_base64,
             },
           ],
         });
 
-        // D. Mise à jour du statut dans Supabase pour le suivi
-        await supabase.from('event_registrations').update({ badge_sent: true }).eq('id', p.id);
+        // D. Mise à jour du statut du badge
+        await supabase.from('event_badges').update({ badge_sent: true }).eq('id', badge.id);
         
         results.sent++;
       } catch (err) {
-        console.error(`Erreur d'envoi pour ${p.email}:`, err);
+        console.error(`Erreur d'envoi pour ${participant?.email}:`, err);
         results.failed++;
       }
     }
