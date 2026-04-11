@@ -122,6 +122,9 @@ export const Data = {
   field_type_number: "Nombre",
   field_type_select: "Choix multiple",
   label_required: "Obligatoire",
+  qr_kit_title: "QR Code de Diffusion",
+  qr_kit_desc: "Générez le QR Code officiel de votre événement. Idéal pour vos affiches et flyers avec suivi des scans (Origin: Flyer).",
+  btn_dl_qr_hd: "⬇️ Télécharger le QR HD",
 
   
   
@@ -250,6 +253,9 @@ export const Data = {
   field_type_number: "Number",
   field_type_select: "Multiple choice",
   label_required: "Required",
+  qr_kit_title: "Distribution QR Code",
+  qr_kit_desc: "Generate the official QR Code for your event. Perfect for posters and flyers with scan tracking (Origin: Flyer).",
+  btn_dl_qr_hd: "⬇️ Download HD QR",
  
   }
 };
