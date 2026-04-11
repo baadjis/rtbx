@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import FormBuilder from './FormBuilder'
 import BadgeBuilder from '@/components/shared/BadgeBuilder'
+import EventQRCode from './EventQRCodeBuilder'
 
 export default function CommsTab({ event, participants, supabase, router, lang, t }: any) {
   const [loading, setLoading] = useState(false)
@@ -71,29 +72,60 @@ export default function CommsTab({ event, participants, supabase, router, lang, 
   }
 
   const sendAllBadges = async () => {
-    if (!confirm(lang === 'fr' ? "Lancer l'envoi groupé ?" : "Start bulk sending?")) return
-    setSendingProgress('sending'); setLoading(true)
+    // 1. Demande de confirmation
+    const confirmMsg = lang === 'fr' 
+      ? "Lancer l'envoi groupé des badges à tous les inscrits ?" 
+      : "Start bulk badge sending to all participants?";
     
-    const res = await fetch("/api/events/send-badges", {
-      method: "POST",
-      body: JSON.stringify({ 
-        eventId: event.id, 
-        orgLogo, 
-        sponsors, 
-        lang,
-        format: badgeFormat
-      })
-    })
-    if (res.ok) setSendingProgress('done')
-    setLoading(false)
-    setTimeout(() => setSendingProgress(null), 3000)
-  }
+    if (!confirm(confirmMsg)) return;
+
+    setSendingProgress('sending');
+    setLoading(true);
+
+    try {
+      // 2. Appel de l'API avec le minimum de données
+      const res = await fetch("/api/events/send-badges", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          eventId: event.id, 
+          lang: lang 
+          // Note : orgLogo, sponsors et format ne sont plus nécessaires ici,
+          // car l'API les récupère directement en base de données.
+        })
+      });
+
+      if (res.ok) {
+        setSendingProgress('done');
+        // On rafraîchit les données pour voir les statuts "badge_sent" à jour
+        router.refresh();
+      } else {
+        const errorData = await res.json();
+        alert(lang === 'fr' ? `Erreur : ${errorData.error}` : `Error: ${errorData.error}`);
+      }
+    } catch (err) {
+      console.error("Bulk sending error:", err);
+      alert(lang === 'fr' ? "Une erreur technique est survenue lors de l'envoi." : "A technical error occurred during sending.");
+    } finally {
+      setLoading(false);
+      // On masque le message de succès après 3 secondes
+      setTimeout(() => setSendingProgress(null), 3000);
+    }
+};
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in slide-in-from-right-8 duration-500 text-gray-900 dark:text-white">
       
       {/* COLONNE GAUCHE : AUTOMATISATION, FORMAT & FORMULAIRE */}
       <div className="space-y-6">
+
+        <EventQRCode 
+          eventId={event.id}
+          themeColor={themeColor}
+          logo={orgLogo}
+          t={t}
+          lang={lang}
+        />
         
         {/* 1. CONFIGURATION DU FORMULAIRE (NOUVEAU) */}
         <FormBuilder  lang ={lang} t={t} 

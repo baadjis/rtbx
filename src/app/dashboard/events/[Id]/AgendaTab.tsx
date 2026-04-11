@@ -6,7 +6,7 @@ export default function AgendaTab({ event, agenda, supabase, router, lang, t }: 
   const [loading, setLoading] = useState(false)
   const [newSession, setNewSession] = useState({ label: '', room_name: '', speakers: '', start: '', end: '' })
 
-  const handleAddSession = async (e: React.FormEvent) => {
+  const handleAddSession = async (e: React.SubmitEvent) => {
     e.preventDefault()
     setLoading(true)
     const { error } = await supabase.from('event_agenda').insert([{
