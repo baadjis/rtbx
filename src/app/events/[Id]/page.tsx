@@ -6,8 +6,16 @@ import RegistrationForm from './RegistrationForm';
 import { Calendar, MapPin, Clock, ShieldCheck, User } from 'lucide-react';
 import { Data } from '../data';
 
-export default async function PublicEventPage({ params }: { params: Promise<{ Id: string }> }) {
+export default async function PublicEventPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ Id: string }>,
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
+}) {
   const { Id } = await params;
+  const sParams = await searchParams; // On attend les paramètres de recherche
+  const origin = (sParams.origin as string) || 'direct';
   const supabase = await createClient();
   
   // On extrait l'ID numérique si l'URL est rtbx.space/events/123-mon-titre
@@ -73,16 +81,17 @@ export default async function PublicEventPage({ params }: { params: Promise<{ Id
           {/* REGISTRATION FORM */}
           <div className="lg:sticky lg:top-32 h-fit">
             
-<RegistrationForm 
-  eventId={event.id} 
-  lang={lang} 
-  t={t} 
-  eventConfig={{
-    ask_company: event.ask_company,
-    ask_professional_role: event.ask_professional_role,
-    form_config: event.form_config
-  }} 
-/>
+ <RegistrationForm 
+              eventId={event.id} 
+              lang={lang} 
+              t={t} 
+              origin={origin}
+              eventConfig={{
+                ask_company: event.ask_company,
+                ask_professional_role: event.ask_professional_role,
+                form_config: event.form_config
+              }} 
+            />
           </div>
 
         </div>
