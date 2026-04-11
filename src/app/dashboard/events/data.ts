@@ -57,6 +57,9 @@ export const Data = {
   tab_overview: "Vue d'ensemble",
   tab_agenda: "Programme / Agenda",
   tab_invites: "Invitations VIP",
+  tab_registration: "Inscription" ,
+
+tab_badges: "Badges" ,
   label_session: "Titre de la session",
   label_room: "Salle / Showroom",
   label_speakers: "Intervenants (séparés par des virgules)",
@@ -108,7 +111,9 @@ export const Data = {
   label_show_role: "Afficher le Rôle",
   label_color_theme: "Couleur d'accentuation",
   theme_explain:"Le thème sera appliqué au bandeau de rôle et aux bordures du PDF.",
-  
+  pdf_font_tip: "Le rendu final en PDF utilisera des polices haute définition pour une impression parfaite.",
+
+
   form_settings_title: "Configuration du Formulaire",
   form_settings_desc: "Choisissez les informations que vos participants doivent saisir lors de l'inscription.",
   label_ask_company: "Demander le nom de l'entreprise",
@@ -189,6 +194,9 @@ export const Data = {
    tab_overview: "Overview",
   tab_agenda: "Agenda / Schedule",
   tab_invites: "VIP Invitations",
+  tab_registration: "Registration",
+
+  tab_badges: "Badges",
   label_session: "Session Title",
   label_room: "Room / Showroom",
   label_speakers: "Speakers (comma separated)",
@@ -238,7 +246,7 @@ export const Data = {
   label_show_role: "Show Role / Title",
   label_color_theme: "Accent Color",
   theme_explain:"Theme will be applied on pdf border",
-
+  pdf_font_tip: "The final PDF output uses high-definition fonts to ensure a perfect, professional print.",
 
 
   form_settings_title: "Form Configuration",
