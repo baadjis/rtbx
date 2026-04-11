@@ -27,7 +27,6 @@ export async function POST(request: Request) {
         start_date: body.start_date,
         end_date: body.end_date || null,
         max_capacity: body.max_capacity ? parseInt(body.max_capacity) : null,
-        is_published: true // On peut aussi le mettre à false par défaut si on veut valider l'agenda avant
       }])
       .select('id')
       .single();
