@@ -5,7 +5,8 @@ import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 import { 
   LayoutDashboard, CalendarRange, FileText, 
-  ImageIcon, Send, UserPlus, Globe, Lock, Loader2 
+  ImageIcon, Send, UserPlus, Globe, Lock, Loader2, 
+  Settings2
 } from 'lucide-react'
 
 // Import des sous-composants
@@ -15,6 +16,7 @@ import RegistrationTab from './RegistrationTab'
 import BadgesTab from './BadgesTab'
 import InvitesTab from './InvitesTab'
 import CommsTab from './CommsTab'
+import Link from 'next/link'
 
 export default function EventAdminTabs({ lang, event, agenda, participants, invitations, t }: any) {
   const [activeTab, setActiveTab] = useState<'overview' | 'agenda' | 'registration' | 'badges' | 'invites' | 'comms'>('overview')
@@ -97,19 +99,43 @@ export default function EventAdminTabs({ lang, event, agenda, participants, invi
     <div className="space-y-8 animate-in fade-in duration-500 pb-24">
       
       {/* HEADER DE PUBLICATION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
+      {/* --- HEADER : PUBLICATION & ÉDITION --- */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-colors">
         <div className="flex items-center gap-4">
           <div className={`p-3 rounded-2xl ${event.is_published ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
             {event.is_published ? <Globe size={24} /> : <Lock size={24} />}
           </div>
           <div>
             <h2 className="text-xl font-black dark:text-white leading-none">{event.title}</h2>
-            <p className="text-[10px] font-bold text-gray-400 uppercase mt-2 tracking-widest">{event.is_published ? t.status_live : t.status_draft}</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase mt-2 tracking-widest">
+                {event.is_published ? t.status_live : t.status_draft}
+            </p>
           </div>
         </div>
-        <button onClick={togglePublish} disabled={loading} className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${event.is_published ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' : 'bg-green-600 text-white hover:bg-green-700'}`}>
-          {loading ? <Loader2 className="animate-spin" /> : (event.is_published ? t.btn_unpublish : t.btn_publish)}
-        </button>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          {/* BOUTON MODIFIER (Lien vers la page edit) */}
+          <Link 
+            href={`/dashboard/events/${event.id}/edit`}
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 no-underline border-none"
+          >
+            <Settings2 size={14} />
+            {lang === 'fr' ? 'Modifier' : 'Edit'}
+          </Link>
+
+          {/* BOUTON PUBLIER / BROUILLON */}
+          <button 
+            onClick={togglePublish} 
+            disabled={loading} 
+            className={`flex-1 md:flex-none px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${
+              event.is_published 
+              ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' 
+              : 'bg-green-600 text-white hover:bg-green-700'
+            }`}
+          >
+            {loading ? <Loader2 className="animate-spin" /> : (event.is_published ? t.btn_unpublish : t.btn_publish)}
+          </button>
+        </div>
       </div>
 
       {/* TABS SWITCHER (6 ONGLET) */}
