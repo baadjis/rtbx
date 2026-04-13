@@ -28,7 +28,7 @@ export default function EditEventForm({ lang, event }: { lang: 'fr' | 'en', even
     return date.toISOString().slice(0, 16)
   }
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdate = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     

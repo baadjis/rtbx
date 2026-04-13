@@ -21,6 +21,7 @@ export default function AgendaTab({ event, agenda, supabase, router, lang, t }: 
       setNewSession({ label: '', room_name: '', speakers: '', start: '', end: '' })
       router.refresh()
     }
+    console.log(error)
     setLoading(false)
   }
 
