@@ -3,37 +3,49 @@
 import { useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { QRCodeCanvas } from 'qrcode.react'
-import { Loader2, CheckCircle2, Send, Printer, Building2, UserSquare2, Info } from 'lucide-react'
+import { 
+  Loader2, CheckCircle2, Send, Printer, 
+  Building2, UserSquare2, Info, ShieldCheck, 
+  ChevronRight, ExternalLink 
+} from 'lucide-react'
+import Link from 'next/link'
 
-// Props : on ajoute 'eventConfig' qui contient les flags et la config JSON
 export default function RegistrationForm({ eventId, lang, t, eventConfig, origin }: { 
   eventId: string, 
   lang: string, 
   t: any,
-  origin: string, // On reçoit l'origine en prop
+  origin: string,
   eventConfig: any
 }) {
   const [loading, setLoading] = useState(false)
   const [ticket, setTicket] = useState<string | null>(null)
+  
+  // États pour les consentements
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [discoveryOptIn, setDiscoveryOptIn] = useState(false)
+  const [merchantOptIn, setMerchantOptIn] = useState(false)
 
   const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!acceptedTerms) return; // Sécurité supplémentaire
+
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     
-    // 1. Collecter les données standard
-   const payload: any = {
+    const payload: any = {
       eventId,
       name: formData.get('name'),
       email: formData.get('email'),
       lang,
-      origin, // ON ENVOIE L'ORIGINE À L'API
+      origin,
       company_name: formData.get('company_name') || null,
       professional_role: formData.get('professional_role') || null,
-      custom_data: {}
+      custom_data: {},
+      // Envoi des consentements à l'API
+      opt_in_discovery: discoveryOptIn,
+      opt_in_merchant: merchantOptIn
     };
 
-    // 2. Collecter les champs dynamiques du FormBuilder
     if (eventConfig.form_config) {
       eventConfig.form_config.forEach((field: any) => {
         payload.custom_data[field.label] = formData.get(`custom_${field.id}`);
@@ -48,7 +60,6 @@ export default function RegistrationForm({ eventId, lang, t, eventConfig, origin
       });
 
       const result = await response.json();
-
       if (result.success) {
         setTicket(result.ticketCode);
       } else {
@@ -97,7 +108,7 @@ export default function RegistrationForm({ eventId, lang, t, eventConfig, origin
             <input name="email" type="email" required placeholder="nom@exemple.com" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 transition-colors" />
         </div>
 
-        {/* --- CHAMPS OPTIONNELS STANDARDS --- */}
+        {/* --- CHAMPS OPTIONNELS --- */}
         {eventConfig.ask_company && (
           <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
             <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
@@ -116,7 +127,7 @@ export default function RegistrationForm({ eventId, lang, t, eventConfig, origin
           </div>
         )}
 
-        {/* --- CHAMPS DYNAMIQUES (JSON CONFIG) --- */}
+        {/* --- CHAMPS DYNAMIQUES --- */}
         {eventConfig.form_config && eventConfig.form_config.map((field: any) => (
           <div key={field.id} className="space-y-2 animate-in fade-in slide-in-from-top-2">
             <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2">
@@ -132,15 +143,72 @@ export default function RegistrationForm({ eventId, lang, t, eventConfig, origin
           </div>
         ))}
 
+        {/* --- SECTION LÉGALE & CONSENTEMENTS --- */}
+        <div className="pt-6 space-y-4 border-t border-gray-50 dark:border-slate-800 mt-6">
+            
+            {/* 1. Terms & Privacy (Obligatoire) */}
+            <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-1">
+                    <input 
+                        type="checkbox" required checked={acceptedTerms}
+                        onChange={(e) => setAcceptedTerms(e.target.checked)}
+                        className="peer h-5 w-5 appearance-none rounded-md border-2 border-gray-200 dark:border-slate-700 checked:bg-indigo-600 checked:border-indigo-600 transition-all cursor-pointer" 
+                    />
+                    <CheckCircle2 size={14} className="absolute top-0.5 left-0.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                </div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium leading-relaxed">
+                      {t.legal_accept}{' '}
+                    <Link href="/terms" className="text-indigo-600 font-bold hover:underline">Conditions</Link>{' '}
+                       {t.legal_and}{' '}
+                    <Link href="/privacy" className="text-indigo-600 font-bold hover:underline">Politique de Confidentialité</Link>.
+                </span>
+            </label>
+
+            {/* 2. Discovery Pool (Uniquement si Public) */}
+            {eventConfig.visibility === 'public' && (
+                <label className="flex items-start gap-3 cursor-pointer group p-3 bg-indigo-50/30 dark:bg-indigo-900/10 rounded-xl border border-indigo-50 dark:border-indigo-900/20">
+                    <div className="relative mt-1">
+                        <input 
+                            type="checkbox" checked={discoveryOptIn}
+                            onChange={(e) => setDiscoveryOptIn(e.target.checked)}
+                            className="peer h-5 w-5 appearance-none rounded-md border-2 border-indigo-200 dark:border-indigo-800 checked:bg-indigo-600 checked:border-indigo-600 transition-all cursor-pointer" 
+                        />
+                        <CheckCircle2 size={14} className="absolute top-0.5 left-0.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                    </div>
+                    <span className="text-xs text-indigo-900 dark:text-indigo-300 font-bold leading-snug">
+                        {t.discovery_opt_in}
+                    </span>
+                </label>
+            )}
+
+            {/* 3. Merchant Opt-in (Toujours proposé) */}
+            <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-1">
+                    <input 
+                        type="checkbox" checked={merchantOptIn}
+                        onChange={(e) => setMerchantOptIn(e.target.checked)}
+                        className="peer h-5 w-5 appearance-none rounded-md border-2 border-gray-200 dark:border-slate-700 checked:bg-indigo-600 checked:border-indigo-600 transition-all cursor-pointer" 
+                    />
+                    <CheckCircle2 size={14} className="absolute top-0.5 left-0.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                </div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 font-medium leading-relaxed">
+                      {t.merchant_opt_in}
+                </span>
+            </label>
+        </div>
+
         <div className="pt-4">
-            <button disabled={loading} className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 border-none cursor-pointer">
+            <button 
+                disabled={loading || !acceptedTerms} 
+                className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-30 border-none cursor-pointer active:scale-95"
+            >
             {loading ? <Loader2 className="animate-spin" /> : <Send size={18} />}
             {t.btn_register}
             </button>
         </div>
 
-        <p className="text-[10px] text-gray-400 font-medium text-center italic mt-4">
-            <Info size={10} className="inline mr-1" /> {t.security_note}
+        <p className="text-[10px] text-gray-400 font-medium text-center italic mt-4 flex items-center justify-center gap-1">
+            <ShieldCheck size={12} /> {t.security_note}
         </p>
       </form>
     </div>
