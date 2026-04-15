@@ -55,10 +55,10 @@ export default async function FormAdminPage({ params }: { params: Promise<{ id: 
   const avgScore = scoreCount > 0 ? (totalScore / scoreCount).toFixed(1) : '--';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-      <Header />
+    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
       
-      <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10 w-full">
+      
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
         
         {/* HEADER & ACTIONS */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">

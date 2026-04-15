@@ -24,10 +24,9 @@ export default async function FormsDashboard() {
     .order('created_at', { ascending: false });
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
-      <Header />
+    
       
-      <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10 w-full">
+      <div className="p-4 md:p-10 space-y-10 transition-colors duration-300">
         
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
@@ -87,9 +86,10 @@ export default async function FormsDashboard() {
                 </div>
             )}
         </div>
-      </main>
+       
+      </div>
 
-      <Footer />
-    </div>
+     
+    
   );
 }
