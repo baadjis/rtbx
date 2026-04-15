@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
@@ -11,7 +12,8 @@ import {
   BarChart3, Star, ArrowUpRight,
   Store, Utensils, Scissors, ShoppingBag, Sparkles,
   ChevronRight, Wifi, ArrowRight, MapPin, Award, Clock,
-  Ticket, LayoutDashboard
+  Ticket, LayoutDashboard,
+  FileText
 } from 'lucide-react';
 
 export default async function DashboardPage() {
@@ -24,7 +26,7 @@ export default async function DashboardPage() {
   const t = DICT[lang];
 
   // 1. Récupération des données en parallèle (Optimisation Performance)
-  const [linksResponse, businessesResponse, pointsResponse, myEventsResponse, attendingEventsResponse] = await Promise.all([
+  const [linksResponse, businessesResponse, pointsResponse, myEventsResponse, attendingEventsResponse,formsRes] = await Promise.all([
     supabase.from('links').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('businesses').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('loyalty_points').select('*, businesses(name, business_type)').eq('user_id', user.id).order('updated_at', { ascending: false }),
@@ -38,13 +40,19 @@ export default async function DashboardPage() {
     // Pour les tickets (participation)
     supabase.from('event_registrations')
       .select('*, events(*)')
-      .eq('user_id', user.id)
+      .eq('user_id', user.id),
+
+    //forms 
+     supabase.from('forms').select('id').eq('user_id', user.id)
 ]);
   const links = linksResponse.data || [];
   const businesses = businessesResponse.data || [];
   const points = pointsResponse.data || [];
   const myEvents = myEventsResponse.data || [];
   const attending = attendingEventsResponse.data || [];
+  const  forms=formsRes.data || []
+  const formsCount = forms.length || 0;
+
 
 console.log("Erreur MyEvents:", myEventsResponse.error);
 console.log("Données MyEvents:", myEventsResponse.data);
@@ -94,45 +102,59 @@ console.log("Données MyEvents:", myEventsResponse.data);
         </Link>
       </div>
 
-      {/* --- SECTION 2 : KPI GRID --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center">
-                <MousePointer2 className="w-6 h-6" />
-            </div>
-            <div className="text-green-500 font-black text-xs flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-lg">
-                <ArrowUpRight size={12} /> Live
-            </div>
-          </div>
-          <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.total_clicks}</p>
-          <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{totalClicks}</h3>
-        </div>
-        
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-          <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center mb-4">
-            <Link2 className="w-6 h-6" />
-          </div>
-          <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.active_links}</p>
-          <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{links.length}</h3>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-          <div className="w-12 h-12 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-2xl flex items-center justify-center mb-4">
-            <Award className="w-6 h-6 text-yellow-500 fill-current" />
-          </div>
-          <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Mes Points' : 'My Points'}</p>
-          <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{points.length}</h3>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-          <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4">
-            <Calendar className="w-6 h-6" />
-          </div>
-          <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Événements' : 'Events'}</p>
-          <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{myEvents.length + attending.length}</h3>
-        </div>
+      {/* --- SECTION 2 : KPI GRID (AGRÉGATION) --- */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+  
+  {/* 1. Total Clics (Bleu) */}
+  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all group">
+    <div className="flex justify-between items-start mb-4">
+      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <MousePointer2 className="w-6 h-6" />
       </div>
+      <div className="text-green-500 font-black text-xs flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-lg">
+          <ArrowUpRight size={12} /> Live
+      </div>
+    </div>
+    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.total_clicks}</p>
+    <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{totalClicks}</h3>
+  </div>
+  
+  {/* 2. Liens Actifs (Violet) */}
+  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all group">
+    <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+      <Link2 className="w-6 h-6" />
+    </div>
+    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.active_links}</p>
+    <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{links.length}</h3>
+  </div>
+
+  {/* 3. NOUVEAU : Formulaires & Sondages (Rose) */}
+  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all group border-rose-100 dark:border-rose-900/20">
+    <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+      <FileText className="w-6 h-6" />
+    </div>
+    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Sondages' : 'Surveys'}</p>
+    <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{formsCount}</h3>
+  </div>
+
+  {/* 4. Mes Points (Jaune) */}
+  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all group">
+    <div className="w-12 h-12 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+      <Award className="w-6 h-6 text-yellow-500 fill-current" />
+    </div>
+    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Mes Points' : 'My Points'}</p>
+    <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{points.length}</h3>
+  </div>
+
+  {/* 5. Événements (Émeraude) */}
+  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all group">
+    <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+      <Calendar className="w-6 h-6" />
+    </div>
+    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Événements' : 'Events'}</p>
+    <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{myEvents.length + attending.length}</h3>
+  </div>
+</div>
 
       {/* --- SECTION 3 : CONTENU PRINCIPAL --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -235,7 +257,8 @@ console.log("Données MyEvents:", myEventsResponse.data);
                     </Link>
                 </div>
             </div>
-{/* MES COMMERCES */}
+            
+            {/* MES COMMERCES */}
             <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col h-fit lg:sticky lg:top-10">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
@@ -281,6 +304,63 @@ console.log("Données MyEvents:", myEventsResponse.data);
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Retail Box • {lang.toUpperCase()}</p>
                 </div>
             </div>
+
+            {/* 3. MES SONDAGES & FORMULAIRES (BETA) */}
+<div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
+    <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                {lang === 'fr' ? 'Sondages' : 'Surveys'}
+            </h2>
+            <span className="text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded font-black uppercase tracking-tighter">BETA</span>
+        </div>
+        <Link href="/dashboard/forms" className="text-rose-600 dark:text-rose-400 font-black text-[10px] uppercase tracking-widest hover:underline no-underline">
+            {lang === 'fr' ? 'Voir tout' : 'View all'}
+        </Link>
+    </div>
+    
+    <div className="space-y-4 flex-1">
+        {forms && forms.length > 0 ? (
+            forms.slice(0, 2).map((form:any) => (
+                <Link 
+                    key={form.id} 
+                    href={`/dashboard/forms/${form.id}`} 
+                    className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-[2rem] border border-gray-100 dark:border-slate-800 block no-underline group hover:border-rose-500 transition-all duration-300"
+                >
+                    <h4 className="font-bold text-gray-900 dark:text-white truncate mb-1 group-hover:text-rose-600 transition-colors">
+                        {form.title}
+                    </h4>
+                    <div className="flex justify-between items-center mt-3">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                {form.form_responses[0]?.count || 0} {lang === 'fr' ? 'réponses' : 'responses'}
+                            </span>
+                        </div>
+                        <div className="w-8 h-8 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-rose-600 transition-colors">
+                            <ArrowRight size={14} className="text-gray-400 group-hover:text-white" />
+                        </div>
+                    </div>
+                </Link>
+            ))
+        ) : (
+            <div className="py-6 text-center">
+                <p className="text-sm text-gray-400 italic font-medium">
+                    {lang === 'fr' ? 'Aucun questionnaire actif.' : 'No active forms.'}
+                </p>
+            </div>
+        )}
+
+        {/* BOUTON CRÉER UN NOUVEAU FORMULAIRE */}
+        <Link 
+            href="/dashboard/forms/new" 
+            className="w-full py-4 mt-2 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-gray-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900/50 transition-all no-underline font-bold text-sm bg-transparent"
+        >
+            <Plus size={16} /> 
+            {lang === 'fr' ? 'Créer un questionnaire' : 'Create a form'}
+        </Link>
+    </div>
+</div>
         </div>
 
       </div>
