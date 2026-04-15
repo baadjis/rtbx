@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
@@ -63,7 +64,7 @@ export default async function FormAdminPage({ params }: { params: Promise<{ id: 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div className="space-y-2">
                 <Link href="/dashboard/forms" className="flex items-center gap-2 text-gray-400 font-bold text-sm hover:text-indigo-600 no-underline transition-colors">
-                    <ArrowLeft size={16} /> {t.back_home}
+                    <ArrowLeft size={16} /> {t.back_to_forms}
                 </Link>
                 <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
                     {form.title}
