@@ -300,9 +300,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
                     </Link>
                 </div>
                 
-                <div className="mt-8 pt-6 border-t border-gray-50 dark:border-slate-800 text-center">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Retail Box • {lang.toUpperCase()}</p>
-                </div>
+              
             </div>
 
             {/* 3. MES SONDAGES & FORMULAIRES (BETA) */}
@@ -364,6 +362,9 @@ console.log("Données MyEvents:", myEventsResponse.data);
         </div>
 
       </div>
+        <div className="mt-8 pt-6 border-t border-gray-50 dark:border-slate-800 text-center">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Retail Box • {lang.toUpperCase()}</p>
+        </div>
     </div>
   );
 }
