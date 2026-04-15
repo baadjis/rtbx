@@ -81,7 +81,7 @@ export default async function FormsDashboard() {
                     <MessageSquare size={48} className="mx-auto text-gray-200 dark:text-slate-700 mb-6" />
                     <p className="text-gray-400 dark:text-slate-500 font-bold italic text-lg">{t.no_forms}</p>
                     <Link href="/dashboard/forms/new" className="inline-block mt-8 text-indigo-600 font-black uppercase text-xs tracking-[0.2em] hover:underline no-underline">
-                        + Créer mon premier sondage
+                        + { lang=="fr"? "Créer mon premier questionnaire":"Create my first form"}
                     </Link>
                 </div>
             )}
