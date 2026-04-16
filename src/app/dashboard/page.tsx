@@ -162,9 +162,9 @@ console.log("Données MyEvents:", myEventsResponse.data);
 </div>
 
       {/* --- SECTION 3 : CONTENU PRINCIPAL --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 flex flex-col gap-8 h-full">
           
           {/* 1. MES LIENS RÉCENTS */}
           <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl overflow-hidden">
@@ -236,7 +236,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
           </div>
 
           {/* 2. MES POINTS ET VISITES RÉCENTES */}
-<div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl overflow-hidden">
+<div className="flex-1 bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl overflow-hidden">
   <div className="p-8 border-b border-gray-50 dark:border-slate-800 flex items-center justify-between">
     <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
       <Clock className="text-indigo-600" size={24} /> 
