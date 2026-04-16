@@ -8,8 +8,8 @@ import MobileMenu from './MobileMenu';
 import { createClient } from '@/utils/supabase/server';
 
 const NAV_DICT = {
-  fr: { home: "Accueil", blog: "Blog", guide: "Guide", faq: "FAQ", about: "À Propos", events: "Événements", login: "Espace Pro", dashboard: "Dashboard" },
-  en: { home: "Home", blog: "Blog", guide: "Guide", faq: "FAQ", about: "About", events: "Events", login: "Pro Dashboard", dashboard: "Dashboard" }
+  fr: { home: "Accueil", blog: "Blog", guide: "Guide", faq: "FAQ", about: "À Propos", events: "Événements", login: "Login", dashboard: "Dashboard" },
+  en: { home: "Home", blog: "Blog", guide: "Guide", faq: "FAQ", about: "About", events: "Events", login: "Se Connecter", dashboard: "Dashboard" }
 };
 
 export default async function Header() {
