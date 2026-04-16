@@ -26,10 +26,9 @@ export default async function DashboardPage() {
   const t = DICT[lang];
 
   // 1. Récupération des données en parallèle (Optimisation Performance)
-  const [linksResponse, businessesResponse, pointsResponse, myEventsResponse, attendingEventsResponse,formsRes] = await Promise.all([
+  const [linksResponse, businessesResponse, myEventsResponse, attendingEventsResponse,formsRes,pointsResponse] = await Promise.all([
     supabase.from('links').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('businesses').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-    supabase.from('loyalty_points').select('*, businesses(name, business_type)').eq('user_id', user.id).order('updated_at', { ascending: false }),
     
    supabase.from('events')
   .select('*, event_registrations(id)') // On récupère juste les IDs des inscrits
@@ -43,7 +42,13 @@ export default async function DashboardPage() {
       .eq('user_id', user.id),
 
     //forms 
-     supabase.from('forms').select('id').eq('user_id', user.id)
+     supabase.from('forms').select('id').eq('user_id', user.id),
+     supabase
+    .from('loyalty_points')
+    .select('*, businesses(name, business_type)')
+    .eq('user_id', user.id)
+    .order('updated_at', { ascending: false }) // On prend l'activité la plus récente
+    .limit(3),
 ]);
   const links = linksResponse.data || [];
   const businesses = businessesResponse.data || [];
@@ -229,6 +234,65 @@ console.log("Données MyEvents:", myEventsResponse.data);
               {attending.length === 0 && <div className="p-12 text-center text-gray-400 italic font-bold">{lang=="fr"?"Aucun ticket à venir." :"No ticket yet"}</div>}
             </div>
           </div>
+
+          {/* 2. MES POINTS ET VISITES RÉCENTES */}
+<div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl overflow-hidden">
+  <div className="p-8 border-b border-gray-50 dark:border-slate-800 flex items-center justify-between">
+    <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
+      <Clock className="text-indigo-600" size={24} /> 
+      {lang === 'fr' ? 'Points de fidelités & Visites' : 'Points & Visits'}
+    </h2>
+    <Link href="/dashboard/points" className="text-indigo-600 dark:text-indigo-400 font-black text-sm hover:underline uppercase tracking-widest no-underline">
+      {t.view_all}
+    </Link>
+  </div>
+  
+  <div className="p-2 space-y-2">
+    {points.length > 0 ? points.map((p) => {
+      const config = getBusinessConfig(p.businesses?.business_type);
+      const progress = (p.points_count / p.max_points) * 100;
+      
+      return (
+        <div key={p.id} className="p-6 bg-gray-50/50 dark:bg-slate-800/30 rounded-[2.5rem] flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white dark:hover:bg-slate-800 transition-all border border-transparent hover:border-gray-100 dark:hover:border-slate-700">
+          <div className="flex items-center gap-4">
+            {/* Icône dynamique selon le type de business */}
+            <div className={`w-12 h-12 ${config.color} rounded-2xl flex items-center justify-center shadow-sm`}>
+              {config.icon}
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900 dark:text-white">{p.businesses?.name}</h4>
+              <div className="flex items-center gap-3 mt-1">
+                 {/* Barre de progression visuelle */}
+                 <div className="w-24 h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-600 rounded-full transition-all duration-700" style={{ width: `${progress}%` }} />
+                 </div>
+                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">
+                    {p.points_count} / {p.max_points} pts
+                 </span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+              <div className="text-right">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dernière visite</p>
+                  <p className="text-xs font-bold text-gray-900 dark:text-white">
+                    {new Date(p.updated_at).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US')}
+                  </p>
+              </div>
+              <ChevronRight className="text-gray-300" size={20} />
+          </div>
+        </div>
+      );
+    }) : (
+      <div className="p-12 text-center text-gray-400 italic font-bold tracking-tight">
+        {lang === 'fr' ? 'Aucune activité de fidélité.' : 'No loyalty activity yet.'}
+      </div>
+    )}
+  </div>
+</div>
+
+
         </div>
 
         {/* COLONNE DROITE (1/3) : MES ORGANISATIONS & COMMERCES */}
