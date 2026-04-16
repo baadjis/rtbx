@@ -133,7 +133,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
     <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
       <FileText className="w-6 h-6" />
     </div>
-    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Sondages' : 'Surveys'}</p>
+    <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lang === 'fr' ? 'Formulaires' : 'Forms'}</p>
     <h3 className="text-4xl font-black text-gray-900 dark:text-white mt-1">{formsCount}</h3>
   </div>
 
@@ -308,7 +308,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
     <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                {lang === 'fr' ? 'Sondages' : 'Surveys'}
+                {lang === 'fr' ? 'Formulaires' : 'Forms'}
             </h2>
             <span className="text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded font-black uppercase tracking-tighter">BETA</span>
         </div>
