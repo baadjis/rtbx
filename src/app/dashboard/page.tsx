@@ -296,7 +296,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
         </div>
 
         {/* COLONNE DROITE (1/3) : MES ORGANISATIONS & COMMERCES */}
-        <div className="space-y-8 h-fit lg:sticky lg:top-10">
+        <div className="lg:col-span-1 flex flex-col gap-8 h-full">
             
             {/* MES ORGANISATIONS (Beta) */}
             <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
@@ -368,7 +368,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
             </div>
 
             {/* 3. MES SONDAGES & FORMULAIRES (BETA) */}
-<div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
+<div className="flex-1 bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-xl p-8 flex flex-col">
     <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
