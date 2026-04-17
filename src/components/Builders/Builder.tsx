@@ -100,62 +100,35 @@ export default function Builder({
   }
 
   return (
-    <div className="w-full space-y-8">
+ 
+<div className="w-full">
 
-      {/* 🔄 SWITCH DESIGN / PREVIEW */}
-      <div className="flex justify-center gap-3">
-        <button
-          onClick={() => setView('design')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold ${
-            view === 'design'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-200'
-          }`}
-        >
-          <Settings2 size={14} className="inline mr-1" />
-          {t.tab_design || 'Design'}
-        </button>
+  {view === 'design' && (
+    <div className="space-y-6">
+      {renderEditor(ctx)}
 
-        <button
-          onClick={() => setView('preview')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold ${
-            view === 'preview'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-200'
-          }`}
-        >
-          <Eye size={14} className="inline mr-1" />
-          {t.tab_preview || 'Preview'}
-        </button>
-      </div>
-
-      {/* 🧩 LAYOUT */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        {/* EDITOR */}
-        <div className={view === 'preview' ? 'hidden lg:block' : ''}>
-          {renderEditor(ctx)}
-
-          {/* SAVE */}
-          <button
-            onClick={() => onSave(tree)}
-            disabled={loading}
-            className="mt-6 w-full py-4 bg-indigo-600 text-white rounded-xl font-bold"
-          >
-            {loading
-              ? <Loader2 className="animate-spin mx-auto" />
-              : <><Save className="inline mr-2" /> {t.btn_save || 'Save'}</>
-            }
-          </button>
-        </div>
-
-        {/* PREVIEW */}
-        <div className={view === 'design' ? 'hidden lg:block' : ''}>
-          {renderPreview(ctx)}
-        </div>
-
-      </div>
+      <button
+        onClick={() => onSave(tree)}
+        disabled={loading}
+        className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold"
+      >
+        {loading
+          ? <Loader2 className="animate-spin mx-auto" />
+          : <><Save className="inline mr-2" /> {t.btn_save || 'Save'}</>
+        }
+      </button>
     </div>
+  )}
+
+  {view === 'preview' && (
+    <div className="w-full">
+      {renderPreview(ctx)}
+    </div>
+  )}
+
+</div>
+
+
   )
 }
 
