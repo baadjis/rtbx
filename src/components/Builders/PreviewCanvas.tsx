@@ -8,18 +8,17 @@ import RenderNode from './RenderNode'
 type Props = {
   tree: DesignNode[]
 }
-
 export default function PreviewCanvas({ tree }: Props) {
   return (
     <div className="flex justify-center">
       <Stage width={320} height={520}>
-        <Layer>
+        <Layer listening={false}> {/* ✅ IMPORTANT */}
           {tree.map((node) => (
             <RenderNode
               key={node.id}
               node={node}
               selectedId={null}
-              onSelect={() => {}}
+              onSelect={undefined}
             />
           ))}
         </Layer>
