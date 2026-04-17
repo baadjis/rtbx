@@ -6,6 +6,7 @@ import Builder from '../Builder'
 import EditorCanvas from '../EditorCanvas'
 import { flyerTree } from './templates'
 import { Data } from './data'
+import { BuilderContext } from '../Builder'
 
 export default function FlyerBuilder(props: any) {
   return (
@@ -14,7 +15,7 @@ export default function FlyerBuilder(props: any) {
       data={Data}
       {...props}
 
-      renderEditor={(ctx) => (
+      renderEditor={(ctx: BuilderContext) => (
         <EditorCanvas
           tree={ctx.tree}
           selectedId={ctx.selectedId}
@@ -22,9 +23,11 @@ export default function FlyerBuilder(props: any) {
         />
       )}
 
-      renderPreview={(ctx) => (
+      renderPreview={(ctx: BuilderContext) => (
         <EditorCanvas
           tree={ctx.tree}
+          selectedId={null} // no selection in preview
+          setSelectedId={() => {}}
         />
       )}
     />
