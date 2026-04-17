@@ -115,7 +115,7 @@ export default async function BlogPost({ params }: { params: Promise<{ Id: strin
             <p className="text-gray-500 dark:text-slate-400 font-medium mb-8">
              { lang === "fr" 
                 ? "Découvrez nos outils gratuits de génération QR, Barcode et Détourage IA." 
-                : "Discover our free tools: QR Code, Barcode, and more."
+                : "Discover our free tools: QR Code, Barcode,Url shortener, and more..."
              }
             </p>
             <Link href="/" className="inline-flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black transition-all hover:bg-indigo-700 hover:scale-105 no-underline">

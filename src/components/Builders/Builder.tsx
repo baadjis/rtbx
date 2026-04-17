@@ -4,159 +4,154 @@
 
 import { useState } from 'react'
 import { Eye, Save, Loader2, Settings2 } from 'lucide-react'
+import { DesignNode } from '@/lib/design/types'
 
-type BuilderProps = {
-  initialData?: any[]
-  onSave: (data: any[]) => void
-  data: any // translation object
-  lang?: string
-  loading?: boolean
-
-  // injected UI
-  renderEditor: (ctx: BuilderContext) => React.ReactNode
-  renderPreview: (ctx: BuilderContext) => React.ReactNode
-  renderToolbar?: (ctx: BuilderContext) => React.ReactNode
-}
+/* ================= TYPES ================= */
 
 export type BuilderContext = {
-  elements: any[]
-  setElements: (el: any[]) => void
+  tree: DesignNode[]
+  setTree: (t: DesignNode[]) => void
 
-  view: 'design' | 'preview'
-  setView: (v: 'design' | 'preview') => void
+  selectedId: string | null
+  setSelectedId: (id: string | null) => void
+
+  view: "design" | "preview"
+  setView: (v: "design" | "preview") => void
 
   t: any
 
   actions: {
-    addElement: (el: any) => void
-    updateElement: (id: string, updates: any) => void
-    removeElement: (id: string) => void
-    reset: () => void
+    updateNode: (id: string, updates: Partial<any>) => void
   }
 }
 
+type BuilderProps = {
+  initialData: DesignNode[]
+  onSave: (data: DesignNode[]) => void
+  data: any
+  lang?: string
+  loading?: boolean
+
+  renderEditor: (ctx: BuilderContext) => React.ReactNode
+  renderPreview: (ctx: BuilderContext) => React.ReactNode
+}
+
+/* ================= COMPONENT ================= */
+
 export default function Builder({
-  initialData = [],
+  initialData,
   onSave,
   data,
   lang = 'fr',
   loading = false,
   renderEditor,
-  renderPreview,
-  renderToolbar
+  renderPreview
 }: BuilderProps) {
 
-  // 🌍 Traduction
+  // 🌍 traduction
   const t = data?.[lang] || data?.fr || {}
 
-  // 🧠 State central
-  const [elements, setElements] = useState<any[]>(initialData)
+  // 🧠 state global
+  const [tree, setTree] = useState<DesignNode[]>(initialData)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [view, setView] = useState<'design' | 'preview'>('design')
 
-  // ⚙️ Actions génériques
-  const addElement = (el: any) => {
-    setElements(prev => [...prev, { id: crypto.randomUUID(), ...el }])
-  }
+  // 🔁 update récursif stable
+  const updateNode = (id: string, updates: Partial<any>) => {
 
-  const updateElement = (id: string, updates: any) => {
-    setElements(prev =>
-      prev.map(el => el.id === id ? { ...el, ...updates } : el)
-    )
-  }
+    const update = (nodes: DesignNode[]): DesignNode[] => {
+      return nodes.map(node => {
 
-  const removeElement = (id: string) => {
-    setElements(prev => prev.filter(el => el.id !== id))
-  }
+        if (node.id === id) {
+          return {
+            ...node,
+            props: {
+              ...node.props,
+              ...updates
+            }
+          } as DesignNode
+        }
 
-  const reset = () => {
-    setElements(initialData)
+        if (node.type === "container") {
+          return {
+            ...node,
+            children: update(node.children)
+          }
+        }
+
+        return node
+      })
+    }
+
+    setTree(prev => update(prev))
   }
 
   const ctx: BuilderContext = {
-    elements,
-    setElements,
+    tree,
+    setTree,
+    selectedId,
+    setSelectedId,
     view,
     setView,
     t,
     actions: {
-      addElement,
-      updateElement,
-      removeElement,
-      reset
+      updateNode
     }
   }
 
   return (
-    <div className="w-full space-y-8 animate-in fade-in duration-500">
+    <div className="w-full space-y-8">
 
       {/* 🔄 SWITCH DESIGN / PREVIEW */}
-      <div className="flex bg-gray-100 dark:bg-slate-900 p-1.5 rounded-2xl w-fit mx-auto border border-gray-100 dark:border-slate-800 shadow-inner">
+      <div className="flex justify-center gap-3">
         <button
           onClick={() => setView('design')}
-          className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all border-none cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold ${
             view === 'design'
-              ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-md'
-              : 'text-gray-400'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-200'
           }`}
         >
-          <Settings2 size={14} className="inline mr-2" />
-          {t?.tab_design || 'Design'}
+          <Settings2 size={14} className="inline mr-1" />
+          {t.tab_design || 'Design'}
         </button>
 
         <button
           onClick={() => setView('preview')}
-          className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all border-none cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold ${
             view === 'preview'
-              ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-md'
-              : 'text-gray-400'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-200'
           }`}
         >
-          <Eye size={14} className="inline mr-2" />
-          {t?.tab_preview || 'Preview'}
+          <Eye size={14} className="inline mr-1" />
+          {t.tab_preview || 'Preview'}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      {/* 🧩 LAYOUT */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        {/* 🧩 EDITOR SIDE */}
-        <div className={`space-y-6 ${view === 'preview' ? 'hidden lg:block' : ''}`}>
+        {/* EDITOR */}
+        <div className={view === 'preview' ? 'hidden lg:block' : ''}>
+          {renderEditor(ctx)}
 
-          {/* optional toolbar */}
-          {renderToolbar && (
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-              {renderToolbar(ctx)}
-            </div>
-          )}
-
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-            {renderEditor(ctx)}
-          </div>
-
-          {/* 💾 SAVE */}
+          {/* SAVE */}
           <button
-            onClick={() => onSave(elements)}
+            onClick={() => onSave(tree)}
             disabled={loading}
-            className="w-full py-5 bg-indigo-600 text-white rounded-[2rem] font-black text-lg shadow-xl hover:bg-indigo-700 transition-all border-none cursor-pointer"
+            className="mt-6 w-full py-4 bg-indigo-600 text-white rounded-xl font-bold"
           >
             {loading
               ? <Loader2 className="animate-spin mx-auto" />
-              : <><Save className="inline mr-2" /> {t?.btn_save || 'Save'}</>
+              : <><Save className="inline mr-2" /> {t.btn_save || 'Save'}</>
             }
           </button>
         </div>
 
-        {/* 📱 PREVIEW SIDE */}
-        <div className={`lg:sticky lg:top-24 flex justify-center ${view === 'design' ? 'hidden lg:block' : ''}`}>
-          <div className="relative w-[340px] h-[680px] bg-slate-900 rounded-[3.5rem] border-[10px] border-slate-800 shadow-2xl overflow-hidden">
-            
-            {/* notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-800 rounded-b-3xl z-20" />
-
-            <div className="h-full bg-white dark:bg-slate-950 overflow-y-auto p-6 pt-16">
-              {renderPreview(ctx)}
-            </div>
-
-          </div>
+        {/* PREVIEW */}
+        <div className={view === 'design' ? 'hidden lg:block' : ''}>
+          {renderPreview(ctx)}
         </div>
 
       </div>

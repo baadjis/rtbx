@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Link2, Copy, BarChart3, ExternalLink, Plus } from 'lucide-react';
 import Link from 'next/link';
 import DeleteLinkButton from './DeleteLinkButton'; // Import du nouveau bouton
+import CopyButton from './CopyButton';
 
 export default async function MyLinksPage() {
   const supabase = await createClient();
@@ -71,9 +72,7 @@ export default async function MyLinksPage() {
                   </div>
                   
                   <div className="flex gap-2">
-                     <button className="p-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm">
-                        <Copy size={18} />
-                     </button>
+                     <CopyButton textToCopy={`https://www.rtbx.space/s/${link.short_code}`} />
                      
                      <Link href={`/stats/${link.short_code}`} className="p-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm">
                         <BarChart3 size={18} />

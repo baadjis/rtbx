@@ -3,20 +3,30 @@
 'use client'
 
 import Builder from '../Builder'
-import FlyerEditor from './FlyerEditor'
-import FlyerPreview from './FlyerPreview'
-import { basicFlyerTemplate } from './templates'
+import EditorCanvas from '../EditorCanvas'
+import { flyerTree } from './templates'
 import { Data } from './data'
 
 export default function FlyerBuilder(props: any) {
   return (
     <Builder
-      initialData={basicFlyerTemplate}
+      initialData={flyerTree}
       data={Data}
       {...props}
 
-      renderEditor={(ctx) => <FlyerEditor {...ctx} />}
-      renderPreview={(ctx) => <FlyerPreview {...ctx} />}
+      renderEditor={(ctx) => (
+        <EditorCanvas
+          tree={ctx.tree}
+          selectedId={ctx.selectedId}
+          setSelectedId={ctx.setSelectedId}
+        />
+      )}
+
+      renderPreview={(ctx) => (
+        <EditorCanvas
+          tree={ctx.tree}
+        />
+      )}
     />
   )
 }
