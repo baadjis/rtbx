@@ -42,7 +42,7 @@ export default function Builder({
   initialData,
   onSave,
   data,
-  lang = 'fr',
+  lang = 'en',
   loading = false,
   renderEditor,
   renderPreview

@@ -4,6 +4,7 @@
 
 import Builder from '../Builder'
 import EditorCanvas from '../EditorCanvas'
+import PreviewCanvas from '../PreviewCanvas'
 import { flyerTree } from './templates'
 import { Data } from './data'
 import { BuilderContext } from '../Builder'
@@ -20,9 +21,7 @@ export default function FlyerBuilder(props: any) {
       )}
 
       renderPreview={(ctx: BuilderContext) => (
-        <EditorCanvas
-          ctx={ctx}
-        />
+        <PreviewCanvas tree={ctx.tree} />
       )}
     />
   )

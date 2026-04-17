@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client'
 
@@ -24,12 +25,14 @@ export default function RenderNode({
   const commonProps = {
     x: node.props.x,
     y: node.props.y,
-    draggable: true,
+    draggable: !!onDrag,
     ref,
-    onClick: () => onSelect(node.id),
-    onDragEnd: (e: any) => {
-      onDrag(node.id, e.target.x(), e.target.y())
-    }
+    onClick: () => onSelect?.(node.id),
+    onDragEnd: (e:any) => {
+  if (onDrag) {
+    onDrag(node.id, e.target.x(), e.target.y())
+  }
+}
   }
 
   if (node.type === "container") {
