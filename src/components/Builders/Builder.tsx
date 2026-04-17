@@ -100,9 +100,37 @@ export default function Builder({
   }
 
   return (
- 
-<div className="w-full">
+  
+<div className="w-full space-y-6">
 
+  {/* 🔄 SWITCH */}
+  <div className="flex justify-center gap-2">
+    <button
+      onClick={() => setView('design')}
+      className={`px-4 py-2 rounded-xl text-xs font-bold ${
+        view === 'design'
+          ? 'bg-indigo-600 text-white'
+          : 'bg-gray-200'
+      }`}
+    >
+      <Settings2 size={14} className="inline mr-1" />
+      {t.tab_design || 'Design'}
+    </button>
+
+    <button
+      onClick={() => setView('preview')}
+      className={`px-4 py-2 rounded-xl text-xs font-bold ${
+        view === 'preview'
+          ? 'bg-indigo-600 text-white'
+          : 'bg-gray-200'
+      }`}
+    >
+      <Eye size={14} className="inline mr-1" />
+      {t.tab_preview || 'Preview'}
+    </button>
+  </div>
+
+  {/* 🎨 CONTENT */}
   {view === 'design' && (
     <div className="space-y-6">
       {renderEditor(ctx)}
@@ -121,12 +149,14 @@ export default function Builder({
   )}
 
   {view === 'preview' && (
-    <div className="w-full">
+    <div className="flex justify-center">
       {renderPreview(ctx)}
     </div>
   )}
 
 </div>
+
+
 
 
   )
