@@ -16,18 +16,12 @@ export default function FlyerBuilder(props: any) {
       {...props}
 
       renderEditor={(ctx: BuilderContext) => (
-        <EditorCanvas
-          tree={ctx.tree}
-          selectedId={ctx.selectedId}
-          setSelectedId={ctx.setSelectedId}
-        />
+        <EditorCanvas ctx={ctx} />
       )}
 
       renderPreview={(ctx: BuilderContext) => (
         <EditorCanvas
-          tree={ctx.tree}
-          selectedId={null} // no selection in preview
-          setSelectedId={() => {}}
+          ctx={ctx}
         />
       )}
     />

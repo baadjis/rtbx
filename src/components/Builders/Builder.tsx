@@ -58,7 +58,7 @@ export default function Builder({
 
   // 🔁 update récursif stable
   const updateNode = (id: string, updates: Partial<any>) => {
-
+    if (!id) return
     const update = (nodes: DesignNode[]): DesignNode[] => {
       return nodes.map(node => {
 

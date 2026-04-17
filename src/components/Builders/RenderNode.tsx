@@ -3,39 +3,52 @@
 
 import { Rect, Text, Group } from 'react-konva'
 import { DesignNode } from '@/lib/design/types'
+import { useRef, useEffect } from 'react'
 
 export default function RenderNode({
   node,
   selectedId,
-  onSelect
-}: {
-  node: DesignNode
-  selectedId?: string | null
-  onSelect?: (id: string) => void
-}) {
+  onSelect,
+  onDrag,
+  nodeRef
+}: any) {
 
-  const isSelected = selectedId === node.id
+  const ref = useRef<any>(null)
+
+  useEffect(() => {
+    if (nodeRef && ref.current) {
+      nodeRef(node.id, ref.current)
+    }
+  }, [node.id, nodeRef])
+
+  const commonProps = {
+    x: node.props.x,
+    y: node.props.y,
+    draggable: true,
+    ref,
+    onClick: () => onSelect(node.id),
+    onDragEnd: (e: any) => {
+      onDrag(node.id, e.target.x(), e.target.y())
+    }
+  }
 
   if (node.type === "container") {
     return (
-      <Group
-        x={node.props.x}
-        y={node.props.y}
-        onClick={() => onSelect?.(node.id)}
-      >
+      <Group {...commonProps}>
         <Rect
           width={node.props.width}
           height={node.props.height}
           fill={node.props.backgroundColor || "#eee"}
-          stroke={isSelected ? "blue" : undefined}
         />
 
-        {node.children.map(child => (
+        {node.children.map((child: any) => (
           <RenderNode
             key={child.id}
             node={child}
             selectedId={selectedId}
             onSelect={onSelect}
+            onDrag={onDrag}
+            nodeRef={nodeRef}
           />
         ))}
       </Group>
@@ -45,20 +58,13 @@ export default function RenderNode({
   if (node.type === "text") {
     return (
       <Text
-        x={node.props.x}
-        y={node.props.y}
+        {...commonProps}
         text={node.props.text}
         fontSize={node.props.fontSize}
         fill={node.props.color}
         fontStyle={node.props.fontWeight}
-        onClick={() => onSelect?.(node.id)}
-        stroke={isSelected ? "blue" : undefined}
       />
     )
-  }
-
-  if (node.type === "image") {
-    return null // step 1 on ignore
   }
 
   return null
