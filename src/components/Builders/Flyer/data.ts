@@ -1,39 +1,15 @@
-
-export const Data = {
+// components/builders/flyer/data.ts
+export const flyerData = {
   fr: {
-    tab_design: "Design",
-    tab_preview: "Aperçu",
-    btn_save: "Enregistrer",
-
-    tools: "Outils",
-    no_selection: "Aucun élément sélectionné",
-
-    add_text: "Ajouter texte",
-    add_image: "Ajouter image",
-
-    inspector: "Édition",
-    delete: "Supprimer",
-
-    flyer_title: "Titre",
-    flyer_subtitle: "Sous-titre",
+    title: "Créateur de Flyer",
+    description: "Concevez vos flyers professionnels rapidement",
+    templatesSection: "Templates disponibles",
   },
-
   en: {
-    tab_design: "Design",
-    tab_preview: "Preview",
-    btn_save: "Save",
+    title: "Flyer Builder",
+    description: "Create professional flyers quickly",
+    templatesSection: "Available Templates",
+  },
+} as const;
 
-    tools: "Tools",
-    no_selection: "No element selected",
-
-    add_text: "Add text",
-    add_image: "Add image",
-
-    inspector: "Inspector",
-    delete: "Delete",
-
-    flyer_title: "Title",
-    flyer_subtitle: "Subtitle",
-  }
-}
-
+export type FlyerData = typeof flyerData;

@@ -6,5 +6,5 @@ export default async function DigitalIDPage() {
   const langValue = cookieStore.get('lang')?.value;
   const lang = (langValue === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
-  return <FlyerBuilder  lang={lang}/>
+  return <FlyerBuilder  />
 }

@@ -1,42 +1,216 @@
+// components/builders/flyer/templates.ts
+import { CanvasTemplate } from '../_shared/types';
 
-import { DesignNode } from "@/lib/design/types"
-
-export const flyerTree: DesignNode[] = [
+export const flyerTemplates: CanvasTemplate[] = [
   {
-    id: "root",
-    type: "container",
-    props: {
-      x: 0,
-      y: 0,
-      width: 300,
-      height: 500,
-      backgroundColor: "#ffffff"
-    },
-    children: [
+    id: 'flyer-promo-restaurant',
+    name: 'Promotion Restaurant - Soirée Spéciale',
+    width: 794,
+    height: 1123,
+    backgroundColor: '#0f172a',
+    elements: [
+      // Fond principal
       {
-        id: "title",
-        type: "text",
-        props: {
-          x: 40,
-          y: 40,
-          text: "BIG SALE",
-          fontSize: 24,
-          fontWeight: "bold",
-          color: "#000"
-        }
+        id: 'bg',
+        type: 'rectangle',
+        x: 0,
+        y: 0,
+        width: 794,
+        height: 1123,
+        style: { fill: '#0f172a' },
+      },
+      // Container principal avec bordure
+      {
+        id: 'main-container',
+        type: 'container',
+        x: 50,
+        y: 80,
+        width: 694,
+        height: 920,
+        style: {
+          fill: '#1e2937',
+          stroke: '#64748b',
+          strokeWidth: 12,
+          borderRadius: 32,
+          shadowBlur: 25,
+          shadowColor: '#00000099',
+        },
+        clip: true,
+        children: [
+          // Titre principal
+          {
+            id: 'title',
+            type: 'text',
+            x: 60,
+            y: 80,
+            width: 574,
+            height: 140,
+            text: 'SOIRÉE SPÉCIALE',
+            fontSize: 72,
+            style: { fill: '#facc15' },
+            align: 'center',
+          },
+          // Sous-titre
+          {
+            id: 'subtitle',
+            type: 'text',
+            x: 60,
+            y: 220,
+            width: 574,
+            height: 60,
+            text: 'Vendredi 15 Mai • 20h00',
+            fontSize: 32,
+            style: { fill: '#e0f2fe' },
+            align: 'center',
+          },
+          // Description
+          {
+            id: 'description',
+            type: 'text',
+            x: 80,
+            y: 320,
+            width: 534,
+            height: 180,
+            text: 'Menu dégustation + Live Music\nCocktails offerts jusqu’à 22h',
+            fontSize: 24,
+            style: { fill: '#cbd5e1' },
+            align: 'center',
+            lineHeight: 1.4,
+          },
+          // Rectangle pour image
+          {
+            id: 'photo-frame',
+            type: 'rectangle',
+            x: 80,
+            y: 520,
+            width: 534,
+            height: 300,
+            style: {
+              fill: '#334155',
+              stroke: '#64748b',
+              strokeWidth: 6,
+              borderRadius: 16,
+            },
+          },
+          // Texte promotionnel
+          {
+            id: 'promo',
+            type: 'text',
+            x: 60,
+            y: 840,
+            width: 574,
+            height: 60,
+            text: 'Réservez maintenant →',
+            fontSize: 28,
+            style: { fill: '#f87171' },
+            align: 'center',
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'flyer-corporate',
+    name: 'Événement Corporate',
+    width: 794,
+    height: 1123,
+    backgroundColor: '#ffffff',
+    elements: [
+      {
+        id: 'bg',
+        type: 'rectangle',
+        x: 0,
+        y: 0,
+        width: 794,
+        height: 1123,
+        style: { fill: '#f8fafc' },
       },
       {
-        id: "subtitle",
-        type: "text",
-        props: {
-          x: 40,
-          y: 80,
-          text: "Up to 50% OFF",
-          fontSize: 16,
-          color: "#666"
-        }
-      }
-    ]
-  }
-]
+        id: 'header',
+        type: 'rectangle',
+        x: 0,
+        y: 0,
+        width: 794,
+        height: 180,
+        style: { fill: '#1e40af' },
+      },
+      {
+        id: 'title',
+        type: 'text',
+        x: 80,
+        y: 70,
+        width: 634,
+        height: 80,
+        text: 'CONFÉRENCE ANNUELLE',
+        fontSize: 52,
+        style: { fill: '#ffffff' },
+        align: 'center',
+      },
+      {
+        id: 'date',
+        type: 'text',
+        x: 80,
+        y: 220,
+        width: 634,
+        height: 50,
+        text: '12 • 13 Juin 2026 • Paris',
+        fontSize: 28,
+        style: { fill: '#1e3a8a' },
+        align: 'center',
+      },
+    ],
+  },
 
+  {
+    id: 'flyer-minimal',
+    name: 'Flyer Minimaliste',
+    width: 794,
+    height: 1123,
+    backgroundColor: '#ffffff',
+    elements: [
+      {
+        id: 'bg',
+        type: 'rectangle',
+        x: 0,
+        y: 0,
+        width: 794,
+        height: 1123,
+        style: { fill: '#ffffff' },
+      },
+      {
+        id: 'accent',
+        type: 'rectangle',
+        x: 60,
+        y: 100,
+        width: 20,
+        height: 300,
+        style: { fill: '#ef4444' },
+      },
+      {
+        id: 'title',
+        type: 'text',
+        x: 120,
+        y: 140,
+        width: 550,
+        height: 120,
+        text: 'NOUVELLE COLLECTION',
+        fontSize: 58,
+        style: { fill: '#111827' },
+        align: 'left',
+      },
+      {
+        id: 'brand',
+        type: 'text',
+        x: 120,
+        y: 280,
+        width: 550,
+        height: 50,
+        text: 'SPRING 2026',
+        fontSize: 28,
+        style: { fill: '#6b7280' },
+        align: 'left',
+      },
+    ],
+  },
+];
