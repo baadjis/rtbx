@@ -80,10 +80,10 @@ export default function RenderNode({
           fontSize={node.props.fontSize}
           fill={node.props.color}
           fontStyle={node.props.fontWeight}
-          onDblClick={() => {
-            setValue(node.props.text || '') // ✅ sync au moment d’éditer
-            setIsEditing(true)
-          }}
+          onClick={() => {
+  setValue(node.props.text || '')
+  setIsEditing(true)
+}}
         />
 
         {isEditing && (
