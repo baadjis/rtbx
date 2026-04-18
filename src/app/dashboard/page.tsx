@@ -396,7 +396,7 @@ console.log("Données MyEvents:", myEventsResponse.data);
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                {form.form_responses[0]?.count || 0} {lang === 'fr' ? 'réponses' : 'responses'}
+                                {form?.form_responses?.[0]?.count || 0} {lang === 'fr' ? 'réponses' : 'responses'}
                             </span>
                         </div>
                         <div className="w-8 h-8 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-rose-600 transition-colors">
