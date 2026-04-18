@@ -87,28 +87,28 @@ export default function RenderNode({
         />
 
         {isEditing && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 100,
-              left: 20,
-              background: 'white',
-              padding: 4,
-              border: '1px solid #ccc',
-              zIndex: 9999
-            }}
-          >
-            <input
-              autoFocus
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onBlur={() => {
-                actions?.updateNode(node.id, { text: value })
-                setIsEditing(false)
-              }}
-            />
-          </div>
-        )}
+  <div
+    style={{
+      position: 'fixed',
+      top: 200,
+      left: 50,
+      background: 'white',
+      padding: 6,
+      border: '1px solid #ccc',
+      zIndex: 9999
+    }}
+  >
+    <input
+      autoFocus
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={() => {
+        actions?.updateNode(node.id, { text: value })
+        setIsEditing(false)
+      }}
+    />
+  </div>
+)}
       </>
     )
   }

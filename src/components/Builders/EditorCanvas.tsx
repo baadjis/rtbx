@@ -28,6 +28,7 @@ export default function EditorCanvas({ ctx,stageRef }: Props) {
   }, [selectedId])
 
   return (
+    <div id="editor-root" className="relative">
     <div className="space-y-4">
 
       {/* 🧰 TOOLBAR */}
@@ -83,6 +84,7 @@ export default function EditorCanvas({ ctx,stageRef }: Props) {
         </div>
 
       </div>
+    </div>
     </div>
   )
 }
