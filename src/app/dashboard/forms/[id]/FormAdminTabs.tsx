@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { useState } from 'react'
-import { LayoutDashboard, Palette, Send, Globe, Lock, Loader2 } from 'lucide-react'
+import { LayoutDashboard, Palette, Send, Globe, Lock, Loader2, Link, Settings2 } from 'lucide-react'
 import OverviewTab from './tabs/OverviewTab'
 import DesignTab from './tabs/DesignTab'
 import CommunicationTab from './tabs/CommunicationTab'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 
-export default function FormAdminTabs({ form, lang }: any) {
+export default function FormAdminTabs({ form, t,lang }: any) {
   const [activeTab, setActiveTab] = useState<'overview' | 'design' | 'comms'>('overview')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -36,9 +36,30 @@ export default function FormAdminTabs({ form, lang }: any) {
                 </p>
             </div>
         </div>
-        <button onClick={togglePublish} disabled={loading} className={`px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg transition-all border-none cursor-pointer ${form.is_published ? 'bg-red-50 text-red-600' : 'bg-green-600 text-white hover:bg-green-700'}`}>
-           {loading ? <Loader2 className="animate-spin" /> : (form.is_published ? 'Désactiver' : 'Publier')}
-        </button>
+        
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          {/* BOUTON MODIFIER (Lien vers la page edit) */}
+          <Link 
+            href={`/dashboard/forms/${form.id}/edit`}
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 no-underline border-none"
+          >
+            <Settings2 size={14} />
+            {lang === 'fr' ? 'Modifier' : 'Edit'}
+          </Link>
+
+          {/* BOUTON PUBLIER / BROUILLON */}
+          <button 
+            onClick={togglePublish} 
+            disabled={loading} 
+            className={`flex-1 md:flex-none px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${
+              form.is_published 
+              ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' 
+              : 'bg-green-600 text-white hover:bg-green-700'
+            }`}
+          >
+            {loading ? <Loader2 className="animate-spin" /> : (form.is_published ? t.btn_unpublish : t.btn_publish)}
+          </button>
+        </div>
       </div>
 
       {/* NAVIGATION TABS */}
