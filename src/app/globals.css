@@ -67,3 +67,18 @@ header {
     background-color: rgba(129, 140, 248, 0.1);
   }
 }
+
+
+.faq-link {
+    color: #4f46e5; /* Ta couleur primary */
+    font-weight: 800;
+    text-decoration: underline !important;
+    text-underline-offset: 4px;
+    text-decoration-color: rgba(79, 70, 229, 0.3) !important;
+    transition: all 0.2s;
+}
+
+.faq-link:hover {
+    color: #9333ea; /* Ta couleur secondary */
+    text-decoration-color: #9333ea !important;
+}

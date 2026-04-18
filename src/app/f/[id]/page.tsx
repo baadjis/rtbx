@@ -18,8 +18,17 @@ export default async function PublicFormPage({ params }: { params: Promise<{ id:
     .eq('id', id)
     .single();
 
-  if (!form) return <div className="min-h-screen flex items-center justify-center font-black">404 - Form not found</div>;
-
+if (!form || !form.is_published) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="text-center p-10 bg-white rounded-[3rem] shadow-xl border border-gray-100 max-w-md">
+        <h1 className="text-2xl font-black text-gray-900 mb-4">{lang=="fr"?"Formulaire non disponible":"Form not found"}</h1>
+        <p className="text-gray-500 font-medium">{lang=="fr"?"Ce formulaire est actuellement en mode brouillon ou a été désactivé par son propriétaire.":"This is inactive or is a draft "}</p>
+        <a href="https://rtbx.space" className="mt-6 inline-block font-bold text-indigo-600">RetailBox.space</a>
+      </div>
+    </div>
+  );
+}
   // 2. Vérification si actif
   if (form.settings && form.settings.active === false) {
     return (
