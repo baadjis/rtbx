@@ -60,6 +60,7 @@ export default function EditorCanvas({ ctx,stageRef }: Props) {
                   node={node}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
+                  actions={actions}
                   onDrag={(id: string, x: any, y: any) => {
                     actions.updateNode(id, { x, y })
                   }}
