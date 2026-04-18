@@ -25,7 +25,7 @@ export default async function FormAdminPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
-      <Header />
+    
       <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10">
         <FormAdminTabs form={form} lang={lang} />
       </main>
