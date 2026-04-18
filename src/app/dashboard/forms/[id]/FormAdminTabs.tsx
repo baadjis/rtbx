@@ -32,7 +32,7 @@ export default function FormAdminTabs({ form, t,lang }: any) {
             <div>
                 <h1 className="text-3xl font-black dark:text-white leading-tight">{form.title}</h1>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                    {form.is_published ? 'En ligne' : 'Brouillon'} • {form.category}
+                    {form.is_published ? t.status_live : t.status_draft} • {form.category}
                 </p>
             </div>
         </div>
