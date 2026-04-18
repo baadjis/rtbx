@@ -8,16 +8,41 @@ import PreviewCanvas from '../PreviewCanvas'
 import { flyerTree } from './templates'
 import { Data } from './data'
 import { BuilderContext } from '../Builder'
+import { useRef } from 'react'
+
+
 
 export default function FlyerBuilder(props: any) {
+
+  // 🎯 ref du Stage Konva
+  const stageRef = useRef<any>(null)
+
+  // 📸 EXPORT PNG (👉 c’est ICI qu’il est)
+  const exportPNG = () => {
+    if (!stageRef.current) return
+
+    const uri = stageRef.current.toDataURL({
+      pixelRatio: 2
+    })
+
+    const link = document.createElement('a')
+    link.download = 'flyer.png'
+    link.href = uri
+    link.click()
+  }
+
   return (
     <Builder
       initialData={flyerTree}
       data={Data}
+      onExportPNG={exportPNG} // ✅ IMPORTANT : branché ici
       {...props}
 
       renderEditor={(ctx: BuilderContext) => (
-        <EditorCanvas ctx={ctx} />
+        <EditorCanvas
+          ctx={ctx}
+          stageRef={stageRef} // ✅ nécessaire pour export
+        />
       )}
 
       renderPreview={(ctx: BuilderContext) => (

@@ -10,10 +10,11 @@ import { BuilderContext } from './Builder'
 import Toolbar from './Toolbar'
 
 type Props = {
-  ctx: BuilderContext
+  ctx: BuilderContext,
+  stageRef: any
 }
 
-export default function EditorCanvas({ ctx }: Props) {
+export default function EditorCanvas({ ctx,stageRef }: Props) {
   const { tree, selectedId, setSelectedId, actions } = ctx
 
   const transformerRef = useRef<any>(null)
@@ -32,35 +33,50 @@ export default function EditorCanvas({ ctx }: Props) {
       {/* 🧰 TOOLBAR */}
       <Toolbar ctx={ctx} />
 
-      {/* 🎨 CANVAS */}
-      <div className="flex justify-center">
-        <Stage width={320} height={520}>
-          <Layer>
+      {/* 🎨 WORKSPACE */}
+      <div className="
+        w-full
+        min-h-[60vh] md:min-h-[70vh]
+        bg-gray-100 dark:bg-neutral-800
+        flex items-center justify-center
+        rounded-xl
+        overflow-hidden
+      ">
 
-            {tree.map((node) => (
-              <RenderNode
-                key={node.id}
-                node={node}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-                onDrag={(id: string, x: any, y: any) => {
-                  actions.updateNode(id, { x, y })
-                }}
-                nodeRef={(id: string | null, ref: any) => {
-                  if (id === selectedId) {
-                    selectedNodeRef.current = ref
-                  }
-                }}
-              />
-            ))}
+        {/* 📄 CANVAS */}
+        <div className="
+          bg-white
+          shadow-xl
+          border border-gray-200 dark:border-neutral-700
+        ">
+          <Stage ref={stageRef} width={320} height={520}>
+            <Layer>
 
-            {/* 🔲 TRANSFORMER */}
-            <Transformer ref={transformerRef} />
+              {tree.map((node) => (
+                <RenderNode
+                  key={node.id}
+                  node={node}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  onDrag={(id: string, x: any, y: any) => {
+                    actions.updateNode(id, { x, y })
+                  }}
+                  nodeRef={(id: string | null, ref: any) => {
+                    if (id === selectedId) {
+                      selectedNodeRef.current = ref
+                    }
+                  }}
+                />
+              ))}
 
-          </Layer>
-        </Stage>
+              {/* 🔲 TRANSFORMER */}
+              <Transformer ref={transformerRef} />
+
+            </Layer>
+          </Stage>
+        </div>
+
       </div>
     </div>
   )
 }
-

@@ -1,10 +1,10 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState } from 'react'
 import { Eye, Save, Loader2, Settings2 } from 'lucide-react'
 import { DesignNode } from '@/lib/design/types'
+import BuilderHeader from './BuilderHeader'
 
 /* ================= TYPES ================= */
 
@@ -32,6 +32,8 @@ type BuilderProps = {
   lang?: string
   loading?: boolean
 
+  title?: string
+
   renderEditor: (ctx: BuilderContext) => React.ReactNode
   renderPreview: (ctx: BuilderContext) => React.ReactNode
 }
@@ -44,6 +46,7 @@ export default function Builder({
   data,
   lang = 'en',
   loading = false,
+  title = 'Builder',
   renderEditor,
   renderPreview
 }: BuilderProps) {
@@ -56,9 +59,10 @@ export default function Builder({
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [view, setView] = useState<'design' | 'preview'>('design')
 
-  // 🔁 update récursif stable
+  // 🔁 update récursif
   const updateNode = (id: string, updates: Partial<any>) => {
     if (!id) return
+
     const update = (nodes: DesignNode[]): DesignNode[] => {
       return nodes.map(node => {
 
@@ -100,65 +104,69 @@ export default function Builder({
   }
 
   return (
-  
-<div className="w-full space-y-6">
+    <div className="w-full space-y-4">
 
-  {/* 🔄 SWITCH */}
-  <div className="flex justify-center gap-2">
-    <button
-      onClick={() => setView('design')}
-      className={`px-4 py-2 rounded-xl text-xs font-bold ${
-        view === 'design'
-          ? 'bg-indigo-600 text-white'
-          : 'bg-gray-200'
-      }`}
-    >
-      <Settings2 size={14} className="inline mr-1" />
-      {t.tab_design || 'Design'}
-    </button>
+      {/* 🧭 HEADER */}
+      <BuilderHeader
+        title={title}
+        onSave={() => onSave(tree)}
+        onNew={() => setTree(initialData)}
+        loading={loading}
+      />
 
-    <button
-      onClick={() => setView('preview')}
-      className={`px-4 py-2 rounded-xl text-xs font-bold ${
-        view === 'preview'
-          ? 'bg-indigo-600 text-white'
-          : 'bg-gray-200'
-      }`}
-    >
-      <Eye size={14} className="inline mr-1" />
-      {t.tab_preview || 'Preview'}
-    </button>
-  </div>
+      {/* 🔄 SWITCH DESIGN / PREVIEW */}
+      <div className="flex justify-center gap-2">
+        <button
+          onClick={() => setView('design')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 ${
+            view === 'design'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-200 dark:bg-neutral-700 dark:text-white'
+          }`}
+        >
+          <Settings2 size={14} />
+          {t.tab_design || 'Design'}
+        </button>
 
-  {/* 🎨 CONTENT */}
-  {view === 'design' && (
-    <div className="space-y-6">
-      {renderEditor(ctx)}
+        <button
+          onClick={() => setView('preview')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 ${
+            view === 'preview'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-200 dark:bg-neutral-700 dark:text-white'
+          }`}
+        >
+          <Eye size={14} />
+          {t.tab_preview || 'Preview'}
+        </button>
+      </div>
 
-      <button
-        onClick={() => onSave(tree)}
-        disabled={loading}
-        className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold"
-      >
-        {loading
-          ? <Loader2 className="animate-spin mx-auto" />
-          : <><Save className="inline mr-2" /> {t.btn_save || 'Save'}</>
-        }
-      </button>
+      {/* 🎨 CONTENT */}
+      {view === 'design' && (
+        <div className="space-y-4">
+          {renderEditor(ctx)}
+
+          <button
+            onClick={() => onSave(tree)}
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-bold
+            bg-indigo-600 text-white
+            flex items-center justify-center gap-2"
+          >
+            {loading
+              ? <Loader2 className="animate-spin" />
+              : <><Save size={16} /> {t.btn_save || 'Save'}</>
+            }
+          </button>
+        </div>
+      )}
+
+      {view === 'preview' && (
+        <div className="flex justify-center">
+          {renderPreview(ctx)}
+        </div>
+      )}
+
     </div>
-  )}
-
-  {view === 'preview' && (
-    <div className="flex justify-center">
-      {renderPreview(ctx)}
-    </div>
-  )}
-
-</div>
-
-
-
-
   )
 }
-
