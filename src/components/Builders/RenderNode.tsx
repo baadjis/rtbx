@@ -15,6 +15,7 @@ export default function RenderNode({
 }: any) {
 
   const ref = useRef<any>(null)
+  const isRoot = node.id === 'root'
 
   useEffect(() => {
     if (nodeRef && ref.current) {
@@ -23,21 +24,21 @@ export default function RenderNode({
   }, [node.id, nodeRef])
 
   const commonProps = {
-    x: node.props.x,
-    y: node.props.y,
-    draggable: !!onDrag,
-    ref,
-    onClick: () => onSelect?.(node.id),
-    onDragEnd: (e:any) => {
-  if (onDrag) {
-    onDrag(node.id, e.target.x(), e.target.y())
+  x: node.props.x,
+  y: node.props.y,
+  draggable: !isRoot && !!onDrag, // ✅ FIX
+  ref,
+  onClick: () => onSelect?.(node.id),
+  onDragEnd: (e:any) => {
+    if (onDrag && !isRoot) {
+      onDrag(node.id, e.target.x(), e.target.y())
+    }
   }
 }
-  }
 
   if (node.type === "container") {
     return (
-      <Group {...commonProps}>
+      <Group {...commonProps}  onDragStart={(e) => e.cancelBubble = true}>
         <Rect
           width={node.props.width}
           height={node.props.height}
