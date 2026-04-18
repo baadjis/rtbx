@@ -6,7 +6,8 @@ import { Data } from '../data';
 import { 
   BarChart3, ArrowLeft, Share2, 
   MessageSquare, Calendar, Download, 
-  Settings, Users, Star 
+  Settings, Users, Star, 
+  Edit3
 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -71,13 +72,19 @@ export default async function FormAdminPage({ params }: { params: Promise<{ id: 
                 </h1>
             </div>
             <div className="flex gap-3">
-                <button className="p-4 bg-white dark:bg-slate-900 text-gray-500 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm hover:text-indigo-600 transition-all">
-                    <Settings size={22} />
-                </button>
-                <Link href={`/f/${form.id}`} target="_blank" className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-all no-underline">
-                    <Share2 size={18} /> {t.btn_link}
-                </Link>
-            </div>
+    {/* LIEN D'ÉDITION RECTIFIÉ */}
+    <Link 
+        href={`/dashboard/forms/${form.id}/edit`} 
+        className="p-4 bg-white dark:bg-slate-900 text-gray-500 dark:text-slate-400 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-100 transition-all flex items-center justify-center no-underline"
+        title={lang === 'fr' ? 'Modifier le formulaire' : 'Edit form'}
+    >
+        <Edit3 size={22} />
+    </Link>
+
+    <Link href={`/f/${form.id}`} target="_blank" className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-all no-underline">
+        <Share2 size={18} /> {t.btn_link}
+    </Link>
+</div>
         </div>
 
         {/* KPI GRID */}
