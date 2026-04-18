@@ -28,6 +28,8 @@ export type BuilderContext = {
 type BuilderProps = {
   initialData: DesignNode[]
   onSave: (data: DesignNode[]) => void
+   onExportPNG?: () => void
+   onExportPDF?: () => void
   data: any
   lang?: string
   loading?: boolean
@@ -43,6 +45,8 @@ type BuilderProps = {
 export default function Builder({
   initialData,
   onSave,
+  onExportPNG,
+  onExportPDF,
   data,
   lang = 'en',
   loading = false,
@@ -108,11 +112,13 @@ export default function Builder({
 
       {/* 🧭 HEADER */}
       <BuilderHeader
-        title={title}
-        onSave={() => onSave(tree)}
-        onNew={() => setTree(initialData)}
-        loading={loading}
-      />
+  title={title}
+  onSave={() => onSave(tree)}
+  onNew={() => setTree(initialData)}
+  onExportPNG={onExportPNG} // ✅ ICI AUSSI
+  onExportPDF={onExportPDF}
+  loading={loading}
+/>
 
       {/* 🔄 SWITCH DESIGN / PREVIEW */}
       <div className="flex justify-center gap-2">

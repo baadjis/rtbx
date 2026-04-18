@@ -49,7 +49,9 @@ export default function EditorCanvas({ ctx,stageRef }: Props) {
           shadow-xl
           border border-gray-200 dark:border-neutral-700
         ">
-          <Stage ref={stageRef} width={320} height={520}>
+          <Stage ref={stageRef} width={320} height={520}   draggable={false}
+          onTouchMove={(e) => e.evt.preventDefault()}
+          >
             <Layer>
 
               {tree.map((node) => (
@@ -61,6 +63,9 @@ export default function EditorCanvas({ ctx,stageRef }: Props) {
                   onDrag={(id: string, x: any, y: any) => {
                     actions.updateNode(id, { x, y })
                   }}
+                  onDragStart={(e:any) => {
+                     e.cancelBubble = true
+                          }}
                   nodeRef={(id: string | null, ref: any) => {
                     if (id === selectedId) {
                       selectedNodeRef.current = ref

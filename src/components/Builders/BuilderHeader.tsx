@@ -6,6 +6,8 @@ type Props = {
   onSave: () => void
   onNew: () => void
   onExportPNG?: () => void
+  onExportPDF?:()=>void
+
   title?: string
   loading?: boolean
 }
@@ -14,6 +16,7 @@ export default function BuilderHeader({
   onSave,
   onNew,
   onExportPNG,
+  onExportPDF,
   title = 'Builder',
   loading
 }: Props) {
@@ -63,6 +66,14 @@ export default function BuilderHeader({
             <Download size={14} />
           </button>
         )}
+
+       <button className="px-3 py-2 rounded-lg text-sm
+            bg-gray-900 text-white
+            dark:bg-white dark:text-black
+          " onClick={onExportPDF}>
+          PDF
+       </button>
+
 
       </div>
     </div>
