@@ -31,11 +31,28 @@ export default function FlyerBuilder(props: any) {
     link.click()
   }
 
+
+  const exportPDF = () => {
+  if (!stageRef.current) return
+
+  const dataURL = stageRef.current.toDataURL({ pixelRatio: 2 })
+
+  const pdf = new (window as any).jspdf.jsPDF({
+    orientation: 'portrait',
+    unit: 'px',
+    format: [320, 520]
+  })
+
+  pdf.addImage(dataURL, 'PNG', 0, 0, 320, 520)
+  pdf.save('flyer.pdf')
+}
+
   return (
     <Builder
       initialData={flyerTree}
       data={Data}
       onExportPNG={exportPNG} // ✅ IMPORTANT : branché ici
+      onExportPDF={exportPDF}
       {...props}
 
       renderEditor={(ctx: BuilderContext) => (
