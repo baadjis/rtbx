@@ -17,24 +17,24 @@ export default function RenderNode({
   const ref = useRef<any>(null)
   const isRoot = node.id === 'root'
 
+  // ✏️ EDIT STATE
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(node.props?.text || '')
 
+  // 🔗 ref binding
   useEffect(() => {
     if (nodeRef && ref.current) {
       nodeRef(node.id, ref.current)
     }
   }, [node.id, nodeRef])
 
+  // 🎯 common props
   const commonProps = {
     x: node.props.x,
     y: node.props.y,
     draggable: !isRoot && !!onDrag,
     ref,
-
-    // ✅ SELECTION FIX
-    onTap: () => onSelect?.(node.id),
-
+    onClick: () => onSelect?.(node.id),
     onDragEnd: (e: any) => {
       if (onDrag && !isRoot) {
         onDrag(node.id, e.target.x(), e.target.y())
@@ -45,7 +45,10 @@ export default function RenderNode({
   // 📦 CONTAINER
   if (node.type === "container") {
     return (
-      <Group {...commonProps}>
+      <Group
+        {...commonProps}
+        onDragStart={(e) => e.cancelBubble = true}
+      >
         <Rect
           width={node.props.width}
           height={node.props.height}
@@ -60,7 +63,7 @@ export default function RenderNode({
             onSelect={onSelect}
             onDrag={onDrag}
             nodeRef={nodeRef}
-            actions={actions} // ✅ IMPORTANT
+            actions={actions}
           />
         ))}
       </Group>
@@ -72,41 +75,40 @@ export default function RenderNode({
     return (
       <>
         <Text
-  x={node.props.x}
-  y={node.props.y}
-  text={node.props.text}
-  fontSize={20}
-  fill="black"
-  onClick={() => console.log("CLICK OK")}
-  onTap={() => console.log("TAP OK")}
-  onDblClick={() => console.log("DBLCLICK OK")}
-  onDblTap={() => console.log("DBLTAP OK")}
-/>
+          {...commonProps}
+          text={node.props.text}
+          fontSize={node.props.fontSize}
+          fill={node.props.color}
+          fontStyle={node.props.fontWeight}
+          onClick={() => {
+  setValue(node.props.text || '')
+  setIsEditing(true)
+}}
+        />
 
-        {/* ✅ INPUT SIMPLE QUI MARCHE */}
         {isEditing && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 120,
-              left: 40,
-              background: 'white',
-              padding: 6,
-              border: '1px solid #ccc',
-              zIndex: 9999
-            }}
-          >
-            <input
-              autoFocus
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onBlur={() => {
-                actions?.updateNode(node.id, { text: value })
-                setIsEditing(false)
-              }}
-            />
-          </div>
-        )}
+  <div
+    style={{
+      position: 'fixed',
+      top: 200,
+      left: 50,
+      background: 'white',
+      padding: 6,
+      border: '1px solid #ccc',
+      zIndex: 9999
+    }}
+  >
+    <input
+      autoFocus
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={() => {
+        actions?.updateNode(node.id, { text: value })
+        setIsEditing(false)
+      }}
+    />
+  </div>
+)}
       </>
     )
   }
