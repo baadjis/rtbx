@@ -72,24 +72,15 @@ export default function RenderNode({
     return (
       <>
         <Text
-  {...commonProps}
+  x={node.props.x}
+  y={node.props.y}
   text={node.props.text}
-  fontSize={node.props.fontSize}
-  fill={node.props.color}
-
-  // ✅ sélection (PC + mobile)
-  onClick={() => onSelect?.(node.id)}
-  onTap={() => onSelect?.(node.id)}
-
-  // ✅ édition (PC + mobile)
-  onDblClick={() => {
-    setValue(node.props.text || '')
-    setIsEditing(true)
-  }}
-  onDblTap={() => {
-    setValue(node.props.text || '')
-    setIsEditing(true)
-  }}
+  fontSize={20}
+  fill="black"
+  onClick={() => console.log("CLICK OK")}
+  onTap={() => console.log("TAP OK")}
+  onDblClick={() => console.log("DBLCLICK OK")}
+  onDblTap={() => console.log("DBLTAP OK")}
 />
 
         {/* ✅ INPUT SIMPLE QUI MARCHE */}
