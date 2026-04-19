@@ -5,6 +5,7 @@ import { Stage, Layer } from 'react-konva';
 import { useCanvas } from './CanvasContext';
 import RenderElement from './RenderElement';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import TextEditorOverlay from './TextEditorOverlay';
 
 type Props = {
   designWidth: number;
@@ -109,6 +110,7 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
             if (e.target === e.target.getStage()) selectElement(null);
           }}
         >
+        
           <Layer>
             {elements.map((element) => (
               <RenderElement
@@ -119,6 +121,7 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
             ))}
           </Layer>
         </Stage>
+        <TextEditorOverlay />
       </div>
     </div>
   );

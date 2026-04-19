@@ -10,7 +10,6 @@ import {
   ContainerElement, 
   GroupElement 
 } from './types';
-
 import useImage from 'use-image';
 
 function KonvaImageElement({ element, onSelect }: { 
@@ -18,7 +17,6 @@ function KonvaImageElement({ element, onSelect }: {
   onSelect: (id: string) => void;
 }) {
   const [image] = useImage(element.src, 'anonymous');
-
   const commonProps = {
     x: element.x,
     y: element.y,
@@ -38,13 +36,13 @@ function KonvaImageElement({ element, onSelect }: {
     />
   );
 }
-
 export default function RenderElement({ element, onSelect }: { 
   element: CanvasElement; 
   onSelect: (id: string) => void;
 }) {
-  const { selectedId } = useCanvas();
+  const { selectedId, editingTextId, startEditingText } = useCanvas();
   const isSelected = selectedId === element.id;
+  const isEditing = editingTextId === element.id;
 
   const commonProps = {
     x: element.x,
@@ -56,13 +54,8 @@ export default function RenderElement({ element, onSelect }: {
     draggable: true,
     onClick: () => onSelect(element.id),
     onTap: () => onSelect(element.id),
-    shadowColor: element.style.shadowColor,
-    shadowBlur: element.style.shadowBlur,
-    shadowOffsetX: element.style.shadowOffsetX,
-    shadowOffsetY: element.style.shadowOffsetY,
   };
 
-  // Bordure de sélection visuelle
   const selectionProps = isSelected ? {
     stroke: '#3b82f6',
     strokeWidth: 3,
@@ -72,6 +65,10 @@ export default function RenderElement({ element, onSelect }: {
   switch (element.type) {
     case 'text': {
       const txt = element as TextElement;
+
+      // Si on est en mode édition → on cache le Text Konva
+      if (isEditing) return null;
+
       return (
         <Text
           {...commonProps}
@@ -84,6 +81,8 @@ export default function RenderElement({ element, onSelect }: {
           verticalAlign={txt.verticalAlign || 'middle'}
           fill={txt.style.fill || '#000000'}
           lineHeight={txt.lineHeight || 1.2}
+          onDblClick={() => startEditingText(txt.id)}     // ← Double clic pour éditer
+          onDblTap={() => startEditingText(txt.id)}       // Support mobile
         />
       );
     }
@@ -91,20 +90,10 @@ export default function RenderElement({ element, onSelect }: {
     case 'image':
       return <KonvaImageElement element={element as ImageElement} onSelect={onSelect} />;
 
-    case 'rectangle': {
-      return (
-        <Rect
-          {...commonProps}
-          {...selectionProps}
-          fill={element.style.fill || '#3b82f6'}
-          stroke={element.style.stroke}
-          strokeWidth={element.style.strokeWidth || 0}
-          cornerRadius={element.style.borderRadius || 0}
-        />
-      );
-    }
+    case 'rectangle':
+      return <Rect {...commonProps} {...selectionProps} fill={element.style.fill} stroke={element.style.stroke} strokeWidth={element.style.strokeWidth} cornerRadius={element.style.borderRadius} />;
 
-    case 'circle': {
+    case 'circle':
       return (
         <Circle
           x={element.x + element.width / 2}
@@ -116,35 +105,26 @@ export default function RenderElement({ element, onSelect }: {
           {...selectionProps}
         />
       );
-    }
 
-    case 'container': {
+    case 'container':
       const container = element as ContainerElement;
       return (
-        <Group
-          {...commonProps}
-          clipX={container.clip ? 0 : undefined}
-          clipY={container.clip ? 0 : undefined}
-          clipWidth={container.clip ? container.width : undefined}
-          clipHeight={container.clip ? container.height : undefined}
-        >
-          {container.children.map((child) => (
+        <Group {...commonProps} clipX={container.clip ? 0 : undefined} clipY={container.clip ? 0 : undefined} clipWidth={container.clip ? container.width : undefined} clipHeight={container.clip ? container.height : undefined}>
+          {container.children.map(child => (
             <RenderElement key={child.id} element={child} onSelect={onSelect} />
           ))}
         </Group>
       );
-    }
 
-    case 'group': {
+    case 'group':
       const group = element as GroupElement;
       return (
         <Group {...commonProps}>
-          {group.children.map((child) => (
+          {group.children.map(child => (
             <RenderElement key={child.id} element={child} onSelect={onSelect} />
           ))}
         </Group>
       );
-    }
 
     default:
       return null;

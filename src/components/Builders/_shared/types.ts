@@ -76,11 +76,7 @@ export type CanvasElement =
   | ShapeElement;
 
 // ← AJOUT IMPORTANT
-export interface SelectedElement {
-  id: string;
-  element: CanvasElement;
-  parentId?: string;
-}
+
 
 export interface CanvasTemplate {
   id: string;
@@ -89,4 +85,25 @@ export interface CanvasTemplate {
   height: number;
   backgroundColor?: string;
   elements: CanvasElement[];
+}
+
+
+// components/builders/_shared/types.ts
+// ... (tout le reste reste identique)
+
+export interface SelectedElement {
+  id: string;
+  element: CanvasElement;
+  parentId?: string;
+}
+
+// Nouvel état pour l'édition de texte
+export interface TextEditingState {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
 }

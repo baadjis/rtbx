@@ -11,10 +11,13 @@ export const sharedBuilderData = {
       templatesBtn: "Templates",
     },
     preview: "Aperçu",
+    properties: "Propriétés",
+    noSelection: "Aucun élément sélectionné",
     actions: {
       addText: "Ajouter du texte",
       addRectangle: "Ajouter un rectangle",
     },
+    delete: "Supprimer",
   },
   en: {
     title: "Design Builder",
@@ -27,10 +30,13 @@ export const sharedBuilderData = {
       templatesBtn: "Templates",
     },
     preview: "Preview",
+    properties: "Properties",
+    noSelection: "No element selected",
     actions: {
       addText: "Add text",
       addRectangle: "Add rectangle",
     },
+    delete: "Delete",
   },
 } as const;
 
