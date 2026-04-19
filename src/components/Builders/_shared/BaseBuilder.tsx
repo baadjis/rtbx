@@ -7,6 +7,7 @@ import EditCanvas from './EditCanvas';
 import Preview from './Preview';
 import { CanvasTemplate } from './types';
 import { sharedBuilderData } from './data';
+import PropertyPanel from './PropretyPanel';
 
 type BaseBuilderProps = {
   title?: string;
@@ -81,9 +82,10 @@ function BaseBuilderContent({
       </div>
 
       {/* Sidebar droite - Preview */}
-      <div className="hidden lg:flex w-80 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex-col">
-        <Preview lang={lang} />
-      </div>
+      {/* Sidebar droite - Propriétés */}
+<div className="hidden lg:flex w-80 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex-col">
+  <PropertyPanel lang={lang} />
+</div>
     </div>
   );
 }
