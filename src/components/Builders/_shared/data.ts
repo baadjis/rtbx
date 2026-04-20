@@ -5,39 +5,39 @@ export const sharedBuilderData = {
     templates: "Templates",
     toolbar: {
       text: "Texte",
-      shape: "Forme",
+      shapes: "Formes",
       image: "Image",
       export: "Exporter",
       templatesBtn: "Templates",
     },
-    preview: "Aperçu",
     properties: "Propriétés",
     noSelection: "Aucun élément sélectionné",
-    actions: {
-      addText: "Ajouter du texte",
-      addRectangle: "Ajouter un rectangle",
+    shapesPanel: {
+      title: "Insérer une forme",
+      rectangle: "Rectangle",
+      circle: "Cercle",
+      line: "Ligne",
+      arrow: "Flèche",
     },
-    delete: "Supprimer",
   },
   en: {
     title: "Design Builder",
     templates: "Templates",
     toolbar: {
       text: "Text",
-      shape: "Shape",
+      shapes: "Shapes",
       image: "Image",
       export: "Export",
       templatesBtn: "Templates",
     },
-    preview: "Preview",
     properties: "Properties",
     noSelection: "No element selected",
-    actions: {
-      addText: "Add text",
-      addRectangle: "Add rectangle",
+    shapesPanel: {
+      title: "Insert shape",
+      rectangle: "Rectangle",
+      circle: "Circle",
+      line: "Line",
+      arrow: "Arrow",
     },
-    delete: "Delete",
   },
 } as const;
-
-export type SharedBuilderData = typeof sharedBuilderData;
