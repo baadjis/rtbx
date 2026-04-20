@@ -11,14 +11,14 @@ export default function PropertyPanel({ lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
   const { selectedId, elements, updateElement, deleteElement } = useCanvas();
 
-  const selected = elements.find(el => el.id === selectedId);
+  const selected = elements.find((el) => el.id === selectedId);
 
   if (!selected) {
     return (
-      <div className="p-6 text-center text-gray-400 dark:text-gray-600 mt-20">
-        <div className="text-5xl mb-4">👆</div>
-        <p className="font-medium">{t.noSelection}</p>
-        <p className="text-sm mt-2">Cliquez sur un élément du canvas pour modifier ses propriétés</p>
+      <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 p-8">
+        <div className="text-6xl mb-6">👆</div>
+        <p className="text-lg font-medium text-center">{t.noSelection}</p>
+        <p className="text-sm mt-2 text-center">Cliquez sur un élément pour modifier ses propriétés</p>
       </div>
     );
   }
@@ -29,36 +29,66 @@ export default function PropertyPanel({ lang }: Props) {
     <div className="p-6 h-full overflow-auto bg-white dark:bg-gray-950">
       <h3 className="font-semibold text-lg mb-6">{t.properties}</h3>
 
-      {/* Couleur */}
+      {/* Couleur de remplissage */}
       <div className="mb-8">
         <label className="block text-sm text-gray-500 dark:text-gray-400 mb-2">Couleur de remplissage</label>
         <input
           type="color"
           value={selected.style.fill || '#000000'}
-          onChange={(e) => 
-            updateElement(selected.id, { 
-              style: { ...selected.style, fill: e.target.value } 
+          onChange={(e) =>
+            updateElement(selected.id, {
+              style: { ...selected.style, fill: e.target.value },
             })
           }
-          className="w-14 h-12 border border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer"
+          className="w-14 h-11 border border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer"
         />
       </div>
 
-      {/* Si c'est du texte */}
+      {/* Contour (Stroke) */}
+      <div className="mb-8">
+        <label className="block text-sm text-gray-500 dark:text-gray-400 mb-2">Contour</label>
+        <div className="flex items-center gap-4">
+          <input
+            type="color"
+            value={selected.style.stroke || '#000000'}
+            onChange={(e) =>
+              updateElement(selected.id, {
+                style: { ...selected.style, stroke: e.target.value },
+              })
+            }
+            className="w-10 h-10 border border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer"
+          />
+          <input
+            type="range"
+            min="0"
+            max="20"
+            step="1"
+            value={selected.style.strokeWidth ?? 0}
+            onChange={(e) =>
+              updateElement(selected.id, {
+                style: { ...selected.style, strokeWidth: Number(e.target.value) },
+              })
+            }
+            className="flex-1 accent-blue-600"
+          />
+          <span className="text-sm text-gray-500 w-8">
+            {selected.style.strokeWidth ?? 0}px
+          </span>
+        </div>
+      </div>
+
+      {/* Options spécifiques au texte */}
       {isText && (
         <>
           <div className="mb-8">
-            <label className="block text-sm text-gray-500 dark:text-gray-400 mb-3">Taille de police</label>
+            <label className="block text-sm text-gray-500 dark:text-gray-400 mb-3">Taille de la police</label>
             <input
               type="range"
               min="12"
               max="120"
-              step="1"
               value={(selected as any).fontSize || 32}
-              onChange={(e) => 
-                updateElement(selected.id, { 
-                  fontSize: parseInt(e.target.value) 
-                })
+              onChange={(e) =>
+                updateElement(selected.id, { fontSize: Number(e.target.value) })
               }
               className="w-full accent-blue-600"
             />
@@ -75,9 +105,9 @@ export default function PropertyPanel({ lang }: Props) {
                   key={align}
                   onClick={() => updateElement(selected.id, { align: align as any })}
                   className={`flex-1 py-3 text-sm font-medium rounded-2xl transition-all ${
-                    (selected as any).align === align 
-                      ? 'bg-blue-600 text-white shadow' 
-                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    (selected as any).align === align
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200'
                   }`}
                 >
                   {align === 'left' ? 'Gauche' : align === 'center' ? 'Centre' : 'Droite'}
@@ -91,9 +121,9 @@ export default function PropertyPanel({ lang }: Props) {
       {/* Bouton Supprimer */}
       <button
         onClick={() => deleteElement(selected.id)}
-        className="w-full py-4 mt-10 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
+        className="w-full py-4 mt-12 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-2xl font-medium flex items-center justify-center gap-2"
       >
-        🗑️ {t.delete}
+        🗑️ Supprimer
       </button>
     </div>
   );
