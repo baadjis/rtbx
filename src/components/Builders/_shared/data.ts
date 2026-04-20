@@ -12,6 +12,12 @@ export const sharedBuilderData = {
     },
     properties: "Propriétés",
     noSelection: "Aucun élément sélectionné",
+    fillColor: "Couleur de remplissage",
+    stroke: "Contour",
+    fontSize: "Taille de la police",
+    alignment: "Alignement",
+    delete: "Supprimer",
+    
     shapesPanel: {
       title: "Insérer une forme",
       rectangle: "Rectangle",
@@ -32,6 +38,11 @@ export const sharedBuilderData = {
     },
     properties: "Properties",
     noSelection: "No element selected",
+    fillColor: "Fill color",
+    stroke: "Stroke",
+    fontSize: "Font size",
+    alignment: "Alignment",
+    delete: "Delete",
     shapesPanel: {
       title: "Insert shape",
       rectangle: "Rectangle",
