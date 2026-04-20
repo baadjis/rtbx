@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { CheckCircle2, Loader2, Send, ArrowRight } from 'lucide-react'
 
-export default function FormRenderer({ form, lang, t }: any) {
+export default function FormRenderer({ form, lang, t,origin }: any) {
   const [answers, setAnswers] = useState<Record<string, any>>({})
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
@@ -19,6 +19,7 @@ export default function FormRenderer({ form, lang, t }: any) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           answers,
+          origin: origin,
           metadata: {
             userAgent: navigator.userAgent,
             language: lang

@@ -178,3 +178,34 @@ export const getSupportEmail = (userName: string, message: string, lang: 'fr' | 
 
   return EmailWrapper(content, lang);
 };
+
+// --- TEMPLATE : INVITATION AU SONDAGE ---
+export const getFormInvitationEmail = (data: { orgName: string, formTitle: string, formLink: string }, lang: 'fr' | 'en') => {
+  const content = {
+    fr: `
+      <p style="color:${theme.primary}; font-weight:800; text-transform:uppercase; font-size:12px; margin-bottom:8px;">Votre avis nous aide</p>
+      <h2 style="font-size:24px; font-weight:800; margin-top:0;">Bonjour,</h2>
+      <p><strong>${data.orgName}</strong> aimerait recueillir votre avis concernant :</p>
+      <div style="margin: 25px 0; padding: 20px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center;">
+        <span style="font-size: 18px; font-weight: 800; color: ${theme.text};">${data.formTitle}</span>
+      </div>
+      <p>Cela ne vous prendra que quelques instants et nous permettra d'améliorer la qualité de nos services.</p>
+      <div align="center" style="margin-top: 30px;">
+        <a href="${data.formLink}" style="background-color:${theme.primary}; color:white; padding: 16px 30px; border-radius: 12px; font-weight:800; text-decoration:none; display:inline-block; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.15);">Répondre au questionnaire</a>
+      </div>
+    `,
+    en: `
+      <p style="color:${theme.primary}; font-weight:800; text-transform:uppercase; font-size:12px; margin-bottom:8px;">We Value Your Feedback</p>
+      <h2 style="font-size:24px; font-weight:800; margin-top:0;">Hello,</h2>
+      <p><strong>${data.orgName}</strong> would like to get your thoughts on:</p>
+      <div style="margin: 25px 0; padding: 20px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center;">
+        <span style="font-size: 18px; font-weight: 800; color: ${theme.text};">${data.formTitle}</span>
+      </div>
+      <p>It will only take a few moments and can be helpfull us improve our service quality for you.</p>
+      <div align="center" style="margin-top: 30px;">
+        <a href="${data.formLink}" style="background-color:${theme.primary}; color:white; padding: 16px 30px; border-radius: 12px; font-weight:800; text-decoration:none; display:inline-block; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.15);">Take the survey</a>
+      </div>
+    `
+  }[lang];
+  return EmailWrapper(content, lang);
+};

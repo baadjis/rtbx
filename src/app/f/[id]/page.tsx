@@ -4,8 +4,16 @@ import { Data } from '../data';
 import FormRenderer from './FormRenderer';
 import { BrandLogo } from '@/components/BrandLogo';
 
-export default async function PublicFormPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PublicFormPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ id: string }>,
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
+}) {
   const { id } = await params;
+  const sParams = await searchParams;
+  const origin = (sParams.origin as string) || 'direct';
   const supabase = await createClient();
   const cookieStore = await cookies();
   const lang = (cookieStore.get('lang')?.value || 'fr') as 'en' | 'fr';
@@ -61,7 +69,7 @@ if (!form || !form.is_published) {
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] shadow-2xl border border-gray-100 dark:border-slate-800">
-            <FormRenderer form={form} lang={lang} t={t} />
+            <FormRenderer form={form} lang={lang} t={t} origin={origin}/>
         </div>
 
         <div className="mt-12 text-center opacity-30 grayscale pointer-events-none">
