@@ -23,7 +23,9 @@ export default function CommunicationTab({ form, lang }: any) {
         invite_title: "Campagne d'invitation",
         invite_sub: "Importez vos clients pour leur envoyer le formulaire par e-mail.",
         import_title: "Importer des contacts",
-        import_desc: "Collez ou uploadez un fichier (CSV, Excel) contenant les e-mails."
+        import_desc: "Collez ou uploadez un fichier (CSV, Excel) contenant les e-mails.",
+        full_name:'Nom Complet',
+        invite_tips:"Les invitations utilisent le template RetailBox. Vos clients recevront un lien direct pour répondre au sondage sur leur mobile."
     },
     en: {
         share_title: "Sharing & QR Code",
@@ -33,7 +35,9 @@ export default function CommunicationTab({ form, lang }: any) {
         invite_title: "Invitation Campaign",
         invite_sub: "Import your customers to send them the form by email.",
         import_title: "Import contacts",
-        import_desc: "Paste or upload a file (CSV, Excel) containing emails."
+        import_desc: "Paste or upload a file (CSV, Excel) containing emails.",
+        full_name:"Fullname",
+        invite_tips:"We will use Retailbox template for invitation mail",
     }
   }[lang as 'fr' | 'en']
 
@@ -67,6 +71,7 @@ export default function CommunicationTab({ form, lang }: any) {
         alert(lang === 'fr' ? "Invitations envoyées !" : "Invitations sent!")
       }
     } catch (err) {
+      console.log(err)
       alert("Error sending emails")
     }
     setLoading(false)
@@ -94,7 +99,7 @@ export default function CommunicationTab({ form, lang }: any) {
                     value={publicUrl}
                     size={220}
                     level="H"
-                    includeMargin={true}
+                    marginSize={4}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-white/80 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2.5rem]">
                     <Smartphone size={40} className="text-indigo-600 animate-bounce" />
@@ -129,7 +134,7 @@ export default function CommunicationTab({ form, lang }: any) {
             requiredFields={['email']}
             availableFields={[
                 { value: 'email', label: 'E-mail' },
-                { value: 'full_name', label: 'Nom Complet' }
+                { value: 'full_name', label: t.full_name }
             ]}
             onImport={handleBulkInvite}
         />
@@ -137,7 +142,7 @@ export default function CommunicationTab({ form, lang }: any) {
         <div className="p-6 bg-indigo-50 dark:bg-indigo-900/10 rounded-[2.5rem] border border-indigo-100 dark:border-indigo-800 flex gap-4">
             <Mail className="text-indigo-600 w-6 h-6 flex-shrink-0" />
             <p className="text-sm text-indigo-900 dark:text-indigo-200 font-medium italic leading-relaxed">
-                Les invitations utilisent le template RetailBox. Vos clients recevront un lien direct pour répondre au sondage sur leur mobile.
+               {t.invite_tips }
             </p>
         </div>
       </div>
