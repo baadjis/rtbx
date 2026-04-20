@@ -3,6 +3,7 @@ export const sharedBuilderData = {
   fr: {
     title: "Créateur de Design",
     templates: "Templates",
+    preview:"Aperçu",
     toolbar: {
       text: "Texte",
       shapes: "Formes",
@@ -29,6 +30,7 @@ export const sharedBuilderData = {
   en: {
     title: "Design Builder",
     templates: "Templates",
+    preview:"Preview",
     toolbar: {
       text: "Text",
       shapes: "Shapes",
