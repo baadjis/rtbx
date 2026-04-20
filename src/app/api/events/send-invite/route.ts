@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // 3. Préparer le lien magique avec tracking d'origine
     // On ajoute 'origin=mail_invite' pour que le formulaire de destination capte la source
     const inviteLink = `https://www.rtbx.space/events/${event.id}?token=${token}&origin=mail_invite`;
-    const orgName = event.profiles?.company || "RetailBox Partner";
+    const orgName = event.org_name || "RetailBox Partner";
 
     // 4. Générer le HTML via le template unifié
     const htmlContent = getInvitationEmail({

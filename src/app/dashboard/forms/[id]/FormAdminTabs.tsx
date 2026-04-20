@@ -16,12 +16,30 @@ export default function FormAdminTabs({ form, t,lang }: any) {
   const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   const togglePublish = async () => {
-    setLoading(true)
-    await supabase.from('forms').update({ is_published: !form.is_published }).eq('id', form.id)
-    router.refresh()
-    setLoading(false)
-  }
+    if (form.is_published) {
+        setLoading(true);
+        await supabase.from('forms').update({ is_published: false }).eq('id', form.id);
+        router.refresh();
+        setLoading(false);
+        return;
+    }
 
+    setLoading(true);
+    try {
+        const res = await fetch("/api/forms/publish", {
+            method: "POST",
+            body: JSON.stringify({ formId: form.id, lang: lang })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const inv_alert=lang=='fr'? "invitations envoyées !":"Invitations sent"
+            if (data.count > 0) alert(`${data.count} ${inv_alert}`);
+            router.refresh();
+        }
+    } finally {
+        setLoading(false);
+    }
+};
   return (
     <div className="space-y-10">
       {/* HEADER : TITRE + PUBLICATION */}

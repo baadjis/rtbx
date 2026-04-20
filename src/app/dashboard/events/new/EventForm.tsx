@@ -1,26 +1,60 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   Calendar, MapPin, Users, ArrowLeft, 
   Loader2, CheckCircle2, Globe, Lock, 
-  Tag, Ticket, ArrowRight 
+  Tag, Ticket, ArrowRight, 
+  Building2
 } from 'lucide-react'
 import Link from 'next/link'
 import { Data } from '../data'
+import { createBrowserClient } from '@supabase/ssr'
 
 export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId: string }) {
   const t = Data[lang]
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [suggestions, setSuggestions] = useState<{label: string, value: string}[]>([])
+  const [selectedOrg, setSelectedOrg] = useState('')
+  const [isOther, setIsOther] = useState(false)
+  const [customOrgName, setCustomOrgName] = useState('')
+
+   const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+  
+
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // 1. Chercher le profil
+      const { data: profile } = await supabase.from('profiles').select('company').eq('id', user.id).single()
+      // 2. Chercher les business enregistrés
+      const { data: businesses } = await supabase.from('businesses').select('name').eq('user_id', user.id)
+
+      const list = []
+      if (profile?.company) list.push({ label: profile.company, value: profile.company })
+      businesses?.forEach(b => list.push({ label: b.name, value: b.name }))
+      
+      setSuggestions(list)
+      if (list.length > 0) setSelectedOrg(list[0].value)
+      else setIsOther(true)
+    }
+    fetchSuggestions()
+  }, [])
+
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     
     const formData = new FormData(e.currentTarget)
+    const finalOrgName = isOther ? customOrgName : selectedOrg
     
     const payload = {
       title: formData.get('title'),
@@ -32,6 +66,7 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
       start_date: formData.get('start_date'),
       end_date: formData.get('end_date') || null,
       max_capacity: formData.get('max_capacity'),
+      org_name: finalOrgName,
     }
 
     try {
@@ -81,8 +116,44 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-10">
+
+            {/* SECTION : CHOIX DE L'ORGANISATEUR (LA LOGIQUE DEMANDÉE) */}
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
+                <Building2 size={14} /> {t.label_org_choice}
+            </label>
+            
+            <div className="grid grid-cols-1 gap-4">
+                <select 
+                    value={isOther ? 'other' : selectedOrg}
+                    onChange={(e) => {
+                        if (e.target.value === 'other') { setIsOther(true) }
+                        else { setIsOther(false); setSelectedOrg(e.target.value) }
+                    }}
+                    className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 appearance-none"
+                >
+                    {suggestions.map((s, i) => (
+                        <option key={i} value={s.value}>{s.label}</option>
+                    ))}
+                    <option value="other">➕ {t.opt_other_org}</option>
+                </select>
+
+                {isOther && (
+                    <input 
+                        required
+                        value={customOrgName}
+                        onChange={(e) => setCustomOrgName(e.target.value)}
+                        placeholder={t.ph_org_name}
+                        className="w-full p-4 bg-indigo-50/30 dark:bg-indigo-900/10 border-2 border-indigo-100 dark:border-indigo-900/30 rounded-2xl font-bold dark:text-white animate-in slide-in-from-top-2"
+                    />
+                )}
+            </div>
+            <p className="text-[10px] text-gray-400 italic ml-2">{t.helper_org}</p>
+          </div>
+
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
                     <Tag size={14} /> {t.label_category}

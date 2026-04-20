@@ -12,22 +12,21 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const { title, description, category, visibility, org_name } = body;
 
-    // Insertion avec récupération de l'ID généré (.select().single())
+    // Insertion avec récupération de l'ID pour la redirection
     const { data, error } = await supabase
-      .from('events')
+      .from('forms')
       .insert([{
-        organizer_id: user.id,
-        title: body.title,
-        description: body.description,
-        category: body.category,
-        visibility: body.visibility,
-        requires_registration: body.requires_registration,
-        location: body.location,
-        start_date: body.start_date,
-        end_date: body.end_date || null,
-        max_capacity: body.max_capacity ? parseInt(body.max_capacity) : null,
-        org_name:body.org_name
+        user_id: user.id,
+        title: title || "Sans titre",
+        description: description || "",
+        category: category || "survey",
+        visibility: visibility || "public",
+        org_name: org_name || "RetailBox User",
+        fields_json: [], // Initialisé vide pour le DesignTab
+        is_published: false,
+        settings: { active: true, theme: "indigo" }
       }])
       .select('id')
       .single();
@@ -37,7 +36,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, id: data.id });
 
   } catch (err: any) {
-    console.error("Event Creation Error:", err.message);
+    console.error("Form Creation Error:", err.message);
+    
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

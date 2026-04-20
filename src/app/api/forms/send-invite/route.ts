@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     // À l'intérieur de la boucle ou avant l'envoi
 const formLinkWithOrigin = `https://www.rtbx.space/f/${form.id}?origin=email_invite`;
-const orgName = form.profiles?.company || "RetailBox Partner";
+const orgName = form.org_name || "RetailBox Partner";
 
 const htmlContent = getFormInvitationEmail({
     orgName: orgName,
@@ -28,7 +28,7 @@ const htmlContent = getFormInvitationEmail({
 
     // Envoi groupé via Resend
     const { data, error } = await resend.emails.send({
-      from: 'RetailBox Forms <forms@rtbx.space>',
+      from: `${orgName} via RetailBox Forms <forms@rtbx.space>`,
       to: emails, // Resend accepte un tableau d'emails
       subject: lang === 'fr' ? `Votre avis nous intéresse : ${form.title}` : `We value your feedback: ${form.title}`,
       html: htmlContent

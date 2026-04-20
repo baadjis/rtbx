@@ -74,12 +74,39 @@ export default function EventAdminTabs({ lang, event, agenda, participants, invi
   }
 
   const togglePublish = async () => {
-    setLoading(true)
-    await supabase.from('events').update({ is_published: !event.is_published }).eq('id', event.id)
-    router.refresh()
-    setLoading(false)
-  }
+    if (event.is_published) {
+        // Mode simple pour repasser en brouillon
+        setLoading(true);
+        await supabase.from('events').update({ is_published: false }).eq('id', event.id);
+        router.refresh();
+        setLoading(false);
+        return;
+    }
 
+    // Mode complexe pour publier (déclenche les emails)
+    setLoading(true);
+    try {
+        const res = await fetch("/api/events/publish", {
+            method: "POST",
+            body: JSON.stringify({ eventId: event.id, lang: lang })
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.invitationsSent > 0) {
+                alert(lang === 'fr' 
+                    ? `Événement publié ! ${data.invitationsSent} invitations envoyées.` 
+                    : `Event published! ${data.invitationsSent} invitations sent.`);
+            }
+            router.refresh();
+        }
+    } catch (err) {
+       console.log(err)
+        alert("Erreur lors de la publication.");
+    } finally {
+        setLoading(false);
+    }
+};
   const sendAllBadges = async () => {
     if (!confirm(lang === 'fr' ? "Lancer l'envoi groupé ?" : "Start bulk sending?")) return
     setSendingProgress('sending'); setLoading(true)

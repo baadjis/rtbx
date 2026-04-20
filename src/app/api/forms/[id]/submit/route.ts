@@ -6,35 +6,48 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     const { id } = await params;
     const body = await request.json();
-    const { answers, metadata } = body;
+    
+    // On extrait les réponses, les métadonnées et l'origine (tracking)
+    const { answers, metadata, origin } = body;
 
-    // Note : On utilise le client serveur standard
     const supabase = await createClient();
 
-    // 1. On vérifie si le formulaire accepte encore des réponses
-    const { data: form } = await supabase
+    // 1. Vérifier si le formulaire existe et est actif
+    const { data: form, error: formErr } = await supabase
       .from('forms')
-      .select('settings')
+      .select('settings, is_published')
       .eq('id', id)
       .single();
 
-    if (!form || form.settings.active === false) {
-      return NextResponse.json({ error: "Ce formulaire n'accepte plus de réponses." }, { status: 403 });
+    if (formErr || !form) {
+        return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 });
     }
 
-    // 2. Enregistrement de la réponse
-    const { error } = await supabase
+    if (!form.is_published || form.settings?.active === false) {
+      return NextResponse.json({ 
+        error: "Ce formulaire n'est plus en ligne ou n'accepte plus de réponses." 
+      }, { status: 403 });
+    }
+
+    // 2. Enregistrement de la réponse avec l'origine
+    const { error: insertErr } = await supabase
       .from('form_responses')
       .insert([{
         form_id: id,
         answers_json: answers,
+        origin: origin || 'direct', // flyer, email_invite, etc.
         metadata: metadata || {}
       }]);
 
-    if (error) throw error;
+    if (insertErr) throw insertErr;
 
-    return NextResponse.json({ success: true, message: "Merci pour votre réponse !" });
+    return NextResponse.json({ 
+        success: true, 
+        message: "Réponse enregistrée avec succès." 
+    });
+
   } catch (err: any) {
+    console.error("Submission Error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

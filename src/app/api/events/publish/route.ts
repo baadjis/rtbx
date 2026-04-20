@@ -1,70 +1,71 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/utils/supabase/server';
+import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { getInvitationEmail } from '@/utils/email-templates';
 
-/**
- * Endpoint pour publier officiellement un événement.
- * Conçu pour être appelé par l'interface Web ou un Agent (MCP).
- */
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export async function POST(request: Request) {
   try {
+    const { eventId, lang } = await request.json();
     const supabase = await createClient();
-    
-    // 1. Vérification de l'utilisateur (Session)
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ 
-        error: "Unauthorized", 
-        message: "Vous devez être connecté pour publier un événement." 
-      }, { status: 401 });
-    }
 
-    // 2. Récupération des paramètres
-    const body = await request.json();
-    const { eventId } = body;
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!eventId) {
-      return NextResponse.json({ 
-        error: "Bad Request", 
-        message: "L'identifiant 'eventId' est requis." 
-      }, { status: 400 });
-    }
-
-    // 3. Mise à jour de la base de données
-    // On vérifie l'organizer_id dans la clause .eq pour la sécurité (Anti-ID-Snooping)
-    const { data, error } = await supabase
+    // 1. Publier l'événement
+    const { data: event, error: eventErr } = await supabase
       .from('events')
-      .update({ 
-        is_published: true,
-        updated_at: new Date().toISOString() 
-      })
+      .update({ is_published: true })
       .eq('id', eventId)
       .eq('organizer_id', user.id)
-      .select()
+      .select('*, profiles(company)')
       .single();
 
-    if (error) {
-      return NextResponse.json({ 
-        error: "Database Error", 
-        message: error.message 
-      }, { status: 500 });
+    if (eventErr) throw eventErr;
+
+    // 2. Récupérer les invitations en attente
+    const { data: pendingInvites } = await supabase
+      .from('event_invitations')
+      .select('*')
+      .eq('event_id', eventId)
+      .eq('status', 'pending');
+
+    let sentCount = 0;
+
+    // 3. Boucle d'envoi si des invitations existent
+    if (pendingInvites && pendingInvites.length > 0) {
+      const orgName = event?.org_name || "RetailBox Partner";
+
+      for (const invite of pendingInvites) {
+        try {
+          const inviteLink = `https://www.rtbx.space/events/${event.id}?token=${invite.token}&origin=mail_invite`;
+          const htmlContent = getInvitationEmail({
+              orgName: orgName,
+              eventTitle: event.title,
+              inviteLink: inviteLink
+          }, lang);
+
+          await resend.emails.send({
+            from: 'RetailBox Events <events@rtbx.space>',
+            to: invite.email,
+            subject: lang === 'fr' ? `Invitation : ${event.title}` : `Invitation: ${event.title}`,
+            html: htmlContent
+          });
+
+          // Marquer comme envoyé pour ne pas renvoyer si on republie plus tard
+          await supabase.from('event_invitations').update({ status: 'sent' }).eq('id', invite.id);
+          sentCount++;
+        } catch (e) {
+          console.error(`Erreur envoi à ${invite.email}`, e);
+        }
+      }
     }
 
-    // 4. Réponse structurée (Idéal pour les agents)
-    return NextResponse.json({
-      success: true,
-      message: `L'événement "${data.title}" est désormais public.`,
-      event: {
-        id: data.id,
-        status: "published",
-        url: `https://www.rtbx.space/events/${data.id}`
-      }
-    });
+    return NextResponse.json({ success: true, invitationsSent: sentCount });
 
   } catch (err: any) {
-    return NextResponse.json({ 
-      error: "Internal Server Error", 
-      message: err.message 
-    }, { status: 500 });
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

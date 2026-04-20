@@ -3,8 +3,10 @@ export const Data = {
     title: "Mes Formulaires & Sondages",
     sub: "Gérez vos enquêtes de satisfaction et collectez des avis clients.",
     btn_new: "Créer un formulaire",
+    new_form:"Nouveau formulaire",
     btn_publish:"Publier",
     btn_unpublish: "🛑 Passer en brouillon",
+    private:"privé",
     status_draft: "Brouillon",
     status_live: "En ligne",
     no_forms: "Vous n'avez pas encore créé de formulaire.",
@@ -33,16 +35,23 @@ export const Data = {
   edit_form_title: "Modifier le formulaire",
   edit_warning: "Attention : Si vous modifiez ou supprimez des questions alors que vous avez déjà reçu des réponses, cela peut impacter la cohérence de vos statistiques.",
   btn_update_form: "Mettre à jour le formulaire",
-  save_success: "Formulaire mis à jour !"
+  save_success: "Formulaire mis à jour !",
+  use_suggestion:"Utiliser la sugestion",
+  type_another_name:"Taper un autre nom",
+  organism_social_reason:"Organisation/Raison sociale",
+  my_account:"Mon Compte",
+  entity_name:"Nom de l'entité",
   },
   en: {
     title: "My Forms & Surveys",
     sub: "Manage your satisfaction surveys and collect customer feedback.",
     btn_new: "Create Form",
+    new_form:"New form",
     btn_publish:"Publish",
     btn_unpublish: "🛑 Set to Draft",
     status_draft: "Draft",
     status_live: "Live",
+    private:"Private",
     no_forms: "You haven't created any forms yet.",
      back_to_forms: "Back to forms",
     card_responses: "Responses",
@@ -69,6 +78,13 @@ export const Data = {
    edit_form_title: "Edit Form",
   edit_warning: "Warning: If you modify or delete questions after receiving responses, it may affect the consistency of your analytics.",
   btn_update_form: "Update Form",
-  save_success: "Form updated successfully!"
+  save_success: "Form updated successfully!",
+
+
+  use_suggestion:"Use sugestion",
+  type_another_name:"Type another name",
+  organism_social_reason:"Organisation/Social reason",
+  my_account:"My Account",
+  entity_name:"Entity name",
   }
 };

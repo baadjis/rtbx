@@ -139,6 +139,13 @@ tab_badges: "Badges" ,
   qr_kit_desc: "Générez le QR Code officiel de votre événement. Idéal pour vos affiches et flyers avec suivi des scans (Origin: Flyer).",
   btn_dl_qr_hd: "⬇️ Télécharger le QR HD",
 
+
+  label_org_choice: "Organisé par",
+  opt_my_profile: "Mon profil ({name})",
+  opt_other_org: "Autre (Saisir un nom...)",
+  ph_org_name: "Nom de l'organisme ou raison sociale",
+  helper_org: "Ce nom apparaîtra sur les tickets et dans les e-mails d'invitation.",
+
   
   
   
@@ -281,6 +288,11 @@ tab_badges: "Badges" ,
   qr_kit_title: "Distribution QR Code",
   qr_kit_desc: "Generate the official QR Code for your event. Perfect for posters and flyers with scan tracking (Origin: Flyer).",
   btn_dl_qr_hd: "⬇️ Download HD QR",
+  label_org_choice: "Organized by",
+  opt_my_profile: "My profile ({name})",
+  opt_other_org: "Other (Enter name...)",
+  ph_org_name: "Organization or Company name",
+  helper_org: "This name will appear on tickets and in invitation emails.",
  
   }
 };
