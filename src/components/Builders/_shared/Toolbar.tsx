@@ -11,8 +11,9 @@ type Props = { extraTools?: string[]; lang: 'fr' | 'en' };
 
 export default function Toolbar({ extraTools = [], lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
-  const { addElement } = useCanvas();
+  
   const [showShapes, setShowShapes] = useState(false);
+  const { addElement, undo, redo, canUndo, canRedo } = useCanvas();
 
   const addText = () => {
     addElement({
@@ -114,8 +115,26 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
       >
         📸 {t.toolbar.image}
       </button>
+   
+      
 
       <div className="flex-1" />
+
+      {/* Undo / Redo */}
+      <button
+        onClick={undo}
+        disabled={!canUndo}
+        className="px-4 py-2 disabled:opacity-40"
+      >
+        ↩️ Undo
+      </button>
+      <button
+        onClick={redo}
+        disabled={!canRedo}
+        className="px-4 py-2 disabled:opacity-40"
+      >
+        ↪️ Redo
+      </button>
 
       <button className="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl">
         {t.toolbar.export}
