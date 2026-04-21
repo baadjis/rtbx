@@ -20,6 +20,10 @@ export interface StyleProps {
   shadowOffsetX?: number;
   shadowOffsetY?: number;
   padding?: number;
+  gradientEnabled?:boolean,
+  gradientColor1?:string,
+  gradientColor2?:string,
+  gradientDirection?:number
 }
 
 export interface BaseElement {

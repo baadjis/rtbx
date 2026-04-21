@@ -27,6 +27,8 @@ export const sharedBuilderData = {
     delete: "Supprimer",
     bring_to_front:"↑ Amener devant",
     sent_to_back:" ↓ Renvoyer deriére",
+    gradient_start:"Début",
+    gradient_end:"Fin",
 
     
     shapesPanel: {
@@ -60,6 +62,8 @@ export const sharedBuilderData = {
     rotation: "Rotation",
     opacity: "Opacity",
     shadow: "Shadow",
+    gradient_start:"Begin",
+    gradient_end:"End",
     duplicate: "Duplicate",
     
     delete: "Delete",

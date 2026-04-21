@@ -30,6 +30,16 @@ export default function PropertyPanel({ lang }: Props) {
   }
 
   const isText = selected.type === 'text';
+  const isGradient = !!selected.style.gradientEnabled;
+
+  const toggleGradient = () => {
+    updateElement(selected.id, {
+      style: {
+        ...selected.style,
+        gradientEnabled: !isGradient,
+      },
+    });
+  };
 
   const duplicateElement = () => {
     const newElement = {
@@ -45,29 +55,69 @@ export default function PropertyPanel({ lang }: Props) {
     <div className="p-6 h-full overflow-auto bg-white dark:bg-gray-950 space-y-8">
       <h3 className="font-semibold text-lg">{t.properties}</h3>
 
-      {/* === COULEUR DE REMPLISSAGE + GRADIENT === */}
+      {/* ==================== GRADIENT / SOLID ==================== */}
       <div>
-        <label className="block text-sm text-gray-500 mb-2">{t.fillColor}</label>
-        <div className="flex gap-3">
+        <label className="block text-sm text-gray-500 mb-2">Couleur de remplissage</label>
+        
+        <div className="flex items-center gap-3 mb-3">
+          <button
+            onClick={toggleGradient}
+            className={`px-4 py-1.5 text-sm font-medium rounded-2xl ${isGradient ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800'}`}
+          >
+            {isGradient ? 'Gradient' : 'Solide'}
+          </button>
+        </div>
+
+        {isGradient ? (
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">{t.gradient_start}</p>
+                <input
+                  type="color"
+                  value={selected.style.gradientColor1 || '#3b82f6'}
+                  onChange={(e) => updateElement(selected.id, { style: { ...selected.style, gradientColor1: e.target.value } })}
+                  className="w-12 h-10 border rounded-xl"
+                />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">{t.gradient_end}</p>
+                <input
+                  type="color"
+                  value={selected.style.gradientColor2 || '#8b5cf6'}
+                  onChange={(e) => updateElement(selected.id, { style: { ...selected.style, gradientColor2: e.target.value } })}
+                  className="w-12 h-10 border rounded-xl"
+                />
+              </div>
+            </div>
+
+            {/* Direction du gradient */}
+            <div>
+              <p className="text-xs text-gray-500 mb-2">Direction</p>
+              <div className="grid grid-cols-4 gap-2">
+                {[0, 90, 180, 270].map((deg) => (
+                  <button
+                    key={deg}
+                    onClick={() => updateElement(selected.id, { style: { ...selected.style, gradientDirection: deg } })}
+                    className={`py-2 text-sm rounded-2xl ${
+                      selected.style.gradientDirection === deg ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800'
+                    }`}
+                  >
+                    {deg}°
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Solid color */
           <input
             type="color"
             value={selected.style.fill || '#3b82f6'}
             onChange={(e) => updateElement(selected.id, { style: { ...selected.style, fill: e.target.value } })}
-            className="w-12 h-10 border rounded-xl cursor-pointer"
+            className="w-14 h-11 border border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer"
           />
-          {/* Gradient simple (à améliorer plus tard avec 2 couleurs) */}
-          <button
-            className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 rounded-xl"
-            onClick={() => {
-              // Pour l'instant on met un gradient bleu-violet par défaut
-              updateElement(selected.id, {
-                style: { ...selected.style, fill: 'linear-gradient(#3b82f6, #8b5cf6)' }
-              });
-            }}
-          >
-            Gradient
-          </button>
-        </div>
+        )}
       </div>
 
       {/* === CONTOUR === */}
