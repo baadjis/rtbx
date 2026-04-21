@@ -17,7 +17,17 @@ export const sharedBuilderData = {
     stroke: "Contour",
     fontSize: "Taille de la police",
     alignment: "Alignement",
+    left:"Gauche",
+    right:"Droite",
+    center:"Centre",
+    rotation: "Rotation",
+    opacity: "Opacité",
+    shadow: "Ombre",
+    duplicate: "Dupliquer",
     delete: "Supprimer",
+    bring_to_front:"↑ Amener devant",
+    sent_to_back:" ↓ Renvoyer deriére",
+
     
     shapesPanel: {
       title: "Insérer une forme",
@@ -44,7 +54,17 @@ export const sharedBuilderData = {
     stroke: "Stroke",
     fontSize: "Font size",
     alignment: "Alignment",
+    left:"Left",
+    right:"Right",
+    center:"Center",
+    rotation: "Rotation",
+    opacity: "Opacity",
+    shadow: "Shadow",
+    duplicate: "Duplicate",
+    
     delete: "Delete",
+    bring_to_front:"↑ Bring to Front",
+    sent_to_back:" ↓ Send to Back",
     shapesPanel: {
       title: "Insert shape",
       rectangle: "Rectangle",
