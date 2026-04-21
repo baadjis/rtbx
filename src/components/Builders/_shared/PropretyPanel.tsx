@@ -183,9 +183,9 @@ export default function PropertyPanel({ lang }: Props) {
 
       {/* === ACTIONS === */}
       <div className="grid grid-cols-2 gap-3 mt-10">
-        <button onClick={() => bringToFront(selected.id)} className="py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl text-sm">↑ Bring to Front</button>
-        <button onClick={() => sendToBack(selected.id)} className="py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl text-sm">↓ Send to Back</button>
-        <button onClick={duplicateElement} className="py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl text-sm">📋 Dupliquer</button>
+        <button onClick={() => bringToFront(selected.id)} className="py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl text-sm">{t.bring_to_front}</button>
+        <button onClick={() => sendToBack(selected.id)} className="py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl text-sm">{t.sent_to_back}</button>
+        <button onClick={duplicateElement} className="py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-2xl text-sm">📋 {t.duplicate}</button>
       </div>
 
       <button

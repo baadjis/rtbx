@@ -76,6 +76,8 @@ export default function RenderElement({ element, onSelect }: { element: CanvasEl
           stroke={element.style.stroke}
           strokeWidth={element.style.strokeWidth || 4}
           shadowColor={element.style.shadowColor || '#3b82f6'}
+          shadowBlur={element.style.shadowBlur?? 0}
+
           opacity={element.style.opacity??1}
           cornerRadius={element.style.borderRadius || 0}
           draggable
@@ -95,6 +97,7 @@ export default function RenderElement({ element, onSelect }: { element: CanvasEl
           fill={element.style.fill || '#3b82f6'}
           opacity={element.style.opacity??1}
           shadowColor={element.style.shadowColor || '#3b82f6'}
+          shadowBlur={element.style.shadowBlur?? 0}
 
           stroke={element.style.stroke}
           strokeWidth={element.style.strokeWidth || 4}
