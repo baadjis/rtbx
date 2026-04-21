@@ -5,6 +5,7 @@ import { Stage, Layer } from 'react-konva';
 import { useCanvas } from './CanvasContext';
 import RenderElement from './RenderElement';
 import Transformer from './Transformer';
+import TextEditorOverlay from './TextEditorOverlay';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 
 export default function EditCanvas({ designWidth, designHeight }: Props) {
   const { stageRef, elements, selectElement } = useCanvas();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -50,6 +52,8 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
 
   return (
     <div ref={containerRef} className="flex items-center justify-center w-full h-full min-h-0 p-4 relative">
+      
+      {/* Canvas principal */}
       <div
         className="relative shadow-2xl border border-gray-300 dark:border-gray-700 rounded-3xl overflow-hidden bg-white"
         style={{
@@ -78,6 +82,10 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
           </Layer>
         </Stage>
       </div>
+
+      {/* Éditeur de texte (par-dessus tout) */}
+      <TextEditorOverlay />
+
     </div>
   );
 }
