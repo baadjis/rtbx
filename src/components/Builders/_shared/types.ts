@@ -75,27 +75,57 @@ export interface ShapeElement extends BaseElement {
   outerRadius?: number; // pour star
 }
 
-// ─── Text ─────────────────────────────────────────────────────────────────────
+// ─── Filters ──────────────────────────────────────────────────────────────────
+export interface ImageFilters {
+  brightness?: number;   // -1 à 1
+  contrast?:   number;   // -1 à 1
+  saturation?: number;   // -1 à 1
+  hue?:        number;   // 0 à 360
+  blur?:       number;   // 0 à 20
+  grayscale?:  boolean;
+  sepia?:      boolean;
+  invert?:     boolean;
+}
+
+export interface TextFilters {
+  blur?:        number;
+  brightness?:  number;
+}
+
+// ─── TextElement — ajoute gradient + mask + filters ──────────────────────────
 export interface TextElement extends BaseElement {
   type:            'text';
   text:            string;
   fontSize:        number;
   fontFamily?:     string;
   fontStyle?:      'normal' | 'bold' | 'italic';
-  fontWeight?:     number;          // ← nouveau : 100–900
-  textDecoration?: 'none' | 'underline' | 'line-through'; // ← nouveau
+  fontWeight?:     number;
+  textDecoration?: 'none' | 'underline' | 'line-through';
   align?:          'left' | 'center' | 'right';
   verticalAlign?:  'top' | 'middle' | 'bottom';
   lineHeight?:     number;
   letterSpacing?:  number;
+  // ── Nouveau ──
+  textGradient?: {
+    enabled:    boolean;
+    color1:     string;
+    color2:     string;
+    direction:  number; // degrés
+  };
+  maskImageSrc?: string;   // URL image utilisée comme masque sur le texte
+  filters?:      TextFilters;
 }
 
-// ─── Image ───────────────────────────────────────────────────────────────────
+// ─── ImageElement — ajoute filters + removeBackground ────────────────────────
 export interface ImageElement extends BaseElement {
-  type:       'image';
-  src:        string;
-  imageFit?:  'fill' | 'contain' | 'cover';
-  alt?:       string; // ← nouveau : accessibilité / calque label
+  type:              'image';
+  src:               string;
+  originalSrc?:      string;  // src avant remove bg
+  removedBgSrc?:     string;  // src après remove bg (PNG transparent)
+  bgRemoved?:        boolean;
+  imageFit?:         'fill' | 'contain' | 'cover';
+  alt?:              string;
+  filters?:          ImageFilters;
 }
 
 

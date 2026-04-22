@@ -2,18 +2,31 @@
 // components/builders/_shared/RenderElement.tsx
 'use client';
 
-import { Rect, Text, Circle, Line, Group, Image as KonvaImage, Arrow } from 'react-konva';
+import {
+  Rect, Text, Circle, Line, Group,
+  Image as KonvaImage, Arrow,
+} from 'react-konva';
 import { useCanvas } from './CanvasContext';
 import {
   CanvasElement, TextElement, ImageElement,
   ShapeElement, ContainerElement, GroupElement,
-  StyleProps, ShapeType,
+  StyleProps, ShapeType, ImageFilters,
 } from './types';
 import useImage from 'use-image';
-//import Konva from 'konva';
+import Konva from 'konva';
+import type { Filter } from 'konva/lib/Node';
+import { Grayscale } from 'konva/lib/filters/Grayscale';
+import { Sepia }     from 'konva/lib/filters/Sepia';
+import { Invert }    from 'konva/lib/filters/Invert';
+import { Blur }      from 'konva/lib/filters/Blur';
+import { Brighten }  from 'konva/lib/filters/Brighten';
+import { Contrast }  from 'konva/lib/filters/Contrast';
+import { HSL }       from 'konva/lib/filters/HSL';
+import {Image as KonvaImageClass }from 'konva/lib/shapes/Image';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+import { useEffect, useRef } from 'react';
 
+// ─── Shadow & gradient helpers (inchangés) ───────────────────────────────────
 function shadowProps(style: StyleProps) {
   return {
     shadowColor:   style.shadowColor   ?? 'transparent',
@@ -33,56 +46,104 @@ function gradientFillProps(style: StyleProps, width: number, height: number): Re
   return {
     fillLinearGradientStartPoint: { x: cx - dx, y: cy - dy },
     fillLinearGradientEndPoint:   { x: cx + dx, y: cy + dy },
-    fillLinearGradientColorStops: [0, style.gradientColor1 ?? '#7c3aed', 1, style.gradientColor2 ?? '#06b6d4'],
+    fillLinearGradientColorStops: [
+      0, style.gradientColor1 ?? '#7c3aed',
+      1, style.gradientColor2 ?? '#06b6d4',
+    ],
     fill: undefined,
   };
 }
 
-/** Points d'un polygone régulier centré sur (cx,cy) avec n côtés */
-function polygonPoints(cx: number, cy: number, r: number, sides: number, offsetAngle = 0): number[] {
+function polygonPoints(cx: number, cy: number, r: number, sides: number, offset = 0) {
   const pts: number[] = [];
   for (let i = 0; i < sides; i++) {
-    const angle = (i * 2 * Math.PI) / sides - Math.PI / 2 + offsetAngle;
-    pts.push(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    const a = (i * 2 * Math.PI) / sides - Math.PI / 2 + offset;
+    pts.push(cx + r * Math.cos(a), cy + r * Math.sin(a));
   }
   return pts;
 }
 
-/** Points d'une étoile à n branches */
-function starPoints(cx: number, cy: number, outerR: number, innerR: number, branches: number): number[] {
+function starPoints(cx: number, cy: number, outerR: number, innerR: number, branches: number) {
   const pts: number[] = [];
   for (let i = 0; i < branches * 2; i++) {
-    const angle = (i * Math.PI) / branches - Math.PI / 2;
+    const a = (i * Math.PI) / branches - Math.PI / 2;
     const r = i % 2 === 0 ? outerR : innerR;
-    pts.push(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    pts.push(cx + r * Math.cos(a), cy + r * Math.sin(a));
   }
   return pts;
 }
 
-/** Points d'une croix */
-function crossPoints(w: number, h: number, thickness = 0.3): number[] {
-  const tx = w * thickness, ty = h * thickness;
+function crossPoints(w: number, h: number, t = 0.3) {
+  const tx = w * t, ty = h * t;
   return [
-    tx, 0,       w - tx, 0,
-    w - tx, ty,  w, ty,
-    w, h - ty,   w - tx, h - ty,
-    w - tx, h,   tx, h,
-    tx, h - ty,  0, h - ty,
-    0, ty,       tx, ty,
+    tx, 0, w - tx, 0, w - tx, ty, w, ty,
+    w, h - ty, w - tx, h - ty, w - tx, h,
+    tx, h, tx, h - ty, 0, h - ty, 0, ty, tx, ty,
   ];
 }
 
-/** Points d'un diamant */
-function diamondPoints(w: number, h: number): number[] {
+function diamondPoints(w: number, h: number) {
   return [w / 2, 0, w, h / 2, w / 2, h, 0, h / 2];
 }
 
 const SELECTION = { stroke: '#7c3aed', strokeWidth: 2, dash: [5, 4] as number[] };
 
-// ─── Image element ────────────────────────────────────────────────────────────
-function KonvaImageElement({ element, onSelect }: { element: ImageElement; onSelect: (id: string) => void }) {
-  const [image] = useImage(element.src, 'anonymous');
-  const { selectedId } = useCanvas();
+// ─── Konva filter builders ───────────────────────────────────────────────────
+function buildKonvaFilters(filters: ImageFilters): Filter[] {
+  const list: Filter[] = [];
+  if (filters.grayscale)                list.push(Grayscale);
+  if (filters.sepia)                    list.push(Sepia);
+  if (filters.invert)                   list.push(Invert);
+  if ((filters.blur       ?? 0) > 0)   list.push(Blur);
+  if ((filters.brightness ?? 0) !== 0) list.push(Brighten);
+  if ((filters.contrast   ?? 0) !== 0) list.push(Contrast);
+  // HSL une seule fois suffit pour hue + saturation
+  if ((filters.hue ?? 0) !== 0 || (filters.saturation ?? 0) !== 0) list.push(HSL);
+  return list;
+}
+
+// ─── Gradient text (canvas 2D trick) ─────────────────────────────────────────
+// Konva ne supporte pas nativement le gradient sur Text.
+// On génère une image canvas et on l'utilise comme fill pattern.
+function useGradientTextImage(element: TextElement): HTMLCanvasElement | null {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  if (!element.textGradient?.enabled) return null;
+
+  const canvas = document.createElement('canvas');
+  canvas.width  = element.width  || 400;
+  canvas.height = element.height || 80;
+  const ctx = canvas.getContext('2d')!;
+
+  const deg = element.textGradient.direction ?? 90;
+  const rad = (deg * Math.PI) / 180;
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
+
+  const grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+  grad.addColorStop(0, element.textGradient.color1 || '#7c3aed');
+  grad.addColorStop(1, element.textGradient.color2 || '#06b6d4');
+
+  ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+  ctx.textBaseline = 'top';
+  ctx.textAlign    = (element.align as CanvasTextAlign) || 'left';
+  ctx.fillStyle    = grad;
+  ctx.fillText(element.text, element.align === 'center' ? cx : element.align === 'right' ? canvas.width : 0, 0);
+
+  return canvas;
+}
+
+// ─── Gradient Text Component ─────────────────────────────────────────────────
+function GradientTextElement({ element, onSelect, isSelected }: {
+  element: TextElement; onSelect: (id: string) => void; isSelected: boolean;
+}) {
+  const { startEditingText } = useCanvas();
+  const gradCanvas = useGradientTextImage(element);
+  const [gradImage] = useImage(gradCanvas?.toDataURL() ?? '');
+
+  // Fallback si canvas pas prêt
+  if (!gradImage) return null;
+
   return (
     <KonvaImage
       id={element.id}
@@ -90,9 +151,99 @@ function KonvaImageElement({ element, onSelect }: { element: ImageElement; onSel
       width={element.width} height={element.height}
       rotation={element.rotation ?? 0}
       opacity={element.style.opacity ?? 1}
+      image={gradImage}
+      draggable={!element.locked}
+      {...(isSelected ? SELECTION : {})}
+      {...shadowProps(element.style)}
+      onClick={() => onSelect(element.id)}
+      onTap={() => onSelect(element.id)}
+      onDblClick={() => startEditingText(element.id)}
+      onDblTap={() => startEditingText(element.id)}
+    />
+  );
+}
+
+// ─── Mask Text Component ──────────────────────────────────────────────────────
+// Affiche une image clippée par la forme du texte
+function MaskedTextElement({ element, onSelect, isSelected }: {
+  element: TextElement; onSelect: (id: string) => void; isSelected: boolean;
+}) {
+  const { startEditingText } = useCanvas();
+  const [maskImg] = useImage(element.maskImageSrc ?? '', 'anonymous');
+
+  return (
+    <Group
+      id={element.id}
+      x={element.x} y={element.y}
+      rotation={element.rotation ?? 0}
+      opacity={element.style.opacity ?? 1}
+      draggable={!element.locked}
+      clipFunc={(ctx) => {
+        // Dessine le texte comme zone de clip
+        ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+        ctx.textBaseline = 'top';
+        ctx.textAlign    = (element.align as CanvasTextAlign) || 'left';
+        const xOffset = element.align === 'center' ? element.width / 2
+                      : element.align === 'right'  ? element.width : 0;
+        ctx.fillText(element.text, xOffset, 0);
+      }}
+      onClick={() => onSelect(element.id)}
+      onTap={() => onSelect(element.id)}
+      onDblClick={() => startEditingText(element.id)}
+      onDblTap={() => startEditingText(element.id)}
+    >
+      {maskImg && (
+        <KonvaImage
+          image={maskImg}
+          width={element.width}
+          height={element.height}
+          {...(isSelected ? SELECTION : {})}
+        />
+      )}
+    </Group>
+  );
+}
+
+// ─── Image with filters ───────────────────────────────────────────────────────
+function FilteredImageElement({ element, onSelect }: {
+  element: ImageElement; onSelect: (id: string) => void;
+}) {
+  const { selectedId } = useCanvas();
+  const isSelected = selectedId === element.id;
+  const src = element.bgRemoved && element.removedBgSrc ? element.removedBgSrc : element.src;
+  const [image] = useImage(src, 'anonymous');
+  const imgRef = useRef<KonvaImageClass>(null);
+  const filters = element.filters ?? {};
+
+  // Applique les filtres Konva dès que l'image ou les  filtres changent
+  useEffect(() => {
+    if (!imgRef.current || !image) return;
+    const node = imgRef.current;
+    node.cache();
+    node.getLayer()?.batchDraw();
+  }, [image, filters.blur, filters.brightness, filters.contrast,
+      filters.grayscale, filters.sepia, filters.invert, filters.hue, filters.saturation]);
+
+  const konvaFilters = buildKonvaFilters(filters);
+
+  return (
+    <KonvaImage
+      ref={imgRef}
+      id={element.id}
+      x={element.x} y={element.y}
+      width={element.width} height={element.height}
+      rotation={element.rotation ?? 0}
+      opacity={element.style.opacity ?? 1}
       image={image ?? undefined}
       draggable={!element.locked}
-      {...(selectedId === element.id ? SELECTION : {})}
+      filters={konvaFilters}
+      // Paramètres des filtres Konva
+      blurRadius={filters.blur ?? 0}
+      brightness={filters.brightness ?? 0}
+      contrast={filters.contrast ?? 0}
+      hue={filters.hue ?? 0}
+      saturation={filters.saturation ?? 0}
+      {...(isSelected ? SELECTION : {})}
       {...shadowProps(element.style)}
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
@@ -100,106 +251,30 @@ function KonvaImageElement({ element, onSelect }: { element: ImageElement; onSel
   );
 }
 
-// ─── Shape renderer ───────────────────────────────────────────────────────────
+// ─── Shape renderer (inchangé) ────────────────────────────────────────────────
 function ShapeRenderer({ element, onSelect, isSelected }: {
   element: ShapeElement; onSelect: (id: string) => void; isSelected: boolean;
 }) {
-  const sel = isSelected ? SELECTION : {};
+  const sel      = isSelected ? SELECTION : {};
   const handlers = { onClick: () => onSelect(element.id), onTap: () => onSelect(element.id), draggable: !element.locked };
   const { style, x, y, width: w, height: h } = element;
-  const cx = w / 2, cy = h / 2;
-  const r  = Math.min(w, h) / 2;
+  const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2;
   const shared = { id: element.id, x, y, rotation: element.rotation ?? 0, opacity: style.opacity ?? 1, ...sel, ...handlers, ...shadowProps(style) };
   const fill   = gradientFillProps(style, w, h);
   const stroke = { stroke: style.stroke, strokeWidth: style.strokeWidth ?? 0, dash: style.strokeDash };
 
   switch (element.type as ShapeType) {
-
-    case 'rectangle':
-      return <Rect {...shared} width={w} height={h} cornerRadius={style.borderRadius ?? 0} {...fill} {...stroke} />;
-
-    case 'circle':
-      return <Circle {...shared} x={x + cx} y={y + cy} radius={r} {...fill} {...stroke} />;
-
-    case 'line':
-      return (
-        <Line {...shared}
-          points={element.points ?? [0, 0, w, 0]}
-          stroke={style.stroke || style.fill || '#7c3aed'}
-          strokeWidth={style.strokeWidth ?? 3}
-          dash={style.strokeDash}
-        />
-      );
-
-    case 'arrow':
-      return (
-        <Arrow {...shared}
-          points={element.points ?? [0, h / 2, w, h / 2]}
-          stroke={style.stroke || style.fill || '#7c3aed'}
-          strokeWidth={style.strokeWidth ?? 3}
-          fill={style.fill || '#7c3aed'}
-          pointerLength={14}
-          pointerWidth={12}
-          pointerAtBeginning={false}
-        />
-      );
-
-    case 'triangle':
-      return (
-        <Line {...shared}
-          points={polygonPoints(cx, cy, r, 3)}
-          closed
-          {...fill} {...stroke}
-        />
-      );
-
-    case 'pentagon':
-      return (
-        <Line {...shared}
-          points={polygonPoints(cx, cy, r, 5)}
-          closed
-          {...fill} {...stroke}
-        />
-      );
-
-    case 'hexagon':
-      return (
-        <Line {...shared}
-          points={polygonPoints(cx, cy, r, 6, Math.PI / 6)}
-          closed
-          {...fill} {...stroke}
-        />
-      );
-
-    case 'star':
-      return (
-        <Line {...shared}
-          points={starPoints(cx, cy, r, r * 0.45, element.numPoints ?? 5)}
-          closed
-          {...fill} {...stroke}
-        />
-      );
-
-    case 'diamond':
-      return (
-        <Line {...shared}
-          points={diamondPoints(w, h)}
-          closed
-          {...fill} {...stroke}
-        />
-      );
-
-    case 'cross':
-      return (
-        <Line {...shared}
-          points={crossPoints(w, h)}
-          closed
-          {...fill} {...stroke}
-        />
-      );
-
-    default:
-      return null;
+    case 'rectangle': return <Rect  {...shared} width={w} height={h} cornerRadius={style.borderRadius ?? 0} {...fill} {...stroke} />;
+    case 'circle':    return <Circle {...shared} x={x + cx} y={y + cy} radius={r} {...fill} {...stroke} />;
+    case 'line':      return <Line  {...shared} points={element.points ?? [0, 0, w, 0]} stroke={style.stroke || style.fill || '#7c3aed'} strokeWidth={style.strokeWidth ?? 3} dash={style.strokeDash} />;
+    case 'arrow':     return <Arrow {...shared} points={element.points ?? [0, h / 2, w, h / 2]} stroke={style.stroke || style.fill || '#7c3aed'} strokeWidth={style.strokeWidth ?? 3} fill={style.fill || '#7c3aed'} pointerLength={14} pointerWidth={12} />;
+    case 'triangle':  return <Line  {...shared} points={polygonPoints(cx, cy, r, 3)}          closed {...fill} {...stroke} />;
+    case 'pentagon':  return <Line  {...shared} points={polygonPoints(cx, cy, r, 5)}          closed {...fill} {...stroke} />;
+    case 'hexagon':   return <Line  {...shared} points={polygonPoints(cx, cy, r, 6, Math.PI / 6)} closed {...fill} {...stroke} />;
+    case 'star':      return <Line  {...shared} points={starPoints(cx, cy, r, r * 0.45, element.numPoints ?? 5)} closed {...fill} {...stroke} />;
+    case 'diamond':   return <Line  {...shared} points={diamondPoints(w, h)}                  closed {...fill} {...stroke} />;
+    case 'cross':     return <Line  {...shared} points={crossPoints(w, h)}                    closed {...fill} {...stroke} />;
+    default:          return null;
   }
 }
 
@@ -214,6 +289,16 @@ export default function RenderElement({ element, onSelect }: {
     case 'text': {
       if (editingTextId === element.id) return null;
       const txt = element as TextElement;
+
+      // Masque image → priorité max
+      if (txt.maskImageSrc) {
+        return <MaskedTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
+      }
+      // Gradient texte
+      if (txt.textGradient?.enabled) {
+        return <GradientTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
+      }
+      // Texte normal
       return (
         <Text
           id={txt.id}
@@ -243,7 +328,7 @@ export default function RenderElement({ element, onSelect }: {
     }
 
     case 'image':
-      return <KonvaImageElement element={element as ImageElement} onSelect={onSelect} />;
+      return <FilteredImageElement element={element as ImageElement} onSelect={onSelect} />;
 
     case 'container':
     case 'group': {
@@ -259,13 +344,6 @@ export default function RenderElement({ element, onSelect }: {
     }
 
     default:
-      // Toutes les ShapeType tombent ici
-      return (
-        <ShapeRenderer
-          element={element as ShapeElement}
-          onSelect={onSelect}
-          isSelected={isSelected}
-        />
-      );
+      return <ShapeRenderer element={element as ShapeElement} onSelect={onSelect} isSelected={isSelected} />;
   }
 }

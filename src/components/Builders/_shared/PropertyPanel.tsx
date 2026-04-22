@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
+import RemoveBgButton from './RemoveBgButton';
 
 type Props = { lang: 'fr' | 'en' };
 
@@ -354,6 +355,163 @@ export default function PropertyPanel({ lang }: Props) {
           </div>
         </Section>
       )}
+
+      {/* ── GRADIENT TEXTE ── */}
+{isText && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Gradient texte' : 'Text gradient'}</SectionTitle>
+    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
+      <TabBtn
+        active={!(selected as any).textGradient?.enabled}
+        onClick={() => upd({ textGradient: { ...((selected as any).textGradient ?? {}), enabled: false } } as any)}
+      >
+        {lang === 'fr' ? 'Solide' : 'Solid'}
+      </TabBtn>
+      <TabBtn
+        active={(selected as any).textGradient?.enabled}
+        onClick={() => upd({
+          textGradient: {
+            enabled: true,
+            color1: (selected as any).textGradient?.color1 ?? '#7c3aed',
+            color2: (selected as any).textGradient?.color2 ?? '#06b6d4',
+            direction: (selected as any).textGradient?.direction ?? 90,
+          },
+        } as any)}
+      >
+        Gradient
+      </TabBtn>
+    </div>
+
+    {(selected as any).textGradient?.enabled && (
+      <div className="space-y-3">
+        <div className="flex items-end gap-3">
+          <ColorDot
+            value={(selected as any).textGradient?.color1 ?? '#7c3aed'}
+            onChange={(v) => upd({ textGradient: { ...(selected as any).textGradient, color1: v } } as any)}
+            label={t.gradient_start}
+          />
+          <div className="flex-1 h-8 rounded-lg"
+            style={{ background: `linear-gradient(${(selected as any).textGradient?.direction ?? 90}deg, ${(selected as any).textGradient?.color1 ?? '#7c3aed'}, ${(selected as any).textGradient?.color2 ?? '#06b6d4'})` }}
+          />
+          <ColorDot
+            value={(selected as any).textGradient?.color2 ?? '#06b6d4'}
+            onChange={(v) => upd({ textGradient: { ...(selected as any).textGradient, color2: v } } as any)}
+            label={t.gradient_end}
+          />
+        </div>
+        <div className="grid grid-cols-4 gap-1.5">
+          {[0, 45, 90, 135].map((deg) => (
+            <button key={deg}
+              onClick={() => upd({ textGradient: { ...(selected as any).textGradient, direction: deg } } as any)}
+              className={`py-1.5 text-xs rounded-lg font-mono transition-all ${
+                (selected as any).textGradient?.direction === deg
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-violet-100'
+              }`}
+            >
+              {deg}°
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+  </Section>
+)}
+
+{/* ── MASQUE IMAGE (texte) ── */}
+{isText && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Masque image' : 'Image mask'}</SectionTitle>
+    <div className="space-y-2">
+      <button
+        onClick={() => {
+          const input = document.createElement('input');
+          input.type = 'file'; input.accept = 'image/*';
+          input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => upd({ maskImageSrc: ev.target?.result as string } as any);
+            reader.readAsDataURL(file);
+          };
+          input.click();
+        }}
+        className="w-full py-2.5 rounded-xl border border-dashed border-violet-300 dark:border-violet-700
+          text-xs font-semibold text-violet-600 dark:text-violet-400
+          hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
+      >
+        📁 {lang === 'fr' ? 'Choisir une image masque' : 'Choose mask image'}
+      </button>
+      {(selected as any).maskImageSrc && (
+        <button
+          onClick={() => upd({ maskImageSrc: undefined } as any)}
+          className="w-full py-2 rounded-xl border border-red-200 text-xs font-semibold text-red-500
+            hover:bg-red-50 transition-all"
+        >
+          ✕ {lang === 'fr' ? 'Retirer le masque' : 'Remove mask'}
+        </button>
+      )}
+    </div>
+  </Section>
+)}
+
+{/* ── FILTRES IMAGE ── */}
+{selected.type === 'image' && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Filtres' : 'Filters'}</SectionTitle>
+    <div className="space-y-3">
+      {/* Presets rapides */}
+      <div className="grid grid-cols-3 gap-1.5 mb-1">
+        {[
+          { label: 'Normal',    patch: {} },
+          { label: 'B&W',       patch: { grayscale: true } },
+          { label: 'Sépia',     patch: { sepia: true } },
+          { label: 'Inverser',  patch: { invert: true } },
+          { label: 'Doux',      patch: { brightness: 0.1, contrast: -0.1 } },
+          { label: 'Vif',       patch: { brightness: 0.05, contrast: 0.3, saturation: 0.5 } },
+        ].map((p) => (
+          <button key={p.label}
+            onClick={() => upd({ filters: p.patch } as any)}
+            className="py-1.5 text-[10px] font-semibold rounded-lg bg-gray-100 dark:bg-gray-800
+              hover:bg-violet-100 dark:hover:bg-violet-900/20 hover:text-violet-600
+              transition-all text-gray-600 dark:text-gray-300"
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <Slider label={lang === 'fr' ? 'Luminosité' : 'Brightness'} min={-100} max={100}
+        value={Math.round(((selected as any).filters?.brightness ?? 0) * 100)}
+        unit="" onChange={(v) => 
+          //updStyle({}) ||
+         upd({ filters: { ...(selected as any).filters, brightness: v / 100 } } as any)}
+      />
+      <Slider label="Contraste" min={-100} max={100}
+        value={Math.round(((selected as any).filters?.contrast ?? 0) * 100)}
+        unit="" onChange={(v) => upd({ filters: { ...(selected as any).filters, contrast: v / 100 } } as any)}
+      />
+      <Slider label="Saturation" min={-100} max={100}
+        value={Math.round(((selected as any).filters?.saturation ?? 0) * 100)}
+        unit="" onChange={(v) => upd({ filters: { ...(selected as any).filters, saturation: v / 100 } } as any)}
+      />
+      <Slider label="Teinte (Hue)" min={0} max={360}
+        value={(selected as any).filters?.hue ?? 0}
+        unit="°" onChange={(v) => upd({ filters: { ...(selected as any).filters, hue: v } } as any)}
+      />
+      <Slider label="Flou" min={0} max={40}
+        value={(selected as any).filters?.blur ?? 0}
+        unit="px" onChange={(v) => upd({ filters: { ...(selected as any).filters, blur: v } } as any)}
+      />
+    </div>
+
+    {/* Remove background */}
+    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+      <SectionTitle>{lang === 'fr' ? 'Arrière-plan' : 'Background'}</SectionTitle>
+      <RemoveBgButton element={selected as any} lang={lang} />
+    </div>
+  </Section>
+)}
 
       {/* ── Rotation ── */}
       <Section>
