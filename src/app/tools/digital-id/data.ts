@@ -13,6 +13,8 @@ fr: {
   label_qr: "Couleur du QR",
   label_bg: "Couleur du Fond",
   label_logo: "Logo central (Optionnel)",
+  back:"Retour",
+  configurate:"configuration des réseaux"
 },
 en: {
   did_title: "Your Digital Identity",
@@ -29,5 +31,8 @@ en: {
     label_qr: "QR Color",
     label_bg: "Background Color",
     label_logo: "Center Logo (Optional)",
+    back:"Back",
+    configurate:"Configurate your social medias"
+
 }
   }

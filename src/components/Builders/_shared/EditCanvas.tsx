@@ -14,24 +14,32 @@ type Props = {
 };
 
 export default function EditCanvas({ designWidth, designHeight }: Props) {
-  const { stageRef, elements, selectElement } = useCanvas();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const canvasWrapRef = useRef<HTMLDivElement>(null);
+
+
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
+
+
+// Par :
+const { stageRef, elements, selectElement, zoom } = useCanvas();
+const [baseScale, setBaseScale] = useState(1);
+const scale = baseScale * zoom;
+
+  // ── Recalcule le scale dès que le conteneur change de taille ──────────────
   const calculateScale = useCallback(() => {
     if (!containerRef.current) return;
-    const padding = 40;
+    const padding = 48;
     const w = containerRef.current.clientWidth - padding;
     const h = containerRef.current.clientHeight - padding;
-
     let newScale = Math.min(w / designWidth, h / designHeight, 2.5);
-    if (window.innerWidth < 768) newScale = Math.max(newScale, 0.75);
-
-    setScale(newScale);
+    // Sur mobile on garde un minimum lisible
+    if (window.innerWidth < 768) newScale = Math.max(newScale, 0.35);
+    setBaseScale(newScale);
     setContainerSize({
-      width: Math.round(designWidth * newScale),
+      width:  Math.round(designWidth  * newScale),
       height: Math.round(designHeight * newScale),
     });
   }, [designWidth, designHeight]);
@@ -39,10 +47,8 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
   useEffect(() => {
     const timeout = setTimeout(calculateScale, 0);
     const observer = new ResizeObserver(() => setTimeout(calculateScale, 16));
-
     if (containerRef.current) observer.observe(containerRef.current);
     window.addEventListener('orientationchange', calculateScale);
-
     return () => {
       clearTimeout(timeout);
       observer.disconnect();
@@ -50,15 +56,27 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
     };
   }, [calculateScale]);
 
+  const wrapW = containerSize.width  || designWidth;
+  const wrapH = containerSize.height || designHeight;
+
   return (
-    <div ref={containerRef} className="flex items-center justify-center w-full h-full min-h-0 p-4 relative">
-      
-      {/* Canvas principal */}
+    <div
+      ref={containerRef}
+      className="flex items-center justify-center w-full h-full min-h-0 p-4 relative"
+    >
+      {/* ── Canvas sheet ── */}
       <div
-        className="relative shadow-2xl border border-gray-300 dark:border-gray-700 rounded-3xl overflow-hidden bg-white"
+        ref={canvasWrapRef}
+        className="relative bg-white"
         style={{
-          width: containerSize.width || designWidth,
-          height: containerSize.height || designHeight,
+          width:  wrapW,
+          height: wrapH,
+          // Ombre et coins doux cohérents avec le nouveau design
+          borderRadius: 16,
+          boxShadow: '0 24px 64px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07)',
+          overflow: 'hidden',
+          // Contour subtil
+          outline: '1px solid rgba(0,0,0,0.06)',
         }}
       >
         <Stage
@@ -81,11 +99,10 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
             <Transformer />
           </Layer>
         </Stage>
+
+        {/* ── TextEditorOverlay : positionné DANS le wrapper pour hériter du scale ── */}
+        <TextEditorOverlay scale={scale} />
       </div>
-
-      {/* Éditeur de texte (par-dessus tout) */}
-      <TextEditorOverlay />
-
     </div>
   );
 }

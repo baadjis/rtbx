@@ -86,7 +86,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
         
         {/* RETOUR */}
         <Link href="/" className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold mb-8 transition-colors no-underline">
-          <ArrowLeft className="w-4 h-4" /> {lang === 'fr' ? 'Retour' : 'Back'}
+          <ArrowLeft className="w-4 h-4" /> {t.back}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -105,7 +105,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
             <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-slate-800 space-y-6 transition-colors">
               <div className="space-y-4">
                 <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2 mb-2">
-                  <Settings2 className="w-4 h-4" /> configuration des réseaux
+                  <Settings2 className="w-4 h-4" /> {t.configurate}
                 </label>
                 
                 {links.map((link, index) => (

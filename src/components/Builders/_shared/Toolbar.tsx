@@ -5,44 +5,89 @@
 import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
 import { v4 as uuidv4 } from 'uuid';
-import { useState } from 'react';
 
 type Props = { extraTools?: string[]; lang: 'fr' | 'en' };
 
+// ─── Icons ────────────────────────────────────────────────────────────────────
+const UndoIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <path d="M3 7v6h6M3 13c1.5-4.5 6-7 10-7a9 9 0 010 18 9 9 0 01-8-5"/>
+  </svg>
+);
+const RedoIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <path d="M21 7v6h-6M21 13c-1.5-4.5-6-7-10-7a9 9 0 000 18 9 9 0 008-5"/>
+  </svg>
+);
+const ImageIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
+    <rect x="3" y="3" width="18" height="18" rx="3"/>
+    <circle cx="8.5" cy="8.5" r="1.5"/>
+    <path d="m21 15-5-5L5 21"/>
+  </svg>
+);
+const ExportIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+  </svg>
+);
+const ZoomInIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>
+  </svg>
+);
+const ZoomOutIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.35-4.35M8 11h6"/>
+  </svg>
+);
+const ResetZoomIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <path d="M3.05 11a9 9 0 1 1 .5 4M3 16v-5h5"/>
+  </svg>
+);
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function Divider() {
+  return <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-0.5 shrink-0" />;
+}
+
+function ToolbarBtn({
+  onClick, disabled = false, title, children, variant = 'ghost',
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+  children: React.ReactNode;
+  variant?: 'ghost' | 'soft';
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className={`
+        flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
+        transition-all duration-150 select-none shrink-0
+        ${disabled
+          ? 'opacity-30 cursor-not-allowed text-gray-400 dark:text-gray-600'
+          : variant === 'soft'
+            ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95'
+            : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100 active:scale-95'
+        }
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── Toolbar ──────────────────────────────────────────────────────────────────
 export default function Toolbar({ extraTools = [], lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
-  
-  const [showShapes, setShowShapes] = useState(false);
-  const { addElement, undo, redo, canUndo, canRedo } = useCanvas();
-
-  const addText = () => {
-    addElement({
-      id: uuidv4(),
-      type: 'text',
-      x: 150,
-      y: 150,
-      width: 400,
-      height: 80,
-      text: lang === 'fr' ? 'Votre texte' : 'Your text',
-      fontSize: 42,
-      style: { fill: '#000000' },
-      align: 'center',
-    } as any);
-  };
-
-  const addShape = (type: 'rectangle' | 'circle' | 'line') => {
-    const base = {
-      id: uuidv4(),
-      x: 180,
-      y: 180,
-      width: type === 'line' ? 320 : 220,
-      height: type === 'line' ? 6 : 180,
-      style: { fill: '#3b82f6', stroke: '#1e40af', strokeWidth: 8 },
-    };
-
-    addElement({ ...base, type } as any);
-    setShowShapes(false);
-  };
+  const { addElement, undo, redo, canUndo, canRedo, exportToPNG, zoom, zoomIn, zoomOut, resetZoom } = useCanvas();
 
   const addImage = () => {
     const input = document.createElement('input');
@@ -54,12 +99,8 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
       const reader = new FileReader();
       reader.onload = (ev) => {
         addElement({
-          id: uuidv4(),
-          type: 'image',
-          x: 120,
-          y: 120,
-          width: 320,
-          height: 320,
+          id: uuidv4(), type: 'image',
+          x: 120, y: 120, width: 320, height: 320,
           src: ev.target?.result as string,
           style: {},
         } as any);
@@ -69,76 +110,87 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
     input.click();
   };
 
-  return (
-    <div className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex items-center px-4 gap-2 overflow-x-auto">
-      
-      {/* Texte */}
-      <button
-        onClick={addText}
-        className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl text-sm font-medium"
-      >
-        Aa {t.toolbar.text}
-      </button>
+  const handleExport = async () => {
+    const url = await exportToPNG();
+    if (!url) return;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'design.png';
+    a.click();
+  };
 
-      {/* Formes (comme PowerPoint) */}
-      <div className="relative">
+  return (
+    <div className="flex items-center gap-0.5 flex-1 overflow-x-auto min-w-0">
+
+      {/* ── [1] Image upload ── */}
+      <Divider />
+      <ToolbarBtn onClick={addImage} title={t.toolbar.image} variant="soft">
+        <ImageIcon />
+        <span className="hidden sm:inline text-xs">{t.toolbar.image}</span>
+      </ToolbarBtn>
+
+      {/* ── [2] Extra tools slot ── */}
+      {extraTools.length > 0 && (
+        <>
+          <Divider />
+          {extraTools.map((tool) => (
+            <ToolbarBtn key={tool} onClick={() => {}} title={tool}>
+              <span className="text-xs">{tool}</span>
+            </ToolbarBtn>
+          ))}
+        </>
+      )}
+
+      {/* ── Spacer ── */}
+      <div className="flex-1 min-w-0" />
+
+      {/* ── [3] Zoom — centré visuellement entre les actions et l'export ── */}
+      <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-800 rounded-xl px-1 py-1">
+        <ToolbarBtn onClick={zoomOut} disabled={zoom <= 0.2} title="Zoom arrière (−)">
+          <ZoomOutIcon />
+        </ToolbarBtn>
+
+        {/* Indicateur % cliquable pour reset */}
         <button
-          onClick={() => setShowShapes(!showShapes)}
-          className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl text-sm font-medium"
+          onClick={resetZoom}
+          title="Réinitialiser le zoom"
+          className="px-2 py-1 text-xs font-mono font-bold text-violet-600 dark:text-violet-400
+            hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-all min-w-[44px] text-center"
         >
-          □ {t.toolbar.shapes}
+          {Math.round(zoom * 100)}%
         </button>
 
-        {/* Panneau des formes */}
-        {showShapes && (
-          <div className="absolute top-14 left-0 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700 rounded-3xl p-4 grid grid-cols-4 gap-3 z-50 w-72">
-            <button onClick={() => addShape('rectangle')} className="flex flex-col items-center gap-1 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl">
-              <div className="w-10 h-10 border-2 border-gray-700 rounded-md"></div>
-              <span className="text-xs">{t.shapesPanel.rectangle}</span>
-            </button>
-            <button onClick={() => addShape('circle')} className="flex flex-col items-center gap-1 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl">
-              <div className="w-10 h-10 border-2 border-gray-700 rounded-full"></div>
-              <span className="text-xs">{t.shapesPanel.circle}</span>
-            </button>
-            <button onClick={() => addShape('line')} className="flex flex-col items-center gap-1 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl">
-              <div className="w-10 h-2 bg-gray-700 rounded"></div>
-              <span className="text-xs">{t.shapesPanel.line}</span>
-            </button>
-          </div>
-        )}
+        <ToolbarBtn onClick={zoomIn} disabled={zoom >= 3} title="Zoom avant (+)">
+          <ZoomInIcon />
+        </ToolbarBtn>
       </div>
 
-      {/* Image */}
-      <button
-        onClick={addImage}
-        className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl text-sm font-medium"
-      >
-        📸 {t.toolbar.image}
-      </button>
-   
-      
+      <Divider />
 
-      <div className="flex-1" />
+      {/* ── [4] Undo / Redo ── */}
+      <ToolbarBtn onClick={undo} disabled={!canUndo} title="Annuler (Ctrl+Z)">
+        <UndoIcon />
+      </ToolbarBtn>
+      <ToolbarBtn onClick={redo} disabled={!canRedo} title="Rétablir (Ctrl+Y)">
+        <RedoIcon />
+      </ToolbarBtn>
 
-      {/* Undo / Redo */}
+      <Divider />
+
+      {/* ── [5] Export ── */}
       <button
-        onClick={undo}
-        disabled={!canUndo}
-        className="px-4 py-2 disabled:opacity-40"
+        onClick={handleExport}
+        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold
+          bg-gradient-to-r from-violet-600 to-indigo-600
+          hover:from-violet-500 hover:to-indigo-500
+          text-white shadow-md shadow-violet-300/30 dark:shadow-violet-900/40
+          transition-all duration-200 hover:scale-[1.02] active:scale-[0.97]
+          select-none shrink-0"
       >
-        ↩️ Undo
-      </button>
-      <button
-        onClick={redo}
-        disabled={!canRedo}
-        className="px-4 py-2 disabled:opacity-40"
-      >
-        ↪️ Redo
+        <ExportIcon />
+        <span className="hidden sm:inline">{t.toolbar.export}</span>
       </button>
 
-      <button className="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl">
-        {t.toolbar.export}
-      </button>
     </div>
   );
 }

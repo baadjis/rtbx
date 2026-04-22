@@ -12,6 +12,7 @@ type CanvasContextType = {
   editingTextId: string | null;
   canUndo: boolean;
   canRedo: boolean;
+  zoom: number;
 
   addElement: (element: CanvasElement) => void;
   updateElement: (id: string, updates: Partial<CanvasElement>) => void;
@@ -25,6 +26,10 @@ type CanvasContextType = {
   redo: () => void;
   loadTemplate: (template: CanvasTemplate) => void;
   exportToPNG: () => Promise<string>;
+  
+zoomIn: () => void;
+zoomOut: () => void;
+resetZoom: () => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -37,6 +42,10 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
 
   const [history, setHistory] = useState<CanvasElement[][]>([]);
   const [historyStep, setHistoryStep] = useState(-1);
+  const [zoom, setZoom] = useState(1);
+  const zoomIn    = () => setZoom((z) => Math.min(z + 0.1, 3));
+  const zoomOut   = () => setZoom((z) => Math.max(z - 0.1, 0.2));
+  const resetZoom = () => setZoom(1);
 
   const saveToHistory = (newElements: CanvasElement[]) => {
     setHistory(prev => {
@@ -150,6 +159,10 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
       redo,
       loadTemplate,
       exportToPNG,
+      zoom, 
+      zoomIn,
+      zoomOut,
+      resetZoom,
     }}>
       {children}
     </CanvasContext.Provider>
