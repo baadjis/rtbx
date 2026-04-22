@@ -2,19 +2,18 @@
 // components/builders/_shared/RenderElement.tsx
 'use client';
 
-import { Rect, Text, Circle, Line, Group, Image as KonvaImage } from 'react-konva';
+import { Rect, Text, Circle, Line, Group, Image as KonvaImage, Arrow } from 'react-konva';
 import { useCanvas } from './CanvasContext';
 import {
   CanvasElement, TextElement, ImageElement,
   ShapeElement, ContainerElement, GroupElement,
-  StyleProps,
+  StyleProps, ShapeType,
 } from './types';
 import useImage from 'use-image';
-import Konva from 'konva';
+//import Konva from 'konva';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Props d'ombre communes à toutes les shapes */
 function shadowProps(style: StyleProps) {
   return {
     shadowColor:   style.shadowColor   ?? 'transparent',
@@ -25,59 +24,75 @@ function shadowProps(style: StyleProps) {
   };
 }
 
-/** Construit un fillLinearGradientXXX pour Konva si gradient activé */
-function gradientFillProps(
-  style: StyleProps,
-  width: number,
-  height: number,
-): Record<string, any>{
+function gradientFillProps(style: StyleProps, width: number, height: number): Record<string, any> {
   if (!style.gradientEnabled) return { fill: style.fill ?? '#7c3aed' };
-
   const deg = style.gradientDirection ?? 90;
   const rad = (deg * Math.PI) / 180;
-
-  // Calcul du vecteur start→end dans le repère de la shape
-  const cx = width  / 2;
-  const cy = height / 2;
-  const dx = Math.cos(rad) * cx;
-  const dy = Math.sin(rad) * cy;
-
+  const cx = width / 2, cy = height / 2;
+  const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
   return {
     fillLinearGradientStartPoint: { x: cx - dx, y: cy - dy },
     fillLinearGradientEndPoint:   { x: cx + dx, y: cy + dy },
-    fillLinearGradientColorStops: [
-      0, style.gradientColor1 ?? '#7c3aed',
-      1, style.gradientColor2 ?? '#06b6d4',
-    ],
+    fillLinearGradientColorStops: [0, style.gradientColor1 ?? '#7c3aed', 1, style.gradientColor2 ?? '#06b6d4'],
     fill: undefined,
   };
 }
 
-// ─── Selection border ─────────────────────────────────────────────────────────
+/** Points d'un polygone régulier centré sur (cx,cy) avec n côtés */
+function polygonPoints(cx: number, cy: number, r: number, sides: number, offsetAngle = 0): number[] {
+  const pts: number[] = [];
+  for (let i = 0; i < sides; i++) {
+    const angle = (i * 2 * Math.PI) / sides - Math.PI / 2 + offsetAngle;
+    pts.push(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+  }
+  return pts;
+}
+
+/** Points d'une étoile à n branches */
+function starPoints(cx: number, cy: number, outerR: number, innerR: number, branches: number): number[] {
+  const pts: number[] = [];
+  for (let i = 0; i < branches * 2; i++) {
+    const angle = (i * Math.PI) / branches - Math.PI / 2;
+    const r = i % 2 === 0 ? outerR : innerR;
+    pts.push(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+  }
+  return pts;
+}
+
+/** Points d'une croix */
+function crossPoints(w: number, h: number, thickness = 0.3): number[] {
+  const tx = w * thickness, ty = h * thickness;
+  return [
+    tx, 0,       w - tx, 0,
+    w - tx, ty,  w, ty,
+    w, h - ty,   w - tx, h - ty,
+    w - tx, h,   tx, h,
+    tx, h - ty,  0, h - ty,
+    0, ty,       tx, ty,
+  ];
+}
+
+/** Points d'un diamant */
+function diamondPoints(w: number, h: number): number[] {
+  return [w / 2, 0, w, h / 2, w / 2, h, 0, h / 2];
+}
+
 const SELECTION = { stroke: '#7c3aed', strokeWidth: 2, dash: [5, 4] as number[] };
 
 // ─── Image element ────────────────────────────────────────────────────────────
-function KonvaImageElement({
-  element, onSelect,
-}: {
-  element: ImageElement; onSelect: (id: string) => void;
-}) {
+function KonvaImageElement({ element, onSelect }: { element: ImageElement; onSelect: (id: string) => void }) {
   const [image] = useImage(element.src, 'anonymous');
   const { selectedId } = useCanvas();
-  const isSelected = selectedId === element.id;
-
   return (
     <KonvaImage
       id={element.id}
-      x={element.x}
-      y={element.y}
-      width={element.width}
-      height={element.height}
+      x={element.x} y={element.y}
+      width={element.width} height={element.height}
       rotation={element.rotation ?? 0}
       opacity={element.style.opacity ?? 1}
       image={image ?? undefined}
       draggable={!element.locked}
-      {...(isSelected ? SELECTION : {})}
+      {...(selectedId === element.id ? SELECTION : {})}
       {...shadowProps(element.style)}
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
@@ -85,176 +100,157 @@ function KonvaImageElement({
   );
 }
 
+// ─── Shape renderer ───────────────────────────────────────────────────────────
+function ShapeRenderer({ element, onSelect, isSelected }: {
+  element: ShapeElement; onSelect: (id: string) => void; isSelected: boolean;
+}) {
+  const sel = isSelected ? SELECTION : {};
+  const handlers = { onClick: () => onSelect(element.id), onTap: () => onSelect(element.id), draggable: !element.locked };
+  const { style, x, y, width: w, height: h } = element;
+  const cx = w / 2, cy = h / 2;
+  const r  = Math.min(w, h) / 2;
+  const shared = { id: element.id, x, y, rotation: element.rotation ?? 0, opacity: style.opacity ?? 1, ...sel, ...handlers, ...shadowProps(style) };
+  const fill   = gradientFillProps(style, w, h);
+  const stroke = { stroke: style.stroke, strokeWidth: style.strokeWidth ?? 0, dash: style.strokeDash };
+
+  switch (element.type as ShapeType) {
+
+    case 'rectangle':
+      return <Rect {...shared} width={w} height={h} cornerRadius={style.borderRadius ?? 0} {...fill} {...stroke} />;
+
+    case 'circle':
+      return <Circle {...shared} x={x + cx} y={y + cy} radius={r} {...fill} {...stroke} />;
+
+    case 'line':
+      return (
+        <Line {...shared}
+          points={element.points ?? [0, 0, w, 0]}
+          stroke={style.stroke || style.fill || '#7c3aed'}
+          strokeWidth={style.strokeWidth ?? 3}
+          dash={style.strokeDash}
+        />
+      );
+
+    case 'arrow':
+      return (
+        <Arrow {...shared}
+          points={element.points ?? [0, h / 2, w, h / 2]}
+          stroke={style.stroke || style.fill || '#7c3aed'}
+          strokeWidth={style.strokeWidth ?? 3}
+          fill={style.fill || '#7c3aed'}
+          pointerLength={14}
+          pointerWidth={12}
+          pointerAtBeginning={false}
+        />
+      );
+
+    case 'triangle':
+      return (
+        <Line {...shared}
+          points={polygonPoints(cx, cy, r, 3)}
+          closed
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'pentagon':
+      return (
+        <Line {...shared}
+          points={polygonPoints(cx, cy, r, 5)}
+          closed
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'hexagon':
+      return (
+        <Line {...shared}
+          points={polygonPoints(cx, cy, r, 6, Math.PI / 6)}
+          closed
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'star':
+      return (
+        <Line {...shared}
+          points={starPoints(cx, cy, r, r * 0.45, element.numPoints ?? 5)}
+          closed
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'diamond':
+      return (
+        <Line {...shared}
+          points={diamondPoints(w, h)}
+          closed
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'cross':
+      return (
+        <Line {...shared}
+          points={crossPoints(w, h)}
+          closed
+          {...fill} {...stroke}
+        />
+      );
+
+    default:
+      return null;
+  }
+}
+
 // ─── Main renderer ────────────────────────────────────────────────────────────
-export default function RenderElement({
-  element,
-  onSelect,
-}: {
-  element: CanvasElement;
-  onSelect: (id: string) => void;
+export default function RenderElement({ element, onSelect }: {
+  element: CanvasElement; onSelect: (id: string) => void;
 }) {
   const { selectedId, editingTextId, startEditingText } = useCanvas();
   const isSelected = selectedId === element.id;
-  const isEditing  = editingTextId === element.id;
-  const sel        = isSelected ? SELECTION : {};
-  const draggable  = !element.locked;
-
-  // ── Shared event handlers ─────────────────────────────────────────────────
-  const selectHandlers = {
-    onClick:  () => onSelect(element.id),
-    onTap:    () => onSelect(element.id),
-    draggable,
-  };
 
   switch (element.type) {
-
-    // ── Text ────────────────────────────────────────────────────────────────
     case 'text': {
-      if (isEditing) return null;
+      if (editingTextId === element.id) return null;
       const txt = element as TextElement;
       return (
         <Text
           id={txt.id}
-          {...sel}
-          {...selectHandlers}
-          x={txt.x}
-          y={txt.y}
-          width={txt.width}
-          height={txt.height}
+          {...(isSelected ? SELECTION : {})}
+          x={txt.x} y={txt.y}
+          width={txt.width} height={txt.height}
           rotation={txt.rotation ?? 0}
           opacity={txt.style.opacity ?? 1}
           text={txt.text}
           fontSize={txt.fontSize}
           fontFamily={txt.fontFamily || 'Sora, sans-serif'}
           fontStyle={txt.fontStyle || 'normal'}
-          fontVariant="normal"
           textDecoration={txt.textDecoration === 'underline' ? 'underline' : ''}
           fill={txt.style.fill || '#000000'}
           align={txt.align || 'left'}
           verticalAlign={txt.verticalAlign || 'top'}
           lineHeight={txt.lineHeight ?? 1.3}
           letterSpacing={txt.letterSpacing ?? 0}
+          draggable={!txt.locked}
           {...shadowProps(txt.style)}
+          onClick={() => onSelect(txt.id)}
+          onTap={() => onSelect(txt.id)}
           onDblClick={() => startEditingText(txt.id)}
           onDblTap={() => startEditingText(txt.id)}
         />
       );
     }
 
-    // ── Image ───────────────────────────────────────────────────────────────
     case 'image':
-      return (
-        <KonvaImageElement
-          element={element as ImageElement}
-          onSelect={onSelect}
-        />
-      );
+      return <KonvaImageElement element={element as ImageElement} onSelect={onSelect} />;
 
-    // ── Rectangle ───────────────────────────────────────────────────────────
-    case 'rectangle': {
-      const s = element as ShapeElement;
-      return (
-        <Rect
-          id={s.id}
-          {...sel}
-          {...selectHandlers}
-          x={s.x}
-          y={s.y}
-          width={s.width}
-          height={s.height}
-          rotation={s.rotation ?? 0}
-          opacity={s.style.opacity ?? 1}
-          cornerRadius={s.style.borderRadius ?? 0}
-          stroke={s.style.stroke}
-          strokeWidth={s.style.strokeWidth ?? 0}
-          dash={s.style.strokeDash}
-          {...shadowProps(s.style)}
-          {...gradientFillProps(s.style, s.width, s.height)}
-        />
-      );
-    }
-
-    // ── Circle ──────────────────────────────────────────────────────────────
-    case 'circle': {
-      const s = element as ShapeElement;
-      const r = Math.min(s.width, s.height) / 2;
-      return (
-        <Circle
-          id={s.id}
-          {...sel}
-          {...selectHandlers}
-          x={s.x + s.width  / 2}
-          y={s.y + s.height / 2}
-          radius={r}
-          opacity={s.style.opacity ?? 1}
-          stroke={s.style.stroke}
-          strokeWidth={s.style.strokeWidth ?? 0}
-          dash={s.style.strokeDash}
-          {...shadowProps(s.style)}
-          {...gradientFillProps(s.style, s.width, s.height)}
-        />
-      );
-    }
-
-    // ── Line ────────────────────────────────────────────────────────────────
-    case 'line': {
-      const s = element as ShapeElement;
-      return (
-        <Line
-          id={s.id}
-          {...sel}
-          {...selectHandlers}
-          x={s.x}
-          y={s.y}
-          points={s.points ?? [0, 0, s.width, 0]}
-          stroke={s.style.stroke || s.style.fill || '#7c3aed'}
-          strokeWidth={s.style.strokeWidth ?? 3}
-          dash={s.style.strokeDash}
-          opacity={s.style.opacity ?? 1}
-          {...shadowProps(s.style)}
-        />
-      );
-    }
-
-    // ── Triangle (prêt pour la suite) ────────────────────────────────────────
-    case 'triangle': {
-      const s = element as ShapeElement;
-      const pts = s.points ?? [
-        s.width / 2, 0,
-        s.width,     s.height,
-        0,           s.height,
-      ];
-      return (
-        <Line
-          id={s.id}
-          {...sel}
-          {...selectHandlers}
-          x={s.x}
-          y={s.y}
-          points={pts}
-          closed
-          opacity={s.style.opacity ?? 1}
-          stroke={s.style.stroke}
-          strokeWidth={s.style.strokeWidth ?? 0}
-          {...shadowProps(s.style)}
-          {...gradientFillProps(s.style, s.width, s.height)}
-        />
-      );
-    }
-
-    // ── Group / Container ────────────────────────────────────────────────────
     case 'container':
     case 'group': {
       const grp = element as ContainerElement | GroupElement;
       return (
-        <Group
-          id={grp.id}
-          x={grp.x}
-          y={grp.y}
-          rotation={grp.rotation ?? 0}
-          opacity={grp.style.opacity ?? 1}
-          draggable={draggable}
-        >
+        <Group id={grp.id} x={grp.x} y={grp.y} rotation={grp.rotation ?? 0}
+          opacity={grp.style.opacity ?? 1} draggable={!grp.locked}>
           {grp.children.map((child) => (
             <RenderElement key={child.id} element={child} onSelect={onSelect} />
           ))}
@@ -263,6 +259,13 @@ export default function RenderElement({
     }
 
     default:
-      return null;
+      // Toutes les ShapeType tombent ici
+      return (
+        <ShapeRenderer
+          element={element as ShapeElement}
+          onSelect={onSelect}
+          isSelected={isSelected}
+        />
+      );
   }
 }

@@ -1,16 +1,28 @@
 // components/builders/_shared/types.ts
 
-// ─── Element types ────────────────────────────────────────────────────────────
+
+// ─── Shape type dédié ─────────────────────────────────────────────────────────
+export type ShapeType =
+  | 'rectangle'
+  | 'circle'
+  | 'line'
+  | 'triangle'
+  | 'arrow'
+  | 'star'
+  | 'pentagon'
+  | 'hexagon'
+  | 'diamond'
+  | 'cross';
+
 export type ElementType =
   | 'container'
   | 'group'
   | 'text'
   | 'image'
-  | 'rectangle'
-  | 'circle'
-  | 'line'
-  | 'triangle'   // ← prêt pour la suite
-  | 'arrow';     // ← prêt pour la suite
+  | ShapeType; // ← plus besoin de lister chaque shape ici
+
+
+
 
 // ─── Style ───────────────────────────────────────────────────────────────────
 export interface StyleProps {
@@ -54,6 +66,15 @@ export interface BaseElement {
   style:     StyleProps;
 }
 
+// ShapeElement utilise ShapeType
+export interface ShapeElement extends BaseElement {
+  type: ShapeType;
+  points?: number[]; // pour line, arrow, polygon custom
+  numPoints?: number; // pour star
+  innerRadius?: number; // pour star
+  outerRadius?: number; // pour star
+}
+
 // ─── Text ─────────────────────────────────────────────────────────────────────
 export interface TextElement extends BaseElement {
   type:            'text';
@@ -77,13 +98,6 @@ export interface ImageElement extends BaseElement {
   alt?:       string; // ← nouveau : accessibilité / calque label
 }
 
-// ─── Shape (rectangle, circle, line, triangle, arrow…) ───────────────────────
-// Une seule interface pour TOUTES les shapes — facile à étendre
-export interface ShapeElement extends BaseElement {
-  type: 'rectangle' | 'circle' | 'line' | 'triangle' | 'arrow';
-  // Points custom pour line/arrow/polygon
-  points?: number[];
-}
 
 // ─── Container / Group ───────────────────────────────────────────────────────
 export interface ContainerElement extends BaseElement {

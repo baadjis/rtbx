@@ -3,30 +3,85 @@
 import { useCanvas } from "./CanvasContext";
 import { sharedBuilderData } from "./data";
 import { v4 as uuidv4 } from 'uuid';
+import { ShapeType } from "./types";
 
 
 // ─── Shapes panel ─────────────────────────────────────────────────────────────
 export default function ShapesPanel({ lang }: { lang: 'fr' | 'en' }) {
   const { addElement } = useCanvas();
   const t = sharedBuilderData[lang];
-
-  const addShape = (type: 'rectangle' | 'circle' | 'line') => {
+const addShape = (type: ShapeType) => {
+    const isLine  = type === 'line' || type === 'arrow';
     addElement({
       id: uuidv4(), type,
-      x: 180, y: 180,
-      width: type === 'line' ? 320 : 200,
-      height: type === 'line' ? 4 : 200,
-      style: { fill: '#7c3aed', stroke: '#5b21b6', strokeWidth: 0 },
+      x: 160, y: 160,
+      width:  isLine ? 280 : 180,
+      height: isLine ? 4   : 180,
+      style: { fill: '#7c3aed', strokeWidth: 0 },
     } as any);
   };
 
-  const shapes = [
-    { key: 'rectangle', label: t.shapesPanel.rectangle, color: '#7c3aed',
-      icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><rect x="3" y="6" width="18" height="12" rx="2" opacity="0.9"/></svg> },
-    { key: 'circle', label: t.shapesPanel.circle, color: '#0ea5e9',
-      icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><circle cx="12" cy="12" r="9" opacity="0.9"/></svg> },
-    { key: 'line', label: t.shapesPanel.line, color: '#f59e0b',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="w-7 h-7"><path d="M4 12h16"/></svg> },
+  const shapes: { key: ShapeType; label: string; color: string; icon: React.ReactNode }[] = [
+    {
+      key: 'rectangle', label: 'Rectangle', color: '#7c3aed',
+      icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><rect x="2" y="5" width="20" height="14" rx="2"/></svg>,
+    },
+    {
+      key: 'circle', label: 'Cercle', color: '#0ea5e9',
+      icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><circle cx="12" cy="12" r="10"/></svg>,
+    },
+    {
+      key: 'triangle', label: 'Triangle', color: '#10b981',
+      icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><path d="M12 3L22 21H2L12 3z"/></svg>,
+    },
+    {
+      key: 'diamond', label: 'Diamant', color: '#f59e0b',
+      icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><path d="M12 2l10 10-10 10L2 12z"/></svg>,
+    },
+    {
+      key: 'star', label: 'Étoile', color: '#f43f5e',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/>
+        </svg>
+      ),
+    },
+    {
+      key: 'pentagon', label: 'Pentagone', color: '#8b5cf6',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M12 2l10 7.27-3.82 11.73H5.82L2 9.27z"/>
+        </svg>
+      ),
+    },
+    {
+      key: 'hexagon', label: 'Hexagone', color: '#06b6d4',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M17 2H7L2 12l5 10h10l5-10z"/>
+        </svg>
+      ),
+    },
+    {
+      key: 'cross', label: 'Croix', color: '#ef4444',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M9 3h6v6h6v6h-6v6H9v-6H3v-6h6z"/>
+        </svg>
+      ),
+    },
+    {
+      key: 'line', label: 'Ligne', color: '#64748b',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="w-7 h-7"><path d="M4 12h16"/></svg>,
+    },
+    {
+      key: 'arrow', label: 'Flèche', color: '#f97316',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-7 h-7">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      ),
+    },
   ];
 
   return (
