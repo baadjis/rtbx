@@ -10,6 +10,9 @@ fr: {
   did_tip: "💡 Conseil : Affichez ce QR Code sur vos supports physiques pour convertir vos clients en abonnés.",
   btn_dl_did: "TÉLÉCHARGER MA SOCIAL CARD",
   did_header: "MA PRÉSENCE DIGITALE :",
+  label_qr: "Couleur du QR",
+  label_bg: "Couleur du Fond",
+  label_logo: "Logo central (Optionnel)",
 },
 en: {
   did_title: "Your Digital Identity",
@@ -21,5 +24,10 @@ en: {
   did_tip: "💡 Tip: Display this QR Code on your physical marketing to turn customers into followers.",
   btn_dl_did: "DOWNLOAD MY SOCIAL CARD",
   did_header: "MY DIGITAL PRESENCE:",
+  
+
+    label_qr: "QR Color",
+    label_bg: "Background Color",
+    label_logo: "Center Logo (Optional)",
 }
   }

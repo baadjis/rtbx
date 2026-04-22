@@ -199,7 +199,7 @@ export default function QRCodeForm({ lang }: { lang: 'fr' | 'en' }) {
                   fgColor={fgColor}
                   bgColor={bgColor}
                   level="H"
-                  includeMargin={true}
+                  marginSize={4}
                   imageSettings={logo ? { src: logo, height: 50, width: 50, excavate: true } : undefined}
                 />
               </div>

@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { 
   Download, Plus, Trash2, ArrowLeft, 
-  ShieldCheck, Users, Settings2, Link2
+  ShieldCheck, Users, Settings2, Link2,
+  Upload,
+  X
 } from 'lucide-react'
 import Link from 'next/link'
 import { Data } from './data'
@@ -18,6 +20,9 @@ const SOCIAL_OPTIONS = [
 export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
   const t = Data[lang]
   const [links, setLinks] = useState([{ network: 'Instagram', handle: '' }])
+  const [fgColor, setFgColor] = useState('#4f46e5')
+  const [bgColor, setBgColor] = useState('#ffffff')
+  const [logo, setLogo] = useState<string | null>(null)
 
   const addLink = () => {
     if (links.length < SOCIAL_OPTIONS.length) {
@@ -41,6 +46,15 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     // @ts-ignore
     newLinks[index][field] = value
     setLinks(newLinks)
+  }
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => setLogo(reader.result as string)
+      reader.readAsDataURL(file)
+    }
   }
 
   const getAvailableOptions = (currentNetwork: string) => {
@@ -142,6 +156,42 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
                   {t.did_tip}
                 </p>
             </div>
+           
+            {/* COULEURS */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-slate-800">
+                            <div className="space-y-3">
+                              <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.label_qr}</label>
+                              <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
+                                  <input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-12 h-10 rounded-lg cursor-pointer border-none bg-transparent" />
+                                  <span className="text-sm font-bold dark:text-white uppercase">{fgColor}</span>
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.label_bg}</label>
+                              <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
+                                  <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-12 h-10 rounded-lg cursor-pointer border-none bg-transparent" />
+                                  <span className="text-sm font-bold dark:text-white uppercase">{bgColor}</span>
+                              </div>
+                            </div>
+                          </div>
+            
+                          {/* LOGO UPLOAD */}
+                          <div className="space-y-3">
+                            <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex justify-between">
+                                {t.label_logo}
+                                {logo && <button onClick={() => setLogo(null)} className="text-red-500 flex items-center gap-1 text-[10px] hover:underline font-bold"><X size={12}/> Supprimer</button>}
+                            </label>
+                            <div className="relative group">
+                                <input type="file" onChange={handleLogoUpload} accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div className="p-4 bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl flex items-center justify-center gap-3 group-hover:border-indigo-400 transition-colors">
+                                    <Upload size={20} className="text-gray-400" />
+                                    <span className="text-sm font-bold text-gray-500 dark:text-slate-400 italic">{logo ? (lang === 'fr' ? "Changer de logo" : "Change logo") : t.label_logo}</span>
+                                </div>
+                            </div>
+                          </div>
+
+
+
           </div>
 
           {/* --- COLONNE DROITE : PREVIEW --- */}
@@ -154,7 +204,15 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
                   value={getQRValue()} 
                   size={260} 
                   level="H" 
-                  includeMargin={true}
+                 marginSize={4}
+                 fgColor={fgColor}
+                  bgColor={bgColor}
+                  // LOGIQUE : imageSettings est indéfini si pas de logo, donc le QR est pur.
+
+                 imageSettings={logo ? { src: logo, height: 50, width: 50, excavate: true } : undefined}
+
+                 
+          
                 />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl border border-gray-50 group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-8 h-8 text-indigo-600" />
