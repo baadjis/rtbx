@@ -29,11 +29,11 @@ fr: {
   delete_account: "Supprimer mon compte",
   delete_warn: "Cette action est irréversible. Toutes vos données (liens, commerces) seront supprimées.",
   tab_social: "Réseaux Sociaux",
-    social_sec: "Présence Digitale",
-    social_sub: "Configurez les liens qui apparaîtront sur votre Identity Card.",
-    btn_add_social: "+ Ajouter un réseau",
-    label_platform: "Plateforme",
-    label_link: "Lien ou Identifiant",
+  social_sec: "Réseaux Sociaux",
+social_sub: "Configurez les liens qui apparaîtront sur votre Identity Card publique.",
+label_link: "Identifiant ou URL",
+btn_add_social: "+ Ajouter un réseau",
+    
 
     label_confirm_pass: "Confirmer le mot de passe",
     
@@ -71,13 +71,12 @@ en: {
   delete_warn: "This action is irreversible. All your data (links, businesses) will be deleted.",
   tab_social: "Social Media",
   social_sec: "Digital Presence",
-  social_sub: "Configure the links that will appear on your Identity Card.",
-  btn_add_social: "+ Add a network",
-  label_platform: "Platform",
-  label_link: "Link or Handle",
-   
-    label_confirm_pass: "Confirm Password",
-    pass_success: "Password updated!",
+  
+social_sub: "Configure the links that will appear on your public Identity Card.",
+label_link: "Handle or URL",
+btn_add_social: "+ Add a network",
+label_confirm_pass: "Confirm Password",
+pass_success: "Password updated!",
   
   
 }
