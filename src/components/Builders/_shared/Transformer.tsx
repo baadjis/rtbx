@@ -27,35 +27,57 @@ export default function Transformer() {
 
   // ── Resize / rotate ───────────────────────────────────────────────────────
   const handleTransformEnd = () => {
-    if (!selectedElement || !transformerRef.current) return;
-    const node = transformerRef.current.nodes()[0];
-    if (!node) return;
+  if (!selectedElement || !transformerRef.current) return;
+  const node = transformerRef.current.nodes()[0];
+  if (!node) return;
 
-    const scaleX = node.scaleX();
-    const scaleY = node.scaleY();
+  const scaleX = node.scaleX();
+  const scaleY = node.scaleY();
 
-    updateElement(selectedElement.id, {
-      x:        node.x(),
-      y:        node.y(),
-      width:    node.width()  * scaleX,
-      height:   node.height() * scaleY,
-      rotation: node.rotation(),
-    });
+  // ← Utilise attrs directement, plus fiable que width()/height()
+  const newWidth  = Math.max(5, node.width()  * scaleX);
+  const newHeight = Math.max(5, node.height() * scaleY);
 
-    // Reset scale après transform
-    node.scaleX(1);
-    node.scaleY(1);
-  };
+  updateElement(selectedElement.id, {
+    x:        Math.round(node.x()),
+    y:        Math.round(node.y()),
+    width:    Math.round(newWidth),
+    height:   Math.round(newHeight),
+    rotation: Math.round(node.rotation()),
+  });
+
+  // Reset AVANT batchDraw
+  node.scaleX(1);
+  node.scaleY(1);
+  node.getLayer()?.batchDraw();
+};
 
   // ── Drag (déplacement libre) ──────────────────────────────────────────────
   // Sans ce handler, déplacer un élément ne met pas à jour x/y dans le store
-  const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
+  useEffect(() => {
+  if (!transformerRef.current) return;
+  const stage = transformerRef.current.getStage();
+  if (!stage) return;
+
+  const selectedNode = stage.findOne(`#${selectedId}`);
+  if (!selectedNode) return;
+
+  // ← Le drag est géré par le nœud lui-même, pas le Transformer
+  const onDragEnd = () => {
     if (!selectedElement) return;
     updateElement(selectedElement.id, {
-      x: e.target.x(),
-      y: e.target.y(),
+      x: Math.round(selectedNode.x()),
+      y: Math.round(selectedNode.y()),
     });
   };
+
+  selectedNode.on('dragend', onDragEnd);
+
+  // Cleanup : retire le listener quand l'élément change
+  return () => {
+    selectedNode.off('dragend', onDragEnd);
+  };
+}, [selectedId, selectedElement, updateElement]);
 
   if (!selectedId) return null;
 
@@ -66,6 +88,12 @@ export default function Transformer() {
       rotateEnabled={true}
       resizeEnabled={true}
       keepRatio={false}
+      flipEnabled={false}
+  boundBoxFunc={(oldBox, newBox) => {
+    // Empêche la taille de passer en négatif
+    if (newBox.width < 5 || newBox.height < 5) return oldBox;
+    return newBox;
+  }}
       // ── Style violet cohérent avec le nouveau design ──
       borderStroke="#7c3aed"
       borderStrokeWidth={1.5}
@@ -79,7 +107,7 @@ export default function Transformer() {
       rotateAnchorOffset={20}
       // ── Événements ──
       onTransformEnd={handleTransformEnd}
-      onDragEnd={handleDragEnd}
+      
       onMouseDown={(e) => e.evt.stopImmediatePropagation()}
       onTouchStart={(e) => e.evt.stopImmediatePropagation()}
     />

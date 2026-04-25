@@ -174,30 +174,41 @@ function MaskedTextElement({ element, onSelect, isSelected }: {
   return (
     <Group
       id={element.id}
-      x={element.x} y={element.y}
+      x={element.x}
+      y={element.y}
+      width={element.width}
+      height={element.height}
       rotation={element.rotation ?? 0}
       opacity={element.style.opacity ?? 1}
+      // ← Ces 3 lignes manquaient
       draggable={!element.locked}
-      clipFunc={(ctx) => {
-        // Dessine le texte comme zone de clip
-        ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
-        ctx.textBaseline = 'top';
-        ctx.textAlign    = (element.align as CanvasTextAlign) || 'left';
-        const xOffset = element.align === 'center' ? element.width / 2
-                      : element.align === 'right'  ? element.width : 0;
-        ctx.fillText(element.text, xOffset, 0);
-      }}
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
       onDblClick={() => startEditingText(element.id)}
       onDblTap={() => startEditingText(element.id)}
+      clipFunc={(ctx) => {
+        ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+        ctx.textBaseline = 'top';
+        ctx.textAlign = (element.align as CanvasTextAlign) || 'left';
+        const xOffset = element.align === 'center' ? element.width / 2
+                      : element.align === 'right'  ? element.width : 0;
+        // ← fillText puis aussi rect transparent pour que le hitbox couvre tout
+        ctx.rect(0, 0, element.width, element.height);
+        ctx.fillText(element.text, xOffset, 0);
+      }}
     >
+      {/* Rect invisible pour que le hitbox soit cliquable partout */}
+      <Rect
+        width={element.width}
+        height={element.height}
+        fill="transparent"
+        {...(isSelected ? SELECTION : {})}
+      />
       {maskImg && (
         <KonvaImage
           image={maskImg}
           width={element.width}
           height={element.height}
-          {...(isSelected ? SELECTION : {})}
         />
       )}
     </Group>
@@ -210,41 +221,53 @@ function FilteredImageElement({ element, onSelect }: {
 }) {
   const { selectedId } = useCanvas();
   const isSelected = selectedId === element.id;
-  const src = element.bgRemoved && element.removedBgSrc ? element.removedBgSrc : element.src;
+  const src = element.bgRemoved && element.removedBgSrc
+    ? element.removedBgSrc
+    : element.src;
+
   const [image] = useImage(src, 'anonymous');
-  const imgRef = useRef<KonvaImageClass>(null);
+  const imgRef  = useRef<any>(null);
   const filters = element.filters ?? {};
 
-  // Applique les filtres Konva dès que l'image ou les  filtres changent
   useEffect(() => {
     if (!imgRef.current || !image) return;
-    const node = imgRef.current;
-    node.cache();
-    node.getLayer()?.batchDraw();
-  }, [image, filters.blur, filters.brightness, filters.contrast,
-      filters.grayscale, filters.sepia, filters.invert, filters.hue, filters.saturation]);
+    // ← clearCache avant de recacher, sinon l'ancienne version reste
+    imgRef.current.clearCache();
+    imgRef.current.cache();
+    imgRef.current.getLayer()?.batchDraw();
+  }, [
+    image,
+    // ← src dans les deps pour forcer le recache après remove bg
+    src,
+    filters.blur, filters.brightness, filters.contrast,
+    filters.grayscale, filters.sepia, filters.invert,
+    filters.hue, filters.saturation,
+  ]);
 
   const konvaFilters = buildKonvaFilters(filters);
+  const hasFilters   = konvaFilters.length > 0;
 
   return (
     <KonvaImage
       ref={imgRef}
       id={element.id}
-      x={element.x} y={element.y}
-      width={element.width} height={element.height}
+      x={element.x}
+      y={element.y}
+      width={element.width}
+      height={element.height}
       rotation={element.rotation ?? 0}
       opacity={element.style.opacity ?? 1}
       image={image ?? undefined}
       draggable={!element.locked}
-      filters={konvaFilters}
-      // Paramètres des filtres Konva
+      // ← Pas de dash sur les images (surtout après remove bg)
+      {...(isSelected ? { stroke: '#7c3aed', strokeWidth: 2 } : {})}
+      {...shadowProps(element.style)}
+      {...(hasFilters ? { filters: konvaFilters } : {})}
       blurRadius={filters.blur ?? 0}
       brightness={filters.brightness ?? 0}
       contrast={filters.contrast ?? 0}
       hue={filters.hue ?? 0}
       saturation={filters.saturation ?? 0}
-      {...(isSelected ? SELECTION : {})}
-      {...shadowProps(element.style)}
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
     />
