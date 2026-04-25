@@ -33,10 +33,14 @@ const handleTransformEnd = () => {
 
   const scaleX = node.scaleX();
   const scaleY = node.scaleY();
-  const newWidth  = Math.max(5, node.width()  * scaleX);
-  const newHeight = Math.max(5, node.height() * scaleY);
 
-  // ← Reset scale EN PREMIER avant updateElement
+  // ← Pour les Group, width()/height() = 0, on utilise les valeurs du store
+  const baseWidth  = node.width()  || selectedElement.width;
+  const baseHeight = node.height() || selectedElement.height;
+
+  const newWidth  = Math.max(5, baseWidth  * scaleX);
+  const newHeight = Math.max(5, baseHeight * scaleY);
+
   node.scaleX(1);
   node.scaleY(1);
 

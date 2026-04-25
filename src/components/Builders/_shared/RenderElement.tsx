@@ -170,6 +170,7 @@ function MaskedTextElement({ element, onSelect, isSelected }: {
 }) {
   const { startEditingText } = useCanvas();
   const [maskImg]    = useImage(element.maskImageSrc ?? '', 'anonymous');
+  
  
   
 const composite = useMemo(() => {
@@ -210,54 +211,60 @@ const composite = useMemo(() => {
     element.width, element.height]);
 
   // Canvas → dataURL → useImage pour Konva
-  const [compositeImage] = useImage(composite?.toDataURL() ?? '');
+  const compositeDataUrl = useMemo(() => composite?.toDataURL() ?? '', [composite]);
+  const [compositeImage] = useImage(compositeDataUrl);
 
   return (
-    <Group
-      id={element.id}
-      x={element.x}
-      y={element.y}
-      rotation={element.rotation ?? 0}
-      opacity={element.style.opacity ?? 1}
-      draggable={!element.locked}
-      onClick={() => onSelect(element.id)}
-      onTap={() => onSelect(element.id)}
-      onDblClick={() => startEditingText(element.id)}
-      onDblTap={() => startEditingText(element.id)}
-    >
-      {/* Hitbox invisible sur toute la zone */}
-      <Rect
+  <Group
+    id={element.id}
+    x={element.x}
+    y={element.y}
+    rotation={element.rotation ?? 0}
+    opacity={element.style.opacity ?? 1}
+    draggable={!element.locked}
+    onClick={() => onSelect(element.id)}
+    onTap={() => onSelect(element.id)}
+    onDblClick={() => startEditingText(element.id)}
+    onDblTap={() => startEditingText(element.id)}
+  >
+    <Rect
+      width={element.width}
+      height={element.height}
+      fill="rgba(0,0,0,0.001)"
+      stroke={isSelected ? '#7c3aed' : undefined}
+      strokeWidth={isSelected ? 2 : 0}
+      dash={isSelected ? [5, 4] as number[] : undefined}
+      // ← ces deux props sont clés
+      listening={true}
+      perfectDrawEnabled={false}
+    />
+
+    {compositeImage && (
+      <KonvaImage
+        image={compositeImage}
         width={element.width}
         height={element.height}
-        fill="rgba(0,0,0,0.001)"
-        stroke={isSelected ? '#7c3aed' : undefined}
-        strokeWidth={isSelected ? 2 : 0}
-        dash={isSelected ? [5, 4] as number[] : undefined}
+        // ← empêche KonvaImage de capturer les events (le Rect s'en charge)
+        listening={false}
+        perfectDrawEnabled={false}
       />
+    )}
 
-      {/* Image composite (image clippée par la forme du texte) */}
-      {compositeImage && (
-        <KonvaImage
-          image={compositeImage}
-          width={element.width}
-          height={element.height}
-        />
-      )}
-
-      {/* Fallback : si l'image n'est pas encore chargée, affiche le texte normal */}
-      {!compositeImage && (
-        <Text
-          text={element.text}
-          fontSize={element.fontSize}
-          fontFamily={element.fontFamily || 'Sora'}
-          fontStyle={element.fontStyle || 'normal'}
-          fill={element.style.fill || '#000000'}
-          width={element.width}
-          align={element.align || 'left'}
-        />
-      )}
-    </Group>
-  );
+    {!compositeImage && (
+      <Text
+        text={element.text}
+        fontSize={element.fontSize}
+        fontFamily={element.fontFamily || 'Sora'}
+        fontStyle={element.fontStyle || 'normal'}
+        fill={element.style.fill || '#000000'}
+        width={element.width}
+        align={element.align || 'left'}
+        listening={false}
+      />
+    )}
+  </Group>
+);
+  
 }
 
 // ─── Image with filters ───────────────────────────────────────────────────────
