@@ -176,42 +176,48 @@ function MaskedTextElement({ element, onSelect, isSelected }: {
       id={element.id}
       x={element.x}
       y={element.y}
-      width={element.width}
-      height={element.height}
       rotation={element.rotation ?? 0}
       opacity={element.style.opacity ?? 1}
-      // ← Ces 3 lignes manquaient
       draggable={!element.locked}
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
       onDblClick={() => startEditingText(element.id)}
       onDblTap={() => startEditingText(element.id)}
-      clipFunc={(ctx) => {
-  ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
-  ctx.textBaseline = 'top';
-  ctx.textAlign = (element.align as CanvasTextAlign) || 'left';
-  const xOffset = element.align === 'center' ? element.width / 2
-                : element.align === 'right'  ? element.width : 0;
-  // ← clip() au lieu de fillText() — crée le masque sans couleur
-  ctx.beginPath();
-  ctx.fillText(element.text, xOffset, 0);
-  // Pas de ctx.fill() ici — Konva utilise le path comme clip
-}}
+      // ← clipFunc RETIRÉ du Group — on le met sur un sous-Group
     >
-      {/* Rect invisible pour que le hitbox soit cliquable partout */}
+      {/* Rect invisible HORS du clip — garantit le hitbox sur toute la zone */}
       <Rect
         width={element.width}
         height={element.height}
-        fill="transparent"
-        {...(isSelected ? SELECTION : {})}
+        fill="rgba(0,0,0,0.001)" // ← quasi transparent mais détectable par Konva
+        stroke={isSelected ? '#7c3aed' : undefined}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [5, 4] : undefined}
       />
-      {maskImg && (
-        <KonvaImage
-          image={maskImg}
-          width={element.width}
-          height={element.height}
-        />
-      )}
+
+      {/* Sous-Group avec le clip appliqué seulement sur l'image */}
+      <Group
+        clipFunc={(ctx) => {
+          ctx.font = `${element.fontStyle || 'normal'} bold ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+          ctx.textBaseline = 'top';
+          ctx.textAlign = (element.align as CanvasTextAlign) || 'left';
+          const xOffset =
+            element.align === 'center' ? element.width / 2
+            : element.align === 'right' ? element.width
+            : 0;
+          ctx.beginPath();
+          // ← fillText crée le path du clip dans l'espace du texte
+          ctx.fillText(element.text, xOffset, 0);
+        }}
+      >
+        {maskImg && (
+          <KonvaImage
+            image={maskImg}
+            width={element.width}
+            height={element.height}
+          />
+        )}
+      </Group>
     </Group>
   );
 }
