@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // components/builders/_shared/CanvasContext.tsx
 'use client';
 
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import Konva from 'konva';
-import { CanvasElement, CanvasTemplate } from './types';
+import { v4 as uuidv4 } from 'uuid';
+import { BezierElement, CanvasElement, CanvasTemplate } from './types';
 
 type CanvasContextType = {
   stageRef: React.RefObject<Konva.Stage|null>;
@@ -30,6 +32,17 @@ type CanvasContextType = {
 zoomIn: () => void;
 zoomOut: () => void;
 resetZoom: () => void;
+
+bezierDrawing:     boolean;
+bezierPoints:      { x: number; y: number }[];
+startBezierDraw:   () => void;
+addBezierPoint:    (x: number, y: number) => void;
+finishBezierDraw:  () => void;
+cancelBezierDraw:  () => void;
+// Mode édition points
+editingBezierPath: boolean;  // ← double-clic sur bezier = édition points
+startEditingBezier:(id: string) => void;
+finishEditingBezier:() => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -43,6 +56,9 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
   const [history, setHistory] = useState<CanvasElement[][]>([]);
   const [historyStep, setHistoryStep] = useState(-1);
   const [zoom, setZoom] = useState(1);
+  const [bezierDrawing,      setBezierDrawing]      = useState(false);
+  const [bezierPoints,       setBezierPoints]        = useState<{ x: number; y: number }[]>([]);
+  const [editingBezierPath,  setEditingBezierPath]   = useState(false);
   const zoomIn    = () => setZoom((z) => Math.min(z + 0.1, 3));
   const zoomOut   = () => setZoom((z) => Math.max(z - 0.1, 0.2));
   const resetZoom = () => setZoom(1);
@@ -139,6 +155,60 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
     return stageRef.current.toDataURL({ pixelRatio: 2 });
   };
 
+  const startBezierDraw = () => {
+  setBezierDrawing(true);
+  setBezierPoints([]);
+  setSelectedId(null);
+};
+
+const addBezierPoint = (x: number, y: number) => {
+  setBezierPoints((prev) => [...prev, { x, y }]);
+};
+
+const finishBezierDraw = () => {
+  if (bezierPoints.length < 2) {
+    cancelBezierDraw();
+    return;
+  }
+  // Calcule le bounding box pour x/y/width/height
+  const xs = bezierPoints.map((p) => p.x);
+  const ys = bezierPoints.map((p) => p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+  const newEl: BezierElement = {
+    id:      uuidv4(),
+    type:    'bezier',
+    x:       minX,
+    y:       minY,
+    width:   Math.max(maxX - minX, 10),
+    height:  Math.max(maxY - minY, 10),
+    // Points relatifs au bounding box
+    points:  bezierPoints.map((p) => ({ x: p.x - minX, y: p.y - minY })),
+    closed:  false,
+    tension: 0.4,
+    style:   { stroke: '#7c3aed', strokeWidth: 3, fill: 'transparent' },
+  };
+
+  addElement(newEl as any);
+  setBezierDrawing(false);
+  setBezierPoints([]);
+};
+
+const cancelBezierDraw = () => {
+  setBezierDrawing(false);
+  setBezierPoints([]);
+};
+
+const startEditingBezier = (id: string) => {
+  setSelectedId(id);
+  setEditingBezierPath(true);
+};
+
+const finishEditingBezier = () => {
+  setEditingBezierPath(false);
+};
+
   return (
     <CanvasContext.Provider value={{
       stageRef,
@@ -163,6 +233,16 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
       zoomIn,
       zoomOut,
       resetZoom,
+      startBezierDraw,
+      startEditingBezier,
+      finishBezierDraw,
+      finishEditingBezier,
+      bezierDrawing,
+      bezierPoints,
+      editingBezierPath,
+      addBezierPoint,
+      cancelBezierDraw,
+
     }}>
       {children}
     </CanvasContext.Provider>

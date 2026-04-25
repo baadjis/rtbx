@@ -86,7 +86,10 @@ const FONT_OPTIONS = [
 // ─── PropertyPanel ────────────────────────────────────────────────────────────
 export default function PropertyPanel({ lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
-  const { selectedId, elements, updateElement, deleteElement, bringToFront, sendToBack, addElement } = useCanvas();
+  const { selectedId, elements, updateElement, deleteElement, 
+    bringToFront, sendToBack, addElement,
+  startEditingBezier,
+  } = useCanvas();
 
   const selected = elements.find((el) => el.id === selectedId);
 
@@ -654,6 +657,52 @@ useEffect(() => {
           ))}
         </div>
       </Section>
+      
+      {/* ── BÉZIER controls ── */}
+{selected.type === 'bezier' && (
+  <Section>
+    <SectionTitle>Bézier</SectionTitle>
+    <div className="space-y-3">
+      <Slider
+        label="Tension"
+        min={0} max={100}
+        value={Math.round(((selected as any).tension ?? 0.4) * 100)}
+        unit=""
+        onChange={(v) => upd({ tension: v / 100 } as any)}
+      />
+      {/* Fermé / Ouvert */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-400 dark:text-gray-500">
+          {lang === 'fr' ? 'Courbe fermée' : 'Closed curve'}
+        </span>
+        <button
+          onClick={() => upd({ closed: !(selected as any).closed } as any)}
+          className={`relative w-10 h-5 rounded-full transition-all ${
+            (selected as any).closed
+              ? 'bg-violet-600'
+              : 'bg-gray-200 dark:bg-gray-700'
+          }`}
+        >
+          <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
+            (selected as any).closed ? 'left-5' : 'left-0.5'
+          }`} />
+        </button>
+      </div>
+      {/* Edit points button */}
+      <button
+        onClick={() => startEditingBezier(selected.id)}
+        className="w-full py-2.5 rounded-xl text-xs font-semibold
+          border border-violet-300 dark:border-violet-700
+          text-violet-600 dark:text-violet-400
+          hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
+      >
+        ✏️ {lang === 'fr' ? 'Éditer les points' : 'Edit points'}
+      </button>
+    </div>
+  </Section>
+)}
+
+
 
       {/* ── Opacity ── */}
       <Section>

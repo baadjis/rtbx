@@ -11,6 +11,7 @@ import {
   CanvasElement, TextElement, ImageElement,
   ShapeElement, ContainerElement, GroupElement,
   StyleProps, ShapeType, ImageFilters,
+  BezierElement,
 } from './types';
 import useImage from 'use-image';
 import Konva from 'konva';
@@ -147,11 +148,126 @@ function useGradientTextImage(element: TextElement): HTMLCanvasElement | null {
   return canvas;
 }
 
+
+// ─── Bézier en mode édition (points déplaçables) ──────────────────────────────
+function BezierEditMode({ element }: { element: BezierElement }) {
+  const { updateElement, finishEditingBezier } = useCanvas();
+
+  const handlePointDrag = (index: number, e: any) => {
+    const newPoints = [...element.points];
+    newPoints[index] = { x: e.target.x(), y: e.target.y() };
+    updateElement(element.id, { points: newPoints } as any);
+    // Recalcule le bounding box
+    const xs = newPoints.map((p) => p.x);
+    const ys = newPoints.map((p) => p.y);
+    updateElement(element.id, {
+      points: newPoints,
+      width:  Math.max(...xs),
+      height: Math.max(...ys),
+    } as any);
+  };
+
+  const flatPoints = element.points.flatMap((p) => [p.x, p.y]);
+
+  return (
+    <Group
+      id={element.id}
+      x={element.x}
+      y={element.y}
+      rotation={element.rotation ?? 0}
+    >
+      {/* Courbe */}
+      <Line
+        points={flatPoints}
+        stroke={element.style.stroke || '#7c3aed'}
+        strokeWidth={element.style.strokeWidth ?? 3}
+        tension={element.tension ?? 0.4}
+        closed={element.closed}
+        fill={element.closed ? (element.style.fill || 'transparent') : 'transparent'}
+        listening={false}
+      />
+      {/* Points éditables */}
+      {element.points.map((p, i) => (
+        <Circle
+          key={i}
+          x={p.x} y={p.y}
+          radius={6}
+          fill="#ffffff"
+          stroke="#7c3aed"
+          strokeWidth={2}
+          draggable
+          onDragMove={(e) => handlePointDrag(i, e)}
+          // Curseur
+          onMouseEnter={(e) => {
+            const stage = e.target.getStage();
+            if (stage) stage.container().style.cursor = 'move';
+          }}
+          onMouseLeave={(e) => {
+            const stage = e.target.getStage();
+            if (stage) stage.container().style.cursor = 'default';
+          }}
+        />
+      ))}
+      {/* Clic en dehors = quitter le mode édition */}
+      <Rect
+        x={-9999} y={-9999}
+        width={19998} height={19998}
+        fill="transparent"
+        listening={true}
+        onClick={finishEditingBezier}
+      />
+    </Group>
+  );
+}
+
+// ─── Bézier normal ────────────────────────────────────────────────────────────
+function BezierShape({ element, onSelect, isSelected }: {
+  element: BezierElement; onSelect: (id: string) => void; isSelected: boolean;
+}) {
+  const { startEditingBezier } = useCanvas();
+  const flatPoints = element.points.flatMap((p) => [p.x, p.y]);
+
+  return (
+    <Group
+      id={element.id}
+      x={element.x}
+      y={element.y}
+      rotation={element.rotation ?? 0}
+      opacity={element.style.opacity ?? 1}
+      draggable={!element.locked}
+      onClick={() => onSelect(element.id)}
+      onTap={() => onSelect(element.id)}
+      onDblClick={() => startEditingBezier(element.id)}
+      onDblTap={() => startEditingBezier(element.id)}
+    >
+      {/* Hitbox */}
+      <Rect
+        width={element.width}
+        height={element.height}
+        fill="rgba(0,0,0,0.001)"
+        stroke={isSelected ? '#7c3aed' : undefined}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [5, 4] as number[] : undefined}
+      />
+      <Line
+        points={flatPoints}
+        stroke={element.style.stroke || '#7c3aed'}
+        strokeWidth={element.style.strokeWidth ?? 3}
+        tension={element.tension ?? 0.4}
+        closed={element.closed}
+        fill={element.closed ? (element.style.fill || 'transparent') : 'transparent'}
+        dash={element.style.strokeDash}
+        listening={false}
+      />
+    </Group>
+  );
+}
+
 // ─── Gradient Text Component ─────────────────────────────────────────────────
 function GradientTextElement({ element, onSelect, isSelected }: {
   element: TextElement; onSelect: (id: string) => void; isSelected: boolean;
 }) {
-  const { startEditingText } = useCanvas();
+  const { startEditingText ,} = useCanvas();
   const gradCanvas = useGradientTextImage(element);
   const [gradImage] = useImage(gradCanvas?.toDataURL() ?? '');
 
@@ -370,7 +486,7 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
 export default function RenderElement({ element, onSelect }: {
   element: CanvasElement; onSelect: (id: string) => void;
 }) {
-  const { selectedId, editingTextId, startEditingText } = useCanvas();
+  const { selectedId, editingTextId, startEditingText ,editingBezierPath} = useCanvas();
   const isSelected = selectedId === element.id;
 
   switch (element.type) {
@@ -422,6 +538,7 @@ export default function RenderElement({ element, onSelect }: {
       return <FilteredImageElement element={element as ImageElement} onSelect={onSelect} />;
 
     case 'container':
+
     case 'group': {
       const grp = element as ContainerElement | GroupElement;
       return (
@@ -433,6 +550,14 @@ export default function RenderElement({ element, onSelect }: {
         </Group>
       );
     }
+
+  case 'bezier': {
+  const bel = element as BezierElement;
+  if (editingBezierPath && selectedId === bel.id) {
+    return <BezierEditMode element={bel} />;
+  }
+  return <BezierShape element={bel} onSelect={onSelect} isSelected={isSelected} />;
+}
 
     default:
       return <ShapeRenderer element={element as ShapeElement} onSelect={onSelect} isSelected={isSelected} />;

@@ -8,10 +8,15 @@ import { ShapeType } from "./types";
 
 // ─── Shapes panel ─────────────────────────────────────────────────────────────
 export default function ShapesPanel({ lang }: { lang: 'fr' | 'en' }) {
-  const { addElement } = useCanvas();
+  const { addElement,startBezierDraw } = useCanvas();
   const t = sharedBuilderData[lang];
 const addShape = (type: ShapeType) => {
+
     const isLine  = type === 'line' || type === 'arrow';
+     if (type === 'bezier') {
+    startBezierDraw(); // ← active le mode dessin
+    return;
+  }
     addElement({
       id: uuidv4(), type,
       x: 160, y: 160,
@@ -19,6 +24,8 @@ const addShape = (type: ShapeType) => {
       height: isLine ? 4   : 180,
       style: { fill: '#7c3aed', strokeWidth: 0 },
     } as any);
+
+    
   };
 
   const shapes: { key: ShapeType; label: string; color: string; icon: React.ReactNode }[] = [
@@ -82,6 +89,19 @@ const addShape = (type: ShapeType) => {
         </svg>
       ),
     },
+
+    {
+  key: 'bezier' as any,
+  label: 'Bézier',
+  color: '#ec4899',
+  icon: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-7 h-7">
+      <path d="M3 20 C 8 8, 16 8, 21 20" strokeLinecap="round"/>
+      <circle cx="3"  cy="20" r="1.5" fill="currentColor"/>
+      <circle cx="21" cy="20" r="1.5" fill="currentColor"/>
+    </svg>
+  ),
+},
   ];
 
   return (

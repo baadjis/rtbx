@@ -7,11 +7,45 @@ import RenderElement from './RenderElement';
 import Transformer from './Transformer';
 import TextEditorOverlay from './TextEditorOverlay';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Line, Circle } from 'react-konva';
 
 type Props = {
   designWidth: number;
   designHeight: number;
 };
+
+
+function BezierPreview({ points }: { points: { x: number; y: number }[] }) {
+  const flatPoints = points.flatMap((p) => [p.x, p.y]);
+  return (
+    <>
+      {/* Ligne preview */}
+      {points.length >= 2 && (
+        <Line
+          points={flatPoints}
+          stroke="#7c3aed"
+          strokeWidth={2}
+          dash={[6, 4]}
+          tension={0.4}
+          opacity={0.7}
+          listening={false}
+        />
+      )}
+      {/* Points posés */}
+      {points.map((p, i) => (
+        <Circle
+          key={i}
+          x={p.x} y={p.y}
+          radius={5}
+          fill={i === 0 ? '#7c3aed' : '#ffffff'}
+          stroke="#7c3aed"
+          strokeWidth={2}
+          listening={false}
+        />
+      ))}
+    </>
+  );
+}
 
 export default function EditCanvas({ designWidth, designHeight }: Props) {
 
@@ -24,7 +58,8 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
 
 
 // Par :
-const { stageRef, elements, selectElement, zoom } = useCanvas();
+const { stageRef, elements, selectElement, zoom , bezierDrawing, bezierPoints, addBezierPoint, finishBezierDraw, cancelBezierDraw,
+  editingBezierPath,} = useCanvas();
 const [baseScale, setBaseScale] = useState(1);
 const scale = baseScale * zoom;
 
@@ -80,25 +115,53 @@ const scale = baseScale * zoom;
         }}
       >
         <Stage
-          ref={stageRef}
-          width={designWidth}
-          height={designHeight}
-          scaleX={scale}
-          scaleY={scale}
-          onClick={(e) => {
-            if (e.target === e.target.getStage()) selectElement(null);
-          }}
-          onTap={(e) => {
-            if (e.target === e.target.getStage()) selectElement(null);
-          }}
-        >
-          <Layer>
-            {elements.map((el) => (
-              <RenderElement key={el.id} element={el} onSelect={selectElement} />
-            ))}
-            <Transformer />
-          </Layer>
-        </Stage>
+  ref={stageRef}
+  width={designWidth}
+  height={designHeight}
+  scaleX={scale}
+  scaleY={scale}
+  // ← cursor change en mode dessin
+  style={{ cursor: bezierDrawing ? 'crosshair' : 'default' }}
+  onClick={(e) => {
+    if (bezierDrawing) {
+      const stage = e.target.getStage();
+      if (!stage) return;
+      const pos = stage.getPointerPosition();
+      if (!pos) return;
+      // Convertit les coords screen → canvas
+      const x = pos.x / scale;
+      const y = pos.y / scale;
+      // Double-clic = terminer (géré dans onDblClick)
+      addBezierPoint(x, y);
+      return;
+    }
+    if (e.target === e.target.getStage()) selectElement(null);
+  }}
+  onDblClick={(e) => {
+    if (bezierDrawing) {
+      finishBezierDraw();
+      return;
+    }
+  }}
+  onContextMenu={(e) => {
+    // Clic droit = annuler le dessin
+    e.evt.preventDefault();
+    if (bezierDrawing) cancelBezierDraw();
+  }}
+>
+  <Layer>
+    {elements.map((el) => (
+      <RenderElement key={el.id} element={el} onSelect={selectElement} />
+    ))}
+
+    {/* Preview en cours de dessin */}
+    {bezierDrawing && bezierPoints.length > 0 && (
+      <BezierPreview points={bezierPoints} />
+    )}
+
+    <Transformer />
+  </Layer>
+</Stage>
 
         {/* ── TextEditorOverlay : positionné DANS le wrapper pour hériter du scale ── */}
         <TextEditorOverlay scale={scale} />
