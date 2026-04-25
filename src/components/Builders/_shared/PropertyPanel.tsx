@@ -2,7 +2,7 @@
 // components/builders/_shared/PropertyPanel.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
 import RemoveBgButton from './RemoveBgButton';
@@ -95,6 +95,17 @@ export default function PropertyPanel({ lang }: Props) {
   return selected?.style.gradientType === 'radial' ? 'radial' : 'gradient';
 });
 
+useEffect(() => {
+  if (!selected) return;
+  const timeout = setTimeout(() => {
+    if (!selected.style.gradientEnabled) setFillTab('solid');
+    else if (selected.style.gradientType === 'radial') setFillTab('radial');
+    else setFillTab('gradient');
+  }, 0);
+  return () => clearTimeout(timeout);
+}, [selected?.id]);
+
+
   // ── Empty state ──────────────────────────────────────────────────────────────
   if (!selected) {
     return (
@@ -116,7 +127,7 @@ export default function PropertyPanel({ lang }: Props) {
   const isShape  = ['rectangle', 'circle'].includes(selected.type);
   const isRect   = selected.type === 'rectangle';
   const style    = selected.style || {};
-  const isGradient = fillTab === 'gradient';
+  //const isGradient = fillTab === 'gradient';
 
   const upd      = (patch: Partial<typeof selected>) => updateElement(selected.id, patch);
   const updStyle = (patch: Record<string, any>) => upd({ style: { ...style, ...patch } } as any);
