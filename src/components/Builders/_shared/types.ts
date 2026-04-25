@@ -33,6 +33,8 @@ export interface StyleProps {
   gradientColor1?:    string;
   gradientColor2?:    string;
   gradientDirection?: number; // degrés : 0 | 45 | 90 | 135 | 180 …
+  gradientType?:    'linear' | 'radial';  // ← nouveau
+  gradientRadius?:  number; 
   // Stroke
   stroke?:            string;
   strokeWidth?:       number;

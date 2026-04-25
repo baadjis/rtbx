@@ -87,8 +87,11 @@ const FONT_OPTIONS = [
 export default function PropertyPanel({ lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
   const { selectedId, elements, updateElement, deleteElement, bringToFront, sendToBack, addElement } = useCanvas();
-  const [fillTab, setFillTab] = useState<'solid' | 'gradient'>('solid');
 
+  const [fillTab, setFillTab] = useState<'solid' | 'gradient' | 'radial'>(() => {
+  if (!selected?.style.gradientEnabled) return 'solid';
+  return selected?.style.gradientType === 'radial' ? 'radial' : 'gradient';
+});
   const selected = elements.find((el) => el.id === selectedId);
 
   // ── Empty state ──────────────────────────────────────────────────────────────
@@ -163,15 +166,18 @@ export default function PropertyPanel({ lang }: Props) {
           <SectionTitle>{t.fillColor || 'Couleur de remplissage'}</SectionTitle>
 
           {isShape && (
-            <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
-              <TabBtn active={fillTab === 'solid'} onClick={() => setFillTab('solid')}>
-                {lang === 'fr' ? 'Solide' : 'Solid'}
-              </TabBtn>
-              <TabBtn active={fillTab === 'gradient'} onClick={() => setFillTab('gradient')}>
-                Gradient
-              </TabBtn>
-            </div>
-          )}
+  <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
+    <TabBtn active={fillTab === 'solid'}    onClick={() => { setFillTab('solid');    updStyle({ gradientEnabled: false }); }}>
+      {lang === 'fr' ? 'Solide' : 'Solid'}
+    </TabBtn>
+    <TabBtn active={fillTab === 'gradient'} onClick={() => { setFillTab('gradient'); updStyle({ gradientEnabled: true, gradientType: 'linear' }); }}>
+      Linear
+    </TabBtn>
+    <TabBtn active={fillTab === 'radial'}   onClick={() => { setFillTab('radial');   updStyle({ gradientEnabled: true, gradientType: 'radial'  }); }}>
+      Radial
+    </TabBtn>
+  </div>
+)}
 
           {isGradient && isShape ? (
             <div className="space-y-3">
@@ -204,8 +210,16 @@ export default function PropertyPanel({ lang }: Props) {
                       {deg}°
                     </button>
                   ))}
+
+                  
+
                 </div>
+                
               </div>
+
+              
+             
+              
             </div>
           ) : (
             <div className="flex items-center gap-3">
@@ -217,6 +231,16 @@ export default function PropertyPanel({ lang }: Props) {
                 style={{ backgroundColor: isText ? (style.fill || '#111111') : (style.fill || '#7c3aed') }} />
             </div>
           )}
+
+          {fillTab === 'radial' && (
+  <Slider
+    label={lang === 'fr' ? 'Rayon gradient' : 'Gradient radius'}
+    min={10} max={150}
+    value={Math.round((style.gradientRadius ?? 1) * 100)}
+    unit="%"
+    onChange={(v) => updStyle({ gradientRadius: v / 100 })}
+  />
+)}
         </Section>
       )}
 

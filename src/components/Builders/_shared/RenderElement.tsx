@@ -39,17 +39,31 @@ function shadowProps(style: StyleProps) {
 
 function gradientFillProps(style: StyleProps, width: number, height: number): Record<string, any> {
   if (!style.gradientEnabled) return { fill: style.fill ?? '#7c3aed' };
+
+  const c1 = style.gradientColor1 ?? '#7c3aed';
+  const c2 = style.gradientColor2 ?? '#06b6d4';
+  const cx = width / 2, cy = height / 2;
+
+  if (style.gradientType === 'radial') {
+    const r = Math.min(width, height) / 2 * (style.gradientRadius ?? 1);
+    return {
+      fillRadialGradientStartPoint:      { x: cx, y: cy },
+      fillRadialGradientEndPoint:        { x: cx, y: cy },
+      fillRadialGradientStartRadius:     0,
+      fillRadialGradientEndRadius:       r,
+      fillRadialGradientColorStops:      [0, c1, 1, c2],
+      fill: undefined,
+    };
+  }
+
+  // Linear (existant)
   const deg = style.gradientDirection ?? 90;
   const rad = (deg * Math.PI) / 180;
-  const cx = width / 2, cy = height / 2;
   const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
   return {
-    fillLinearGradientStartPoint: { x: cx - dx, y: cy - dy },
-    fillLinearGradientEndPoint:   { x: cx + dx, y: cy + dy },
-    fillLinearGradientColorStops: [
-      0, style.gradientColor1 ?? '#7c3aed',
-      1, style.gradientColor2 ?? '#06b6d4',
-    ],
+    fillLinearGradientStartPoint:      { x: cx - dx, y: cy - dy },
+    fillLinearGradientEndPoint:        { x: cx + dx, y: cy + dy },
+    fillLinearGradientColorStops:      [0, c1, 1, c2],
     fill: undefined,
   };
 }
