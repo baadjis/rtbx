@@ -88,11 +88,12 @@ export default function PropertyPanel({ lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
   const { selectedId, elements, updateElement, deleteElement, bringToFront, sendToBack, addElement } = useCanvas();
 
+  const selected = elements.find((el) => el.id === selectedId);
+
   const [fillTab, setFillTab] = useState<'solid' | 'gradient' | 'radial'>(() => {
   if (!selected?.style.gradientEnabled) return 'solid';
   return selected?.style.gradientType === 'radial' ? 'radial' : 'gradient';
 });
-  const selected = elements.find((el) => el.id === selectedId);
 
   // ── Empty state ──────────────────────────────────────────────────────────────
   if (!selected) {
