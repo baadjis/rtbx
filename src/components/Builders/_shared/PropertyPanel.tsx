@@ -176,7 +176,7 @@ useEffect(() => {
       </Section>
 
      {/* ── Fill color ── */}
-{(isShape || isText) && (
+{(isShape || isText ||selected.type === 'bezier' ) && (
   <Section>
     <SectionTitle>{t.fillColor || 'Couleur de remplissage'}</SectionTitle>
 
@@ -205,16 +205,43 @@ useEffect(() => {
     )}
 
     {/* ── Solid ── */}
-    {(fillTab === 'solid' || isText) && (
+    {(fillTab === 'solid' || isText || selected.type === 'bezier') && (
       <div className="flex items-center gap-3">
         <ColorDot
-          value={style.fill || (isText ? '#111111' : '#7c3aed')}
+          value={style.fill || (isText ? '#111111' : 'transparent')}
           onChange={(v) => updStyle({ fill: v, gradientEnabled: false })}
         />
         <div
           className="flex-1 h-8 rounded-lg border border-gray-200 dark:border-gray-700"
-          style={{ backgroundColor: style.fill || (isText ? '#111111' : '#7c3aed') }}
+          style={{
+            backgroundColor: style.fill === 'transparent' || !style.fill
+              ? 'transparent'
+              : style.fill,
+            // Motif damier pour montrer la transparence
+            backgroundImage: (!style.fill || style.fill === 'transparent')
+              ? 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)'
+              : 'none',
+            backgroundSize: '8px 8px',
+            backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px',
+          }}
         />
+        {/* Bouton transparent rapide */}
+        <button
+          onClick={() => updStyle({ fill: style.fill === 'transparent' ? '#7c3aed' : 'transparent' })}
+          title={lang === 'fr' ? 'Transparent' : 'Transparent'}
+          className={`w-8 h-8 rounded-lg border-2 transition-all flex items-center justify-center text-xs font-bold ${
+            style.fill === 'transparent' || !style.fill
+              ? 'border-violet-500 text-violet-600'
+              : 'border-gray-200 dark:border-gray-700 text-gray-400'
+          }`}
+          style={{
+            backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
+            backgroundSize: '6px 6px',
+            backgroundPosition: '0 0, 0 3px, 3px -3px, -3px 0px',
+          }}
+        >
+          ∅
+        </button>
       </div>
     )}
 
