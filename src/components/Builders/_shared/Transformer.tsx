@@ -26,17 +26,19 @@ export default function Transformer() {
   }, [selectedId, elements]);
 
   // ── Resize / rotate ───────────────────────────────────────────────────────
-  const handleTransformEnd = () => {
+const handleTransformEnd = () => {
   if (!selectedElement || !transformerRef.current) return;
   const node = transformerRef.current.nodes()[0];
   if (!node) return;
 
   const scaleX = node.scaleX();
   const scaleY = node.scaleY();
-
-  // ← Utilise attrs directement, plus fiable que width()/height()
   const newWidth  = Math.max(5, node.width()  * scaleX);
   const newHeight = Math.max(5, node.height() * scaleY);
+
+  // ← Reset scale EN PREMIER avant updateElement
+  node.scaleX(1);
+  node.scaleY(1);
 
   updateElement(selectedElement.id, {
     x:        Math.round(node.x()),
@@ -46,9 +48,6 @@ export default function Transformer() {
     rotation: Math.round(node.rotation()),
   });
 
-  // Reset AVANT batchDraw
-  node.scaleX(1);
-  node.scaleY(1);
   node.getLayer()?.batchDraw();
 };
 

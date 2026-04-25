@@ -24,7 +24,7 @@ import { Contrast }  from 'konva/lib/filters/Contrast';
 import { HSL }       from 'konva/lib/filters/HSL';
 import {Image as KonvaImageClass }from 'konva/lib/shapes/Image';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 // ─── Shadow & gradient helpers (inchangés) ───────────────────────────────────
 function shadowProps(style: StyleProps) {
@@ -169,7 +169,48 @@ function MaskedTextElement({ element, onSelect, isSelected }: {
   element: TextElement; onSelect: (id: string) => void; isSelected: boolean;
 }) {
   const { startEditingText } = useCanvas();
-  const [maskImg] = useImage(element.maskImageSrc ?? '', 'anonymous');
+  const [maskImg]    = useImage(element.maskImageSrc ?? '', 'anonymous');
+ 
+  
+const composite = useMemo(() => {
+  if (!maskImg || !element.text) return null;
+
+  const w = element.width  || 400;
+  const h = element.height || 100;
+
+  const textCanvas = document.createElement('canvas');
+  textCanvas.width  = w;
+  textCanvas.height = h;
+  const tCtx = textCanvas.getContext('2d')!;
+
+  const fontStyle  = element.fontStyle === 'italic' ? 'italic' : 'normal';
+  const fontWeight = element.fontStyle === 'bold' ? 'bold' : (element.fontWeight ?? 'normal');
+  tCtx.font          = `${fontStyle} ${fontWeight} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+  tCtx.textBaseline  = 'top';
+  tCtx.fillStyle     = '#ffffff';
+  tCtx.textAlign     = (element.align as CanvasTextAlign) || 'left';
+
+  const xOffset = element.align === 'center' ? w / 2
+                : element.align === 'right'  ? w : 0;
+  tCtx.fillText(element.text, xOffset, 0);
+
+  const compCanvas = document.createElement('canvas');
+  compCanvas.width  = w;
+  compCanvas.height = h;
+  const cCtx = compCanvas.getContext('2d')!;
+
+  cCtx.drawImage(maskImg, 0, 0, w, h);
+  cCtx.globalCompositeOperation = 'destination-in';
+  cCtx.drawImage(textCanvas, 0, 0);
+  cCtx.globalCompositeOperation = 'source-over';
+
+  return compCanvas;
+}, [maskImg, element.text, element.fontSize, element.fontFamily,
+    element.fontStyle, element.fontWeight, element.align,
+    element.width, element.height]);
+
+  // Canvas → dataURL → useImage pour Konva
+  const [compositeImage] = useImage(composite?.toDataURL() ?? '');
 
   return (
     <Group
@@ -183,41 +224,38 @@ function MaskedTextElement({ element, onSelect, isSelected }: {
       onTap={() => onSelect(element.id)}
       onDblClick={() => startEditingText(element.id)}
       onDblTap={() => startEditingText(element.id)}
-      // ← clipFunc RETIRÉ du Group — on le met sur un sous-Group
     >
-      {/* Rect invisible HORS du clip — garantit le hitbox sur toute la zone */}
+      {/* Hitbox invisible sur toute la zone */}
       <Rect
         width={element.width}
         height={element.height}
-        fill="rgba(0,0,0,0.001)" // ← quasi transparent mais détectable par Konva
+        fill="rgba(0,0,0,0.001)"
         stroke={isSelected ? '#7c3aed' : undefined}
         strokeWidth={isSelected ? 2 : 0}
-        dash={isSelected ? [5, 4] : undefined}
+        dash={isSelected ? [5, 4] as number[] : undefined}
       />
 
-      {/* Sous-Group avec le clip appliqué seulement sur l'image */}
-      <Group
-        clipFunc={(ctx) => {
-          ctx.font = `${element.fontStyle || 'normal'} bold ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
-          ctx.textBaseline = 'top';
-          ctx.textAlign = (element.align as CanvasTextAlign) || 'left';
-          const xOffset =
-            element.align === 'center' ? element.width / 2
-            : element.align === 'right' ? element.width
-            : 0;
-          ctx.beginPath();
-          // ← fillText crée le path du clip dans l'espace du texte
-          ctx.fillText(element.text, xOffset, 0);
-        }}
-      >
-        {maskImg && (
-          <KonvaImage
-            image={maskImg}
-            width={element.width}
-            height={element.height}
-          />
-        )}
-      </Group>
+      {/* Image composite (image clippée par la forme du texte) */}
+      {compositeImage && (
+        <KonvaImage
+          image={compositeImage}
+          width={element.width}
+          height={element.height}
+        />
+      )}
+
+      {/* Fallback : si l'image n'est pas encore chargée, affiche le texte normal */}
+      {!compositeImage && (
+        <Text
+          text={element.text}
+          fontSize={element.fontSize}
+          fontFamily={element.fontFamily || 'Sora'}
+          fontStyle={element.fontStyle || 'normal'}
+          fill={element.style.fill || '#000000'}
+          width={element.width}
+          align={element.align || 'left'}
+        />
+      )}
     </Group>
   );
 }
@@ -236,20 +274,19 @@ function FilteredImageElement({ element, onSelect }: {
   const imgRef  = useRef<any>(null);
   const filters = element.filters ?? {};
 
-  useEffect(() => {
-    if (!imgRef.current || !image) return;
-    // ← clearCache avant de recacher, sinon l'ancienne version reste
-    imgRef.current.clearCache();
-    imgRef.current.cache();
-    imgRef.current.getLayer()?.batchDraw();
-  }, [
-    image,
-    // ← src dans les deps pour forcer le recache après remove bg
-    src,
-    filters.blur, filters.brightness, filters.contrast,
-    filters.grayscale, filters.sepia, filters.invert,
-    filters.hue, filters.saturation,
-  ]);
+ useEffect(() => {
+  if (!imgRef.current || !image) return;
+  imgRef.current.clearCache();
+  imgRef.current.cache();
+  imgRef.current.getLayer()?.batchDraw();
+}, [
+  image, src,
+  element.width,  // ← nouveau
+  element.height, // ← nouveau
+  filters.blur, filters.brightness, filters.contrast,
+  filters.grayscale, filters.sepia, filters.invert,
+  filters.hue, filters.saturation,
+]);
 
   const konvaFilters = buildKonvaFilters(filters);
   const hasFilters   = konvaFilters.length > 0;
