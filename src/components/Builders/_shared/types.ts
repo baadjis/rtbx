@@ -105,6 +105,8 @@ export interface TextElement extends BaseElement {
   verticalAlign?:  'top' | 'middle' | 'bottom';
   lineHeight?:     number;
   letterSpacing?:  number;
+  stroke?:       string;  // ← nouveau
+  strokeWidth?:  number;  
   // ── Nouveau ──
   textGradient?: {
     enabled:    boolean;

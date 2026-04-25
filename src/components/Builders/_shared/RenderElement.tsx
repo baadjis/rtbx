@@ -187,15 +187,16 @@ function MaskedTextElement({ element, onSelect, isSelected }: {
       onDblClick={() => startEditingText(element.id)}
       onDblTap={() => startEditingText(element.id)}
       clipFunc={(ctx) => {
-        ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
-        ctx.textBaseline = 'top';
-        ctx.textAlign = (element.align as CanvasTextAlign) || 'left';
-        const xOffset = element.align === 'center' ? element.width / 2
-                      : element.align === 'right'  ? element.width : 0;
-        // ← fillText puis aussi rect transparent pour que le hitbox couvre tout
-        ctx.rect(0, 0, element.width, element.height);
-        ctx.fillText(element.text, xOffset, 0);
-      }}
+  ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+  ctx.textBaseline = 'top';
+  ctx.textAlign = (element.align as CanvasTextAlign) || 'left';
+  const xOffset = element.align === 'center' ? element.width / 2
+                : element.align === 'right'  ? element.width : 0;
+  // ← clip() au lieu de fillText() — crée le masque sans couleur
+  ctx.beginPath();
+  ctx.fillText(element.text, xOffset, 0);
+  // Pas de ctx.fill() ici — Konva utilise le path comme clip
+}}
     >
       {/* Rect invisible pour que le hitbox soit cliquable partout */}
       <Rect
@@ -335,7 +336,10 @@ export default function RenderElement({ element, onSelect }: {
           fontFamily={txt.fontFamily || 'Sora, sans-serif'}
           fontStyle={txt.fontStyle || 'normal'}
           textDecoration={txt.textDecoration === 'underline' ? 'underline' : ''}
-          fill={txt.style.fill || '#000000'}
+          fill={txt.style.fill || 'transparent'}  // ← 'transparent' par défaut si pas de fill
+          stroke={txt.stroke}                      // ← nouveau
+          strokeWidth={txt.strokeWidth ?? 0}       // ← nouveau
+          fillAfterStrokeEnabled={true} 
           align={txt.align || 'left'}
           verticalAlign={txt.verticalAlign || 'top'}
           lineHeight={txt.lineHeight ?? 1.3}

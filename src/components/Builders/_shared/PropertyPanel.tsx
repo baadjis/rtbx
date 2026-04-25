@@ -352,6 +352,49 @@ export default function PropertyPanel({ lang }: Props) {
                 ))}
               </div>
             </div>
+
+
+            {/* Stroke texte */}
+<div>
+  <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+    {lang === 'fr' ? 'Contour texte' : 'Text stroke'}
+  </p>
+  <div className="flex items-center gap-3">
+    <ColorDot
+      value={(selected as any).stroke || '#000000'}
+      onChange={(v) => upd({ stroke: v } as any)}
+    />
+    <div className="flex-1">
+      <Slider
+        label={lang === 'fr' ? 'Épaisseur' : 'Width'}
+        min={0} max={20}
+        value={(selected as any).strokeWidth ?? 0}
+        unit="px"
+        onChange={(v) => upd({ strokeWidth: v } as any)}
+      />
+    </div>
+  </div>
+</div>
+
+{/* Transparent fill */}
+<div className="flex items-center justify-between">
+  <span className="text-xs text-gray-400 dark:text-gray-500">
+    {lang === 'fr' ? 'Fill transparent' : 'Transparent fill'}
+  </span>
+  <button
+    onClick={() => updStyle({ fill: selected.style.fill === 'transparent' ? '#000000' : 'transparent' })}
+    className={`relative w-10 h-5 rounded-full transition-all ${
+      selected.style.fill === 'transparent'
+        ? 'bg-violet-600'
+        : 'bg-gray-200 dark:bg-gray-700'
+    }`}
+  >
+    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
+      selected.style.fill === 'transparent' ? 'left-5' : 'left-0.5'
+    }`} />
+  </button>
+</div>
+
           </div>
         </Section>
       )}
