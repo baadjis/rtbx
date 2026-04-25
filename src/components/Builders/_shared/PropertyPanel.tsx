@@ -161,89 +161,134 @@ export default function PropertyPanel({ lang }: Props) {
         </div>
       </Section>
 
-      {/* ── Fill color ── */}
-      {(isShape || isText) && (
-        <Section>
-          <SectionTitle>{t.fillColor || 'Couleur de remplissage'}</SectionTitle>
+     {/* ── Fill color ── */}
+{(isShape || isText) && (
+  <Section>
+    <SectionTitle>{t.fillColor || 'Couleur de remplissage'}</SectionTitle>
 
-          {isShape && (
-  <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
-    <TabBtn active={fillTab === 'solid'}    onClick={() => { setFillTab('solid');    updStyle({ gradientEnabled: false }); }}>
-      {lang === 'fr' ? 'Solide' : 'Solid'}
-    </TabBtn>
-    <TabBtn active={fillTab === 'gradient'} onClick={() => { setFillTab('gradient'); updStyle({ gradientEnabled: true, gradientType: 'linear' }); }}>
-      Linear
-    </TabBtn>
-    <TabBtn active={fillTab === 'radial'}   onClick={() => { setFillTab('radial');   updStyle({ gradientEnabled: true, gradientType: 'radial'  }); }}>
-      Radial
-    </TabBtn>
-  </div>
+    {/* Tabs — shapes seulement */}
+    {isShape && (
+      <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
+        <TabBtn
+          active={fillTab === 'solid'}
+          onClick={() => { setFillTab('solid'); updStyle({ gradientEnabled: false }); }}
+        >
+          {lang === 'fr' ? 'Solide' : 'Solid'}
+        </TabBtn>
+        <TabBtn
+          active={fillTab === 'gradient'}
+          onClick={() => { setFillTab('gradient'); updStyle({ gradientEnabled: true, gradientType: 'linear' }); }}
+        >
+          Linear
+        </TabBtn>
+        <TabBtn
+          active={fillTab === 'radial'}
+          onClick={() => { setFillTab('radial'); updStyle({ gradientEnabled: true, gradientType: 'radial' }); }}
+        >
+          Radial
+        </TabBtn>
+      </div>
+    )}
+
+    {/* ── Solid ── */}
+    {(fillTab === 'solid' || isText) && (
+      <div className="flex items-center gap-3">
+        <ColorDot
+          value={style.fill || (isText ? '#111111' : '#7c3aed')}
+          onChange={(v) => updStyle({ fill: v, gradientEnabled: false })}
+        />
+        <div
+          className="flex-1 h-8 rounded-lg border border-gray-200 dark:border-gray-700"
+          style={{ backgroundColor: style.fill || (isText ? '#111111' : '#7c3aed') }}
+        />
+      </div>
+    )}
+
+    {/* ── Linear gradient ── */}
+    {fillTab === 'gradient' && isShape && (
+      <div className="space-y-3">
+        {/* Color pickers + preview */}
+        <div className="flex items-end gap-3">
+          <ColorDot
+            value={style.gradientColor1 || '#7c3aed'}
+            onChange={(v) => updStyle({ gradientColor1: v })}
+            label={t.gradient_start}
+          />
+          <div
+            className="flex-1 h-8 rounded-lg shadow-inner"
+            style={{
+              background: `linear-gradient(${style.gradientDirection ?? 90}deg,
+                ${style.gradientColor1 || '#7c3aed'},
+                ${style.gradientColor2 || '#06b6d4'})`,
+            }}
+          />
+          <ColorDot
+            value={style.gradientColor2 || '#06b6d4'}
+            onChange={(v) => updStyle({ gradientColor2: v })}
+            label={t.gradient_end}
+          />
+        </div>
+        {/* Direction */}
+        <div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Direction</p>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[0, 45, 90, 135].map((deg) => (
+              <button
+                key={deg}
+                onClick={() => updStyle({ gradientDirection: deg })}
+                className={`py-1.5 text-xs rounded-lg font-mono transition-all ${
+                  (style.gradientDirection ?? 90) === deg
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-violet-100 dark:hover:bg-violet-900/20 text-gray-600 dark:text-gray-300'
+                }`}
+              >
+                {deg}°
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* ── Radial gradient ── */}
+    {fillTab === 'radial' && isShape && (
+      <div className="space-y-3">
+        {/* Color pickers + preview */}
+        <div className="flex items-end gap-3">
+          <ColorDot
+            value={style.gradientColor1 || '#7c3aed'}
+            onChange={(v) => updStyle({ gradientColor1: v })}
+            label={lang === 'fr' ? 'Centre' : 'Center'}
+          />
+          {/* Preview radial */}
+          <div
+            className="flex-1 h-8 rounded-lg shadow-inner"
+            style={{
+              background: `radial-gradient(circle,
+                ${style.gradientColor1 || '#7c3aed'},
+                ${style.gradientColor2 || '#06b6d4'})`,
+            }}
+          />
+          <ColorDot
+            value={style.gradientColor2 || '#06b6d4'}
+            onChange={(v) => updStyle({ gradientColor2: v })}
+            label={lang === 'fr' ? 'Bord' : 'Edge'}
+          />
+        </div>
+        {/* Radius slider */}
+        <Slider
+          label={lang === 'fr' ? 'Rayon' : 'Radius'}
+          min={10}
+          max={150}
+          value={Math.round((style.gradientRadius ?? 1) * 100)}
+          unit="%"
+          onChange={(v) => updStyle({ gradientRadius: v / 100 })}
+        />
+      </div>
+    )}
+
+  </Section>
 )}
-
-          {isGradient && isShape ? (
-            <div className="space-y-3">
-              <div className="flex items-end gap-3">
-                <ColorDot
-                  value={style.gradientColor1 || '#7c3aed'}
-                  onChange={(v) => updStyle({ gradientColor1: v, gradientEnabled: true })}
-                  label={t.gradient_start}
-                />
-                <div className="flex-1 h-8 rounded-lg shadow-inner" style={{
-                  background: `linear-gradient(${style.gradientDirection ?? 90}deg, ${style.gradientColor1 || '#7c3aed'}, ${style.gradientColor2 || '#06b6d4'})`,
-                }} />
-                <ColorDot
-                  value={style.gradientColor2 || '#06b6d4'}
-                  onChange={(v) => updStyle({ gradientColor2: v, gradientEnabled: true })}
-                  label={t.gradient_end}
-                />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 mb-2">Direction</p>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {[0, 45, 90, 135].map((deg) => (
-                    <button key={deg}
-                      onClick={() => updStyle({ gradientDirection: deg, gradientEnabled: true })}
-                      className={`py-1.5 text-xs rounded-lg font-mono transition-all ${
-                        style.gradientDirection === deg
-                          ? 'bg-violet-600 text-white'
-                          : 'bg-gray-100 dark:bg-gray-800 hover:bg-violet-100 dark:hover:bg-violet-900/20 text-gray-600 dark:text-gray-300'
-                      }`}>
-                      {deg}°
-                    </button>
-                  ))}
-
-                  
-
-                </div>
-                
-              </div>
-
-              
-             
-              
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <ColorDot
-                value={isText ? (style.fill || '#111111') : (style.fill || '#7c3aed')}
-                onChange={(v) => updStyle({ fill: v, gradientEnabled: false })}
-              />
-              <div className="flex-1 h-8 rounded-lg border border-gray-200 dark:border-gray-700"
-                style={{ backgroundColor: isText ? (style.fill || '#111111') : (style.fill || '#7c3aed') }} />
-            </div>
-          )}
-
-          {fillTab === 'radial' && (
-  <Slider
-    label={lang === 'fr' ? 'Rayon gradient' : 'Gradient radius'}
-    min={10} max={150}
-    value={Math.round((style.gradientRadius ?? 1) * 100)}
-    unit="%"
-    onChange={(v) => updStyle({ gradientRadius: v / 100 })}
-  />
-)}
-        </Section>
-      )}
 
       {/* ── Stroke ── */}
       <Section>
