@@ -12,6 +12,7 @@ import {
   ShapeElement, ContainerElement, GroupElement,
   StyleProps, ShapeType, ImageFilters,
   BezierElement,
+  DrawElement,
 } from './types';
 import useImage from 'use-image';
 import Konva from 'konva';
@@ -557,6 +558,29 @@ export default function RenderElement({ element, onSelect }: {
     return <BezierEditMode element={bel} />;
   }
   return <BezierShape element={bel} onSelect={onSelect} isSelected={isSelected} />;
+}
+
+case 'draw': {
+  const d = element as DrawElement;
+  return (
+    <Line
+      id={d.id}
+      points={d.points}
+      stroke={d.style.stroke || '#7c3aed'}
+      strokeWidth={d.style.strokeWidth ?? d.lineWidth}
+      tension={d.tool === 'brush' ? 0.4 : 0.2}
+      lineCap={d.lineCap || 'round'}
+      lineJoin="round"
+      opacity={d.style.opacity ?? 1}
+      globalCompositeOperation="source-over"
+      // Les traits ne sont pas sélectionnables/draggables individuellement
+      // sauf si on clique dessus explicitement
+      draggable={!d.locked}
+      onClick={() => onSelect(d.id)}
+      onTap={() => onSelect(d.id)}
+      listening={true}
+    />
+  );
 }
 
     default:

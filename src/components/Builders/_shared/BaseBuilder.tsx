@@ -13,6 +13,7 @@ import TemplatesPanel from './TemplatesPanel';
 import TextPanel from './TextPanel';
 import ShapesPanel from './ShapesPanel';
 import LayersPanel from './LayerPanel';
+import DrawPanel from './Drawpanel';
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 const Icons = {
@@ -50,7 +51,7 @@ const Icons = {
   ),
 };
 
-type SidebarPanel = 'templates' | 'text' | 'shapes' | 'images' | 'layers' | null;
+type SidebarPanel = 'templates' | 'text' | 'shapes' | 'images' | 'layers' | 'draw'|null;
 
 type BaseBuilderProps = {
   title?: string;
@@ -106,7 +107,7 @@ function BaseBuilderContent({ title, width, height, defaultTemplates, extraTools
     { id: 'shapes',    label: lang === 'fr' ? 'Formes' : 'Shapes',       icon: <Icons.Shapes /> },
     { id: 'images',    label: lang === 'fr' ? 'Images' : 'Images',       icon: <Icons.Image /> },
     { id: 'layers',    label: lang === 'fr' ? 'Calques' : 'Layers',      icon: <Icons.Layers /> },
-    { id: null,        label: lang === 'fr' ? 'Dessin' : 'Draw',         icon: <Icons.Draw /> },
+    { id: 'draw', label: lang === 'fr' ? 'Dessin' : 'Draw', icon: <Icons.Draw /> },  
   ];
 
   return (
@@ -148,6 +149,7 @@ function BaseBuilderContent({ title, width, height, defaultTemplates, extraTools
           {activePanel === 'text'      && <TextPanel lang={lang} />}
           {activePanel === 'shapes'    && <ShapesPanel lang={lang} />}
           {activePanel === 'layers'    && <LayersPanel lang={lang}  icons={Icons} />}
+          {activePanel === 'draw' && <DrawPanel lang={lang} />}
           {activePanel === 'images'    && (
             <div className="flex flex-col items-center justify-center h-full text-gray-300 dark:text-gray-600 gap-3 p-6">
               <Icons.Image />

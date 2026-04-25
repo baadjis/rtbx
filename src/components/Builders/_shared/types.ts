@@ -1,6 +1,8 @@
 // components/builders/_shared/types.ts
 
 
+
+export type DrawTool = 'pen' | 'brush' | 'eraser'
 // ─── Shape type dédié ─────────────────────────────────────────────────────────
 export type ShapeType =
   | 'rectangle'
@@ -34,6 +36,7 @@ export type ElementType =
   | 'group'
   | 'text'
   | 'image'
+  | 'draw'
   | ShapeType; // ← plus besoin de lister chaque shape ici
 
 
@@ -81,6 +84,14 @@ export interface BaseElement {
   name?:     string;    // ← nouveau : label dans le panel Calques
   zIndex?:   number;
   style:     StyleProps;
+}
+
+export interface DrawElement extends BaseElement {
+  type:      'draw';
+  points:    number[];     // flat array [x1,y1,x2,y2,...]
+  tool:      DrawTool;
+  lineWidth: number;
+  lineCap?:  'round' | 'square' | 'butt';
 }
 
 // ShapeElement utilise ShapeType
@@ -165,9 +176,11 @@ export type CanvasElement =
   | TextElement
   | ImageElement
   | ShapeElement
+  | DrawElement
   | BezierElement  // ← nouveau
   | ContainerElement
   | GroupElement;
+
 
 // ─── Template ────────────────────────────────────────────────────────────────
 export interface CanvasTemplate {

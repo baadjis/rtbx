@@ -5,7 +5,7 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import Konva from 'konva';
 import { v4 as uuidv4 } from 'uuid';
-import { BezierElement, CanvasElement, CanvasTemplate } from './types';
+import { BezierElement, CanvasElement, CanvasTemplate, DrawTool } from './types';
 
 type CanvasContextType = {
   stageRef: React.RefObject<Konva.Stage|null>;
@@ -43,6 +43,13 @@ cancelBezierDraw:  () => void;
 editingBezierPath: boolean;  // ← double-clic sur bezier = édition points
 startEditingBezier:(id: string) => void;
 finishEditingBezier:() => void;
+
+drawTool:        DrawTool | null;
+drawColor:       string;
+drawSize:        number;
+setDrawTool:     (tool: DrawTool | null) => void;
+setDrawColor:    (color: string) => void;
+setDrawSize:     (size: number) => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -52,6 +59,10 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
+
+  const [drawTool,  setDrawTool]  = useState<DrawTool | null>(null);
+  const [drawColor, setDrawColor] = useState('#7c3aed');
+  const [drawSize,  setDrawSize]  = useState(4);
 
   const [history, setHistory] = useState<CanvasElement[][]>([]);
   const [historyStep, setHistoryStep] = useState(-1);
@@ -242,6 +253,8 @@ const finishEditingBezier = () => {
       editingBezierPath,
       addBezierPoint,
       cancelBezierDraw,
+      drawTool, drawColor, drawSize,
+     setDrawTool, setDrawColor, setDrawSize,
 
     }}>
       {children}
