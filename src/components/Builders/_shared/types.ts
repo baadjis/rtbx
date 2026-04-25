@@ -12,7 +12,22 @@ export type ShapeType =
   | 'pentagon'
   | 'hexagon'
   | 'diamond'
-  | 'cross';
+  | 'cross'
+  | 'bezier';
+
+
+
+  export interface BezierPoint {
+  x: number;
+  y: number;
+}
+
+export interface BezierElement extends BaseElement {
+  type: 'bezier';
+  points:   BezierPoint[]; // points de contrôle
+  closed?:  boolean;       // courbe fermée ou ouverte
+  tension?: number;        // 0 = angles droits, 1 = très courbé
+}
 
 export type ElementType =
   | 'container'
@@ -150,6 +165,7 @@ export type CanvasElement =
   | TextElement
   | ImageElement
   | ShapeElement
+  | BezierElement  // ← nouveau
   | ContainerElement
   | GroupElement;
 
