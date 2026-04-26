@@ -6,5 +6,5 @@ export default async function FlyerPage() {
     const cookieStore = await cookies();
       const langValue = cookieStore.get('lang')?.value;
       const lang = (langValue === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
-  return <QRStudioBuilder  lang={lang}/>;
+  return <QRStudioBuilder  lang={lang} templateOrientation='vertical'/>;
 }
