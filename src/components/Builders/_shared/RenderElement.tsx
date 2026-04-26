@@ -490,13 +490,7 @@ function FilteredImageElement({ element, onSelect }: {
 
 // ─── Helper : wraps any Line-based shape in Group + hitbox ───────────────────
 function LineShape({
-  element,
-  points,
-  closed = true,
-  isSelected,
-  onSelect,
-  fill,
-  stroke,
+  element, points, closed = true, isSelected, onSelect, fill, stroke,
 }: {
   element:    ShapeElement;
   points:     number[];
@@ -519,19 +513,20 @@ function LineShape({
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
     >
-      {/* Hitbox — donne width/height lisibles au Transformer */}
+      {/* Hitbox — listening={true} pour capturer drag/click */}
       <Rect
         width={w} height={h}
         fill="rgba(0,0,0,0.001)"
         stroke={isSelected ? '#7c3aed' : undefined}
         strokeWidth={isSelected ? 2 : 0}
         dash={isSelected ? [5, 4] as number[] : undefined}
-        listening={false}
+        listening={true}   // ← était false, corrigé
       />
+      {/* La Line ne capte pas les events, le Rect s'en charge */}
       <Line
         points={points}
         closed={closed}
-        listening={false}
+        listening={false}  // ← reste false
         {...fill}
         {...stroke}
         {...shadowProps(style)}
@@ -539,7 +534,6 @@ function LineShape({
     </Group>
   );
 }
-
 // ─── Shape renderer (inchangé) ────────────────────────────────────────────────
 function ShapeRenderer({ element, onSelect, isSelected }: {
   element: ShapeElement; onSelect: (id: string) => void; isSelected: boolean;
