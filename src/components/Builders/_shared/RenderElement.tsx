@@ -13,6 +13,8 @@ import {
   StyleProps, ShapeType, ImageFilters,
   BezierElement,
   DrawElement,
+  ImageBackground,
+  ClipShape,
 } from './types';
 import useImage from 'use-image';
 import Konva from 'konva';
@@ -430,58 +432,248 @@ const composite = useMemo(() => {
   
 }
 
-// ─── Image with filters ───────────────────────────────────────────────────────
+// ─── Helpers clip path ────────────────────────────────────────────────────────
+function applyClipShape(
+  ctx: CanvasRenderingContext2D | any,
+  shape: ClipShape,
+  w: number,
+  h: number,
+  radius = 20,
+) {
+  const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2;
+
+  ctx.beginPath();
+  switch (shape) {
+    case 'circle':
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      break;
+
+    case 'rounded':
+      ctx.roundRect(0, 0, w, h, radius);
+      break;
+
+    case 'triangle': {
+      const pts = polygonPoints(cx, cy, r, 3);
+      ctx.moveTo(pts[0], pts[1]);
+      for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1]);
+      ctx.closePath();
+      break;
+    }
+
+    case 'hexagon': {
+      const pts = polygonPoints(cx, cy, r, 6, Math.PI / 6);
+      ctx.moveTo(pts[0], pts[1]);
+      for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1]);
+      ctx.closePath();
+      break;
+    }
+
+    case 'pentagon': {
+      const pts = polygonPoints(cx, cy, r, 5);
+      ctx.moveTo(pts[0], pts[1]);
+      for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1]);
+      ctx.closePath();
+      break;
+    }
+
+    case 'star': {
+      const pts = starPoints(cx, cy, r, r * 0.45, 5);
+      ctx.moveTo(pts[0], pts[1]);
+      for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1]);
+      ctx.closePath();
+      break;
+    }
+
+    case 'diamond': {
+      ctx.moveTo(w / 2, 0);
+      ctx.lineTo(w, h / 2);
+      ctx.lineTo(w / 2, h);
+      ctx.lineTo(0, h / 2);
+      ctx.closePath();
+      break;
+    }
+
+    case 'blob': {
+      const pts = blobPoints(cx, cy, r);
+      ctx.moveTo(pts[0], pts[1]);
+      for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1]);
+      ctx.closePath();
+      break;
+    }
+
+    default:
+      ctx.rect(0, 0, w, h);
+  }
+}
+
+// ─── Background renderer (canvas 2D) ─────────────────────────────────────────
+function drawBackground(
+  ctx: CanvasRenderingContext2D,
+  bg: ImageBackground,
+  w: number,
+  h: number,
+  bgImage?: HTMLImageElement,
+) {
+  if (bg.type === 'color' && bg.color) {
+    ctx.fillStyle = bg.color;
+    ctx.fillRect(0, 0, w, h);
+
+  } else if (bg.type === 'gradient' && bg.gradient) {
+    const g = bg.gradient;
+    let grad: CanvasGradient;
+    if (g.type === 'radial') {
+      grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.min(w,h)/2);
+    } else {
+      const rad = (g.direction * Math.PI) / 180;
+      const cx = w/2, cy = h/2;
+      const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
+      grad = ctx.createLinearGradient(cx-dx, cy-dy, cx+dx, cy+dy);
+    }
+    grad.addColorStop(0, g.color1);
+    grad.addColorStop(1, g.color2);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+  } else if (bg.type === 'image' && bgImage) {
+    ctx.drawImage(bgImage, 0, 0, w, h);
+  }
+}
+
+// ─── Composite canvas : bg + image clippée par shape ─────────────────────────
+function useCompositeImage(element: ImageElement): HTMLCanvasElement | null {
+  const src = element.bgRemoved && element.removedBgSrc
+    ? element.removedBgSrc : element.src;
+
+  const [fgImg, setFgImg] = useState<HTMLImageElement | null>(null);
+  const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null);
+
+  // Charge foreground
+  useEffect(() => {
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => setFgImg(img);
+    img.src = src;
+  }, [src]);
+
+  // Charge background image si besoin
+  useEffect(() => {
+    if (element.background?.type !== 'image' || !element.background.imageSrc) return;
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => setBgImg(img);
+    img.src = element.background.imageSrc;
+  }, [element.background?.imageSrc]);
+
+  return useMemo(() => {
+    if (!fgImg) return null;
+
+    const w = element.width  || 300;
+    const h = element.height || 300;
+    const canvas = document.createElement('canvas');
+    canvas.width  = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d')!;
+
+    // 1. Dessine le background si remove bg actif
+    if (element.bgRemoved && element.background) {
+      drawBackground(ctx, element.background, w, h, bgImg ?? undefined);
+    }
+
+    // 2. Applique le clip shape
+    if (element.clipShape && element.clipShape !== 'none') {
+      ctx.save();
+      applyClipShape(ctx, element.clipShape, w, h, element.clipRadius ?? 20);
+      ctx.clip();
+    }
+
+    // 3. Dessine l'image foreground
+    ctx.drawImage(fgImg, 0, 0, w, h);
+
+    // 4. Restore clip
+    if (element.clipShape && element.clipShape !== 'none') {
+      ctx.restore();
+    }
+
+    return canvas;
+  }, [
+    fgImg, bgImg,
+    element.width, element.height,
+    element.clipShape, element.clipRadius,
+    element.bgRemoved, element.background,
+  ]);
+}
+
+// ─── FilteredImageElement (refactorisé) ──────────────────────────────────────
 function FilteredImageElement({ element, onSelect }: {
   element: ImageElement; onSelect: (id: string) => void;
 }) {
   const { selectedId } = useCanvas();
-  const isSelected = selectedId === element.id;
-  const src = element.bgRemoved && element.removedBgSrc
-    ? element.removedBgSrc
-    : element.src;
+  const isSelected     = selectedId === element.id;
+  const filters        = element.filters ?? {};
+  const composite      = useCompositeImage(element);
 
-  const [image] = useImage(src, 'anonymous');
-  const imgRef  = useRef<any>(null);
-  const filters = element.filters ?? {};
+  // URL stable pour useImage
+  const compositeUrl = useMemo(
+    () => composite?.toDataURL() ?? '',
+    [composite]
+  );
+  const [compositeImage] = useImage(compositeUrl);
 
- useEffect(() => {
-  if (!imgRef.current || !image) return;
-  imgRef.current.clearCache();
-  imgRef.current.cache();
-  imgRef.current.getLayer()?.batchDraw();
-}, [
-  image, src,
-  element.width,  // ← nouveau
-  element.height, // ← nouveau
-  filters.blur, filters.brightness, filters.contrast,
-  filters.grayscale, filters.sepia, filters.invert,
-  filters.hue, filters.saturation,
-]);
+  // Src fallback (sans composite)
+  const plainSrc = element.bgRemoved && element.removedBgSrc
+    ? element.removedBgSrc : element.src;
+  const [plainImage] = useImage(plainSrc, 'anonymous');
 
+  const imgRef = useRef<any>(null);
+
+  // Konva filters
   const konvaFilters = buildKonvaFilters(filters);
   const hasFilters   = konvaFilters.length > 0;
+
+  useEffect(() => {
+    if (!imgRef.current) return;
+    const node = imgRef.current;
+    node.clearCache();
+    if (hasFilters) node.cache();
+    node.getLayer()?.batchDraw();
+  }, [
+    compositeUrl, plainSrc,
+    element.width, element.height,
+    hasFilters,
+    filters.blur, filters.brightness, filters.contrast,
+    filters.grayscale, filters.sepia, filters.invert,
+    filters.hue, filters.saturation,
+  ]);
+
+  // Image à afficher : composite si clip/bg, sinon plain
+  const needsComposite = !!(
+    (element.clipShape && element.clipShape !== 'none') ||
+    (element.bgRemoved && element.background)
+  );
+  const displayImage = needsComposite ? compositeImage : plainImage;
 
   return (
     <KonvaImage
       ref={imgRef}
       id={element.id}
-      x={element.x}
-      y={element.y}
-      width={element.width}
-      height={element.height}
+      x={element.x} y={element.y}
+      width={element.width} height={element.height}
       rotation={element.rotation ?? 0}
       opacity={element.style.opacity ?? 1}
-      image={image ?? undefined}
+      image={displayImage ?? undefined}
       draggable={!element.locked}
-      // ← Pas de dash sur les images (surtout après remove bg)
+      // Blend mode natif Konva
+      globalCompositeOperation={element.blendMode ?? 'source-over'}
+      // Filtres
+      {...(hasFilters ? { filters: konvaFilters } : {})}
+      blurRadius={filters.blur       ?? 0}
+      brightness={filters.brightness ?? 0}
+      contrast={filters.contrast     ?? 0}
+      hue={filters.hue               ?? 0}
+      saturation={filters.saturation ?? 0}
+      // Sélection sans dash pour les images
       {...(isSelected ? { stroke: '#7c3aed', strokeWidth: 2 } : {})}
       {...shadowProps(element.style)}
-      {...(hasFilters ? { filters: konvaFilters } : {})}
-      blurRadius={filters.blur ?? 0}
-      brightness={filters.brightness ?? 0}
-      contrast={filters.contrast ?? 0}
-      hue={filters.hue ?? 0}
-      saturation={filters.saturation ?? 0}
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
     />

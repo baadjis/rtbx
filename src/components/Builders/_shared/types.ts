@@ -35,6 +35,50 @@ export interface BezierElement extends BaseElement {
   tension?: number;        // 0 = angles droits, 1 = très courbé
 }
 
+//_____________________blendmode__________________
+export type BlendMode =
+  | 'source-over'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity';
+
+export type ClipShape =
+  | 'none'
+  | 'circle'
+  | 'triangle'
+  | 'star'
+  | 'hexagon'
+  | 'pentagon'
+  | 'diamond'
+  | 'blob'
+  | 'rounded'; // rect arrondi
+
+export interface ImageBackground {
+  type:       'color' | 'gradient' | 'image';
+  color?:     string;
+  gradient?:  {
+    type:      'linear' | 'radial';
+    color1:    string;
+    color2:    string;
+    direction: number;
+  };
+  imageSrc?:  string;
+}
+
+
+
 export type ElementType =
   | 'container'
   | 'group'
@@ -42,6 +86,9 @@ export type ElementType =
   | 'image'
   | 'draw'
   | ShapeType; // ← plus besoin de lister chaque shape ici
+
+
+
 
 
 
@@ -151,15 +198,21 @@ export interface TextElement extends BaseElement {
 }
 
 // ─── ImageElement — ajoute filters + removeBackground ────────────────────────
+// Dans ImageElement, ajoute :
 export interface ImageElement extends BaseElement {
-  type:              'image';
-  src:               string;
-  originalSrc?:      string;  // src avant remove bg
-  removedBgSrc?:     string;  // src après remove bg (PNG transparent)
-  bgRemoved?:        boolean;
-  imageFit?:         'fill' | 'contain' | 'cover';
-  alt?:              string;
-  filters?:          ImageFilters;
+  type:          'image';
+  src:           string;
+  originalSrc?:  string;
+  removedBgSrc?: string;
+  bgRemoved?:    boolean;
+  imageFit?:     'fill' | 'contain' | 'cover';
+  alt?:          string;
+  filters?:      ImageFilters;
+  // ── Nouveau ──
+  blendMode?:    BlendMode;
+  clipShape?:    ClipShape;
+  clipRadius?:   number;   // pour 'rounded'
+  background?:   ImageBackground; // fond derrière l'image (après remove bg)
 }
 
 

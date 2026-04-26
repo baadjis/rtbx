@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
 import RemoveBgButton from './RemoveBgButton';
+import Image from 'next/image';
+import { ClipShape } from './types';
 
 type Props = { lang: 'fr' | 'en' };
 
@@ -668,6 +670,239 @@ const isShape = SHAPE_TYPES.includes(selected.type);
       <SectionTitle>{lang === 'fr' ? 'Arrière-plan' : 'Background'}</SectionTitle>
       <RemoveBgButton element={selected as any} lang={lang} />
     </div>
+  </Section>
+)}
+
+{/* ── BLEND MODE ── */}
+{selected.type === 'image' && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Blend Mode' : 'Blend Mode'}</SectionTitle>
+    <select
+      value={(selected as any).blendMode || 'source-over'}
+      onChange={(e) => upd({ blendMode: e.target.value } as any)}
+      className="w-full px-3 py-2 text-xs rounded-lg bg-gray-50 dark:bg-gray-800
+        border border-gray-200 dark:border-gray-700
+        focus:outline-none focus:ring-1 focus:ring-violet-400
+        text-gray-800 dark:text-gray-100"
+    >
+      {[
+        ['source-over', 'Normal'],
+        ['multiply',    'Multiply'],
+        ['screen',      'Screen'],
+        ['overlay',     'Overlay'],
+        ['darken',      'Darken'],
+        ['lighten',     'Lighten'],
+        ['color-dodge', 'Color Dodge'],
+        ['color-burn',  'Color Burn'],
+        ['hard-light',  'Hard Light'],
+        ['soft-light',  'Soft Light'],
+        ['difference',  'Difference'],
+        ['exclusion',   'Exclusion'],
+        ['hue',         'Hue'],
+        ['saturation',  'Saturation'],
+        ['color',       'Color'],
+        ['luminosity',  'Luminosity'],
+      ].map(([val, label]) => (
+        <option key={val} value={val}>{label}</option>
+      ))}
+    </select>
+  </Section>
+)}
+
+{/* ── CLIP SHAPE ── */}
+{selected.type === 'image' && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Découpe par forme' : 'Clip shape'}</SectionTitle>
+    <div className="grid grid-cols-4 gap-1.5">
+      {([
+        { key: 'none',     icon: '▭',  label: lang === 'fr' ? 'Aucun' : 'None'    },
+        { key: 'rounded',  icon: '▢',  label: lang === 'fr' ? 'Arrondi' : 'Round' },
+        { key: 'circle',   icon: '◯',  label: lang === 'fr' ? 'Cercle' : 'Circle' },
+        { key: 'triangle', icon: '△',  label: lang === 'fr' ? 'Triangle' : 'Tri'  },
+        { key: 'diamond',  icon: '◇',  label: 'Diamond'                           },
+        { key: 'star',     icon: '☆',  label: lang === 'fr' ? 'Étoile' : 'Star'  },
+        { key: 'hexagon',  icon: '⬡',  label: 'Hex'                               },
+        { key: 'blob',     icon: '⬬',  label: 'Blob'                              },
+      ] as { key: ClipShape; icon: string; label: string }[]).map((s) => (
+        <button
+          key={s.key}
+          onClick={() => upd({ clipShape: s.key } as any)}
+          className={`flex flex-col items-center gap-1 py-2 px-1 rounded-xl text-xs
+            border transition-all ${
+              (selected as any).clipShape === s.key
+                ? 'border-violet-400 bg-violet-50 dark:bg-violet-900/20 text-violet-600'
+                : 'border-gray-200 dark:border-gray-700 text-gray-500 hover:border-violet-300'
+            }`}
+        >
+          <span className="text-lg leading-none">{s.icon}</span>
+          <span className="text-[9px] font-semibold leading-none">{s.label}</span>
+        </button>
+      ))}
+    </div>
+
+    {/* Radius pour rounded */}
+    {(selected as any).clipShape === 'rounded' && (
+      <div className="mt-3">
+        <Slider
+          label={lang === 'fr' ? 'Arrondi' : 'Radius'}
+          min={0} max={100}
+          value={(selected as any).clipRadius ?? 20}
+          unit="px"
+          onChange={(v) => upd({ clipRadius: v } as any)}
+        />
+      </div>
+    )}
+  </Section>
+)}
+
+{/* ── BACKGROUND (après remove bg) ── */}
+{selected.type === 'image' && (selected as any).bgRemoved && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Fond de remplacement' : 'Background fill'}</SectionTitle>
+
+    {/* Type tabs */}
+    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
+      {(['color', 'gradient', 'image'] as const).map((type) => (
+        <button
+          key={type}
+          onClick={() => upd({
+            background: {
+              ...((selected as any).background ?? {}),
+              type,
+            },
+          } as any)}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+            (selected as any).background?.type === type
+              ? 'bg-violet-600 text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-200'
+          }`}
+        >
+          {type === 'color'    ? (lang === 'fr' ? 'Couleur' : 'Color')    : ''}
+          {type === 'gradient' ? 'Gradient'                                : ''}
+          {type === 'image'    ? (lang === 'fr' ? 'Image'   : 'Image')    : ''}
+        </button>
+      ))}
+    </div>
+
+    {/* Color */}
+    {(selected as any).background?.type === 'color' && (
+      <div className="flex items-center gap-3">
+        <ColorDot
+          value={(selected as any).background?.color ?? '#ffffff'}
+          onChange={(v) => upd({
+            background: { ...((selected as any).background ?? {}), type: 'color', color: v }
+          } as any)}
+        />
+        <div className="flex-1 h-8 rounded-lg border border-gray-200 dark:border-gray-700"
+          style={{ backgroundColor: (selected as any).background?.color ?? '#ffffff' }} />
+      </div>
+    )}
+
+    {/* Gradient */}
+    {(selected as any).background?.type === 'gradient' && (
+      <div className="space-y-3">
+        <div className="flex items-end gap-3">
+          <ColorDot
+            value={(selected as any).background?.gradient?.color1 ?? '#7c3aed'}
+            onChange={(v) => upd({
+              background: {
+                ...((selected as any).background ?? {}),
+                type: 'gradient',
+                gradient: {
+                  ...((selected as any).background?.gradient ?? { type: 'linear', direction: 90 }),
+                  color1: v,
+                },
+              },
+            } as any)}
+            label="C1"
+          />
+          <div className="flex-1 h-8 rounded-lg" style={{
+            background: `linear-gradient(${
+              (selected as any).background?.gradient?.direction ?? 90}deg,
+              ${(selected as any).background?.gradient?.color1 ?? '#7c3aed'},
+              ${(selected as any).background?.gradient?.color2 ?? '#06b6d4'})`,
+          }} />
+          <ColorDot
+            value={(selected as any).background?.gradient?.color2 ?? '#06b6d4'}
+            onChange={(v) => upd({
+              background: {
+                ...((selected as any).background ?? {}),
+                type: 'gradient',
+                gradient: {
+                  ...((selected as any).background?.gradient ?? { type: 'linear', direction: 90 }),
+                  color2: v,
+                },
+              },
+            } as any)}
+            label="C2"
+          />
+        </div>
+        <div className="grid grid-cols-4 gap-1.5">
+          {[0, 45, 90, 135].map((deg) => (
+            <button key={deg}
+              onClick={() => upd({
+                background: {
+                  ...((selected as any).background ?? {}),
+                  gradient: {
+                    ...((selected as any).background?.gradient ?? { color1: '#7c3aed', color2: '#06b6d4', type: 'linear' }),
+                    direction: deg,
+                  },
+                },
+              } as any)}
+              className={`py-1.5 text-xs rounded-lg font-mono transition-all ${
+                (selected as any).background?.gradient?.direction === deg
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-violet-100'
+              }`}
+            >
+              {deg}°
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Image de fond */}
+    {(selected as any).background?.type === 'image' && (
+      <div className="space-y-2">
+        <button
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file'; input.accept = 'image/*';
+            input.onchange = (e) => {
+              const file = (e.target as HTMLInputElement).files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = (ev) => upd({
+                background: {
+                  ...((selected as any).background ?? {}),
+                  type: 'image',
+                  imageSrc: ev.target?.result as string,
+                },
+              } as any);
+              reader.readAsDataURL(file);
+            };
+            input.click();
+          }}
+          className="w-full py-2.5 rounded-xl border border-dashed border-violet-300
+            dark:border-violet-700 text-xs font-semibold text-violet-600
+            hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
+        >
+          📁 {lang === 'fr' ? 'Choisir une image de fond' : 'Choose background image'}
+        </button>
+
+        {(selected as any).background?.imageSrc && (
+          <div className="relative h-16 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+  <Image
+    src={(selected as any).background.imageSrc}
+    fill
+    className="object-cover"
+    alt="bg preview"
+  />
+</div>
+        )}
+      </div>
+    )}
   </Section>
 )}
 
