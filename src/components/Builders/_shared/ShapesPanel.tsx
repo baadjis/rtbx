@@ -89,6 +89,26 @@ const addShape = (type: ShapeType) => {
         </svg>
       ),
     },
+    {
+  key: 'octagon',
+  label: lang === 'fr' ? 'Octogone' : 'Octagon',
+  color: '#0ea5e9',
+  icon: (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+      <path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2z"/>
+    </svg>
+  ),
+},
+{
+  key: 'blob',
+  label: 'Blob',
+  color: '#ec4899',
+  icon: (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+      <path d="M12 3C9 3 6.5 4 5 6c-1.5 2-2 4-1.5 6.5.5 2.5 2 4.5 4 5.5 2 1 4.5 1.5 6.5.5 2-1 3.5-3 4-5.5.5-2.5 0-5-1.5-7C15 3.5 13 3 12 3z"/>
+    </svg>
+  ),
+},
 
     {
   key: 'bezier' as any,

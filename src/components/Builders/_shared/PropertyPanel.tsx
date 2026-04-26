@@ -127,7 +127,11 @@ useEffect(() => {
   }
 
   const isText   = selected.type === 'text';
-  const isShape  = ['rectangle', 'circle'].includes(selected.type);
+  const SHAPE_TYPES: string[] = [
+  'rectangle', 'circle', 'line', 'triangle',
+  'arrow', 'star', 'pentagon', 'hexagon', 'diamond', 'cross'
+];
+const isShape = SHAPE_TYPES.includes(selected.type);
   const isRect   = selected.type === 'rectangle';
   const style    = selected.style || {};
   //const isGradient = fillTab === 'gradient';

@@ -89,6 +89,38 @@ function starPoints(cx: number, cy: number, outerR: number, innerR: number, bran
   return pts;
 }
 
+// ─── Blob points generator ────────────────────────────────────────────────────
+// Génère un blob organique aléatoire mais reproductible via seed
+function blobPoints(
+  cx: number,
+  cy: number,
+  r: number,
+  sides = 8,
+  irregularity = 0.4,
+  seed = 42,
+): number[] {
+  // Petit PRNG déterministe (pas de Math.random() — reproductible)
+  let s = seed;
+  const rand = () => {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+
+  const pts: number[] = [];
+  const angleStep = (2 * Math.PI) / sides;
+
+  for (let i = 0; i < sides; i++) {
+    const angle  = i * angleStep - Math.PI / 2;
+    // Rayon variable pour l'effet organique
+    const radius = r * (1 - irregularity / 2 + rand() * irregularity);
+    pts.push(
+      cx + radius * Math.cos(angle),
+      cy + radius * Math.sin(angle),
+    );
+  }
+  return pts;
+}
+
 function crossPoints(w: number, h: number, t = 0.3) {
   const tx = w * t, ty = h * t;
   return [
@@ -456,30 +488,152 @@ function FilteredImageElement({ element, onSelect }: {
   );
 }
 
+// ─── Helper : wraps any Line-based shape in Group + hitbox ───────────────────
+function LineShape({
+  element,
+  points,
+  closed = true,
+  isSelected,
+  onSelect,
+  fill,
+  stroke,
+}: {
+  element:    ShapeElement;
+  points:     number[];
+  closed?:    boolean;
+  isSelected: boolean;
+  onSelect:   (id: string) => void;
+  fill:       Record<string, any>;
+  stroke:     Record<string, any>;
+}) {
+  const { style, x, y, width: w, height: h } = element;
+
+  return (
+    <Group
+      id={element.id}
+      x={x} y={y}
+      width={w} height={h}
+      rotation={element.rotation ?? 0}
+      opacity={style.opacity ?? 1}
+      draggable={!element.locked}
+      onClick={() => onSelect(element.id)}
+      onTap={() => onSelect(element.id)}
+    >
+      {/* Hitbox — donne width/height lisibles au Transformer */}
+      <Rect
+        width={w} height={h}
+        fill="rgba(0,0,0,0.001)"
+        stroke={isSelected ? '#7c3aed' : undefined}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [5, 4] as number[] : undefined}
+        listening={false}
+      />
+      <Line
+        points={points}
+        closed={closed}
+        listening={false}
+        {...fill}
+        {...stroke}
+        {...shadowProps(style)}
+      />
+    </Group>
+  );
+}
+
 // ─── Shape renderer (inchangé) ────────────────────────────────────────────────
 function ShapeRenderer({ element, onSelect, isSelected }: {
   element: ShapeElement; onSelect: (id: string) => void; isSelected: boolean;
 }) {
-  const sel      = isSelected ? SELECTION : {};
-  const handlers = { onClick: () => onSelect(element.id), onTap: () => onSelect(element.id), draggable: !element.locked };
+  const handlers = {
+    onClick:   () => onSelect(element.id),
+    onTap:     () => onSelect(element.id),
+    draggable: !element.locked,
+  };
   const { style, x, y, width: w, height: h } = element;
   const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2;
-  const shared = { id: element.id, x, y, rotation: element.rotation ?? 0, opacity: style.opacity ?? 1, ...sel, ...handlers, ...shadowProps(style) };
+  const sel    = isSelected ? SELECTION : {};
   const fill   = gradientFillProps(style, w, h);
-  const stroke = { stroke: style.stroke, strokeWidth: style.strokeWidth ?? 0, dash: style.strokeDash };
+  const stroke = {
+    stroke:      style.stroke,
+    strokeWidth: style.strokeWidth ?? 0,
+    dash:        style.strokeDash,
+  };
+  const shared = {
+    id: element.id, x, y, width: w, height: h,
+    rotation: element.rotation ?? 0,
+    opacity:  style.opacity ?? 1,
+    ...sel, ...handlers, ...shadowProps(style),
+  };
+
+  // Shapes avec Line — juste les points changent
+  const lineShapes: Partial<Record<ShapeType, number[]>> = {
+    triangle: polygonPoints(cx, cy, r, 3),
+    pentagon: polygonPoints(cx, cy, r, 5),
+    hexagon:  polygonPoints(cx, cy, r, 6, Math.PI / 6),
+    star:     starPoints(cx, cy, r, r * 0.45, element.numPoints ?? 5),
+    diamond:  diamondPoints(w, h),
+    cross:    crossPoints(w, h),
+    octagon: polygonPoints(cx, cy, r, 8),  // ← 1 ligne suffit
+    blob:    blobPoints(cx, cy, r),  
+  };
+
+  // ← Si c'est une Line shape, on délègue à LineShape
+  if (element.type in lineShapes) {
+    return (
+      <LineShape
+        element={element}
+        points={lineShapes[element.type as ShapeType]!}
+        closed
+        isSelected={isSelected}
+        onSelect={onSelect}
+        fill={fill}
+        stroke={stroke}
+      />
+    );
+  }
 
   switch (element.type as ShapeType) {
-    case 'rectangle': return <Rect  {...shared} width={w} height={h} cornerRadius={style.borderRadius ?? 0} {...fill} {...stroke} />;
-    case 'circle':    return <Circle {...shared} x={x + cx} y={y + cy} radius={r} {...fill} {...stroke} />;
-    case 'line':      return <Line  {...shared} points={element.points ?? [0, 0, w, 0]} stroke={style.stroke || style.fill || '#7c3aed'} strokeWidth={style.strokeWidth ?? 3} dash={style.strokeDash} />;
-    case 'arrow':     return <Arrow {...shared} points={element.points ?? [0, h / 2, w, h / 2]} stroke={style.stroke || style.fill || '#7c3aed'} strokeWidth={style.strokeWidth ?? 3} fill={style.fill || '#7c3aed'} pointerLength={14} pointerWidth={12} />;
-    case 'triangle':  return <Line  {...shared} points={polygonPoints(cx, cy, r, 3)}          closed {...fill} {...stroke} />;
-    case 'pentagon':  return <Line  {...shared} points={polygonPoints(cx, cy, r, 5)}          closed {...fill} {...stroke} />;
-    case 'hexagon':   return <Line  {...shared} points={polygonPoints(cx, cy, r, 6, Math.PI / 6)} closed {...fill} {...stroke} />;
-    case 'star':      return <Line  {...shared} points={starPoints(cx, cy, r, r * 0.45, element.numPoints ?? 5)} closed {...fill} {...stroke} />;
-    case 'diamond':   return <Line  {...shared} points={diamondPoints(w, h)}                  closed {...fill} {...stroke} />;
-    case 'cross':     return <Line  {...shared} points={crossPoints(w, h)}                    closed {...fill} {...stroke} />;
-    default:          return null;
+    case 'rectangle':
+      return (
+        <Rect {...shared}
+          cornerRadius={style.borderRadius ?? 0}
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'circle':
+      return (
+        <Circle {...shared}
+          x={x + cx} y={y + cy}
+          radius={r}
+          {...fill} {...stroke}
+        />
+      );
+
+    case 'line':
+      return (
+        <Line {...shared}
+          points={element.points ?? [0, 0, w, 0]}
+          stroke={style.stroke || style.fill || '#7c3aed'}
+          strokeWidth={style.strokeWidth ?? 3}
+          dash={style.strokeDash}
+        />
+      );
+
+    case 'arrow':
+      return (
+        <Arrow {...shared}
+          points={element.points ?? [0, h / 2, w, h / 2]}
+          stroke={style.stroke || style.fill || '#7c3aed'}
+          strokeWidth={style.strokeWidth ?? 3}
+          fill={style.fill || '#7c3aed'}
+          pointerLength={14}
+          pointerWidth={12}
+        />
+      );
+
+    default:
+      return null;
   }
 }
 

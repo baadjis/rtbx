@@ -15,7 +15,11 @@ export type ShapeType =
   | 'hexagon'
   | 'diamond'
   | 'cross'
-  | 'bezier';
+  | 'bezier'
+  | 'octagon'
+  | 'blob'
+  ;
+
 
 
 

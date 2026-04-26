@@ -34,13 +34,15 @@ const handleTransformEnd = () => {
   const scaleX = node.scaleX();
   const scaleY = node.scaleY();
 
-  // ← Pour les Group, width()/height() = 0, on utilise les valeurs du store
-  const baseWidth  = node.width()  || selectedElement.width;
-  const baseHeight = node.height() || selectedElement.height;
+  // ← node.width() retourne 0 pour Line/Group
+  // On utilise les attrs directement
+  const rawW = node.getAttr('width')  || node.width()  || selectedElement.width;
+  const rawH = node.getAttr('height') || node.height() || selectedElement.height;
 
-  const newWidth  = Math.max(5, baseWidth  * scaleX);
-  const newHeight = Math.max(5, baseHeight * scaleY);
+  const newWidth  = Math.max(5, rawW * scaleX);
+  const newHeight = Math.max(5, rawH * scaleY);
 
+  // Reset scale AVANT updateElement
   node.scaleX(1);
   node.scaleY(1);
 
