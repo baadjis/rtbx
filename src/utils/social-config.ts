@@ -10,7 +10,7 @@ export const SOCIAL_CONFIG: Record<string, { folder?: string, baseUrl: string, p
   "Pinterest": { folder: "pinterest", baseUrl: "https://pinterest.com/", ph: "Ex: mon_pseudo" },
   "Twitch": { folder: "twitch", baseUrl: "https://twitch.tv/", ph: "Ex: mon_pseudo" },
   "Spotify": { folder: "spotify", baseUrl: "https://open.spotify.com/user/", ph: "ID utilisateur" },
-  "Website": { baseUrl: "", ph: "https://mon-site.com" } // Pas de préfixe
+  "Website": { baseUrl: "",folder:"website", ph: "https://mon-site.com" } // Pas de préfixe
 };
 
 export const formatSocialUrl = (network: string, handle: string) => {
