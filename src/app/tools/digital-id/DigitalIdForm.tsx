@@ -43,29 +43,44 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
   }, [supabase])
 
   const updateLink = (index: number, field: string, value: string) => {
-    const newLinks = [...links]
-    let cleanValue = value
+    if (!links[index]) return; // Sécurité
+
+    const newLinks = [...links];
+    let cleanValue = value;
     
-    // Contrôle de saisie : si l'utilisateur met un @ au début, on le retire pour les handles
+    // Nettoyage du @ pour les réseaux sociaux
     if (field === 'handle' && value.startsWith('@')) {
-        cleanValue = value.substring(1)
+        cleanValue = value.substring(1);
     }
 
-    // @ts-ignore
-    newLinks[index][field] = cleanValue
-    setLinks(newLinks)
-  }
+    // Mise à jour de l'objet spécifique
+    newLinks[index] = { 
+        ...newLinks[index], 
+        [field]: cleanValue 
+    };
+    
+    setLinks(newLinks);
+};
 
   const getQRValue = () => {
-    if (user) return `https://www.rtbx.space/@/${user.id}`
+    // 1. Mode PRO : On utilise le lien court et stylé (le plus fiable)
+    // Note : Assure-toi que ta route Next.js est bien /app/@/[id]/page.tsx
+    if (user) return `https://www.rtbx.space/@/${user.id}`;
     
-    // Mode Anonyme : on génère une liste d'URLs réelles pour que le scan soit utile
+    // 2. Mode Anonyme : On génère une liste claire
     const content = links
-      .filter(l => l.handle.trim() !== '')
-      .map(l => formatSocialUrl(l.network, l.handle))
-      .join('\n')
-    return content || 'RetailBox Identity'
-  }
+      .filter(l => l.handle && l.handle.trim() !== '')
+      .map(l => {
+        const url = formatSocialUrl(l.network, l.handle);
+        // On ajoute le nom du réseau pour que l'utilisateur sache sur quoi il clique après le scan
+        return `${l.network}: ${url}`;
+      })
+      .join('\n');
+
+    return content || 'RetailBox Identity';
+}
+
+  
 
   const handleSaveAndSync = async () => {
     if (!user) return
@@ -123,7 +138,14 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
                       >
                         {Object.keys(SOCIAL_CONFIG).map(net => <option key={net} value={net}>{net}</option>)}
                       </select>
-                      <button onClick={() => setLinks(links.filter((_, i) => i !== index))} className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl border-none cursor-pointer"><Trash2 size={18} /></button>
+                      
+                      <button onClick={() => setLinks(links.filter((_, i) => i !== index))} 
+                      
+                      className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl border-none bg-transparent transition-all cursor-pointer">
+                        <Trash2 size={18} />
+                      </button>
+
+                      
                     </div>
                     
                     <div className="space-y-1">
@@ -214,7 +236,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
                 </button>
                 
                 {user && (
-                    <Link href={`/space/${user.id}`} target="_blank" className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl font-black border border-indigo-100 dark:border-indigo-900 no-underline flex items-center justify-center gap-2 hover:bg-indigo-50 transition-all">
+                    <Link href={`/@/${user.id}`} target="_blank" className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl font-black border border-indigo-100 dark:border-indigo-900 no-underline flex items-center justify-center gap-2 hover:bg-indigo-50 transition-all">
                         {lang === 'fr' ? "Voir mon Space" : "View my Space"} <ArrowRight size={18} />
                     </Link>
                 )}
