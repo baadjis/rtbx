@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BrandLogo } from '@/components/BrandLogo';
-import { SOCIAL_CONFIG, formatSocialUrl } from '@/utils/social-config';
+import { get_social_config, formatSocialUrl } from '@/utils/social-config';
 import { Data } from './data';
 
 export default async function PublicSpacePage({ params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +25,8 @@ export default async function PublicSpacePage({ params }: { params: Promise<{ id
       {t.not_found}
     </div>
   );
-
+  const SOCIAL_CONFIG = get_social_config(lang)
+  
   const socialLinks = profile.social_data || [];
 
   return (
@@ -64,7 +65,7 @@ export default async function PublicSpacePage({ params }: { params: Promise<{ id
                 if (!config) return null;
 
                 const iconPath = `/social_assets/${config.folder}/glyph/digital/png/full.png`;
-                const finalUrl = formatSocialUrl(link.network, link.handle);
+                const finalUrl = formatSocialUrl(link.network, link.handle,lang);
 
                 return (
                     <a 
