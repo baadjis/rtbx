@@ -10,6 +10,7 @@ const nextConfig: import('next').NextConfig = {
         pathname: '/s2/favicons/**',
       },
     ],
+      domains: [],
   },
 };
 

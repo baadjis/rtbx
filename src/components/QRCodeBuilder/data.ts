@@ -17,7 +17,9 @@ export const Data = {
     preview: "Aperçu en direct",
     preview_sub: "Mise à jour instantanée",
     btn_dl: "TÉLÉCHARGER PNG HD",
-    back: "Retour"
+    back: "Retour",
+    logo_margin:"Marge du logo",
+    logo_size:"Dimensions du logo",
   },
   en: {
     title: "Pro QR Code Generator",
@@ -37,6 +39,9 @@ export const Data = {
     preview: "Live Preview",
     preview_sub: "Instant update",
     btn_dl: "DOWNLOAD HD PNG",
-    back: "Back"
+    back: "Back",
+    logo_margin:"Marge du logo",
+    logo_size:"Logo size",
+
   }
 }
