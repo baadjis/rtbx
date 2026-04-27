@@ -58,7 +58,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     const header = lang === 'fr' ? "MES RÉSEAUX :\n" : "MY SOCIALS:\n";
     const content = validLinks
       .map(l => `${l.network}: ${formatSocialUrl(l.network, l.handle)}`)
-      .join('\n');
+      .join('\r\n');
 
     return `${header}${content}`;
   }, [links, user, lang]);
