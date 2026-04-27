@@ -42,7 +42,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     checkUser()
   }, [supabase])
 
-  const updateLink = (index: number, field: string, value: string) => {
+ const updateLink = (index: number, field: string, value: string) => {
     if (!links[index]) return; // Sécurité
 
     const newLinks = [...links];
