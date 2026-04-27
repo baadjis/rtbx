@@ -13,48 +13,51 @@ export default async function PublicSpacePage({ params }: { params: Promise<{ id
   const cookieStore = await cookies();
   const lang = (cookieStore.get('lang')?.value || 'fr') as 'en' | 'fr';
   const t = Data[lang];
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('first_name, last_name, social_data')
+ // Récupération de l'identité digitale + le profil du propriétaire
+  const { data: space } = await supabase
+    .from('spaces')
+    .select('*, profiles(first_name, last_name)')
     .eq('id', id)
     .single();
 
-  if (!profile) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-black">
-      {t.not_found}
-    </div>
-  );
+  if (!space) return <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">404 - Not Found</div>;
+
+  // --- LOGIQUE DE NOM DYNAMIQUE ---
+  const isOrg = space.account_type === 'organization';
+  const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`;
   const SOCIAL_CONFIG = get_social_config(lang)
+  const socialLinks = space.social_data || [];
   
-  const socialLinks = profile.social_data || [];
+  
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white relative overflow-hidden">
+     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white relative overflow-hidden">
+      {/* ... Background dégradé ... */}
       
-      {/* Background Splendide */}
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-slate-950 to-black z-0"></div>
-      <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-violet-600/10 blur-[120px] rounded-full"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-blue-600/10 blur-[120px] rounded-full"></div>
-
       <div className="relative z-10 w-full max-w-md space-y-10 text-center">
-        
-        {/* Header Profil */}
         <div className="space-y-6">
-            <div className="w-28 h-28 bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-500 rounded-[2.5rem] mx-auto flex items-center justify-center shadow-2xl border-4 border-white/20 p-1">
-                <div className="w-full h-full bg-slate-900 rounded-[2.2rem] flex items-center justify-center">
-                  <span className="text-4xl font-black uppercase tracking-tighter">
-                    {profile.first_name?.[0]}{profile.last_name?.[0]}
-                  </span>
+            {/* Avatar / Logo */}
+            <div className="w-28 h-28 mx-auto p-1 rounded-[2.8rem] shadow-2xl border-4 border-white/10" style={{ background: `linear-gradient(to tr, ${space.theme_color || '#4f46e5'}, #9333ea)` }}>
+                <div className="w-full h-full bg-slate-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden">
+                  {space.logo_url ? 
+                  <Image
+                   src={space.logo_url} className="w-full h-full object-cover" alt="Logo"
+                    /> : 
+                    <span className="text-3xl font-black uppercase">{displayName?.[0] || 'R'}</span>}
                 </div>
             </div>
+
+            {/* NOM AFFICHÉ */}
             <div>
-                <h1 className="text-4xl font-black tracking-tight leading-none mb-2">
-                    {profile.first_name} {profile.last_name}
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight mb-2">
+                    {displayName || "RetailBox Space"}
                 </h1>
-                <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-[10px] opacity-80">
-                  {t.badge_label}
-                </p>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10">
+                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: space.theme_color }}></div>
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">
+                      {isOrg ? 'Verified Organization' : t.badge_label}
+                   </span>
+                </div>
             </div>
         </div>
 

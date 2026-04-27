@@ -25,7 +25,10 @@ fr: {
   legal_auth: "Je certifie sur l'honneur avoir le droit d'administrer l'identité digitale de cette organisation.",
   error_legal: "Veuillez accepter les engagements juridiques pour continuer.",
   btn_activate: "🚀 Activer mon Identité Digitale",
-  label_socials:"Réseaux Sociaux"
+  label_socials:"Réseaux Sociaux",
+  label_org_name:"Nom de l'organisation",
+  ph_org_name:"Mon organisation",
+  identity_activated:"Identité Activée"
 },
 en: {
   did_title: "Your Digital Identity",
@@ -54,7 +57,10 @@ en: {
   legal_auth: "I certify that I have the legal authority to manage this organization's digital identity.",
   error_legal: "Please accept the legal commitments to continue.",
   btn_activate: "🚀 Activate My Digital Identity",
-  label_socials:"Soacial Networks"
+  label_socials:"Soacial Networks",
+   label_org_name:"Organization  Name",
+  ph_org_name:"My Organization",
+  identity_activated:"Identity Activated"
 
 
 }

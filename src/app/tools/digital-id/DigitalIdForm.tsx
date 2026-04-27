@@ -34,6 +34,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
   // --- ÉTATS JURIDIQUES ---
   const [legalTerms, setLegalTerms] = useState(false)
   const [legalAuth, setLegalAuth] = useState(false)
+  const [orgNameField, setOrgNameField] = useState('') // Nouveau
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -71,7 +72,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     }
   }
 
-  const handleActivate = async () => {
+ const handleActivate = async () => {
     if (!legalTerms || (accountType === 'organization' && !legalAuth)) {
         alert(t.error_legal); return;
     }
@@ -81,6 +82,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
         user_id: currentUser?.id || null,
         email: email.toLowerCase().trim(),
         account_type: accountType,
+        organization_name: accountType === 'organization' ? orgNameField : null, // Sauvegarde du nom d'org
         social_data: links.filter(l => l.handle.trim() !== ''),
         theme_color: fgColor,
         bg_color: bgColor,
@@ -89,11 +91,8 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
         is_authorized_representative: accountType === 'organization'
     }]).select().single()
 
-    if (!error) {
-        setGeneratedId(data.id)
-    } else {
-        alert(error.message)
-    }
+    if (!error) setGeneratedId(data.id)
+    else alert(error.message)
     setLoading(false)
   }
 
@@ -143,7 +142,14 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
                     </button>
                 </div>
               </div>
-
+              
+                 {/* NOM DE L'ORGANISATION (DYNAMIQUE) */}
+              {accountType === 'organization' && (
+                <div className="space-y-2 animate-in slide-in-from-top-4 duration-500">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.label_org_name || "Nom de l'organisation"}</label>
+                    <input value={orgNameField} onChange={(e) => setOrgNameField(e.target.value)} placeholder={t.ph_org_name || "Ex: Ma Boutique SARL"} className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500" />
+                </div>
+              )}
               {/* 2. EMAIL DE GESTION */}
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2"><Mail size={14}/> Email de gestion</label>
@@ -225,7 +231,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
                 </button>
               ) : (
                 <div className="p-5 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-3xl border border-green-100 dark:border-green-900/30 flex items-center justify-center gap-3 font-black uppercase text-xs tracking-widest animate-in zoom-in">
-                    <CheckCircle2 size={20} /> Identity Activated
+                    <CheckCircle2 size={20} /> { t.identity_activated}
                 </div>
               )}
             </div>
