@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
 import { Data } from './data'
 import { getQrIcon, ICON_PATHS } from '@/utils/qr-utils'
-import { SOCIAL_CONFIG } from '@/utils/social-config'
+import { get_social_config } from '@/utils/social-config'
 
 export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
   const t = Data[lang]
@@ -39,6 +39,8 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+
+  const SOCIAL_CONFIG =get_social_config(lang)
 
   useEffect(() => {
     const checkUser = async () => {
