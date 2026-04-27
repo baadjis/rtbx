@@ -9,7 +9,7 @@ import {
   Share2, Plus, X, ShieldAlert, KeyRound, ArrowRight
 } from 'lucide-react'
 import { Data } from './data'
-import { SOCIAL_CONFIG } from '@/utils/social-config'
+import { get_social_config} from '@/utils/social-config'
 
 export default function SettingsForm({ lang, user }: { lang: 'fr' | 'en', user: any }) {
   const t = Data[lang]
@@ -29,6 +29,9 @@ export default function SettingsForm({ lang, user }: { lang: 'fr' | 'en', user: 
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+
+    const SOCIAL_CONFIG = get_social_config(lang)
+  
 
   useEffect(() => {
     const fetchProfile = async () => {
