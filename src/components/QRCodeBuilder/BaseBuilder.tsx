@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // /lib/baseQRBuilder.ts
+
 import { Options } from "qr-code-styling"
 import { QR_TEMPLATES } from "./Templates"
-
 
 export type QRBuilderParams = {
   value: string
@@ -18,32 +18,33 @@ export type QRBuilderParams = {
 
   templateName?: string
 
-  // override avancé libre
   overrides?: Partial<Options>
 }
 
-// 🔥 merge profond propre
+// 🔥 merge profond safe (corrigé edge cases)
 function deepMerge(target: any, source: any) {
+  if (!source) return target
+
   const output = { ...target }
 
-  if (typeof target === "object" && typeof source === "object") {
-    Object.keys(source || {}).forEach((key) => {
-      if (
-        typeof source[key] === "object" &&
-        source[key] !== null &&
-        !Array.isArray(source[key])
-      ) {
-        output[key] = deepMerge(target[key] || {}, source[key])
-      } else {
-        output[key] = source[key]
-      }
-    })
-  }
+  Object.keys(source).forEach((key) => {
+    const sourceVal = source[key]
+    const targetVal = target?.[key]
+
+    if (
+      typeof sourceVal === "object" &&
+      sourceVal !== null &&
+      !Array.isArray(sourceVal)
+    ) {
+      output[key] = deepMerge(targetVal || {}, sourceVal)
+    } else {
+      output[key] = sourceVal
+    }
+  })
 
   return output
 }
 
-// 🔥 BUILDER CENTRAL
 export function baseQRBuilder(params: QRBuilderParams): Options {
   const {
     value,
@@ -56,7 +57,7 @@ export function baseQRBuilder(params: QRBuilderParams): Options {
     overrides = {},
   } = params
 
-  // 1️⃣ BASE (stable)
+  // 🔹 BASE CLEAN
   const base: Options = {
     width: size,
     height: size,
@@ -65,8 +66,8 @@ export function baseQRBuilder(params: QRBuilderParams): Options {
     image: logo || undefined,
 
     dotsOptions: {
-      color: fgColor,
       type: dotType,
+      color: fgColor,
     },
 
     backgroundOptions: {
@@ -84,18 +85,29 @@ export function baseQRBuilder(params: QRBuilderParams): Options {
     imageOptions: {
       crossOrigin: "anonymous",
       margin: 5,
+      imageSize: 0.2, // 🔥 important (default UX safe)
     },
   }
 
-  // 2️⃣ TEMPLATE
+  // 🔹 TEMPLATE
   const template =
     QR_TEMPLATES.find((t) => t.name === templateName)?.options || {}
 
-  // 3️⃣ MERGE FINAL (ordre important)
+  // 🔹 MERGE BASE + TEMPLATE
   let finalOptions = deepMerge(base, template)
 
-  // 4️⃣ USER OVERRIDE (priorité max)
+  // 🔹 USER OVERRIDE
   finalOptions = deepMerge(finalOptions, overrides)
+
+  // 🔥 FIX CRITIQUE : gradient vs color
+  if (finalOptions?.dotsOptions?.gradient) {
+    delete finalOptions.dotsOptions.color
+  }
+
+  // 🔥 FIX : image null propre
+  if (!logo) {
+    delete finalOptions.image
+  }
 
   return finalOptions
 }
