@@ -195,7 +195,7 @@ export default function SettingsForm({ lang, user }: { lang: 'fr' | 'en', user: 
                         </span>
                     )}
                     <input 
-                        placeholder={t.label_link} 
+                        placeholder={config.ph} 
                         value={item.handle} 
                         onChange={e => updateSocial(i, 'handle', e.target.value)} 
                         className={`w-full p-4 bg-white dark:bg-slate-800 border-none rounded-2xl font-bold text-sm dark:text-white transition-all ${config.baseUrl ? 'pl-28 md:pl-36' : 'pl-4'}`} 
