@@ -40,7 +40,7 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const SOCIAL_CONFIG =get_social_config(lang)
+  const SOCIAL_CONFIG = get_social_config(lang)
 
   useEffect(() => {
     const checkUser = async () => {

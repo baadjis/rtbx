@@ -11,7 +11,7 @@ fr:{
 },
 en:{
 
-   pseudo:"Ex: user_name",
+pseudo:"Ex: user_name",
  profil_id:  "profil link or ID",
  channel:"Ex: my_channel",
  channel_id:"Chanel ID",
