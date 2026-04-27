@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState, useMemo } from "react"
@@ -26,21 +27,30 @@ export default function QRStudioBuilder({
   const [template, setTemplate] = useState("default")
 
   const [design, setDesign] = useState<{
-    fgColor?: string
-    bgColor?: string
-    logo?: string | null
-  }>({})
-
+  fgColor?: string
+  bgColor?: string
+  logo?: string | null
+  dotType?: any
+  overrides?: any
+}>({
+  fgColor: "#4f46e5",
+  bgColor: "#ffffff",
+  logo: null,
+  dotType: "square",
+  overrides: {},
+})
   // 🔹 BUILD OPTIONS (🔥 basebuilder utilisé ici)
   const options = useMemo(() => {
-    return baseQRBuilder({
-      value,
-      fgColor: design.fgColor,
-      bgColor: design.bgColor,
-      logo: design.logo,
-      templateName: template,
-    })
-  }, [value, design, template])
+  return baseQRBuilder({
+    value,
+    fgColor: design.fgColor,
+    bgColor: design.bgColor,
+    logo: design.logo,
+    dotType: design.dotType,
+    templateName: template,
+    overrides: design.overrides, // 🔥 CRITIQUE
+  })
+}, [value, design, template])
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors">
