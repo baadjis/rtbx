@@ -61,20 +61,29 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
 
   // 3. LOGIQUE DU QR CODE : Calculée dynamiquement (useMemo pour la performance)
   const qrValue = useMemo(() => {
-    // Mode PRO : URL de la page de profil splendide
+    // Cas 1 : Utilisateur connecté (Page de profil pro)
+    // C'est la solution la plus fiable pour le clic direct
     if (user) return `https://www.rtbx.space/@/${user.id}`;
     
-    // Mode Anonyme : On liste TOUS les liens valides
-    const content = links
-      .filter(l => l.handle && l.handle.trim() !== '')
+    // Cas 2 : Mode Anonyme (Multi-liens)
+    const validLinks = links.filter(l => l.handle && l.handle.trim() !== '');
+    
+    if (validLinks.length === 0) return 'RetailBox Identity';
+
+    // ASTUCE TECHNIQUE : On ajoute un titre et on préfixe chaque ligne. 
+    // Le fait de ne pas commencer par "http" directement aide le scanner 
+    // à traiter le bloc comme une fiche texte où chaque URL est détectée.
+    const header = lang === 'fr' ? "MA CARTE DIGITALE :\n" : "MY DIGITAL CARD:\n";
+    
+    const content = validLinks
       .map(l => {
         const url = formatSocialUrl(l.network, l.handle);
         return `${l.network}: ${url}`;
       })
-      .join('\n');
+      .join('\n\n'); // Double retour à la ligne pour la lisibilité
 
-    return content || 'RetailBox Digital Identity';
-  }, [links, user]);
+    return `${header}${content}`;
+  }, [links, user, lang]);
 
   const handleSaveAndSync = async () => {
     if (!user) return
