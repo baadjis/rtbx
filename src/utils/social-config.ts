@@ -1,16 +1,16 @@
-export const SOCIAL_CONFIG: Record<string, { folder?: string, baseUrl: string, pattern: string }> = {
-  "Instagram": { folder: "instagram", baseUrl: "https://instagram.com/", pattern: "username" },
-  "TikTok": { folder: "tiktok", baseUrl: "https://tiktok.com/@", pattern: "username" },
-  "WhatsApp": { folder: "whatsapp", baseUrl: "https://whatsapp.com/channel/", pattern: "channel_id" },
-  "YouTube": { folder: "youtube", baseUrl: "https://youtube.com/@", pattern: "channel_handle" },
-  "LinkedIn": { folder: "linkedin", baseUrl: "https://linkedin.com/in/", pattern: "profile_id" },
-  "X (Twitter)": { folder: "x", baseUrl: "https://x.com/", pattern: "username" },
-  "Facebook": { folder: "facebook", baseUrl: "https://facebook.com/", pattern: "profile_id" },
-  "Threads": { folder: "threads", baseUrl: "https://threads.net/@", pattern: "username" },
-  "Pinterest": { folder: "pinterest", baseUrl: "https://pinterest.com/", pattern: "username" },
-  "Twitch": { folder: "twitch", baseUrl: "https://twitch.tv/", pattern: "username" },
-  "Spotify": { folder: "spotify", baseUrl: "https://open.spotify.com/user/", pattern: "user_id" },
-  "Website": { baseUrl: "", pattern: "full_url" } // Pas de folder ici
+export const SOCIAL_CONFIG: Record<string, { folder?: string, baseUrl: string, ph: string }> = {
+  "Instagram": { folder: "instagram", baseUrl: "https://instagram.com/", ph: "Ex: mon_pseudo" },
+  "TikTok": { folder: "tiktok", baseUrl: "https://tiktok.com/@", ph: "Ex: mon_pseudo" },
+  "WhatsApp": { folder: "whatsapp", baseUrl: "https://whatsapp.com/channel/", ph: "ID de la chaîne" },
+  "YouTube": { folder: "youtube", baseUrl: "https://youtube.com/@", ph: "Ex: ma_chaine" },
+  "LinkedIn": { folder: "linkedin", baseUrl: "https://linkedin.com/in/", ph: "Lien profil ou ID" },
+  "X (Twitter)": { folder: "x", baseUrl: "https://x.com/", ph: "Ex: mon_pseudo" },
+  "Facebook": { folder: "facebook", baseUrl: "https://facebook.com/", ph: "Lien profil ou ID" },
+  "Threads": { folder: "threads", baseUrl: "https://threads.net/@", ph: "Ex: mon_pseudo" },
+  "Pinterest": { folder: "pinterest", baseUrl: "https://pinterest.com/", ph: "Ex: mon_pseudo" },
+  "Twitch": { folder: "twitch", baseUrl: "https://twitch.tv/", ph: "Ex: mon_pseudo" },
+  "Spotify": { folder: "spotify", baseUrl: "https://open.spotify.com/user/", ph: "ID utilisateur" },
+  "Website": { baseUrl: "", ph: "https://mon-site.com" } // Pas de préfixe
 };
 
 export const formatSocialUrl = (network: string, handle: string) => {
@@ -20,12 +20,11 @@ export const formatSocialUrl = (network: string, handle: string) => {
   const val = handle.trim();
   if (!val) return "";
 
-  // 1. Si l'utilisateur a déjà mis l'URL complète, on la nettoie juste
+  // Si l'utilisateur a déjà mis l'URL complète (commence par http), on la garde telle quelle
   if (val.startsWith('http')) return val;
   
-  // 2. Nettoyage du '@' si l'utilisateur l'a mis par habitude
+  // On nettoie le @ uniquement ici pour la construction de l'URL
   const cleanHandle = val.replace('@', '');
   
-  // 3. Construction propre selon la base du réseau
   return `${config.baseUrl}${cleanHandle}`;
 };
