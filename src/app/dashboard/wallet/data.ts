@@ -9,7 +9,9 @@ export const DATA = {
     sub_vcard: "Partagez vos coordonnées pro",
     sub_social: "Tous vos liens en un scan",
     switch_space: "Choisir un espace à diffuser",
-    personal_space: "Ma Social Card (Perso)"
+    personal_space: "Ma Social Card (Perso)",
+    data_is_protected:"Vos données sont chiffrées et protégées par les protocoles OAuth 2.0."
+
   },
   en: {
     title: "My Wallet",
@@ -21,6 +23,8 @@ export const DATA = {
     sub_vcard: "Share your professional details",
     sub_social: "All your links in one scan",
     switch_space: "Choose space to share",
-    personal_space: "My Social Card (Personal)"
+    personal_space: "My Social Card (Personal)",
+    data_is_protected:"your personal data  is well protected with OAuth 2.0. protocol"
+
   }
 };

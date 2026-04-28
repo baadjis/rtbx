@@ -128,7 +128,7 @@ export default function WalletSwitcher({ user, profile, spaces, lang }: any) {
       <div className="flex items-center gap-3 p-5 bg-gray-50 dark:bg-slate-900/50 rounded-3xl border border-gray-100 dark:border-slate-800 w-full">
          <ShieldCheck className="text-indigo-600 dark:text-indigo-400" size={20} />
          <p className="text-[10px] text-gray-500 dark:text-slate-400 font-medium leading-relaxed italic">
-            RetailBox Secured Passage. Vos données sont chiffrées et protégées par les protocoles OAuth 2.0.
+            RetailBox Secured Passage. {t.data_is_protected}
          </p>
       </div>
     </div>
