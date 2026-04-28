@@ -210,50 +210,42 @@ export const getFormInvitationEmail = (data: { orgName: string, formTitle: strin
   return EmailWrapper(content, lang);
 };
 
-
-
 // --- TEMPLATE : BIENVENUE / CRÉATION DE SPACE ---
-export const getSpaceWelcomeEmail = (data: { displayName: string, spaceId: string, spaceUrl: string }, lang: 'fr' | 'en') => {
+// --- TEMPLATE : BIENVENUE SPACE (RECTIFIÉ) ---
+export const getSpaceWelcomeEmail = (data: { displayName: string, slug: string, spaceId: string, editUrl: string }, lang: 'fr' | 'en') => {
   const content = {
     fr: `
-      <h2 style="font-size:24px; font-weight:800; margin-top:0; color:${theme.primary};">Votre Espace est prêt ! 🚀</h2>
+      <h2 style="color:#4f46e5;">Félicitations, votre identité est réservée ! 🚀</h2>
       <p>Bonjour <strong>${data.displayName}</strong>,</p>
-      <p>Félicitations, votre identité digitale unique a été créée avec succès sur RetailBox.</p>
+      <p>Votre Espace Public est accessible ici : <br/>
+         <a href="https://rtbx.space/@/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
+      </p>
       
-      <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center;">
-        <p style="margin:0; font-size:12px; font-weight:bold; color:${theme.lightText}; uppercase tracking-widest">Votre Identifiant Unique</p>
-        <p style="margin:10px 0; font-size:22px; font-weight:900; color:${theme.text};">${data.spaceId}</p>
-        <p style="margin:0; font-size:14px; font-weight:700; color:${theme.primary};">${data.spaceUrl}</p>
+      <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+        <p style="margin:0; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:1px;">Informations de gestion</p>
+        <p style="margin:10px 0; font-size:14px; color:#1e293b;">
+           <strong>Space ID :</strong> <code style="background:#eee; padding:2px 5px;">${data.spaceId}</code><br/>
+           <strong>Lien d'édition :</strong> <a href="${data.editUrl}" style="color:#4f46e5;">Modifier mon profil →</a>
+        </p>
+        <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Conservez cet e-mail. Ces accès sont privés et vous appartiennent.</p>
       </div>
-
-      <p>Vous pouvez désormais partager ce lien dans vos biographies de réseaux sociaux, sur vos cartes de visite ou vos vitrines pour centraliser tous vos canaux de vente et de contact.</p>
-      
-      <div align="center" style="margin-top: 35px;">
-        <a href="${data.spaceUrl}" style="background-color:${theme.primary}; color:white; padding: 18px 35px; border-radius: 14px; font-weight:800; text-decoration:none; display:inline-block; shadow: 0 10px 20px rgba(79, 70, 229, 0.2);">Voir mon Space</a>
-      </div>
-      
-      <p style="margin-top:30px; font-size:14px; color:${theme.lightText};">Besoin de modifier vos liens ? Connectez-vous à votre Dashboard sur rtbx.space.</p>
     `,
     en: `
-      <h2 style="font-size:24px; font-weight:800; margin-top:0; color:${theme.primary};">Your Space is live! 🚀</h2>
+      <h2 style="color:#4f46e5;">Congratulations, your identity is reserved! 🚀</h2>
       <p>Hello <strong>${data.displayName}</strong>,</p>
-      <p>Congratulations, your unique digital identity has been successfully created on RetailBox.</p>
+      <p>Your Public Space is live at: <br/>
+         <a href="https://rtbx.space/@/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
+      </p>
       
-      <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center;">
-        <p style="margin:0; font-size:12px; font-weight:bold; color:${theme.lightText}; uppercase tracking-widest">Your Unique ID</p>
-        <p style="margin:10px 0; font-size:22px; font-weight:900; color:${theme.text};">${data.spaceId}</p>
-        <p style="margin:0; font-size:14px; font-weight:700; color:${theme.primary};">${data.spaceUrl}</p>
+      <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+        <p style="margin:0; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:1px;">Management Details</p>
+        <p style="margin:10px 0; font-size:14px; color:#1e293b;">
+           <strong>Space ID:</strong> <code style="background:#eee; padding:2px 5px;">${data.spaceId}</code><br/>
+           <strong>Edit Link:</strong> <a href="${data.editUrl}" style="color:#4f46e5;">Manage my profile →</a>
+        </p>
+        <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Keep this email safe. These access points are private and belong to you.</p>
       </div>
-
-      <p>You can now share this link in your social media bios, on business cards, or storefronts to centralize all your sales and contact channels.</p>
-      
-      <div align="center" style="margin-top: 35px;">
-        <a href="${data.spaceUrl}" style="background-color:${theme.primary}; color:white; padding: 18px 35px; border-radius: 14px; font-weight:800; text-decoration:none; display:inline-block; shadow: 0 10px 20px rgba(79, 70, 229, 0.2);">View my Space</a>
-      </div>
-      
-      <p style="margin-top:30px; font-size:14px; color:${theme.lightText};">Need to update your links? Log in to your Dashboard at rtbx.space.</p>
     `
   }[lang];
-
   return EmailWrapper(content, lang);
 };

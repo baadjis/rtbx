@@ -10,8 +10,9 @@ import {
 } from 'lucide-react'
 import { Data } from './data'
 import { get_social_config} from '@/utils/social-config'
+import { LangType } from '@/lib/lang/types'
 
-export default function SettingsForm({ lang, user }: { lang: 'fr' | 'en', user: any }) {
+export default function SettingsForm({ lang, user }: { lang:LangType, user: any }) {
   const t = Data[lang]
   const [activeTab, setActiveTab] = useState<'profile' | 'social' | 'account'>('profile')
   const [loading, setLoading] = useState(false)

@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SettingsForm from './SettingsForm';
 import { Data } from './data';
+import { LangType } from '@/lib/lang/types';
 
 export default async function SettingsPage() {
   // 1. Protection de la route
@@ -15,7 +16,7 @@ export default async function SettingsPage() {
   // 2. Gestion de la langue
   const cookieStore = await cookies();
   const langValue = cookieStore.get('lang')?.value;
-  const lang = (langValue === 'en' ? 'en' : 'fr') as 'en' | 'fr';
+  const lang = (langValue === 'en' ? 'en' : 'fr') as LangType;
   const t = Data[lang];
 
   return (

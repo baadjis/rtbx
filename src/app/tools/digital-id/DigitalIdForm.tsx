@@ -14,8 +14,9 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Data } from './data'
 import { getQrIcon, ICON_PATHS } from '@/utils/qr-utils'
 import { get_social_config } from '@/utils/social-config'
+import { LangType } from '@/lib/lang/types'
 
-export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
+export default function DigitalIDForm({ lang }: { lang: LangType }) {
   const t = Data[lang]
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [loading, setLoading] = useState(false)
@@ -35,6 +36,8 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
   const [legalTerms, setLegalTerms] = useState(false)
   const [legalAuth, setLegalAuth] = useState(false)
   const [orgNameField, setOrgNameField] = useState('') // Nouveau
+  const [slug, setSlug] = useState('');
+  const [isSlugAvailable, setIsSlugAvailable] = useState<boolean | null>(null);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,6 +54,19 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     checkUser()
   }, [supabase])
 
+  // --- LOGIQUE DE VÉRIFICATION ---
+useEffect(() => {
+  const delayDebounce = setTimeout(async () => {
+    if (slug.length >= 3) {
+      const res = await fetch(`/api/spaces/check-slug?slug=${slug}`);
+      const data = await res.json();
+      setIsSlugAvailable(data.available);
+    } else {
+      setIsSlugAvailable(null);
+    }
+  }, 500);
+  return () => clearTimeout(delayDebounce);
+}, [slug]);
   // --- LOGIQUE ACTIONS ---
 
   const updateLink = (index: number, field: string, value: string) => {
@@ -178,6 +194,24 @@ const handleActivate = async () => {
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2"><Mail size={14}/> Email de gestion</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={!!currentUser} placeholder="votre@email.com" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 disabled:opacity-50" />
               </div>
+
+              <div className="space-y-4">
+    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Choisir votre lien public</label>
+    <div className={`flex items-center bg-gray-50 dark:bg-slate-800 rounded-2xl px-4 border-2 transition-all ${
+        isSlugAvailable === true ? 'border-green-500' : isSlugAvailable === false ? 'border-red-500' : 'border-transparent'
+    }`}>
+        <span className="text-gray-400 font-bold border-r border-gray-200 dark:border-slate-700 pr-3 text-sm">rtbx.space/@/</span>
+        <input 
+            value={slug}
+            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+            placeholder="votre-nom"
+            className="flex-1 p-4 bg-transparent border-none focus:ring-0 font-bold dark:text-white"
+        />
+        {isSlugAvailable === true && <CheckCircle2 className="text-green-500 ml-2" size={18} />}
+        {isSlugAvailable === false && <X className="text-red-500 ml-2" size={18} />}
+    </div>
+    {isSlugAvailable === false && <p className="text-[10px] text-red-500 font-bold ml-4">Ce nom est déjà pris.</p>}
+</div>
 
               {/* 3. RÉSEAUX SOCIAUX */}
               <div className="space-y-4">

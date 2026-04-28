@@ -29,16 +29,16 @@ export async function POST(request: Request) {
 
     // 2. Envoi de l'e-mail après succès
     const displayName = body.account_type === 'organization' ? body.organization_name : body.email;
-    const spaceUrl = `https://www.rtbx.space/@/${data.id}`;
     
-    const htmlContent = getSpaceWelcomeEmail({
-      displayName: displayName,
-      spaceId: data.id,
-      spaceUrl: spaceUrl
-    }, body.lang);
+   const htmlContent = getSpaceWelcomeEmail({
+  displayName: displayName,
+  slug: data.slug || data.id, // On utilise le slug s'il existe, sinon l'ID
+  spaceId: data.id,           // L'identifiant technique
+  editUrl: `https://www.rtbx.space/edit/space?token=${data.edit_token}`,
+}, body.lang);
 
     await resend.emails.send({
-      from: 'RetailBox <hello@rtbx.space>',
+      from: 'RetailBox Space <hello@rtbx.space>',
       to: body.email,
       subject: body.lang === 'fr' ? 'Votre Espace RetailBox est prêt !' : 'Your RetailBox Space is ready!',
       html: htmlContent

@@ -1,36 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { BrandLogo } from '@/components/BrandLogo';
+import { formatSocialUrl, get_social_config } from '@/utils/social-config';
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import Image from 'next/image';
-import { BrandLogo } from '@/components/BrandLogo';
-import { get_social_config, formatSocialUrl } from '@/utils/social-config';
+import { notFound } from 'next/navigation';
 import { Data } from '../data';
+import Image from 'next/image';
+import { LangType } from '@/lib/lang/types';
 
-export default async function PublicSpacePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function PublicSpacePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const supabase = await createClient();
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as 'en' | 'fr';
+  const lang = (cookieStore.get('lang')?.value || 'fr') as LangType;
   const t = Data[lang];
- // Récupération de l'identité digitale + le profil du propriétaire
-  const { data: space } = await supabase
-    .from('spaces')
-    .select('*, profiles(first_name, last_name)')
-    .eq('id', id)
-    .single();
+  
 
-  if (!space) return <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">404 - Not Found</div>;
+  // LOGIQUE MAGIQUE : On cherche d'abord par le SLUG, puis par l'ID si le slug ressemble à un UUID
+  let query = supabase.from('spaces').select('*, profiles(*)');
+  
+  // Si le paramètre ressemble à un UUID (36 caractères avec des tirets)
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
 
-  // --- LOGIQUE DE NOM DYNAMIQUE ---
+  if (isUuid) {
+    query = query.eq('id', slug);
+  } else {
+    query = query.eq('slug', slug.toLowerCase());
+  }
+
+  const { data: space, error } = await query.single();
+
+  // Si on ne trouve rien, on affiche la page 404
+  if (error || !space) return notFound();
+
+  // --- LOGIQUE DE NOM AFFICHÉ ---
   const isOrg = space.account_type === 'organization';
-  const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`;
-  const SOCIAL_CONFIG = get_social_config(lang)
-  const socialLinks = space.social_data || [];
-  
-  
+  const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`.trim() || space.email;
+    const SOCIAL_CONFIG = get_social_config(lang)
+    const socialLinks = space.social_data || [];
+    
 
-  return (
+   return (
      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white relative overflow-hidden">
       {/* ... Background dégradé ... */}
       
