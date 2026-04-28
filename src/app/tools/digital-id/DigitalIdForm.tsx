@@ -72,29 +72,52 @@ export default function DigitalIDForm({ lang }: { lang: 'fr' | 'en' }) {
     }
   }
 
- const handleActivate = async () => {
+ 
+
+
+const handleActivate = async () => {
+    // Ta validation juridique intacte
     if (!legalTerms || (accountType === 'organization' && !legalAuth)) {
         alert(t.error_legal); return;
     }
     setLoading(true)
     
-    const { data, error } = await supabase.from('spaces').insert([{
+    // Préparation de l'objet exactement comme ton insert original
+    const payload = {
         user_id: currentUser?.id || null,
         email: email.toLowerCase().trim(),
         account_type: accountType,
-        organization_name: accountType === 'organization' ? orgNameField : null, // Sauvegarde du nom d'org
+        organization_name: accountType === 'organization' ? orgNameField : null,
         social_data: links.filter(l => l.handle.trim() !== ''),
         theme_color: fgColor,
         bg_color: bgColor,
         logo_url: logo,
         legal_accepted_at: new Date().toISOString(),
-        is_authorized_representative: accountType === 'organization'
-    }]).select().single()
+        is_authorized_representative: accountType === 'organization',
+        lang: lang // On ajoute la langue pour le mail
+    };
 
-    if (!error) setGeneratedId(data.id)
-    else alert(error.message)
-    setLoading(false)
-  }
+    try {
+        const response = await fetch('/api/spaces/activate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            setGeneratedId(result.id);
+        } else {
+            alert(result.error);
+        }
+    } catch (err) {
+        alert("Erreur lors de l'activation");
+    } finally {
+        setLoading(false);
+    }
+}
+  
 
   // FONCTION DE TÉLÉCHARGEMENT RECTIFIÉE
   const downloadQR = () => {
