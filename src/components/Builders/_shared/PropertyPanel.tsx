@@ -89,7 +89,7 @@ export default function PropertyPanel({ lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
   const {
     selectedId, elements, updateElement, deleteElement,
-    bringToFront, sendToBack, addElement, startEditingBezier,
+    bringToFront, sendToBack, addElement, startEditingBezier,ungroupElements
   } = useCanvas();
 
   const selected = elements.find((el) => el.id === selectedId);
@@ -123,6 +123,7 @@ export default function PropertyPanel({ lang }: Props) {
   const isText  = selected.type === 'text';
   const isShape = SHAPE_TYPES.includes(selected.type);
   const isRect  = selected.type === 'rectangle';
+  const isGroup = selected.type === 'group';
   const style   = selected.style || {};
 
   const upd      = (patch: Partial<typeof selected>) => updateElement(selected.id, patch);
@@ -138,9 +139,7 @@ export default function PropertyPanel({ lang }: Props) {
     stops:     style.gradient?.stops     ?? DEFAULT_STOPS,
   });
 
-  function ungroupElements(id: string): void {
-    throw new Error('Function not implemented.');
-  }
+ 
 
   return (
     <div className="h-full overflow-y-auto bg-white dark:bg-gray-900 flex flex-col"
@@ -158,6 +157,37 @@ export default function PropertyPanel({ lang }: Props) {
           {selected.type}
         </span>
       </div>
+      {/* ── Groupe ── */}
+{isGroup && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Groupe' : 'Group'}</SectionTitle>
+    <div className="space-y-2">
+      {/* Infos */}
+      <div className="flex items-center justify-between px-1">
+        <span className="text-xs text-gray-400 dark:text-gray-500">
+          {lang === 'fr' ? 'Éléments' : 'Elements'}
+        </span>
+        <span className="text-xs font-bold text-violet-600 dark:text-violet-400">
+          {(selected as any).children?.length ?? 0}
+        </span>
+      </div>
+      {/* Ungroup */}
+      <button
+        onClick={() => ungroupElements(selected.id)}
+        className="w-full py-2.5 rounded-xl text-xs font-semibold
+          border border-orange-300 dark:border-orange-700
+          text-orange-600 dark:text-orange-400
+          hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all
+          flex items-center justify-center gap-2"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5">
+          <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"/>
+        </svg>
+        {lang === 'fr' ? 'Dégrouper' : 'Ungroup'}
+      </button>
+    </div>
+  </Section>
+)}
 
       {/* ── Position & Taille ── */}
       <Section>
