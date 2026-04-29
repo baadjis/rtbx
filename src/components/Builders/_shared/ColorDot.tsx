@@ -87,8 +87,9 @@ export default function ColorDot({ value, onChange, label }: {
 
       {open && (
         <div
-    className="fixed z-[9999] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl
-      border border-gray-200 dark:border-gray-700 p-3 w-52"
+    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[999]
+            bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border
+            border-gray-200 dark:border-gray-700 p-3 w-52"
     style={{ top: popoverPos.top, left: popoverPos.left }}
     onClick={(e) => e.stopPropagation()}
   >
