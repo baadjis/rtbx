@@ -26,9 +26,32 @@ export default function Transformer() {
     }
   }, [selectedId, elements]);
 
-  // ── Resize / rotate ───────────────────────────────────────────────────────
 
- const handleTransformEnd = () => {
+  // ── Drag (déplacement libre) ──────────────────────────────────────────────
+  // Sans ce handler, déplacer un élément ne met pas à jour x/y dans le store
+ // ── useEffect dragEnd consolidé ───────────────────────────────────────────────
+useEffect(() => {
+  if (!transformerRef.current) return;
+  const stage = transformerRef.current.getStage();
+  if (!stage) return;
+  const selectedNode = stage.findOne(`#${selectedId}`);
+  if (!selectedNode) return;
+
+  const onDragEnd = () => {
+    if (!selectedElement) return;
+    // ← x/y depuis le nœud directement (Group = coin sup gauche ✓)
+    updateElement(selectedElement.id, {
+      x: Math.round(selectedNode.x()),
+      y: Math.round(selectedNode.y()),
+    });
+  };
+
+  selectedNode.on('dragend', onDragEnd);
+  return () => { selectedNode.off('dragend', onDragEnd); };
+}, [selectedId, selectedElement, updateElement]);
+
+// ── handleTransformEnd consolidé ──────────────────────────────────────────────
+const handleTransformEnd = () => {
   if (!selectedElement || !transformerRef.current) return;
   const node = transformerRef.current.nodes()[0];
   if (!node) return;
@@ -36,25 +59,11 @@ export default function Transformer() {
   const scaleX = node.scaleX();
   const scaleY = node.scaleY();
 
-  // ── Lecture de la taille brute selon le type de nœud ──────────────────────
-  // Circle stocke radius, Group/Rect stockent width/height
-  const rawW = (() => {
-    const attrW  = node.getAttr('width');
-    const radius = node.getAttr('radius');
-    if (attrW)  return attrW;
-    if (radius) return radius * 2;
-    const nw = node.width();
-    return nw || selectedElement.width;
-  })();
-
-  const rawH = (() => {
-    const attrH  = node.getAttr('height');
-    const radius = node.getAttr('radius');
-    if (attrH)  return attrH;
-    if (radius) return radius * 2;
-    const nh = node.height();
-    return nh || selectedElement.height;
-  })();
+  // Pour tous les nœuds wrappés dans Group (circle, lineShapes, bezier...)
+  // node.getAttr('width/height') est fiable car on le set explicitement
+  // Pour Rect et autres shapes directes, node.width()/height() suffit
+  const rawW = node.getAttr('width')  ?? node.width()  ?? selectedElement.width;
+  const rawH = node.getAttr('height') ?? node.height() ?? selectedElement.height;
 
   const newWidth  = Math.max(5, rawW * scaleX);
   const newHeight = Math.max(5, rawH * scaleY);
@@ -63,13 +72,10 @@ export default function Transformer() {
   node.scaleX(1);
   node.scaleY(1);
 
-  // ── Cas texte : fontSize suit le scale ───────────────────────────────────
   if (selectedElement.type === 'text') {
     const oldFontSize = (selectedElement as any).fontSize || 32;
-    // Priorité au scale vertical, fallback horizontal
     const fontScale   = scaleY !== 1 ? scaleY : scaleX !== 1 ? scaleX : 1;
     const newFontSize = Math.max(8, Math.round(oldFontSize * fontScale));
-
     updateElement(selectedElement.id, {
       x:        Math.round(node.x()),
       y:        Math.round(node.y()),
@@ -78,8 +84,6 @@ export default function Transformer() {
       fontSize: newFontSize,
       rotation: Math.round(node.rotation()),
     } as any);
-
-  // ── Tous les autres éléments ──────────────────────────────────────────────
   } else {
     updateElement(selectedElement.id, {
       x:        Math.round(node.x()),
@@ -92,32 +96,6 @@ export default function Transformer() {
 
   node.getLayer()?.batchDraw();
 };
-  // ── Drag (déplacement libre) ──────────────────────────────────────────────
-  // Sans ce handler, déplacer un élément ne met pas à jour x/y dans le store
-  useEffect(() => {
-  if (!transformerRef.current) return;
-  const stage = transformerRef.current.getStage();
-  if (!stage) return;
-
-  const selectedNode = stage.findOne(`#${selectedId}`);
-  if (!selectedNode) return;
-
-  // ← Le drag est géré par le nœud lui-même, pas le Transformer
-  const onDragEnd = () => {
-    if (!selectedElement) return;
-    updateElement(selectedElement.id, {
-      x: Math.round(selectedNode.x()),
-      y: Math.round(selectedNode.y()),
-    });
-  };
-
-  selectedNode.on('dragend', onDragEnd);
-
-  // Cleanup : retire le listener quand l'élément change
-  return () => {
-    selectedNode.off('dragend', onDragEnd);
-  };
-}, [selectedId, selectedElement, updateElement]);
 
   if (!selectedId) return null;
 

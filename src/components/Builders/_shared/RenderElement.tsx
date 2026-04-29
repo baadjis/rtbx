@@ -826,7 +826,7 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
         />
       );
 
-  case 'circle': {
+ case 'circle': {
   return (
     <Group
       id={element.id}
@@ -847,7 +847,7 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
         listening={true}
       />
       <Circle
-        x={cx} y={cy}  // ← relatif au Group
+        x={cx} y={cy}
         radius={r}
         listening={false}
         {...fill} {...stroke}

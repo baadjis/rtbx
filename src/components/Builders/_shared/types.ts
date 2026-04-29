@@ -304,6 +304,12 @@ export interface SelectedElement {
   parentId?: string;
 }
 
+export interface GroupElement extends BaseElement {
+  type:     'group';
+  children: CanvasElement[];
+  name?:    string; // ← label dans calques
+}
+
 export interface TextEditingState {
   id:       string;
   text:     string;

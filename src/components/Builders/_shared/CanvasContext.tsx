@@ -5,7 +5,7 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import Konva from 'konva';
 import { v4 as uuidv4 } from 'uuid';
-import { BezierElement, CanvasElement, CanvasTemplate, DrawTool } from './types';
+import { BezierElement, CanvasElement, CanvasTemplate, DrawTool, GroupElement } from './types';
 
 type CanvasContextType = {
   stageRef: React.RefObject<Konva.Stage|null>;
@@ -50,6 +50,8 @@ drawSize:        number;
 setDrawTool:     (tool: DrawTool | null) => void;
 setDrawColor:    (color: string) => void;
 setDrawSize:     (size: number) => void;
+groupElements:   (ids: string[]) => void;
+ungroupElements: (groupId: string) => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -106,6 +108,66 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
     setSelectedId(id);
     setEditingTextId(null);
   };
+
+  const groupElements = (ids: string[]) => {
+  if (ids.length < 2) return;
+  const toGroup = elements.filter((el) => ids.includes(el.id));
+  if (toGroup.length < 2) return;
+
+  // Calcule le bounding box du groupe
+  const minX = Math.min(...toGroup.map((el) => el.x));
+  const minY = Math.min(...toGroup.map((el) => el.y));
+  const maxX = Math.max(...toGroup.map((el) => el.x + el.width));
+  const maxY = Math.max(...toGroup.map((el) => el.y + el.height));
+
+  const newGroup: GroupElement = {
+    id:       uuidv4(),
+    type:     'group',
+    x:        minX,
+    y:        minY,
+    width:    maxX - minX,
+    height:   maxY - minY,
+    rotation: 0,
+    // Positions des enfants relatives au groupe
+    children: toGroup.map((el) => ({
+      ...el,
+      x: el.x - minX,
+      y: el.y - minY,
+    })),
+    style: {},
+  };
+
+  // Remplace les éléments groupés par le groupe
+  const newElements = [
+    ...elements.filter((el) => !ids.includes(el.id)),
+    newGroup,
+  ];
+  setElements(newElements);
+  saveToHistory(newElements);
+  setSelectedId(newGroup.id);
+};
+
+const ungroupElements = (groupId: string) => {
+  const group = elements.find((el) => el.id === groupId);
+  if (!group || group.type !== 'group') return;
+  const grp = group as GroupElement;
+
+  // Remet les enfants à leurs positions absolues
+  const children = grp.children.map((child) => ({
+    ...child,
+    id: uuidv4(), // nouvel id pour éviter conflits
+    x:  child.x + grp.x,
+    y:  child.y + grp.y,
+  }));
+
+  const newElements = [
+    ...elements.filter((el) => el.id !== groupId),
+    ...children,
+  ];
+  setElements(newElements);
+  saveToHistory(newElements);
+  setSelectedId(null);
+};
 
   const startEditingText = (id: string) => {
     setSelectedId(id);
@@ -255,6 +317,8 @@ const finishEditingBezier = () => {
       cancelBezierDraw,
       drawTool, drawColor, drawSize,
      setDrawTool, setDrawColor, setDrawSize,
+     groupElements,
+     ungroupElements
 
     }}>
       {children}

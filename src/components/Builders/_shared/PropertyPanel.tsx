@@ -138,6 +138,10 @@ export default function PropertyPanel({ lang }: Props) {
     stops:     style.gradient?.stops     ?? DEFAULT_STOPS,
   });
 
+  function ungroupElements(id: string): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <div className="h-full overflow-y-auto bg-white dark:bg-gray-900 flex flex-col"
       style={{ fontFamily: "'Sora', 'DM Sans', system-ui, sans-serif" }}>
@@ -767,6 +771,31 @@ export default function PropertyPanel({ lang }: Props) {
           ))}
         </div>
       </Section>
+
+      {/* ── Group / Ungroup ── */}
+<Section>
+  <SectionTitle>{lang === 'fr' ? 'Grouper' : 'Group'}</SectionTitle>
+  <div className="space-y-2">
+    {selected.type === 'group' ? (
+      // Ungroup si l'élément sélectionné est un groupe
+      <button
+        onClick={() => ungroupElements(selected.id)}
+        className="w-full py-2.5 rounded-xl text-xs font-semibold
+          border border-orange-300 dark:border-orange-700
+          text-orange-600 dark:text-orange-400
+          hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all"
+      >
+        ⊞ {lang === 'fr' ? 'Dégrouper' : 'Ungroup'}
+      </button>
+    ) : (
+      <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center">
+        {lang === 'fr'
+          ? 'Sélectionnez plusieurs éléments dans les calques pour grouper'
+          : 'Select multiple elements in layers to group'}
+      </p>
+    )}
+  </div>
+</Section>
 
       {/* ── Supprimer ── */}
       <div className="px-4 py-4 mt-auto">
