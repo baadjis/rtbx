@@ -23,16 +23,98 @@ export type ShapeType =
 
 
 
+
   export interface BezierPoint {
   x: number;
   y: number;
 }
+
+
 
 export interface BezierElement extends BaseElement {
   type: 'bezier';
   points:   BezierPoint[]; // points de contrôle
   closed?:  boolean;       // courbe fermée ou ouverte
   tension?: number;        // 0 = angles droits, 1 = très courbé
+}
+
+
+
+
+// ─── Gradient stop ────────────────────────────────────────────────────────────
+export interface GradientStop {
+  id:       string;  // pour les keys React
+  color:    string;
+  position: number;  // 0 à 1
+}
+
+export interface GradientConfig {
+  type:      'linear' | 'radial';
+  stops:     GradientStop[];
+  direction: number;  // degrés (linear seulement)
+  radius?:   number;  // 0-1 (radial seulement)
+}
+
+// ─── Default stops si aucun défini ───────────────────────────────────────────
+export const DEFAULT_STOPS: GradientStop[] = [
+  { id: '1', color: '#7c3aed', position: 0 },
+  { id: '2', color: '#06b6d4', position: 1 },
+];
+
+// Dans StyleProps, remplace les anciens champs gradient :
+export interface StyleProps {
+  fill?:             string;
+  stroke?:           string;
+  strokeWidth?:      number;
+  strokeDash?:       number[];
+  borderRadius?:     number;
+  opacity?:          number;
+  shadowColor?:      string;
+  shadowBlur?:       number;
+  shadowOffsetX?:    number;
+  shadowOffsetY?:    number;
+  padding?:          number;
+  // ── Gradient unifié ──
+  gradientEnabled?:  boolean;
+  gradient?:         GradientConfig;  // ← remplace gradientColor1/2/direction/type/radius
+}
+
+
+// ─── Style ───────────────────────────────────────────────────────────────────
+/*export interface StyleProps {
+  // Fill
+  fill?:              string;
+  // Gradient
+  gradientEnabled?:   boolean;
+  gradientColor1?:    string;
+  gradientColor2?:    string;
+  gradientDirection?: number; // degrés : 0 | 45 | 90 | 135 | 180 …
+  gradientType?:    'linear' | 'radial';  // ← nouveau
+  gradientRadius?:  number; 
+  // Stroke
+  stroke?:            string;
+  strokeWidth?:       number;
+  strokeDash?:        number[]; // ex: [6, 4] pour pointillés
+  // Shape
+  borderRadius?:      number;
+  // Visibility
+  opacity?:           number;
+  // Shadow
+  shadowColor?:       string;
+  shadowBlur?:        number;
+  shadowOffsetX?:     number;
+  shadowOffsetY?:     number;
+  // Spacing
+  padding?:           number;
+}*/
+
+
+// Dans ImageBackground, même chose :
+export interface ImageBackground {
+  type:      'color' | 'gradient' | 'image';
+  color?:    string;
+  gradient?: GradientConfig;  // ← remplace l'ancien gradient inline
+  imageSrc?: string;
 }
 
 //_____________________blendmode__________________
@@ -65,7 +147,7 @@ export type ClipShape =
   | 'blob'
   | 'rounded'; // rect arrondi
 
-export interface ImageBackground {
+/*export interface ImageBackground {
   type:       'color' | 'gradient' | 'image';
   color?:     string;
   gradient?:  {
@@ -75,7 +157,7 @@ export interface ImageBackground {
     direction: number;
   };
   imageSrc?:  string;
-}
+}*/
 
 
 
@@ -87,41 +169,7 @@ export type ElementType =
   | 'draw'
   | ShapeType; // ← plus besoin de lister chaque shape ici
 
-
-
-
-
-
-
-// ─── Style ───────────────────────────────────────────────────────────────────
-export interface StyleProps {
-  // Fill
-  fill?:              string;
-  // Gradient
-  gradientEnabled?:   boolean;
-  gradientColor1?:    string;
-  gradientColor2?:    string;
-  gradientDirection?: number; // degrés : 0 | 45 | 90 | 135 | 180 …
-  gradientType?:    'linear' | 'radial';  // ← nouveau
-  gradientRadius?:  number; 
-  // Stroke
-  stroke?:            string;
-  strokeWidth?:       number;
-  strokeDash?:        number[]; // ex: [6, 4] pour pointillés
-  // Shape
-  borderRadius?:      number;
-  // Visibility
-  opacity?:           number;
-  // Shadow
-  shadowColor?:       string;
-  shadowBlur?:        number;
-  shadowOffsetX?:     number;
-  shadowOffsetY?:     number;
-  // Spacing
-  padding?:           number;
-}
-
-// ─── Base ─────────────────────────────────────────────────────────────────────
+/*─── Base ─────────────────────────────────────────────────────────────────────*/
 export interface BaseElement {
   id:        string;
   type:      ElementType;
@@ -187,12 +235,9 @@ export interface TextElement extends BaseElement {
   stroke?:       string;  // ← nouveau
   strokeWidth?:  number;  
   // ── Nouveau ──
-  textGradient?: {
-    enabled:    boolean;
-    color1:     string;
-    color2:     string;
-    direction:  number; // degrés
-  };
+  textGradient?:{
+    gradientEnabled?:boolean;
+    grandient:GradientConfig};
   maskImageSrc?: string;   // URL image utilisée comme masque sur le texte
   filters?:      TextFilters;
 }

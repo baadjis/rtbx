@@ -15,6 +15,8 @@ import {
   DrawElement,
   ImageBackground,
   ClipShape,
+  GradientStop,
+  DEFAULT_STOPS,
 } from './types';
 import useImage from 'use-image';
 import Konva from 'konva';
@@ -41,33 +43,47 @@ function shadowProps(style: StyleProps) {
   };
 }
 
-function gradientFillProps(style: StyleProps, width: number, height: number): Record<string, any> {
-  if (!style.gradientEnabled) return { fill: style.fill ?? '#7c3aed' };
 
-  const c1 = style.gradientColor1 ?? '#7c3aed';
-  const c2 = style.gradientColor2 ?? '#06b6d4';
+
+function gradientFillProps(
+  style: StyleProps,
+  width: number,
+  height: number,
+): Record<string, any> {
+  if (!style.gradientEnabled || !style.gradient) {
+    return { fill: style.fill ?? '#7c3aed' };
+  }
+
+  const g     = style.gradient;
+  const stops = (g.stops?.length >= 2 ? g.stops : DEFAULT_STOPS)
+    .slice()
+    .sort((a, b) => a.position - b.position);
+
+  // Konva colorStops format : [pos, color, pos, color, ...]
+  const colorStops = stops.flatMap((s) => [s.position, s.color]);
+
   const cx = width / 2, cy = height / 2;
 
-  if (style.gradientType === 'radial') {
-    const r = Math.min(width, height) / 2 * (style.gradientRadius ?? 1);
+  if (g.type === 'radial') {
+    const r = Math.min(width, height) / 2 * (g.radius ?? 1);
     return {
-      fillRadialGradientStartPoint:      { x: cx, y: cy },
-      fillRadialGradientEndPoint:        { x: cx, y: cy },
-      fillRadialGradientStartRadius:     0,
-      fillRadialGradientEndRadius:       r,
-      fillRadialGradientColorStops:      [0, c1, 1, c2],
+      fillRadialGradientStartPoint:  { x: cx, y: cy },
+      fillRadialGradientEndPoint:    { x: cx, y: cy },
+      fillRadialGradientStartRadius: 0,
+      fillRadialGradientEndRadius:   r,
+      fillRadialGradientColorStops:  colorStops,
       fill: undefined,
     };
   }
 
-  // Linear (existant)
-  const deg = style.gradientDirection ?? 90;
-  const rad = (deg * Math.PI) / 180;
-  const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
+  // Linear
+  const rad = ((g.direction ?? 90) * Math.PI) / 180;
+  const dx  = Math.cos(rad) * cx;
+  const dy  = Math.sin(rad) * cy;
   return {
-    fillLinearGradientStartPoint:      { x: cx - dx, y: cy - dy },
-    fillLinearGradientEndPoint:        { x: cx + dx, y: cy + dy },
-    fillLinearGradientColorStops:      [0, c1, 1, c2],
+    fillLinearGradientStartPoint:     { x: cx - dx, y: cy - dy },
+    fillLinearGradientEndPoint:       { x: cx + dx, y: cy + dy },
+    fillLinearGradientColorStops:     colorStops,
     fill: undefined,
   };
 }
@@ -158,21 +174,38 @@ function buildKonvaFilters(filters: ImageFilters): Filter[] {
 function useGradientTextImage(element: TextElement): HTMLCanvasElement | null {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  if (!element.textGradient?.enabled) return null;
+  if (!element.textGradient?.gradientEnabled) return null;
 
   const canvas = document.createElement('canvas');
   canvas.width  = element.width  || 400;
   canvas.height = element.height || 80;
   const ctx = canvas.getContext('2d')!;
-
-  const deg = element.textGradient.direction ?? 90;
+  
+  const deg = element?.textGradient?.grandient?.direction ?? 90;
   const rad = (deg * Math.PI) / 180;
   const cx = canvas.width / 2, cy = canvas.height / 2;
   const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
+  let grad: CanvasGradient
 
-  const grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
-  grad.addColorStop(0, element.textGradient.color1 || '#7c3aed');
-  grad.addColorStop(1, element.textGradient.color2 || '#06b6d4');
+
+  const stops = ((element?.textGradient?.grandient?.stops&& element?.textGradient?.grandient?.stops?.length >= 2) ? element?.textGradient?.grandient?.stops: DEFAULT_STOPS)
+      .slice()
+      .sort((a, b) => a.position - b.position);
+  if (element.textGradient.grandient?.type=='linear'){
+    grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+    
+
+  } else {
+      const rad = ((element?.textGradient?.grandient?.direction ?? 90) * Math.PI) / 180;
+      const dx  = Math.cos(rad) * cx;
+      const dy  = Math.sin(rad) * cy;
+      grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+    }
+
+  stops.forEach((s) => grad.addColorStop(s.position, s.color));
+  
+
+  
 
   ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
   ctx.textBaseline = 'top';
@@ -506,31 +539,36 @@ function applyClipShape(
   }
 }
 
-// ─── Background renderer (canvas 2D) ─────────────────────────────────────────
+/// ─── drawBackground (utilisé dans useCompositeImage) ─────────────────────────
 function drawBackground(
-  ctx: CanvasRenderingContext2D,
-  bg: ImageBackground,
-  w: number,
-  h: number,
+  ctx:     CanvasRenderingContext2D,
+  bg:      ImageBackground,
+  w:       number,
+  h:       number,
   bgImage?: HTMLImageElement,
 ) {
+  const cx = w / 2, cy = h / 2;
+
   if (bg.type === 'color' && bg.color) {
     ctx.fillStyle = bg.color;
     ctx.fillRect(0, 0, w, h);
 
   } else if (bg.type === 'gradient' && bg.gradient) {
-    const g = bg.gradient;
+    const g     = bg.gradient;
+    const stops = (g.stops?.length >= 2 ? g.stops : DEFAULT_STOPS)
+      .slice()
+      .sort((a, b) => a.position - b.position);
+
     let grad: CanvasGradient;
     if (g.type === 'radial') {
-      grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.min(w,h)/2);
+      grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(w, h) / 2 * (g.radius ?? 1));
     } else {
-      const rad = (g.direction * Math.PI) / 180;
-      const cx = w/2, cy = h/2;
-      const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
-      grad = ctx.createLinearGradient(cx-dx, cy-dy, cx+dx, cy+dy);
+      const rad = ((g.direction ?? 90) * Math.PI) / 180;
+      const dx  = Math.cos(rad) * cx;
+      const dy  = Math.sin(rad) * cy;
+      grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
     }
-    grad.addColorStop(0, g.color1);
-    grad.addColorStop(1, g.color2);
+    stops.forEach((s) => grad.addColorStop(s.position, s.color));
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
@@ -539,54 +577,43 @@ function drawBackground(
   }
 }
 
-// ─── Composite canvas : bg + image clippée par shape ─────────────────────────
+// ─── useCompositeImage ────────────────────────────────────────────────────────
 function useCompositeImage(element: ImageElement): HTMLCanvasElement | null {
   const src = element.bgRemoved && element.removedBgSrc
-    ? element.removedBgSrc : element.src;
+    ? element.removedBgSrc
+    : element.src;
 
-  const [fgImg, setFgImg] = useState<HTMLImageElement | null>(null);
-  const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null);
+  const [fgImg] = useImage(src, 'anonymous');
+  const [bgImg] = useImage(
+    element.background?.type === 'image' ? (element.background.imageSrc ?? '') : '',
+    'anonymous',
+  );
 
-  // Charge foreground
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+
   useEffect(() => {
-    const img = new window.Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => setFgImg(img);
-    img.src = src;
-  }, [src]);
-
-  // Charge background image si besoin
-  useEffect(() => {
-    if (element.background?.type !== 'image' || !element.background.imageSrc) return;
-    const img = new window.Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => setBgImg(img);
-    img.src = element.background.imageSrc;
-  }, [element.background?.imageSrc]);
-
-  return useMemo(() => {
-    if (!fgImg) return null;
+    if (!fgImg) { setCanvas(null); return; }
 
     const w = element.width  || 300;
     const h = element.height || 300;
-    const canvas = document.createElement('canvas');
-    canvas.width  = w;
-    canvas.height = h;
-    const ctx = canvas.getContext('2d')!;
+    const c = document.createElement('canvas');
+    c.width  = w;
+    c.height = h;
+    const ctx = c.getContext('2d')!;
 
-    // 1. Dessine le background si remove bg actif
+    // 1. Background (utilise drawBackground — plus de duplication)
     if (element.bgRemoved && element.background) {
       drawBackground(ctx, element.background, w, h, bgImg ?? undefined);
     }
 
-    // 2. Applique le clip shape
+    // 2. Clip shape
     if (element.clipShape && element.clipShape !== 'none') {
       ctx.save();
       applyClipShape(ctx, element.clipShape, w, h, element.clipRadius ?? 20);
       ctx.clip();
     }
 
-    // 3. Dessine l'image foreground
+    // 3. Foreground
     ctx.drawImage(fgImg, 0, 0, w, h);
 
     // 4. Restore clip
@@ -594,15 +621,30 @@ function useCompositeImage(element: ImageElement): HTMLCanvasElement | null {
       ctx.restore();
     }
 
-    return canvas;
-  }, [
-    fgImg, bgImg,
-    element.width, element.height,
-    element.clipShape, element.clipRadius,
-    element.bgRemoved, element.background,
-  ]);
-}
+    setTimeout(() => setCanvas(c), 0);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    fgImg,
+    bgImg,
+    element.width,
+    element.height,
+    element.clipShape,
+    element.clipRadius,
+    element.bgRemoved,
+    element.background?.type,
+    element.background?.color,
+    element.background?.imageSrc,
+    element.background?.gradient?.type,
+    element.background?.gradient?.direction,
+    element.background?.gradient?.radius,
+    // ← stops sérialisés en string pour que useEffect les détecte
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    JSON.stringify(element.background?.gradient?.stops),
+  ]);
+
+  return canvas;
+}
 // ─── FilteredImageElement (refactorisé) ──────────────────────────────────────
 function FilteredImageElement({ element, onSelect }: {
   element: ImageElement; onSelect: (id: string) => void;
@@ -840,7 +882,7 @@ export default function RenderElement({ element, onSelect }: {
         return <MaskedTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
       }
       // Gradient texte
-      if (txt.textGradient?.enabled) {
+      if (txt.textGradient?.gradientEnabled) {
         return <GradientTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
       }
       // Texte normal
