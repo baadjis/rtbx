@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // components/builders/_shared/Transformer.tsx
 'use client';
 
@@ -26,7 +27,8 @@ export default function Transformer() {
   }, [selectedId, elements]);
 
   // ── Resize / rotate ───────────────────────────────────────────────────────
-const handleTransformEnd = () => {
+
+ const handleTransformEnd = () => {
   if (!selectedElement || !transformerRef.current) return;
   const node = transformerRef.current.nodes()[0];
   if (!node) return;
@@ -34,10 +36,25 @@ const handleTransformEnd = () => {
   const scaleX = node.scaleX();
   const scaleY = node.scaleY();
 
-  // ← node.width() retourne 0 pour Line/Group
-  // On utilise les attrs directement
-  const rawW = node.getAttr('width')  || node.width()  || selectedElement.width;
-  const rawH = node.getAttr('height') || node.height() || selectedElement.height;
+  // ── Lecture de la taille brute selon le type de nœud ──────────────────────
+  // Circle stocke radius, Group/Rect stockent width/height
+  const rawW = (() => {
+    const attrW  = node.getAttr('width');
+    const radius = node.getAttr('radius');
+    if (attrW)  return attrW;
+    if (radius) return radius * 2;
+    const nw = node.width();
+    return nw || selectedElement.width;
+  })();
+
+  const rawH = (() => {
+    const attrH  = node.getAttr('height');
+    const radius = node.getAttr('radius');
+    if (attrH)  return attrH;
+    if (radius) return radius * 2;
+    const nh = node.height();
+    return nh || selectedElement.height;
+  })();
 
   const newWidth  = Math.max(5, rawW * scaleX);
   const newHeight = Math.max(5, rawH * scaleY);
@@ -46,17 +63,35 @@ const handleTransformEnd = () => {
   node.scaleX(1);
   node.scaleY(1);
 
-  updateElement(selectedElement.id, {
-    x:        Math.round(node.x()),
-    y:        Math.round(node.y()),
-    width:    Math.round(newWidth),
-    height:   Math.round(newHeight),
-    rotation: Math.round(node.rotation()),
-  });
+  // ── Cas texte : fontSize suit le scale ───────────────────────────────────
+  if (selectedElement.type === 'text') {
+    const oldFontSize = (selectedElement as any).fontSize || 32;
+    // Priorité au scale vertical, fallback horizontal
+    const fontScale   = scaleY !== 1 ? scaleY : scaleX !== 1 ? scaleX : 1;
+    const newFontSize = Math.max(8, Math.round(oldFontSize * fontScale));
+
+    updateElement(selectedElement.id, {
+      x:        Math.round(node.x()),
+      y:        Math.round(node.y()),
+      width:    Math.round(newWidth),
+      height:   Math.round(newHeight),
+      fontSize: newFontSize,
+      rotation: Math.round(node.rotation()),
+    } as any);
+
+  // ── Tous les autres éléments ──────────────────────────────────────────────
+  } else {
+    updateElement(selectedElement.id, {
+      x:        Math.round(node.x()),
+      y:        Math.round(node.y()),
+      width:    Math.round(newWidth),
+      height:   Math.round(newHeight),
+      rotation: Math.round(node.rotation()),
+    });
+  }
 
   node.getLayer()?.batchDraw();
 };
-
   // ── Drag (déplacement libre) ──────────────────────────────────────────────
   // Sans ce handler, déplacer un élément ne met pas à jour x/y dans le store
   useEffect(() => {

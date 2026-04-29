@@ -826,14 +826,36 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
         />
       );
 
-    case 'circle':
-      return (
-        <Circle {...shared}
-          x={x + cx} y={y + cy}
-          radius={r}
-          {...fill} {...stroke}
-        />
-      );
+  case 'circle': {
+  return (
+    <Group
+      id={element.id}
+      x={x} y={y}
+      width={w} height={h}
+      rotation={element.rotation ?? 0}
+      opacity={style.opacity ?? 1}
+      draggable={!element.locked}
+      onClick={() => onSelect(element.id)}
+      onTap={() => onSelect(element.id)}
+    >
+      <Rect
+        width={w} height={h}
+        fill="rgba(0,0,0,0.001)"
+        stroke={isSelected ? '#7c3aed' : undefined}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [5, 4] as number[] : undefined}
+        listening={true}
+      />
+      <Circle
+        x={cx} y={cy}  // ← relatif au Group
+        radius={r}
+        listening={false}
+        {...fill} {...stroke}
+        {...shadowProps(style)}
+      />
+    </Group>
+  );
+}
 
     case 'line':
       return (
@@ -895,8 +917,10 @@ export default function RenderElement({ element, onSelect }: {
           fontSize={txt.fontSize}
           fontFamily={txt.fontFamily || 'Sora, sans-serif'}
           fontStyle={txt.fontStyle || 'normal'}
-          textDecoration={txt.textDecoration === 'underline' ? 'underline' : ''}
-          fill={txt.style.fill || 'transparent'}  // ← 'transparent' par défaut si pas de fill
+textDecoration={
+  txt.textDecoration === 'underline'    ? 'underline'    :
+  txt.textDecoration === 'line-through' ? 'line-through' : ''
+}          fill={txt.style.fill || 'transparent'}  // ← 'transparent' par défaut si pas de fill
           stroke={txt.stroke}                      // ← nouveau
           strokeWidth={txt.strokeWidth ?? 0}       // ← nouveau
           fillAfterStrokeEnabled={true} 
@@ -913,6 +937,7 @@ export default function RenderElement({ element, onSelect }: {
         />
       );
     }
+
 
     case 'image':
       return <FilteredImageElement element={element as ImageElement} onSelect={onSelect} />;

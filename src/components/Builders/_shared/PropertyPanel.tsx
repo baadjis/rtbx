@@ -338,20 +338,26 @@ export default function PropertyPanel({ lang }: Props) {
               <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">Style</p>
               <div className="flex gap-1.5">
                 {[
-                  { label: 'B', prop: 'fontStyle',      on: 'bold',      off: 'normal',    active: (selected as any).fontStyle === 'bold' },
-                  { label: 'I', prop: 'fontStyle',      on: 'italic',    off: 'normal',    active: (selected as any).fontStyle === 'italic' },
-                  { label: 'U', prop: 'textDecoration', on: 'underline', off: 'none',      active: (selected as any).textDecoration === 'underline' },
-                ].map((btn) => (
-                  <button key={btn.label}
-                    onClick={() => upd({ [btn.prop]: btn.active ? btn.off : btn.on } as any)}
-                    className={`w-9 h-9 rounded-lg text-sm font-bold transition-all ${
-                      btn.active ? 'bg-violet-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-violet-100'
-                    }`}
-                    style={{ fontStyle: btn.label === 'I' ? 'italic' : 'normal' }}>
-                    {btn.label}
-                  </button>
-                ))}
+  { label: 'B', prop: 'fontStyle',      on: 'bold',        off: 'normal', active: (selected as any).fontStyle === 'bold' },
+  { label: 'I', prop: 'fontStyle',      on: 'italic',      off: 'normal', active: (selected as any).fontStyle === 'italic' },
+  { label: 'U', prop: 'textDecoration', on: 'underline',   off: 'none',   active: (selected as any).textDecoration === 'underline' },
+  { label: 'S', prop: 'textDecoration', on: 'line-through', off: 'none',  active: (selected as any).textDecoration === 'line-through' },
+].map((btn) => (
+  <button key={btn.label}
+    onClick={() => upd({ [btn.prop]: btn.active ? btn.off : btn.on } as any)}
+    className={`w-9 h-9 rounded-lg text-sm font-bold transition-all ${
+      btn.active
+        ? 'bg-violet-600 text-white'
+        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-violet-100'
+    }`}
+    style={{
+      fontStyle:      btn.label === 'I' ? 'italic'    : 'normal',
+      textDecoration: btn.label === 'S' ? 'line-through' : btn.label === 'U' ? 'underline' : 'none',
+    }}
+  >
+    {btn.label}
+  </button>
+))}
               </div>
             </div>
 
