@@ -172,46 +172,43 @@ function buildKonvaFilters(filters: ImageFilters): Filter[] {
 // Konva ne supporte pas nativement le gradient sur Text.
 // On génère une image canvas et on l'utilise comme fill pattern.
 function useGradientTextImage(element: TextElement): HTMLCanvasElement | null {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  if (!element.textGradient?.enabled || !element.textGradient?.gradient) return null;
 
-  if (!element.textGradient?.gradientEnabled) return null;
+  const g     = element.textGradient.gradient;
+  const stops = (g.stops?.length >= 2 ? g.stops : DEFAULT_STOPS)
+    .slice().sort((a, b) => a.position - b.position);
 
+  const w = element.width  || 400;
+  const h = element.height || 100;
   const canvas = document.createElement('canvas');
-  canvas.width  = element.width  || 400;
-  canvas.height = element.height || 80;
+  canvas.width  = w;
+  canvas.height = h;
   const ctx = canvas.getContext('2d')!;
-  
-  const deg = element?.textGradient?.grandient?.direction ?? 90;
-  const rad = (deg * Math.PI) / 180;
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-  const dx = Math.cos(rad) * cx, dy = Math.sin(rad) * cy;
-  let grad: CanvasGradient
 
+  const cx = w / 2, cy = h / 2;
+  let grad: CanvasGradient;
 
-  const stops = ((element?.textGradient?.grandient?.stops&& element?.textGradient?.grandient?.stops?.length >= 2) ? element?.textGradient?.grandient?.stops: DEFAULT_STOPS)
-      .slice()
-      .sort((a, b) => a.position - b.position);
-  if (element.textGradient.grandient?.type=='linear'){
-    grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
-    
-
+  if (g.type === 'radial') {
+    grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(w, h) / 2 * (g.radius ?? 1));
   } else {
-      const rad = ((element?.textGradient?.grandient?.direction ?? 90) * Math.PI) / 180;
-      const dx  = Math.cos(rad) * cx;
-      const dy  = Math.sin(rad) * cy;
-      grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
-    }
+    const rad = ((g.direction ?? 90) * Math.PI) / 180;
+    const dx  = Math.cos(rad) * cx;
+    const dy  = Math.sin(rad) * cy;
+    grad = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+  }
 
   stops.forEach((s) => grad.addColorStop(s.position, s.color));
-  
 
-  
+  const fontStyle  = element.fontStyle === 'italic' ? 'italic' : 'normal';
+  const fontWeight = element.fontStyle === 'bold' ? 'bold' : (element.fontWeight ?? 'normal');
+  ctx.font          = `${fontStyle} ${fontWeight} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
+  ctx.textBaseline  = 'top';
+  ctx.textAlign     = (element.align as CanvasTextAlign) || 'left';
+  ctx.fillStyle     = grad;
 
-  ctx.font = `${element.fontStyle || 'normal'} ${element.fontSize}px "${element.fontFamily || 'Sora'}"`;
-  ctx.textBaseline = 'top';
-  ctx.textAlign    = (element.align as CanvasTextAlign) || 'left';
-  ctx.fillStyle    = grad;
-  ctx.fillText(element.text, element.align === 'center' ? cx : element.align === 'right' ? canvas.width : 0, 0);
+  const xOffset = element.align === 'center' ? cx
+                : element.align === 'right'  ? w : 0;
+  ctx.fillText(element.text, xOffset, 0);
 
   return canvas;
 }
@@ -882,7 +879,7 @@ export default function RenderElement({ element, onSelect }: {
         return <MaskedTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
       }
       // Gradient texte
-      if (txt.textGradient?.gradientEnabled) {
+      if (txt.textGradient?.enabled) {
         return <GradientTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
       }
       // Texte normal

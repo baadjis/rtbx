@@ -236,8 +236,9 @@ export interface TextElement extends BaseElement {
   strokeWidth?:  number;  
   // ── Nouveau ──
   textGradient?:{
-    gradientEnabled?:boolean;
-    grandient:GradientConfig};
+    enabled?:boolean;
+    gradient?:GradientConfig
+  };
   maskImageSrc?: string;   // URL image utilisée comme masque sur le texte
   filters?:      TextFilters;
 }

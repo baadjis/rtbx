@@ -7,7 +7,9 @@ import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
 import RemoveBgButton from './RemoveBgButton';
 import Image from 'next/image';
-import { ClipShape, GradientConfig, GradientStop, DEFAULT_STOPS } from './types';
+import { ClipShape, GradientConfig, DEFAULT_STOPS } from './types';
+import ColorDot from './ColorDot';
+import GradientEditor from './GradientEditor';
 
 type Props = { lang: 'fr' | 'en' };
 
@@ -66,287 +68,9 @@ function TabBtn({ active, onClick, children }: {
   );
 }
 
-// ─── ColorDot ─────────────────────────────────────────────────────────────────
-function ColorDot({ value, onChange, label }: {
-  value: string; onChange: (v: string) => void; label?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [hex,  setHex]  = useState(value);
-  const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const t = setTimeout(() => setHex(value), 0);
-    return () => clearTimeout(t);
-  }, [value]);
 
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
 
-  const hexToRgb = (h: string) => {
-    const clean = h.replace('#', '');
-    if (clean.length !== 6) return { r: 0, g: 0, b: 0 };
-    return {
-      r: parseInt(clean.slice(0, 2), 16),
-      g: parseInt(clean.slice(2, 4), 16),
-      b: parseInt(clean.slice(4, 6), 16),
-    };
-  };
-
-  const rgbToHex = (r: number, g: number, b: number) => {
-    const toHex = (n: number) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  };
-
-  const rgb = hexToRgb(hex);
-
-  const updateChannel = (channel: 'r' | 'g' | 'b', val: number) => {
-    const next = rgbToHex(
-      channel === 'r' ? val : rgb.r,
-      channel === 'g' ? val : rgb.g,
-      channel === 'b' ? val : rgb.b,
-    );
-    setHex(next);
-    onChange(next);
-  };
-
-  const handleHexInput = (v: string) => {
-    setHex(v);
-    if (/^#[0-9a-fA-F]{6}$/.test(v)) onChange(v);
-  };
-
-  const swatches = [
-    '#000000', '#ffffff', '#f9fafb', '#6b7280',
-    '#7c3aed', '#4f46e5', '#0ea5e9', '#06b6d4',
-    '#10b981', '#84cc16', '#f59e0b', '#ef4444',
-    '#ec4899', '#f97316', '#8b5cf6', '#14b8a6',
-  ];
-
-  const checkerStyle = {
-    backgroundImage: 'linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%)',
-    backgroundSize: '6px 6px',
-    backgroundPosition: '0 0,0 3px,3px -3px,-3px 0',
-  };
-
-  return (
-    <div className="relative flex flex-col items-center gap-1" ref={ref}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-8 h-8 rounded-lg border-2 border-white dark:border-gray-700 shadow-md hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-violet-400"
-        style={
-          value === 'transparent'
-            ? checkerStyle
-            : { backgroundColor: value }
-        }
-      />
-      {label && <span className="text-[10px] text-gray-400">{label}</span>}
-
-      {open && (
-        <div
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[999]
-            bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border
-            border-gray-200 dark:border-gray-700 p-3 w-52"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Color picker natif */}
-          <div className="relative w-full h-8 mb-3">
-            <div className="w-full h-8 rounded-xl border border-gray-200 dark:border-gray-700"
-              style={{ backgroundColor: hex === 'transparent' ? '#ffffff' : hex }} />
-            <input type="color"
-              value={hex === 'transparent' ? '#ffffff' : hex}
-              onChange={(e) => { setHex(e.target.value); onChange(e.target.value); }}
-              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-            />
-          </div>
-
-          {/* Swatches */}
-          <div className="grid grid-cols-8 gap-1 mb-3">
-            {swatches.map((s) => (
-              <button key={s} onClick={() => { setHex(s); onChange(s); }}
-                className={`w-5 h-5 rounded-md border-2 hover:scale-110 transition-transform ${
-                  hex === s ? 'border-violet-500' : 'border-transparent'
-                }`}
-                style={{ backgroundColor: s,
-                  boxShadow: s === '#ffffff' ? 'inset 0 0 0 1px #e5e7eb' : undefined }}
-              />
-            ))}
-          </div>
-
-          {/* Sliders RGB */}
-          <div className="space-y-2 mb-3">
-            {(['r', 'g', 'b'] as const).map((ch) => (
-              <div key={ch} className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase w-3"
-                  style={{ color: ch === 'r' ? '#ef4444' : ch === 'g' ? '#10b981' : '#3b82f6' }}>
-                  {ch}
-                </span>
-                <input type="range" min={0} max={255} value={rgb[ch]}
-                  onChange={(e) => updateChannel(ch, Number(e.target.value))}
-                  className="flex-1 h-1.5 rounded-full cursor-pointer"
-                  style={{ accentColor: ch === 'r' ? '#ef4444' : ch === 'g' ? '#10b981' : '#3b82f6' }}
-                />
-                <span className="text-[10px] font-mono text-gray-400 w-6 text-right">{rgb[ch]}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Hex input + transparent */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md border border-gray-200 flex-shrink-0"
-              style={{ backgroundColor: hex === 'transparent' ? 'transparent' : hex }} />
-            <input type="text" value={hex}
-              onChange={(e) => handleHexInput(e.target.value)}
-              className="flex-1 px-2 py-1 text-xs font-mono rounded-lg bg-gray-50 dark:bg-gray-800
-                border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-1
-                focus:ring-violet-400 text-gray-800 dark:text-gray-100"
-              placeholder="#000000" maxLength={7}
-            />
-            <button
-              onClick={() => { setHex('transparent'); onChange('transparent'); }}
-              title="Transparent"
-              className={`w-6 h-6 rounded-md border-2 text-[9px] font-bold flex items-center justify-center transition-all ${
-                hex === 'transparent' ? 'border-violet-500 text-violet-600' : 'border-gray-200 dark:border-gray-700 text-gray-400'
-              }`}
-              style={checkerStyle}
-            >
-              ∅
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── GradientEditor ───────────────────────────────────────────────────────────
-function GradientEditor({ gradient, onChange, lang }: {
-  gradient: GradientConfig; onChange: (g: GradientConfig) => void; lang: 'fr' | 'en';
-}) {
-  const stops = (gradient.stops?.length >= 2 ? gradient.stops : DEFAULT_STOPS)
-    .slice().sort((a, b) => a.position - b.position);
-
-  const addStop = () => {
-    const mid = stops.length >= 2
-      ? (stops[stops.length - 2].position + stops[stops.length - 1].position) / 2
-      : 0.5;
-    onChange({ ...gradient, stops: [...stops, { id: crypto.randomUUID(), color: '#ffffff', position: mid }] });
-  };
-
-  const removeStop = (id: string) => {
-    if (stops.length <= 2) return;
-    onChange({ ...gradient, stops: stops.filter((s) => s.id !== id) });
-  };
-
-  const updateStop = (id: string, patch: Partial<GradientStop>) => {
-    onChange({ ...gradient, stops: stops.map((s) => s.id === id ? { ...s, ...patch } : s) });
-  };
-
-  const previewCss = (() => {
-    const sorted = [...stops].sort((a, b) => a.position - b.position);
-    const stopsStr = sorted.map((s) => `${s.color} ${s.position * 100}%`).join(', ');
-    return gradient.type === 'radial'
-      ? `radial-gradient(circle, ${stopsStr})`
-      : `linear-gradient(${gradient.direction ?? 90}deg, ${stopsStr})`;
-  })();
-
-  return (
-    <div className="space-y-3">
-      {/* Preview */}
-      <div className="h-8 rounded-xl shadow-inner" style={{ background: previewCss }} />
-
-      {/* Stops */}
-      <div className="space-y-2">
-        {stops.map((stop) => (
-          <div key={stop.id} className="flex items-center gap-2">
-            <ColorDot value={stop.color} onChange={(v) => updateStop(stop.id, { color: v })} />
-            <div className="flex-1">
-              <input
-                type="range" min={0} max={100}
-                value={Math.round(stop.position * 100)}
-                onChange={(e) => updateStop(stop.id, { position: Number(e.target.value) / 100 })}
-                className="w-full h-1.5 rounded-full accent-violet-600 cursor-pointer"
-              />
-            </div>
-            <span className="text-[10px] font-mono text-violet-600 dark:text-violet-400 w-7 text-right">
-              {Math.round(stop.position * 100)}%
-            </span>
-            <button
-              onClick={() => removeStop(stop.id)}
-              disabled={stops.length <= 2}
-              className="w-5 h-5 rounded-md text-gray-400 hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-xs"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Add stop */}
-      <button onClick={addStop}
-        className="w-full py-2 rounded-xl border border-dashed border-violet-300 dark:border-violet-700
-          text-xs font-semibold text-violet-600 dark:text-violet-400
-          hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
-      >
-        + {lang === 'fr' ? 'Ajouter une couleur' : 'Add color stop'}
-      </button>
-
-      {/* Direction (linear) */}
-      {gradient.type === 'linear' && (
-        <div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">Direction</p>
-          <div className="grid grid-cols-4 gap-1.5 mb-2">
-            {[0, 45, 90, 135].map((deg) => (
-              <button key={deg}
-                onClick={() => onChange({ ...gradient, direction: deg })}
-                className={`py-1.5 text-xs rounded-lg font-mono transition-all ${
-                  (gradient.direction ?? 90) === deg
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-violet-100'
-                }`}
-              >
-                {deg}°
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <input type="range" min={0} max={360}
-              value={gradient.direction ?? 90}
-              onChange={(e) => onChange({ ...gradient, direction: Number(e.target.value) })}
-              className="flex-1 h-1.5 rounded-full accent-violet-600 cursor-pointer"
-            />
-            <span className="text-[10px] font-mono text-violet-600 w-8 text-right">
-              {gradient.direction ?? 90}°
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Radius (radial) */}
-      {gradient.type === 'radial' && (
-        <div>
-          <div className="flex justify-between mb-1.5">
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              {lang === 'fr' ? 'Rayon' : 'Radius'}
-            </p>
-            <span className="text-[10px] font-mono text-violet-600">
-              {Math.round((gradient.radius ?? 1) * 100)}%
-            </span>
-          </div>
-          <input type="range" min={10} max={150}
-            value={Math.round((gradient.radius ?? 1) * 100)}
-            onChange={(e) => onChange({ ...gradient, radius: Number(e.target.value) / 100 })}
-            className="w-full h-1.5 rounded-full accent-violet-600 cursor-pointer"
-          />
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 const FONT_OPTIONS = [
@@ -667,68 +391,49 @@ export default function PropertyPanel({ lang }: Props) {
       )}
 
       {/* ── Gradient texte ── */}
-      {isText && (
-        <Section>
-          <SectionTitle>{lang === 'fr' ? 'Gradient texte' : 'Text gradient'}</SectionTitle>
-          <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
-            <TabBtn
-              active={!(selected as any).textGradient?.enabled}
-              onClick={() => upd({ textGradient: { ...((selected as any).textGradient ?? {}), enabled: false } } as any)}
-            >
-              {lang === 'fr' ? 'Solide' : 'Solid'}
-            </TabBtn>
-            <TabBtn
-              active={(selected as any).textGradient?.enabled}
-              onClick={() => upd({
-                textGradient: {
-                  enabled:   true,
-                  color1:    (selected as any).textGradient?.color1    ?? '#7c3aed',
-                  color2:    (selected as any).textGradient?.color2    ?? '#06b6d4',
-                  direction: (selected as any).textGradient?.direction ?? 90,
-                },
-              } as any)}
-            >
-              Gradient
-            </TabBtn>
-          </div>
+      
+     {isText && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Gradient texte' : 'Text gradient'}</SectionTitle>
+    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-3">
+      <TabBtn
+        active={!(selected as any).textGradient?.enabled}
+        onClick={() => upd({
+          textGradient: { ...((selected as any).textGradient ?? {}), enabled: false }
+        } as any)}
+      >
+        {lang === 'fr' ? 'Solide' : 'Solid'}
+      </TabBtn>
+      <TabBtn
+        active={(selected as any).textGradient?.enabled === true}
+        onClick={() => upd({
+          textGradient: {
+            enabled:  true,
+            gradient: (selected as any).textGradient?.gradient ?? {
+              type:      'linear',
+              direction: 90,
+              stops:     DEFAULT_STOPS,
+            },
+          },
+        } as any)}
+      >
+        Gradient
+      </TabBtn>
+    </div>
 
-          {(selected as any).textGradient?.enabled && (
-            <div className="space-y-3">
-              <div className="flex items-end gap-3">
-                <ColorDot
-                  value={(selected as any).textGradient?.color1 ?? '#7c3aed'}
-                  onChange={(v) => upd({ textGradient: { ...(selected as any).textGradient, color1: v } } as any)}
-                  label={t.gradient_start}
-                />
-                <div className="flex-1 h-8 rounded-lg" style={{
-                  background: `linear-gradient(${(selected as any).textGradient?.direction ?? 90}deg,
-                    ${(selected as any).textGradient?.color1 ?? '#7c3aed'},
-                    ${(selected as any).textGradient?.color2 ?? '#06b6d4'})`,
-                }} />
-                <ColorDot
-                  value={(selected as any).textGradient?.color2 ?? '#06b6d4'}
-                  onChange={(v) => upd({ textGradient: { ...(selected as any).textGradient, color2: v } } as any)}
-                  label={t.gradient_end}
-                />
-              </div>
-              <div className="grid grid-cols-4 gap-1.5">
-                {[0, 45, 90, 135].map((deg) => (
-                  <button key={deg}
-                    onClick={() => upd({ textGradient: { ...(selected as any).textGradient, direction: deg } } as any)}
-                    className={`py-1.5 text-xs rounded-lg font-mono transition-all ${
-                      (selected as any).textGradient?.direction === deg
-                        ? 'bg-violet-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-violet-100'
-                    }`}
-                  >
-                    {deg}°
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </Section>
-      )}
+    {(selected as any).textGradient?.enabled && (
+      <GradientEditor
+        gradient={(selected as any).textGradient?.gradient ?? {
+          type: 'linear', direction: 90, stops: DEFAULT_STOPS,
+        }}
+        onChange={(g) => upd({
+          textGradient: { enabled: true, gradient: g }
+        } as any)}
+        lang={lang}
+      />
+    )}
+  </Section>
+)}
 
       {/* ── Masque image ── */}
       {isText && (
