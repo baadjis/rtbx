@@ -1,5 +1,4 @@
 
-'use client';
 
 import { useEffect, useRef, useState } from "react";
 
@@ -7,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 export default function ColorDot({ value, onChange, label }: {
   value: string; onChange: (v: string) => void; label?: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [hex,  setHex]  = useState(value);
   const ref = useRef<HTMLDivElement>(null);
   const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0 });
@@ -92,7 +91,13 @@ export default function ColorDot({ value, onChange, label }: {
         <div
     className="fixed z-[9999] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl
       border border-gray-200 dark:border-gray-700 p-3 w-52"
-    style={{ top: popoverPos.top, left: popoverPos.left }}
+    style={{ 
+
+      
+      top: popoverPos.top, left: popoverPos.left 
+    
+    
+    }}
     onClick={(e) => e.stopPropagation()}
   >
           {/* Color picker natif */}
