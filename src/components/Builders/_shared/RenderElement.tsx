@@ -892,51 +892,104 @@ export default function RenderElement({ element, onSelect }: {
   const isSelected = selectedId === element.id;
 
   switch (element.type) {
+    
     case 'text': {
-      if (editingTextId === element.id) return null;
-      const txt = element as TextElement;
+  if (editingTextId === element.id) return null;
+  const txt = element as TextElement;
 
-      // Masque image → priorité max
-      if (txt.maskImageSrc) {
-        return <MaskedTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
-      }
-      // Gradient texte
-      if (txt.textGradient?.enabled) {
-        return <GradientTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
-      }
-      // Texte normal
-      return (
-        <Text
-          id={txt.id}
+  if (txt.maskImageSrc) {
+    return <MaskedTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
+  }
+  if (txt.textGradient?.enabled) {
+    return <GradientTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
+  }
+
+  const hasBg = !!(txt.textBackground && txt.textBackground !== 'transparent');
+  const pad   = txt.textBackgroundPadding ?? 4;
+
+  // Avec background → Group + Rect + Text
+  if (hasBg) {
+    return (
+      <Group
+        id={txt.id}
+        x={txt.x} y={txt.y}
+        rotation={txt.rotation ?? 0}
+        opacity={txt.style.opacity ?? 1}
+        draggable={!txt.locked}
+        onClick={() => onSelect(txt.id)}
+        onTap={() => onSelect(txt.id)}
+        onDblClick={() => startEditingText(txt.id)}
+        onDblTap={() => startEditingText(txt.id)}
+      >
+        {/* Fond coloré */}
+        <Rect
+          x={-pad} y={-pad}
+          width={txt.width  + pad * 2}
+          height={txt.height + pad * 2}
+          fill={txt.textBackground}
+          cornerRadius={4}
+          listening={false}
           {...(isSelected ? SELECTION : {})}
-          x={txt.x} y={txt.y}
-          width={txt.width} height={txt.height}
-          rotation={txt.rotation ?? 0}
-          opacity={txt.style.opacity ?? 1}
+        />
+        <Text
+          x={0} y={0}
+          width={txt.width}
+          height={txt.height}
           text={txt.text}
           fontSize={txt.fontSize}
           fontFamily={txt.fontFamily || 'Sora, sans-serif'}
           fontStyle={txt.fontStyle || 'normal'}
-textDecoration={
-  txt.textDecoration === 'underline'    ? 'underline'    :
-  txt.textDecoration === 'line-through' ? 'line-through' : ''
-}          fill={txt.style.fill || 'transparent'}  // ← 'transparent' par défaut si pas de fill
-          stroke={txt.stroke}                      // ← nouveau
-          strokeWidth={txt.strokeWidth ?? 0}       // ← nouveau
-          fillAfterStrokeEnabled={true} 
+          textDecoration={
+            txt.textDecoration === 'underline'    ? 'underline'    :
+            txt.textDecoration === 'line-through' ? 'line-through' : ''
+          }
+          fill={txt.style.fill || '#000000'}
+          stroke={txt.stroke}
+          strokeWidth={txt.strokeWidth ?? 0}
           align={txt.align || 'left'}
           verticalAlign={txt.verticalAlign || 'top'}
           lineHeight={txt.lineHeight ?? 1.3}
           letterSpacing={txt.letterSpacing ?? 0}
-          draggable={!txt.locked}
+          listening={false}
           {...shadowProps(txt.style)}
-          onClick={() => onSelect(txt.id)}
-          onTap={() => onSelect(txt.id)}
-          onDblClick={() => startEditingText(txt.id)}
-          onDblTap={() => startEditingText(txt.id)}
         />
-      );
-    }
+      </Group>
+    );
+  }
+
+  // Sans background → Text direct comme avant
+  return (
+    <Text
+      id={txt.id}
+      {...(isSelected ? SELECTION : {})}
+      x={txt.x} y={txt.y}
+      width={txt.width} height={txt.height}
+      rotation={txt.rotation ?? 0}
+      opacity={txt.style.opacity ?? 1}
+      text={txt.text}
+      fontSize={txt.fontSize}
+      fontFamily={txt.fontFamily || 'Sora, sans-serif'}
+      fontStyle={txt.fontStyle || 'normal'}
+      textDecoration={
+        txt.textDecoration === 'underline'    ? 'underline'    :
+        txt.textDecoration === 'line-through' ? 'line-through' : ''
+      }
+      fill={txt.style.fill || '#000000'}
+      stroke={txt.stroke}
+      strokeWidth={txt.strokeWidth ?? 0}
+      align={txt.align || 'left'}
+      verticalAlign={txt.verticalAlign || 'top'}
+      lineHeight={txt.lineHeight ?? 1.3}
+      letterSpacing={txt.letterSpacing ?? 0}
+      draggable={!txt.locked}
+      {...shadowProps(txt.style)}
+      onClick={() => onSelect(txt.id)}
+      onTap={() => onSelect(txt.id)}
+      onDblClick={() => startEditingText(txt.id)}
+      onDblTap={() => startEditingText(txt.id)}
+    />
+  );
+}
 
 
     case 'image':

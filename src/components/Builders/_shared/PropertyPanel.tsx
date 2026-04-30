@@ -209,7 +209,7 @@ export default function PropertyPanel({ lang }: Props) {
       </Section>
 
       {/* ── Fill ── */}
-      {(isShape || isText || selected.type === 'bezier') && (
+      {(isShape || isText || selected.type === 'bezier' || isGroup) && (
         <Section>
           <SectionTitle>{t.fillColor || 'Couleur de remplissage'}</SectionTitle>
 
@@ -394,6 +394,50 @@ export default function PropertyPanel({ lang }: Props) {
 ))}
               </div>
             </div>
+
+            {/* Surlignage */}
+<div>
+  <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+    {lang === 'fr' ? 'Surlignage' : 'Highlight'}
+  </p>
+  <div className="flex items-center gap-3">
+    <ColorDot
+      value={(selected as any).textBackground || 'transparent'}
+      onChange={(v) => upd({ textBackground: v } as any)}
+    />
+    <div className="flex-1 h-8 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center px-3"
+      style={{
+        backgroundColor: (selected as any).textBackground || 'transparent',
+        backgroundImage: (!(selected as any).textBackground || (selected as any).textBackground === 'transparent')
+          ? 'linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%)'
+          : 'none',
+        backgroundSize: '8px 8px',
+      }}
+    >
+      <span className="text-xs font-medium"
+        style={{ color: (selected as any).textBackground ? '#000' : '#9ca3af' }}>
+        Aa
+      </span>
+    </div>
+    {(selected as any).textBackground && (selected as any).textBackground !== 'transparent' && (
+      <button
+        onClick={() => upd({ textBackground: 'transparent' } as any)}
+        className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+      >✕</button>
+    )}
+  </div>
+  {(selected as any).textBackground && (selected as any).textBackground !== 'transparent' && (
+    <div className="mt-2">
+      <Slider
+        label={lang === 'fr' ? 'Padding' : 'Padding'}
+        min={0} max={20}
+        value={(selected as any).textBackgroundPadding ?? 4}
+        unit="px"
+        onChange={(v) => upd({ textBackgroundPadding: v } as any)}
+      />
+    </div>
+  )}
+</div>
 
             <div>
               <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
