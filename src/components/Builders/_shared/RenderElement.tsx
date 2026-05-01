@@ -936,12 +936,8 @@ export default function RenderElement({ element, onSelect }: {
       {/* Hitbox — couvre toute la zone, capture drag/click/transform */}
       <Rect
         x={-pad} y={-pad}
-        width={txt.width}
-  // ← Ne pas fixer height — laisse Konva calculer
-  // height={txt.height}  ← SUPPRIME cette ligne
-  wrap="word"           // ← wrap automatique
-  ellipsis={false} 
-        
+        width={txt.width  + pad * 2}
+        height={txt.height + pad * 2}
         fill="rgba(0,0,0,0.001)"
         stroke={isSelected ? '#7c3aed' : undefined}
         strokeWidth={isSelected ? 2 : 0}
@@ -953,7 +949,10 @@ export default function RenderElement({ element, onSelect }: {
       <Text
         x={0} y={0}
         width={txt.width}
-        height={txt.height}
+  // ← Ne pas fixer height — laisse Konva calculer
+  // height={txt.height}  ← SUPPRIME cette ligne
+  wrap="word"           // ← wrap automatique
+  ellipsis={false} 
         text={txt.text}
         fontSize={txt.fontSize}
         fontFamily={txt.fontFamily || 'Sora, sans-serif'}
