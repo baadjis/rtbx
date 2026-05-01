@@ -112,6 +112,57 @@ export default function ExportBtn({ lang }: Props) {
     triggerDownload(url, 'design-hd.png');
   };
 
+  // ── Export SVG ────────────────────────────────────────────────────────────────
+const exportSVG = async (stageRef:any) => {
+  setOpen(false);
+  if (!stageRef?.current) return;
+  const stage = stageRef.current;
+  const w = stage.width();
+  const h = stage.height();
+
+  // Konva → canvas → dataURL → image dans SVG
+  const dataUrl = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
+
+  const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+  <image href="${dataUrl}" x="0" y="0" width="${w}" height="${h}"/>
+</svg>`;
+
+  const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+  const url  = URL.createObjectURL(blob);
+  triggerDownload(url, 'design.svg');
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+// ── Export PDF ────────────────────────────────────────────────────────────────
+const exportPDF = async (stageRef:any) => {
+  setOpen(false);
+  if (!stageRef?.current) return;
+
+  const { default: jsPDF } = await import('jspdf');
+  const stage  = stageRef.current;
+  const w      = stage.width();
+  const h      = stage.height();
+  const dataUrl = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
+
+  // Orientation selon les proportions
+  const orientation = w >= h ? 'landscape' : 'portrait';
+
+  // Unité px → mm (1px ≈ 0.2646mm)
+  const mmW = w * 0.2646;
+  const mmH = h * 0.2646;
+
+  const pdf = new jsPDF({
+    orientation,
+    unit: 'mm',
+    format: [mmW, mmH],
+  });
+
+  pdf.addImage(dataUrl, 'PNG', 0, 0, mmW, mmH);
+  pdf.save('design.pdf');
+};
+
   // ── Options ───────────────────────────────────────────────────────────────
   const options = [
     {
@@ -178,6 +229,29 @@ export default function ExportBtn({ lang }: Props) {
         </svg>
       ),
     },
+    {
+  label:    'SVG',
+  sublabel: lang === 'fr' ? 'Vectoriel + image' : 'Vector + image',
+  color:    'text-teal-600',
+  onClick:  exportSVG,
+  icon: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
+      <path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>
+  ),
+},
+{
+  label:    'PDF',
+  sublabel: lang === 'fr' ? 'Document imprimable' : 'Printable document',
+  color:    'text-red-500',
+  onClick:  exportPDF,
+  icon: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+      <path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>
+    </svg>
+  ),
+},
   ];
 
   return (

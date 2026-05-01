@@ -11,6 +11,7 @@ export default function Transformer() {
   const { selectedId, elements, updateElement } = useCanvas();
   const transformerRef = useRef<Konva.Transformer>(null);
   const selectedElement = elements.find((el) => el.id === selectedId);
+  const isTextSelected = selectedElement?.type === 'text';  
 
   // ── Attache le transformer au nœud sélectionné ───────────────────────────
   useEffect(() => {
@@ -79,18 +80,46 @@ const rawH = node.getAttr('height')
   node.scaleY(1);
 
   if (selectedElement.type === 'text') {
-    const oldFontSize = (selectedElement as any).fontSize || 32;
-    const fontScale   = scaleY !== 1 ? scaleY : scaleX !== 1 ? scaleX : 1;
-    const newFontSize = Math.max(8, Math.round(oldFontSize * fontScale));
-    updateElement(selectedElement.id, {
-      x:        Math.round(node.x()),
-      y:        Math.round(node.y()),
-      width:    Math.round(newWidth),
-      height:   Math.round(newHeight),
-      fontSize: newFontSize,
-      rotation: Math.round(node.rotation()),
-    } as any);
-  } else {
+  const oldFontSize = (selectedElement as any).fontSize || 32;
+  const oldWidth    = selectedElement.width;
+  const oldHeight   = selectedElement.height;
+
+  // Scale réel appliqué
+  const actualScaleX = scaleX;
+  const actualScaleY = scaleY;
+
+  const newWidth  = Math.max(20, rawW * actualScaleX);
+  const newHeight = Math.max(20, rawH * actualScaleY);
+
+  // ← Ne scale la police QUE si resize vertical pur
+  // Si resize horizontal : juste la largeur change (wrap du texte)
+  // Si resize vertical   : la police suit pour que le texte remplisse
+  const isVerticalResize  = Math.abs(actualScaleY - 1) > 0.01;
+  const isHorizontalResize = Math.abs(actualScaleX - 1) > 0.01;
+
+  let newFontSize = oldFontSize;
+
+  if (isVerticalResize && !isHorizontalResize) {
+    // Resize vertical pur → scale la police
+    newFontSize = Math.max(8, Math.round(oldFontSize * actualScaleY));
+  } else if (isVerticalResize && isHorizontalResize) {
+    // Resize coin (diagonal) → scale proportionnel
+    const avgScale = (actualScaleX + actualScaleY) / 2;
+    newFontSize = Math.max(8, Math.round(oldFontSize * avgScale));
+  }
+  // Resize horizontal pur → police inchangée, juste la largeur change
+
+  node.scaleX(1);
+  node.scaleY(1);
+
+  updateElement(selectedElement.id, {
+    x:        Math.round(node.x()),
+    y:        Math.round(node.y()),
+    width:    Math.round(newWidth),
+    height:   Math.round(newHeight),
+    fontSize: newFontSize,
+    rotation: Math.round(node.rotation()),
+  } as any);} else {
     updateElement(selectedElement.id, {
       x:        Math.round(node.x()),
       y:        Math.round(node.y()),
@@ -113,8 +142,13 @@ const rawH = node.getAttr('height')
       resizeEnabled={true}
       keepRatio={false}
       flipEnabled={false}
+       enabledAnchors={
+    isTextSelected
+      ? ['top-left','top-right','bottom-left','bottom-right',
+         'middle-left','middle-right'] // ← pas de top-center/bottom-center
+      : undefined // tous les anchors pour les shapes
+  }
   boundBoxFunc={(oldBox, newBox) => {
-    // Empêche la taille de passer en négatif
     if (newBox.width < 5 || newBox.height < 5) return oldBox;
     return newBox;
   }}
