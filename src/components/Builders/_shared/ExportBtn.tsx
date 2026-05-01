@@ -219,7 +219,7 @@ const exportPDF = async (stageRef:any) => {
   label:    'SVG',
   sublabel: lang === 'fr' ? 'Vectoriel + image' : 'Vector + image',
   color:    'text-teal-600',
-  onClick:  exportSVG,
+  onClick: ()=> exportSVG(stageRef),
   icon: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
       <path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/>
@@ -230,7 +230,7 @@ const exportPDF = async (stageRef:any) => {
   label:    'PDF',
   sublabel: lang === 'fr' ? 'Document imprimable' : 'Printable document',
   color:    'text-red-500',
-  onClick:  exportPDF,
+  onClick: ()=> exportPDF(stageRef),
   icon: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
