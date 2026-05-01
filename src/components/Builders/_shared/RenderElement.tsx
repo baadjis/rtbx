@@ -892,7 +892,7 @@ export default function RenderElement({ element, onSelect }: {
   const isSelected = selectedId === element.id;
 
   switch (element.type) {
-    
+
     case 'text': {
   if (editingTextId === element.id) return null;
   const txt = element as TextElement;
@@ -909,53 +909,68 @@ export default function RenderElement({ element, onSelect }: {
 
   // Avec background → Group + Rect + Text
   if (hasBg) {
-    return (
-      <Group
-        id={txt.id}
-        x={txt.x} y={txt.y}
-        rotation={txt.rotation ?? 0}
-        opacity={txt.style.opacity ?? 1}
-        draggable={!txt.locked}
-        onClick={() => onSelect(txt.id)}
-        onTap={() => onSelect(txt.id)}
-        onDblClick={() => startEditingText(txt.id)}
-        onDblTap={() => startEditingText(txt.id)}
-      >
-        {/* Fond coloré */}
-        <Rect
-          x={-pad} y={-pad}
-          width={txt.width  + pad * 2}
-          height={txt.height + pad * 2}
-          fill={txt.textBackground}
-          cornerRadius={4}
-          listening={false}
-          {...(isSelected ? SELECTION : {})}
-        />
-        <Text
-          x={0} y={0}
-          width={txt.width}
-          height={txt.height}
-          text={txt.text}
-          fontSize={txt.fontSize}
-          fontFamily={txt.fontFamily || 'Sora, sans-serif'}
-          fontStyle={txt.fontStyle || 'normal'}
-          textDecoration={
-            txt.textDecoration === 'underline'    ? 'underline'    :
-            txt.textDecoration === 'line-through' ? 'line-through' : ''
-          }
-          fill={txt.style.fill || '#000000'}
-          stroke={txt.stroke}
-          strokeWidth={txt.strokeWidth ?? 0}
-          align={txt.align || 'left'}
-          verticalAlign={txt.verticalAlign || 'top'}
-          lineHeight={txt.lineHeight ?? 1.3}
-          letterSpacing={txt.letterSpacing ?? 0}
-          listening={false}
-          {...shadowProps(txt.style)}
-        />
-      </Group>
-    );
-  }
+  return (
+    <Group
+      id={txt.id}
+      x={txt.x} y={txt.y}
+      width={txt.width}
+      height={txt.height}
+      rotation={txt.rotation ?? 0}
+      opacity={txt.style.opacity ?? 1}
+      draggable={!txt.locked}
+      onClick={() => onSelect(txt.id)}
+      onTap={() => onSelect(txt.id)}
+      onDblClick={() => startEditingText(txt.id)}
+      onDblTap={() => startEditingText(txt.id)}
+    >
+      {/* Fond coloré */}
+      <Rect
+        x={-pad} y={-pad}
+        width={txt.width  + pad * 2}
+        height={txt.height + pad * 2}
+        fill={txt.textBackground}
+        cornerRadius={4}
+        listening={false}
+      />
+
+      {/* Hitbox — couvre toute la zone, capture drag/click/transform */}
+      <Rect
+        x={-pad} y={-pad}
+        width={txt.width  + pad * 2}
+        height={txt.height + pad * 2}
+        fill="rgba(0,0,0,0.001)"
+        stroke={isSelected ? '#7c3aed' : undefined}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [5, 4] as number[] : undefined}
+        listening={true}  // ← capture les events
+      />
+
+      {/* Texte — pas d'events, le Rect s'en charge */}
+      <Text
+        x={0} y={0}
+        width={txt.width}
+        height={txt.height}
+        text={txt.text}
+        fontSize={txt.fontSize}
+        fontFamily={txt.fontFamily || 'Sora, sans-serif'}
+        fontStyle={txt.fontStyle || 'normal'}
+        textDecoration={
+          txt.textDecoration === 'underline'    ? 'underline'    :
+          txt.textDecoration === 'line-through' ? 'line-through' : ''
+        }
+        fill={txt.style.fill || '#000000'}
+        stroke={txt.stroke}
+        strokeWidth={txt.strokeWidth ?? 0}
+        align={txt.align || 'left'}
+        verticalAlign={txt.verticalAlign || 'top'}
+        lineHeight={txt.lineHeight ?? 1.3}
+        letterSpacing={txt.letterSpacing ?? 0}
+        listening={false}  // ← le Rect gère les events
+        {...shadowProps(txt.style)}
+      />
+    </Group>
+  );
+}
 
   // Sans background → Text direct comme avant
   return (
