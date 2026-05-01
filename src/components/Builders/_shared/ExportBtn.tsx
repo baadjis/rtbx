@@ -6,8 +6,8 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
+import { LangType } from '@/lib/lang/types';
 
-type Props = { lang: 'fr' | 'en' };
 
 const ExportIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
@@ -15,7 +15,7 @@ const ExportIcon = () => (
   </svg>
 );
 
-export default function ExportBtn({ lang }: Props) {
+export default function ExportBtn({ lang }: {lang :LangType}) {
   const t = sharedBuilderData[lang];
   const { stageRef } = useCanvas();
 
