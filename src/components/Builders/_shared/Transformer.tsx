@@ -62,8 +62,14 @@ const handleTransformEnd = () => {
   // Pour tous les nœuds wrappés dans Group (circle, lineShapes, bezier...)
   // node.getAttr('width/height') est fiable car on le set explicitement
   // Pour Rect et autres shapes directes, node.width()/height() suffit
-  const rawW = node.getAttr('width')  ?? node.width()  ?? selectedElement.width;
-  const rawH = node.getAttr('height') ?? node.height() ?? selectedElement.height;
+ 
+  const rawW = node.getAttr('width')
+  ?? node.width()
+  ?? selectedElement.width;
+
+const rawH = node.getAttr('height')
+  ?? node.height()
+  ?? selectedElement.height;
 
   const newWidth  = Math.max(5, rawW * scaleX);
   const newHeight = Math.max(5, rawH * scaleY);
