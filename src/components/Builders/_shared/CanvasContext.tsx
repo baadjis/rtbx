@@ -179,22 +179,20 @@ const ungroupElements = (groupId: string) => {
 
 const finishEditingText = (newText: string) => {
   if (!editingTextId) { setEditingTextId(null); return; }
-
+  // ← updateElement avec SEULEMENT text et height
+  // pas de width/fontSize qui pourraient être écrasés par le transformer
   const el = elements.find((e) => e.id === editingTextId) as any;
   if (!el) { setEditingTextId(null); return; }
 
-  // Recalcule la hauteur selon le nombre de lignes
   const lines     = newText.split('\n').length;
-  const lineH     = el.lineHeight ?? 1.3;
-  const fontSize  = el.fontSize   ?? 32;
   const newHeight = Math.max(
-    fontSize * lineH * lines + 16,
-    el.height, // garde au moins la hauteur actuelle
+    el.height,
+    Math.round(lines * (el.fontSize ?? 32) * (el.lineHeight ?? 1.3) + 16),
   );
 
   updateElement(editingTextId, {
     text:   newText,
-    height: Math.round(newHeight),
+    height: newHeight,
   } as any);
 
   setEditingTextId(null);

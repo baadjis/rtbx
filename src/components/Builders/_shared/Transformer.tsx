@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// components/builders/_shared/Transformer.tsx
 'use client';
 
 import { Transformer as KonvaTransformer } from 'react-konva';
@@ -11,9 +10,8 @@ export default function Transformer() {
   const { selectedId, elements, updateElement } = useCanvas();
   const transformerRef = useRef<Konva.Transformer>(null);
   const selectedElement = elements.find((el) => el.id === selectedId);
-  const isTextSelected = selectedElement?.type === 'text';  
 
-  // ── Attache le transformer au nœud sélectionné ───────────────────────────
+  // ── Attache le transformer ────────────────────────────────────────────────
   useEffect(() => {
     if (!transformerRef.current) return;
     const stage = transformerRef.current.getStage();
@@ -27,206 +25,141 @@ export default function Transformer() {
     }
   }, [selectedId, elements]);
 
+  // ── DragBound + DragEnd ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (!transformerRef.current) return;
+    const stage = transformerRef.current.getStage();
+    if (!stage) return;
+    const selectedNode = stage.findOne(`#${selectedId}`);
+    if (!selectedNode) return;
 
-  // ── Drag (déplacement libre) ──────────────────────────────────────────────
-  // Sans ce handler, déplacer un élément ne met pas à jour x/y dans le store
- // ── useEffect dragEnd consolidé ───────────────────────────────────────────────
-// ── useEffect dragEnd ─────────────────────────────────────────────────────────
-/*useEffect(() => {
-  if (!transformerRef.current) return;
-  const stage = transformerRef.current.getStage();
-  if (!stage) return;
-  const selectedNode = stage.findOne(`#${selectedId}`);
-  if (!selectedNode) return;
+    selectedNode.dragBoundFunc((pos) => {
+      if (!selectedElement) return pos;
 
-  const onDragEnd = () => {
-    if (!selectedElement) return;
-    updateElement(selectedElement.id, {
-      x: Math.round(selectedNode.x()),
-      y: Math.round(selectedNode.y()),
+      const sw = stage.width()  / stage.scaleX();
+      const sh = stage.height() / stage.scaleY();
+
+      // ← Bounding box réelle du nœud pour tenir compte des Groups
+      const clientRect = selectedNode.getClientRect({ relativeTo: stage });
+      const nw = clientRect.width  / stage.scaleX();
+      const nh = clientRect.height / stage.scaleY();
+
+      // Offset entre pos (coin sup gauche du nœud) et clientRect
+      const offsetX = clientRect.x / stage.scaleX() - selectedNode.x();
+      const offsetY = clientRect.y / stage.scaleY() - selectedNode.y();
+
+      return {
+        x: Math.max(-offsetX, Math.min(pos.x, sw - nw - offsetX)),
+        y: Math.max(-offsetY, Math.min(pos.y, sh - nh - offsetY)),
+      };
     });
-  };
 
-  selectedNode.on('dragend', onDragEnd);
-  return () => { selectedNode.off('dragend', onDragEnd); };
-}, [selectedId, selectedElement, updateElement]);*/
-
-
-/*useEffect(() => {
-  if (!transformerRef.current) return;
-  const stage = transformerRef.current.getStage();
-  if (!stage) return;
-  const selectedNode = stage.findOne(`#${selectedId}`);
-  if (!selectedNode) return;
-
-  // ── Borne le drag dans les limites du canvas ──────────────────────────────
-  selectedNode.dragBoundFunc((pos) => {
-    const sw = stage.width()  / stage.scaleX();
-    const sh = stage.height() / stage.scaleY();
-    const nw = (selectedNode.getAttr('width')  ?? selectedNode.width()  ?? 0);
-    const nh = (selectedNode.getAttr('height') ?? selectedNode.height() ?? 0);
-
-    return {
-      x: Math.max(0, Math.min(pos.x, sw - nw)),
-      y: Math.max(0, Math.min(pos.y, sh - nh)),
+    const onDragEnd = () => {
+      if (!selectedElement) return;
+      updateElement(selectedElement.id, {
+        x: Math.round(selectedNode.x()),
+        y: Math.round(selectedNode.y()),
+      });
     };
-  });
 
-  // ── DragEnd ───────────────────────────────────────────────────────────────
-  const onDragEnd = () => {
-    if (!selectedElement) return;
-    updateElement(selectedElement.id, {
-      x: Math.round(selectedNode.x()),
-      y: Math.round(selectedNode.y()),
-    });
-  };
-
-  selectedNode.on('dragend', onDragEnd);
-
-  return () => {
-    selectedNode.off('dragend', onDragEnd);
-    // Reset dragBoundFunc quand on désélectionne
-    selectedNode.dragBoundFunc(() => ({ x: 0, y: 0 }));
-    selectedNode.dragBoundFunc(undefined as any);
-  };
-}, [selectedId, selectedElement, updateElement]);*/
-
-
-
-useEffect(() => {
-  if (!transformerRef.current) return;
-  const stage = transformerRef.current.getStage();
-  if (!stage) return;
-  const selectedNode = stage.findOne(`#${selectedId}`);
-  if (!selectedNode) return;
-
-  // ── Borne le drag — les BORDS de l'élément restent dans le canvas ─────────
-  selectedNode.dragBoundFunc((pos) => {
-    if (!selectedElement) return pos;
-
-    const sw = stage.width()  / stage.scaleX();
-    const sh = stage.height() / stage.scaleY();
-    const nw = selectedElement.width;
-    const nh = selectedElement.height;
-
-    return {
-      x: Math.max(0, Math.min(pos.x, sw - nw)),
-      y: Math.max(0, Math.min(pos.y, sh - nh)),
+    selectedNode.on('dragend', onDragEnd);
+    return () => {
+      selectedNode.off('dragend', onDragEnd);
+      selectedNode.dragBoundFunc(undefined as any);
     };
-  });
+  }, [selectedId, selectedElement, updateElement]);
 
-  const onDragEnd = () => {
-    if (!selectedElement) return;
-    updateElement(selectedElement.id, {
-      x: Math.round(selectedNode.x()),
-      y: Math.round(selectedNode.y()),
-    });
-  };
+  // ── handleTransformEnd ────────────────────────────────────────────────────
+  const handleTransformEnd = () => {
+    if (!selectedElement || !transformerRef.current) return;
+    const node = transformerRef.current.nodes()[0];
+    if (!node) return;
 
-  selectedNode.on('dragend', onDragEnd);
+    const scaleX = node.scaleX();
+    const scaleY = node.scaleY();
 
-  return () => {
-    selectedNode.off('dragend', onDragEnd);
-    selectedNode.dragBoundFunc(undefined as any);
-  };
-}, [selectedId, selectedElement, updateElement]);
-
-// ── handleTransformEnd ────────────────────────────────────────────────────────
-const handleTransformEnd = () => {
-  if (!selectedElement || !transformerRef.current) return;
-  const node = transformerRef.current.nodes()[0];
-  if (!node) return;
-
-  const scaleX = node.scaleX();
-  const scaleY = node.scaleY();
-
-  // Lecture taille brute — fiable pour Group (circle, lineShapes)
-  // et pour Rect/shapes directes
-  const rawW = node.getAttr('width')  ?? node.width()  ?? selectedElement.width;
-  const rawH = node.getAttr('height') ?? node.height() ?? selectedElement.height;
-
-  // Reset scale AVANT updateElement — important pour éviter double-apply
-  node.scaleX(1);
-  node.scaleY(1);
-
-  if (selectedElement.type === 'text') {
-    const oldFontSize = (selectedElement as any).fontSize || 32;
-
-    const newWidth  = Math.max(20, rawW * scaleX);
-    const newHeight = Math.max(20, rawH * scaleY);
-
-    const isVerticalResize   = Math.abs(scaleY - 1) > 0.01;
-    const isHorizontalResize = Math.abs(scaleX - 1) > 0.01;
-
-    let newFontSize = oldFontSize;
-    if (isVerticalResize && !isHorizontalResize) {
-      // Resize vertical pur → police suit
-      newFontSize = Math.max(8, Math.round(oldFontSize * scaleY));
-    } else if (isVerticalResize && isHorizontalResize) {
-      // Resize diagonal → scale moyen
-      newFontSize = Math.max(8, Math.round(oldFontSize * (scaleX + scaleY) / 2));
+    // ← Si pas de vrai transform (drag seul), on ignore
+    if (Math.abs(scaleX - 1) < 0.001 && Math.abs(scaleY - 1) < 0.001) {
+      node.scaleX(1);
+      node.scaleY(1);
+      return;
     }
-    // Resize horizontal pur → police inchangée, largeur change seulement
 
-    updateElement(selectedElement.id, {
-      x:        Math.round(node.x()),
-      y:        Math.round(node.y()),
-      width:    Math.round(newWidth),
-      height:   Math.round(newHeight),
-      fontSize: newFontSize,
-      rotation: Math.round(node.rotation()),
-    } as any);
+    const rawW = node.getAttr('width')  ?? node.width()  ?? selectedElement.width;
+    const rawH = node.getAttr('height') ?? node.height() ?? selectedElement.height;
 
-  } else {
-    const newWidth  = Math.max(5, rawW * scaleX);
-    const newHeight = Math.max(5, rawH * scaleY);
+    // Reset scale AVANT updateElement
+    node.scaleX(1);
+    node.scaleY(1);
 
-    updateElement(selectedElement.id, {
-      x:        Math.round(node.x()),
-      y:        Math.round(node.y()),
-      width:    Math.round(newWidth),
-      height:   Math.round(newHeight),
-      rotation: Math.round(node.rotation()),
-    });
-  }
+    if (selectedElement.type === 'text') {
+      const oldFontSize = (selectedElement as any).fontSize || 32;
+      const newWidth    = Math.max(20, rawW * scaleX);
+      const newHeight   = Math.max(20, rawH * scaleY);
 
-  node.getLayer()?.batchDraw();
-};
+      const isVerticalResize   = Math.abs(scaleY - 1) > 0.01;
+      const isHorizontalResize = Math.abs(scaleX - 1) > 0.01;
+
+      let newFontSize = oldFontSize;
+      if (isVerticalResize && !isHorizontalResize) {
+        newFontSize = Math.max(8, Math.round(oldFontSize * scaleY));
+      } else if (isVerticalResize && isHorizontalResize) {
+        newFontSize = Math.max(8, Math.round(oldFontSize * (scaleX + scaleY) / 2));
+      }
+
+      updateElement(selectedElement.id, {
+        x:        Math.round(node.x()),
+        y:        Math.round(node.y()),
+        width:    Math.round(newWidth),
+        height:   Math.round(newHeight),
+        fontSize: newFontSize,
+        rotation: Math.round(node.rotation()),
+      } as any);
+
+    } else {
+      const newWidth  = Math.max(5, rawW * scaleX);
+      const newHeight = Math.max(5, rawH * scaleY);
+
+      updateElement(selectedElement.id, {
+        x:        Math.round(node.x()),
+        y:        Math.round(node.y()),
+        width:    Math.round(newWidth),
+        height:   Math.round(newHeight),
+        rotation: Math.round(node.rotation()),
+      });
+    }
+
+    node.getLayer()?.batchDraw();
+  };
 
   if (!selectedId) return null;
 
   return (
     <KonvaTransformer
       ref={transformerRef}
-      // ── Fonctionnalités ──
       rotateEnabled={true}
       resizeEnabled={true}
       keepRatio={false}
       flipEnabled={false}
-       enabledAnchors={undefined}
-  
-        boundBoxFunc={(oldBox, newBox) => {
-    const stage = transformerRef.current?.getStage();
-    if (!stage) return newBox;
+      enabledAnchors={undefined}
+      boundBoxFunc={(oldBox, newBox) => {
+        const stage = transformerRef.current?.getStage();
+        if (!stage) return newBox;
 
-    const sw = stage.width()  / stage.scaleX();
-    const sh = stage.height() / stage.scaleY();
+        const sw = stage.width()  / stage.scaleX();
+        const sh = stage.height() / stage.scaleY();
 
-    // Taille minimale
-    if (newBox.width < 5 || newBox.height < 5) return oldBox;
+        if (newBox.width < 5 || newBox.height < 5) return oldBox;
 
-    // ← Empêche de sortir des 4 bords
-    const x = Math.max(0, newBox.x);
-    const y = Math.max(0, newBox.y);
-    const w = Math.min(newBox.width,  sw - x);
-    const h = Math.min(newBox.height, sh - y);
+        const x = Math.max(0, newBox.x);
+        const y = Math.max(0, newBox.y);
+        const w = Math.min(newBox.width,  sw - x);
+        const h = Math.min(newBox.height, sh - y);
 
-    // Si la contrainte réduit trop, garde l'ancien box
-    if (w < 5 || h < 5) return oldBox;
+        if (w < 5 || h < 5) return oldBox;
 
-    return { x, y, width: w, height: h, rotation: newBox.rotation };
-  }}
-      // ── Style violet cohérent avec le nouveau design ──
+        return { x, y, width: w, height: h, rotation: newBox.rotation };
+      }}
       borderStroke="#7c3aed"
       borderStrokeWidth={1.5}
       borderDash={[4, 4] as number[]}
@@ -235,11 +168,8 @@ const handleTransformEnd = () => {
       anchorStroke="#ffffff"
       anchorStrokeWidth={2}
       anchorCornerRadius={3}
-      // ── Rotate handle ──
       rotateAnchorOffset={20}
-      // ── Événements ──
       onTransformEnd={handleTransformEnd}
-      
       onMouseDown={(e) => e.evt.stopImmediatePropagation()}
       onTouchStart={(e) => e.evt.stopImmediatePropagation()}
     />
