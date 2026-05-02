@@ -907,40 +907,34 @@ export default function RenderElement({ element, onSelect }: {
   const hasBg = !!(txt.textBackground && txt.textBackground !== 'transparent');
   const pad   = txt.textBackgroundPadding ?? 4;
 
-  // ── Propriétés texte communes ──────────────────────────────────────────────
-  const textProps = {
+  const sharedTextProps = {
     width:          txt.width,
-    height:         txt.height,
-    wrap:           'word' as const,
+    // ← PAS de height ici — Konva calcule la hauteur automatiquement
+    wrap:           'word'         as const,
     ellipsis:       false,
     text:           txt.text,
     fontSize:       txt.fontSize,
     fontFamily:     txt.fontFamily || 'Sora, sans-serif',
     fontStyle:      txt.fontStyle  || 'normal',
-    textDecoration: txt.textDecoration === 'underline'
-      ? 'underline'
-      : txt.textDecoration === 'line-through'
-      ? 'line-through'
-      : '',
-    fill:           txt.style.fill || '#000000',
+    textDecoration: txt.textDecoration === 'underline'    ? 'underline'
+                  : txt.textDecoration === 'line-through' ? 'line-through'
+                  : '',
+    fill:           txt.style.fill   || '#000000',
     stroke:         txt.stroke,
-    strokeWidth:    txt.strokeWidth ?? 0,
-    align:          txt.align         || 'left',
+    strokeWidth:    txt.strokeWidth  ?? 0,
+    align:          txt.align        || 'left',
     verticalAlign:  txt.verticalAlign || 'top',
-    lineHeight:     txt.lineHeight    ?? 1.3,
+    lineHeight:     txt.lineHeight   ?? 1.3,
     letterSpacing:  txt.letterSpacing ?? 0,
     ...shadowProps(txt.style),
   };
 
-  // ── Avec background ────────────────────────────────────────────────────────
   if (hasBg) {
     return (
       <Group
         id={txt.id}
-        x={txt.x}
-        y={txt.y}
-        width={txt.width}
-        height={txt.height}
+        x={txt.x} y={txt.y}
+        width={txt.width} height={txt.height}
         rotation={txt.rotation ?? 0}
         opacity={txt.style.opacity ?? 1}
         draggable={!txt.locked}
@@ -949,7 +943,7 @@ export default function RenderElement({ element, onSelect }: {
         onDblClick={() => startEditingText(txt.id)}
         onDblTap={() => startEditingText(txt.id)}
       >
-        {/* Fond coloré */}
+        {/* Fond — height du store pour le visuel */}
         <Rect
           x={-pad} y={-pad}
           width={txt.width  + pad * 2}
@@ -958,7 +952,7 @@ export default function RenderElement({ element, onSelect }: {
           cornerRadius={4}
           listening={false}
         />
-        {/* Hitbox */}
+        {/* Hitbox — height du store pour le transformer */}
         <Rect
           x={-pad} y={-pad}
           width={txt.width  + pad * 2}
@@ -969,27 +963,26 @@ export default function RenderElement({ element, onSelect }: {
           dash={isSelected ? [5, 4] as number[] : undefined}
           listening={true}
         />
-        {/* Texte */}
+        {/* Texte — PAS de height, wrap libre */}
         <Text
           x={0} y={0}
-          {...textProps}
+          {...sharedTextProps}
           listening={false}
         />
       </Group>
     );
   }
 
-  // ── Sans background ────────────────────────────────────────────────────────
   return (
     <Text
       id={txt.id}
       {...(isSelected ? SELECTION : {})}
-      x={txt.x}
-      y={txt.y}
+      x={txt.x} y={txt.y}
+      // ← PAS de height sur le Text
       rotation={txt.rotation ?? 0}
       opacity={txt.style.opacity ?? 1}
       draggable={!txt.locked}
-      {...textProps}
+      {...sharedTextProps}
       onClick={() => onSelect(txt.id)}
       onTap={() => onSelect(txt.id)}
       onDblClick={() => startEditingText(txt.id)}

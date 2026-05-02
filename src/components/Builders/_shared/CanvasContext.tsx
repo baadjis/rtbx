@@ -174,24 +174,24 @@ const ungroupElements = (groupId: string) => {
     setEditingTextId(id);
   };
 
-  const finishEditingText = (newText: string) => {
+const finishEditingText = (newText: string) => {
   if (!editingTextId) { setEditingTextId(null); return; }
 
   const el = elements.find((e) => e.id === editingTextId) as any;
   if (!el) { setEditingTextId(null); return; }
 
-  // Calcule la hauteur nécessaire pour le nouveau texte
+  // Recalcule la hauteur selon le nombre de lignes
   const lines     = newText.split('\n').length;
-  const lineH     = (el.lineHeight ?? 1.3);
+  const lineH     = el.lineHeight ?? 1.3;
   const fontSize  = el.fontSize   ?? 32;
-  const minHeight = Math.max(
-    el.height,                          // garde au moins la hauteur actuelle
-    lines * fontSize * lineH + 16,      // hauteur calculée selon les lignes
+  const newHeight = Math.max(
+    fontSize * lineH * lines + 16,
+    el.height, // garde au moins la hauteur actuelle
   );
 
   updateElement(editingTextId, {
     text:   newText,
-    height: Math.round(minHeight),
+    height: Math.round(newHeight),
   } as any);
 
   setEditingTextId(null);
