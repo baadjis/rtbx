@@ -142,12 +142,7 @@ const rawH = node.getAttr('height')
       resizeEnabled={true}
       keepRatio={false}
       flipEnabled={false}
-       enabledAnchors={
-    isTextSelected
-      ? ['top-left','top-right','bottom-left','bottom-right',
-         'middle-left','middle-right'] // ← pas de top-center/bottom-center
-      : undefined // tous les anchors pour les shapes
-  }
+       enabledAnchors={undefined}
   boundBoxFunc={(oldBox, newBox) => {
     if (newBox.width < 5 || newBox.height < 5) return oldBox;
     return newBox;
