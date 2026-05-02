@@ -164,9 +164,27 @@ const handleTransformEnd = () => {
       keepRatio={false}
       flipEnabled={false}
        enabledAnchors={undefined}
-  boundBoxFunc={(oldBox, newBox) => {
+  
+        boundBoxFunc={(oldBox, newBox) => {
+    const stage = transformerRef.current?.getStage();
+    if (!stage) return newBox;
+
+    const sw = stage.width()  / stage.scaleX();
+    const sh = stage.height() / stage.scaleY();
+
+    // Taille minimale
     if (newBox.width < 5 || newBox.height < 5) return oldBox;
-    return newBox;
+
+    // ← Empêche de sortir des 4 bords
+    const x = Math.max(0, newBox.x);
+    const y = Math.max(0, newBox.y);
+    const w = Math.min(newBox.width,  sw - x);
+    const h = Math.min(newBox.height, sh - y);
+
+    // Si la contrainte réduit trop, garde l'ancien box
+    if (w < 5 || h < 5) return oldBox;
+
+    return { x, y, width: w, height: h, rotation: newBox.rotation };
   }}
       // ── Style violet cohérent avec le nouveau design ──
       borderStroke="#7c3aed"
