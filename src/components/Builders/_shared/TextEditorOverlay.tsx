@@ -37,10 +37,15 @@ export default function TextEditorOverlay({ scale = 1 }: { scale?: number }) {
 
   if (!editingTextId || !editingElement) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(e.target.value);
-    valueRef.current = e.target.value; // ← met à jour le ref à chaque frappe
-  };
+  // Ajoute un auto-resize de la textarea pendant la frappe
+const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  setValue(e.target.value);
+  valueRef.current = e.target.value;
+
+  // Auto-resize visuel de la textarea
+  e.target.style.height = 'auto';
+  e.target.style.height = `${e.target.scrollHeight}px`;
+};
 
   const handleBlur = () => {
     finishEditingText(valueRef.current); // ← utilise le ref, pas le state

@@ -175,9 +175,27 @@ const ungroupElements = (groupId: string) => {
   };
 
   const finishEditingText = (newText: string) => {
-    if (editingTextId) updateElement(editingTextId, { text: newText });
-    setEditingTextId(null);
-  };
+  if (!editingTextId) { setEditingTextId(null); return; }
+
+  const el = elements.find((e) => e.id === editingTextId) as any;
+  if (!el) { setEditingTextId(null); return; }
+
+  // Calcule la hauteur nécessaire pour le nouveau texte
+  const lines     = newText.split('\n').length;
+  const lineH     = (el.lineHeight ?? 1.3);
+  const fontSize  = el.fontSize   ?? 32;
+  const minHeight = Math.max(
+    el.height,                          // garde au moins la hauteur actuelle
+    lines * fontSize * lineH + 16,      // hauteur calculée selon les lignes
+  );
+
+  updateElement(editingTextId, {
+    text:   newText,
+    height: Math.round(minHeight),
+  } as any);
+
+  setEditingTextId(null);
+};
 
   const bringToFront = (id: string) => {
     const newElements = [...elements];
