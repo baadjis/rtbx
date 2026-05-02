@@ -884,18 +884,17 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
   }
 }
 
-// ─── Main renderer ────────────────────────────────────────────────────────────
-export default function RenderElement({ element, onSelect }: {
-  element: CanvasElement; onSelect: (id: string) => void;
-}) {
-  const { selectedId, editingTextId, startEditingText ,editingBezierPath} = useCanvas();
-  const isSelected = selectedId === element.id;
-
-  switch (element.type) {
-
-   case 'text': {
-  if (editingTextId === element.id) return null;
-  const txt = element as TextElement;
+function TextRenderer({ txt, onSelect,editingTextId ,isSelected ,startEditingText}: {
+txt: TextElement; 
+onSelect: (id: string) => void;
+startEditingText:(id: string) => void;
+editingTextId:string|null;
+isSelected:boolean
+}){
+    const textNodeRef = useRef<Konva.Text>(null);
+    const [realHeight, setRealHeight] = useState(txt.height);
+    if (editingTextId === txt.id) return null;
+  
 
   if (txt.maskImageSrc) {
     return <MaskedTextElement element={txt} onSelect={onSelect} isSelected={isSelected} />;
@@ -930,48 +929,67 @@ export default function RenderElement({ element, onSelect }: {
   };
 
   if (hasBg) {
-    return (
-      <Group
-        id={txt.id}
-        x={txt.x} y={txt.y}
-        width={txt.width} height={txt.height}
-        rotation={txt.rotation ?? 0}
-        opacity={txt.style.opacity ?? 1}
-        draggable={!txt.locked}
-        onClick={() => onSelect(txt.id)}
-        onTap={() => onSelect(txt.id)}
-        onDblClick={() => startEditingText(txt.id)}
-        onDblTap={() => startEditingText(txt.id)}
-      >
-        {/* Fond — height du store pour le visuel */}
-        <Rect
-          x={-pad} y={-pad}
-          width={txt.width  + pad * 2}
-          height={txt.height + pad * 2}
-          fill={txt.textBackground}
-          cornerRadius={4}
-          listening={false}
-        />
-        {/* Hitbox — height du store pour le transformer */}
-        <Rect
-          x={-pad} y={-pad}
-          width={txt.width  + pad * 2}
-          height={txt.height + pad * 2}
-          fill="rgba(0,0,0,0.001)"
-          stroke={isSelected ? '#7c3aed' : undefined}
-          strokeWidth={isSelected ? 2 : 0}
-          dash={isSelected ? [5, 4] as number[] : undefined}
-          listening={true}
-        />
-        {/* Texte — PAS de height, wrap libre */}
-        <Text
-          x={0} y={0}
-          {...sharedTextProps}
-          listening={false}
-        />
-      </Group>
-    );
-  }
+  // Estime les lignes en tenant compte du wrapping
+  const charsPerLine = Math.floor(txt.width / (txt.fontSize * 0.6));
+  const words        = txt.text.split('\n');
+  let   totalLines   = 0;
+  words.forEach((line) => {
+    totalLines += Math.max(1, Math.ceil(line.length / Math.max(1, charsPerLine)));
+  });
+  const estimatedHeight = Math.max(
+    txt.height,
+    totalLines * txt.fontSize * (txt.lineHeight ?? 1.3) + pad * 2,
+  );
+
+  return (
+    <Group
+      id={txt.id}
+      x={txt.x} y={txt.y}
+      width={txt.width}
+      height={estimatedHeight}
+      rotation={txt.rotation ?? 0}
+      opacity={txt.style.opacity ?? 1}
+      draggable={!txt.locked}
+      onClick={() => onSelect(txt.id)}
+      onTap={() => onSelect(txt.id)}
+      onDblClick={() => startEditingText(txt.id)}
+      onDblTap={() => startEditingText(txt.id)}
+    >
+      <Rect
+        x={-pad} y={-pad}
+        width={txt.width  + pad * 2}
+        height={estimatedHeight + pad * 2}  // ← hauteur estimée
+        fill={txt.textBackground}
+        cornerRadius={4}
+        listening={false}
+      />
+      <Rect
+        x={-pad} y={-pad}
+        width={txt.width  + pad * 2}
+        height={estimatedHeight + pad * 2}  // ← hauteur estimée
+        fill="rgba(0,0,0,0.001)"
+        stroke={isSelected ? '#7c3aed' : undefined}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [5, 4] as number[] : undefined}
+        listening={true}
+      />
+      <Text
+  ref={textNodeRef}
+  x={0} y={0}
+  {...sharedTextProps}
+  listening={false}
+  onDraw={() => {
+    // ← Lit la vraie hauteur après chaque draw
+    if (textNodeRef.current) {
+      const h = textNodeRef.current.height();
+      if (h !== realHeight) setRealHeight(h);
+    }
+  }}
+/>
+      
+    </Group>
+  );
+}
 
   return (
     <Text
@@ -990,6 +1008,25 @@ export default function RenderElement({ element, onSelect }: {
     />
   );
 }
+
+// ─── Main renderer ────────────────────────────────────────────────────────────
+export default function RenderElement({ element, onSelect }: {
+  element: CanvasElement; onSelect: (id: string) => void;
+}) {
+  const { selectedId, editingTextId, startEditingText ,editingBezierPath} = useCanvas();
+  const isSelected = selectedId === element.id;
+
+
+  switch (element.type) {
+
+   case 'text': 
+        return <TextRenderer
+        txt={element as TextElement}
+        editingTextId={editingTextId}
+        startEditingText={startEditingText}
+        isSelected={isSelected}
+        onSelect={onSelect}
+         />
 
     case 'image':
       return <FilteredImageElement element={element as ImageElement} onSelect={onSelect} />;

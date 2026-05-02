@@ -24,6 +24,7 @@ type CanvasContextType = {
   selectElement: (id: string | null) => void;
   startEditingText: (id: string) => void;
   finishEditingText: (newText: string) => void;
+  toggleLock: (id: string) => void;
   bringToFront: (id: string) => void;
   sendToBack: (id: string) => void;        // ← maintenant implémenté
   undo: () => void;
@@ -303,6 +304,16 @@ const finishEditingBezier = () => {
   setEditingBezierPath(false);
 };
 
+const toggleLock = (id: string) => {
+  const el = elements.find((e) => e.id === id);
+  if (!el) return;
+  const newElements = elements.map((e) =>
+    e.id === id ? { ...e, locked: !e.locked } : e
+  );
+  setElements(newElements);
+  saveToHistory(newElements);
+};
+
   return (
     <CanvasContext.Provider value={{
       stageRef,
@@ -318,7 +329,8 @@ const finishEditingBezier = () => {
       startEditingText,
       finishEditingText,
       bringToFront,
-      sendToBack,           // ← maintenant présent
+      sendToBack,    
+      toggleLock,       
       undo,
       redo,
       loadTemplate,
@@ -333,6 +345,7 @@ const finishEditingBezier = () => {
       finishEditingBezier,
       bezierDrawing,
       bezierPoints,
+
       editingBezierPath,
       addBezierPoint,
       cancelBezierDraw,
@@ -342,6 +355,7 @@ const finishEditingBezier = () => {
      ungroupElements,
      canvasWidth:  width,
      canvasHeight: height,
+
 
     }}>
       {children}

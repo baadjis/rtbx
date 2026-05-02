@@ -89,7 +89,7 @@ export default function PropertyPanel({ lang }: Props) {
   const t = sharedBuilderData[lang] || sharedBuilderData.fr;
   const {
     selectedId, elements, updateElement, deleteElement,
-    bringToFront, sendToBack, addElement, startEditingBezier,ungroupElements
+    bringToFront, sendToBack, addElement, startEditingBezier,ungroupElements,toggleLock
   } = useCanvas();
 
   const selected = elements.find((el) => el.id === selectedId);
@@ -843,6 +843,35 @@ export default function PropertyPanel({ lang }: Props) {
               {action.label}
             </button>
           ))}
+
+          {/* Lock toggle */}
+<button
+  onClick={() => toggleLock(selected.id)}
+  className={`w-full py-2.5 rounded-xl text-xs font-semibold
+    border transition-all flex items-center justify-center gap-2 ${
+    (selected as any).locked
+      ? 'border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+      : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+  }`}
+>
+  {(selected as any).locked ? (
+    <>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4"/>
+      </svg>
+      {lang === 'fr' ? 'Verrouillé — cliquer pour déverrouiller' : 'Locked — click to unlock'}
+    </>
+  ) : (
+    <>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 019.9-1"/>
+      </svg>
+      {lang === 'fr' ? 'Verrouiller' : 'Lock'}
+    </>
+  )}
+</button>
         </div>
       </Section>
 

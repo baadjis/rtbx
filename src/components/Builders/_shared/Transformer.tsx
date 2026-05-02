@@ -18,12 +18,12 @@ export default function Transformer() {
     const stage = transformerRef.current.getStage();
     if (!stage) return;
     const selectedNode = stage.findOne(`#${selectedId}`);
-    if (selectedNode) {
-      transformerRef.current.nodes([selectedNode]);
-      transformerRef.current.getLayer()?.batchDraw();
-    } else {
-      transformerRef.current.nodes([]);
-    }
+  if (selectedNode && !selectedElement?.locked) {
+  transformerRef.current.nodes([selectedNode]);
+  transformerRef.current.getLayer()?.batchDraw();
+} else {
+  transformerRef.current.nodes([]);
+}
   }, [selectedId, elements]);
 
   // ── DragBound + DragEnd ───────────────────────────────────────────────────
