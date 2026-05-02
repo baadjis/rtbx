@@ -52,7 +52,7 @@ export default function Transformer() {
 }, [selectedId, selectedElement, updateElement]);*/
 
 
-useEffect(() => {
+/*useEffect(() => {
   if (!transformerRef.current) return;
   const stage = transformerRef.current.getStage();
   if (!stage) return;
@@ -87,6 +87,46 @@ useEffect(() => {
     selectedNode.off('dragend', onDragEnd);
     // Reset dragBoundFunc quand on désélectionne
     selectedNode.dragBoundFunc(() => ({ x: 0, y: 0 }));
+    selectedNode.dragBoundFunc(undefined as any);
+  };
+}, [selectedId, selectedElement, updateElement]);*/
+
+
+
+useEffect(() => {
+  if (!transformerRef.current) return;
+  const stage = transformerRef.current.getStage();
+  if (!stage) return;
+  const selectedNode = stage.findOne(`#${selectedId}`);
+  if (!selectedNode) return;
+
+  // ── Borne le drag — les BORDS de l'élément restent dans le canvas ─────────
+  selectedNode.dragBoundFunc((pos) => {
+    if (!selectedElement) return pos;
+
+    const sw = stage.width()  / stage.scaleX();
+    const sh = stage.height() / stage.scaleY();
+    const nw = selectedElement.width;
+    const nh = selectedElement.height;
+
+    return {
+      x: Math.max(0, Math.min(pos.x, sw - nw)),
+      y: Math.max(0, Math.min(pos.y, sh - nh)),
+    };
+  });
+
+  const onDragEnd = () => {
+    if (!selectedElement) return;
+    updateElement(selectedElement.id, {
+      x: Math.round(selectedNode.x()),
+      y: Math.round(selectedNode.y()),
+    });
+  };
+
+  selectedNode.on('dragend', onDragEnd);
+
+  return () => {
+    selectedNode.off('dragend', onDragEnd);
     selectedNode.dragBoundFunc(undefined as any);
   };
 }, [selectedId, selectedElement, updateElement]);
