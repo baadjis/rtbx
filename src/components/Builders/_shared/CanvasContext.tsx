@@ -105,9 +105,12 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
   };
 
   const selectElement = (id: string | null) => {
-    setSelectedId(id);
+  // ← Si on édite un texte, sauvegarde avant de changer de sélection
+  if (editingTextId) {
     setEditingTextId(null);
-  };
+  }
+  setSelectedId(id);
+};
 
   const groupElements = (ids: string[]) => {
   if (ids.length < 2) return;

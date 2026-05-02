@@ -42,6 +42,7 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
     drawTool, drawColor, drawSize,
     addElement, updateElement,
     zoom,
+    editingTextId
   } = useCanvas();
 
   const containerRef  = useRef<HTMLDivElement>(null);
@@ -214,10 +215,15 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
             if (bezierDrawing) cancelBezierDraw();
           }}
           onClick={(e) => {
-            if (drawTool) return;
-            if (bezierDrawing) return;
-            if (e.target === e.target.getStage()) selectElement(null);
-          }}
+  if (editingTextId) return; // ← ignore le clic si on édite
+  if (drawTool) return;
+  if (bezierDrawing) return;
+  if (e.target === e.target.getStage()) selectElement(null);
+}}
+onTap={(e) => {
+  if (editingTextId) return; // ← idem pour touch
+  if (e.target === e.target.getStage()) selectElement(null);
+}}
         >
           <Layer>
             {elements.map((el) => (
