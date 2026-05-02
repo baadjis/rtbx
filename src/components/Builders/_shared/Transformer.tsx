@@ -34,7 +34,7 @@ export default function Transformer() {
     const selectedNode = stage.findOne(`#${selectedId}`);
     if (!selectedNode) return;
 
-    /*selectedNode.dragBoundFunc((pos) => {
+    selectedNode.dragBoundFunc((pos) => {
       if (!selectedElement) return pos;
 
       const sw = stage.width()  / stage.scaleX();
@@ -53,10 +53,10 @@ export default function Transformer() {
         x: Math.max(-offsetX, Math.min(pos.x, sw - nw - offsetX)),
         y: Math.max(-offsetY, Math.min(pos.y, sh - nh - offsetY)),
       };
-    });*/
+    });
 
     // dragBoundFunc — simple et direct
-selectedNode.dragBoundFunc((pos) => {
+/*selectedNode.dragBoundFunc((pos) => {
   if (!selectedElement) return pos;
 
   const w = selectedElement.width;
@@ -66,7 +66,7 @@ selectedNode.dragBoundFunc((pos) => {
     x: Math.max(0, Math.min(pos.x, canvasWidth  - w)),
     y: Math.max(0, Math.min(pos.y, canvasHeight - h)),
   };
-});
+});*/
 
     const onDragEnd = () => {
       if (!selectedElement) return;
@@ -156,7 +156,7 @@ selectedNode.dragBoundFunc((pos) => {
       keepRatio={false}
       flipEnabled={false}
       enabledAnchors={undefined}
-      /*boundBoxFunc={(oldBox, newBox) => {
+      boundBoxFunc={(oldBox, newBox) => {
         const stage = transformerRef.current?.getStage();
         if (!stage) return newBox;
 
@@ -173,9 +173,9 @@ selectedNode.dragBoundFunc((pos) => {
         if (w < 5 || h < 5) return oldBox;
 
         return { x, y, width: w, height: h, rotation: newBox.rotation };
-      }}*/
+      }}
      // boundBoxFunc — simple et direct
-boundBoxFunc={(oldBox, newBox) => {
+/*boundBoxFunc={(oldBox, newBox) => {
   if (newBox.width < 5 || newBox.height < 5) return oldBox;
 
   const x = Math.max(0, newBox.x);
@@ -186,7 +186,7 @@ boundBoxFunc={(oldBox, newBox) => {
   if (w < 5 || h < 5) return oldBox;
 
   return { x, y, width: w, height: h, rotation: newBox.rotation };
-}}
+}}*/
       borderStroke="#7c3aed"
       borderStrokeWidth={1.5}
       borderDash={[4, 4] as number[]}
