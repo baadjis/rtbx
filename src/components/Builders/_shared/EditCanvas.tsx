@@ -179,7 +179,7 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
           width: wrapW, height: wrapH,
           borderRadius: 16,
           boxShadow: '0 24px 64px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07)',
-          overflow: 'hidden',
+          
           outline: '1px solid rgba(0,0,0,0.06)',
         }}
       >
