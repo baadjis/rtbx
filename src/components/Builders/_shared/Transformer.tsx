@@ -7,9 +7,10 @@ import { useRef, useEffect } from 'react';
 import Konva from 'konva';
 
 export default function Transformer() {
-  const { selectedId, elements, updateElement } = useCanvas();
+  const { selectedId, elements, updateElement,canvasWidth, canvasHeight } = useCanvas();
   const transformerRef = useRef<Konva.Transformer>(null);
   const selectedElement = elements.find((el) => el.id === selectedId);
+
 
   // ── Attache le transformer ────────────────────────────────────────────────
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function Transformer() {
     const selectedNode = stage.findOne(`#${selectedId}`);
     if (!selectedNode) return;
 
-    selectedNode.dragBoundFunc((pos) => {
+    /*selectedNode.dragBoundFunc((pos) => {
       if (!selectedElement) return pos;
 
       const sw = stage.width()  / stage.scaleX();
@@ -52,7 +53,20 @@ export default function Transformer() {
         x: Math.max(-offsetX, Math.min(pos.x, sw - nw - offsetX)),
         y: Math.max(-offsetY, Math.min(pos.y, sh - nh - offsetY)),
       };
-    });
+    });*/
+
+    // dragBoundFunc — simple et direct
+selectedNode.dragBoundFunc((pos) => {
+  if (!selectedElement) return pos;
+
+  const w = selectedElement.width;
+  const h = selectedElement.height;
+
+  return {
+    x: Math.max(0, Math.min(pos.x, canvasWidth  - w)),
+    y: Math.max(0, Math.min(pos.y, canvasHeight - h)),
+  };
+});
 
     const onDragEnd = () => {
       if (!selectedElement) return;
@@ -142,7 +156,7 @@ export default function Transformer() {
       keepRatio={false}
       flipEnabled={false}
       enabledAnchors={undefined}
-      boundBoxFunc={(oldBox, newBox) => {
+      /*boundBoxFunc={(oldBox, newBox) => {
         const stage = transformerRef.current?.getStage();
         if (!stage) return newBox;
 
@@ -159,7 +173,20 @@ export default function Transformer() {
         if (w < 5 || h < 5) return oldBox;
 
         return { x, y, width: w, height: h, rotation: newBox.rotation };
-      }}
+      }}*/
+     // boundBoxFunc — simple et direct
+boundBoxFunc={(oldBox, newBox) => {
+  if (newBox.width < 5 || newBox.height < 5) return oldBox;
+
+  const x = Math.max(0, newBox.x);
+  const y = Math.max(0, newBox.y);
+  const w = Math.min(newBox.width,  canvasWidth  - x);
+  const h = Math.min(newBox.height, canvasHeight - y);
+
+  if (w < 5 || h < 5) return oldBox;
+
+  return { x, y, width: w, height: h, rotation: newBox.rotation };
+}}
       borderStroke="#7c3aed"
       borderStrokeWidth={1.5}
       borderDash={[4, 4] as number[]}

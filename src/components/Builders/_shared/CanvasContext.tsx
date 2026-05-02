@@ -15,6 +15,8 @@ type CanvasContextType = {
   canUndo: boolean;
   canRedo: boolean;
   zoom: number;
+  canvasWidth:  number;
+  canvasHeight: number;
 
   addElement: (element: CanvasElement) => void;
   updateElement: (id: string, updates: Partial<CanvasElement>) => void;
@@ -337,7 +339,9 @@ const finishEditingBezier = () => {
       drawTool, drawColor, drawSize,
      setDrawTool, setDrawColor, setDrawSize,
      groupElements,
-     ungroupElements
+     ungroupElements,
+     canvasWidth:  width,
+     canvasHeight: height,
 
     }}>
       {children}
