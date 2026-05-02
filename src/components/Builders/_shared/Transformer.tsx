@@ -32,7 +32,7 @@ export default function Transformer() {
   // Sans ce handler, déplacer un élément ne met pas à jour x/y dans le store
  // ── useEffect dragEnd consolidé ───────────────────────────────────────────────
 // ── useEffect dragEnd ─────────────────────────────────────────────────────────
-useEffect(() => {
+/*useEffect(() => {
   if (!transformerRef.current) return;
   const stage = transformerRef.current.getStage();
   if (!stage) return;
@@ -49,6 +49,46 @@ useEffect(() => {
 
   selectedNode.on('dragend', onDragEnd);
   return () => { selectedNode.off('dragend', onDragEnd); };
+}, [selectedId, selectedElement, updateElement]);*/
+
+
+useEffect(() => {
+  if (!transformerRef.current) return;
+  const stage = transformerRef.current.getStage();
+  if (!stage) return;
+  const selectedNode = stage.findOne(`#${selectedId}`);
+  if (!selectedNode) return;
+
+  // ── Borne le drag dans les limites du canvas ──────────────────────────────
+  selectedNode.dragBoundFunc((pos) => {
+    const sw = stage.width()  / stage.scaleX();
+    const sh = stage.height() / stage.scaleY();
+    const nw = (selectedNode.getAttr('width')  ?? selectedNode.width()  ?? 0);
+    const nh = (selectedNode.getAttr('height') ?? selectedNode.height() ?? 0);
+
+    return {
+      x: Math.max(0, Math.min(pos.x, sw - nw)),
+      y: Math.max(0, Math.min(pos.y, sh - nh)),
+    };
+  });
+
+  // ── DragEnd ───────────────────────────────────────────────────────────────
+  const onDragEnd = () => {
+    if (!selectedElement) return;
+    updateElement(selectedElement.id, {
+      x: Math.round(selectedNode.x()),
+      y: Math.round(selectedNode.y()),
+    });
+  };
+
+  selectedNode.on('dragend', onDragEnd);
+
+  return () => {
+    selectedNode.off('dragend', onDragEnd);
+    // Reset dragBoundFunc quand on désélectionne
+    selectedNode.dragBoundFunc(() => ({ x: 0, y: 0 }));
+    selectedNode.dragBoundFunc(undefined as any);
+  };
 }, [selectedId, selectedElement, updateElement]);
 
 // ── handleTransformEnd ────────────────────────────────────────────────────────

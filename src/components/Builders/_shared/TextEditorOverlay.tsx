@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// components/builders/_shared/TextEditorOverlay.tsx
 'use client';
 
 import { useCanvas } from './CanvasContext';
@@ -7,54 +6,57 @@ import { useState, useRef, useEffect } from 'react';
 
 type Props = { scale?: number };
 
-export default function TextEditorOverlay({ scale = 1 }: { scale?: number }) {
+export default function TextEditorOverlay({ scale = 1 }: Props) {
   const { editingTextId, elements, finishEditingText } = useCanvas();
-  const [value, setValue] = useState('');
-  const valueRef = useRef('');  // ← ref pour valeur toujours à jour
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [value, setValue]   = useState('');
+  const valueRef            = useRef('');
+  const inputRef            = useRef<HTMLTextAreaElement>(null);
+  const editingElement      = elements.find((el) => el.id === editingTextId) as any;
 
-  const editingElement = elements.find((el) => el.id === editingTextId) as any;
-
+  // Init valeur
   useEffect(() => {
-    if (editingTextId && editingElement) {
-      const timeout = setTimeout(() => {
-        setValue(editingElement.text || '');
-        valueRef.current = editingElement.text || ''; // ← sync le ref aussi
-      }, 0);
-      return () => clearTimeout(timeout);
-    }
+    if (!editingTextId || !editingElement) return;
+    const t = setTimeout(() => {
+      setValue(editingElement.text || '');
+      valueRef.current = editingElement.text || '';
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 30);
+    return () => clearTimeout(t);
   }, [editingTextId]);
 
+  // ← Écoute clics extérieurs sur le document entier
   useEffect(() => {
-    if (editingTextId && inputRef.current) {
-      const timeout = setTimeout(() => {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }, 30);
-      return () => clearTimeout(timeout);
-    }
-  }, [editingTextId]);
+    if (!editingTextId) return;
+
+    const handlePointerDown = (e: PointerEvent) => {
+      if (inputRef.current && inputRef.current.contains(e.target as Node)) return;
+      // Clic en dehors de la textarea → sauvegarde
+      finishEditingText(valueRef.current);
+    };
+
+    // Délai pour éviter que le clic d'ouverture ferme immédiatement
+    const t = setTimeout(() => {
+      document.addEventListener('pointerdown', handlePointerDown);
+    }, 100);
+
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [editingTextId, finishEditingText]);
 
   if (!editingTextId || !editingElement) return null;
 
-  // Ajoute un auto-resize de la textarea pendant la frappe
-const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  setValue(e.target.value);
-  valueRef.current = e.target.value;
-
-  // Auto-resize visuel de la textarea
-  e.target.style.height = 'auto';
-  e.target.style.height = `${e.target.scrollHeight}px`;
-};
-
-  const handleBlur = () => {
-    finishEditingText(valueRef.current); // ← utilise le ref, pas le state
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    valueRef.current = e.target.value;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      finishEditingText(valueRef.current); // ← ref ici aussi
+      finishEditingText(valueRef.current);
     }
     if (e.key === 'Escape') {
       finishEditingText(editingElement.text || '');
@@ -66,22 +68,22 @@ const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       key={editingTextId}
       ref={inputRef}
       value={value}
-      onChange={handleChange}   // ← handleChange au lieu de setValue inline
-      onBlur={handleBlur}
+      onChange={handleChange}
       onKeyDown={handleKeyDown}
+      // ← Plus de onBlur — géré par pointerdown sur document
       className="absolute focus:outline-none resize-none z-50"
       style={{
-        left:      `${editingElement.x * scale}px`,
-        top:       `${editingElement.y * scale}px`,
-        width:     `${editingElement.width * scale}px`,
-        minHeight: `${Math.max(editingElement.height, 80) * scale}px`,
-        fontSize:   `${(editingElement.fontSize || 32) * scale}px`,
-        fontFamily: editingElement.fontFamily || 'Sora, sans-serif',
-        fontWeight: editingElement.fontStyle === 'bold' ? 700 : 400,
-        fontStyle:  editingElement.fontStyle === 'italic' ? 'italic' : 'normal',
-        textAlign:  editingElement.align || 'left',
-        color:      editingElement.style?.fill || '#000000',
-        lineHeight: editingElement.lineHeight ?? 1.3,
+        left:         `${editingElement.x * scale}px`,
+        top:          `${editingElement.y * scale}px`,
+        width:        `${editingElement.width * scale}px`,
+        minHeight:    `${Math.max(editingElement.height, 80) * scale}px`,
+        fontSize:     `${(editingElement.fontSize || 32) * scale}px`,
+        fontFamily:   editingElement.fontFamily || 'Sora, sans-serif',
+        fontWeight:   editingElement.fontStyle === 'bold'   ? 700 : 400,
+        fontStyle:    editingElement.fontStyle === 'italic' ? 'italic' : 'normal',
+        textAlign:    editingElement.align || 'left',
+        color:        editingElement.style?.fill || '#000000',
+        lineHeight:   editingElement.lineHeight  ?? 1.3,
         letterSpacing: editingElement.letterSpacing
           ? `${editingElement.letterSpacing * scale}px`
           : 'normal',
