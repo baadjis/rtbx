@@ -175,13 +175,14 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
       className="flex items-center justify-center w-full h-full min-h-0 p-4 relative">
 
       <div ref={canvasWrapRef} className="relative bg-white"
-        style={{
-          width: wrapW, height: wrapH,
-          borderRadius: 16,
-          boxShadow: '0 24px 64px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07)',
-          
-          outline: '1px solid rgba(0,0,0,0.06)',
-        }}
+       style={{
+  width: wrapW,
+  height: wrapH,
+  borderRadius: 16,
+  boxShadow: '0 24px 64px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07)',
+  // overflow: 'hidden' ← supprime cette ligne
+  outline: '1px solid rgba(0,0,0,0.06)',
+}}
       >
         <Stage
           ref={stageRef}

@@ -27,7 +27,7 @@ export default function Transformer() {
   }, [selectedId, elements]);
 
   // ── DragBound + DragEnd ───────────────────────────────────────────────────
-  useEffect(() => {
+  /*useEffect(() => {
     if (!transformerRef.current) return;
     const stage = transformerRef.current.getStage();
     if (!stage) return;
@@ -56,7 +56,7 @@ export default function Transformer() {
     });*/
 
     // dragBoundFunc — simple et direct
-selectedNode.dragBoundFunc((pos) => {
+/*selectedNode.dragBoundFunc((pos) => {
   if (!selectedElement) return pos;
 
   const w = selectedElement.width;
@@ -81,7 +81,27 @@ selectedNode.dragBoundFunc((pos) => {
       selectedNode.off('dragend', onDragEnd);
       selectedNode.dragBoundFunc(undefined as any);
     };
-  }, [selectedId, selectedElement, updateElement]);
+  }, [selectedId, selectedElement, updateElement]);*/
+
+
+  useEffect(() => {
+  if (!transformerRef.current) return;
+  const stage = transformerRef.current.getStage();
+  if (!stage) return;
+  const selectedNode = stage.findOne(`#${selectedId}`);
+  if (!selectedNode) return;
+
+  const onDragEnd = () => {
+    if (!selectedElement) return;
+    updateElement(selectedElement.id, {
+      x: Math.round(selectedNode.x()),
+      y: Math.round(selectedNode.y()),
+    });
+  };
+
+  selectedNode.on('dragend', onDragEnd);
+  return () => { selectedNode.off('dragend', onDragEnd); };
+}, [selectedId, selectedElement, updateElement]);
 
   // ── handleTransformEnd ────────────────────────────────────────────────────
   const handleTransformEnd = () => {
@@ -175,7 +195,7 @@ selectedNode.dragBoundFunc((pos) => {
         return { x, y, width: w, height: h, rotation: newBox.rotation };
       }}*/
      // boundBoxFunc — simple et direct
-boundBoxFunc={(oldBox, newBox) => {
+/*boundBoxFunc={(oldBox, newBox) => {
   if (newBox.width < 5 || newBox.height < 5) return oldBox;
 
   const x = Math.max(0, newBox.x);
@@ -186,6 +206,10 @@ boundBoxFunc={(oldBox, newBox) => {
   if (w < 5 || h < 5) return oldBox;
 
   return { x, y, width: w, height: h, rotation: newBox.rotation };
+}}*/
+     boundBoxFunc={(oldBox, newBox) => {
+  if (newBox.width < 5 || newBox.height < 5) return oldBox;
+  return newBox;
 }}
       borderStroke="#7c3aed"
       borderStrokeWidth={1.5}
