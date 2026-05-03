@@ -495,7 +495,12 @@ export default function PropertyPanel({ lang }: Props) {
           <SectionTitle>{lang === 'fr' ? 'Arrondi des coins' : 'Corner Radius'}</SectionTitle>
           <Slider label={lang === 'fr' ? 'Rayon' : 'Radius'} min={0} max={100}
             value={style.borderRadius ?? 0} unit="px"
-            onChange={(v) => updStyle({ borderRadius: v })}
+            // Dans la section Border radius existante (isRect) :
+onChange={(v) => updStyle({
+  borderRadius: v,
+  // ← Sync avec le border radius aussi
+  border: style.border ? { ...style.border, radius: v } : style.border,
+})}
           />
           <div className="flex gap-1.5 mt-2.5">
             {[0, 8, 16, 32, 9999].map((r) => (
