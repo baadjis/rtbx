@@ -55,6 +55,47 @@ export interface GradientConfig {
   radius?:   number;  // 0-1 (radial seulement)
 }
 
+
+
+// ─── Border styles ────────────────────────────────────────────────────────────
+export type BorderStyle =
+  | 'solid'
+  | 'dashed'
+  | 'dotted'
+  | 'double'
+  | 'gradient'
+  | 'image'
+  | 'none';
+
+export interface BorderSide {
+  width: number;
+  color: string;
+}
+
+export interface BorderConfig {
+  style:       BorderStyle;
+  width:       number;        // épaisseur globale
+  color:       string;        // couleur globale
+  // ── Par côté (override global) ──
+  top?:        BorderSide;
+  right?:      BorderSide;
+  bottom?:     BorderSide;
+  left?:       BorderSide;
+  // ── Dashed/Dotted ──
+  dashSize?:   number;
+  gapSize?:    number;
+  // ── Double ──
+  doubleGap?:  number;
+  // ── Gradient ──
+  gradient?:   GradientConfig;
+  // ── Image ──
+  imageSrc?:   string;
+  imageSize?:  number;        // taille du tile
+  // ── Coins ──
+  cornerStyle?: 'round' | 'square' | 'bevel';
+  radius?:      number;
+}
+
 // ─── Default stops si aucun défini ───────────────────────────────────────────
 export const DEFAULT_STOPS: GradientStop[] = [
   { id: '1', color: '#7c3aed', position: 0 },
@@ -67,6 +108,10 @@ export interface StyleProps {
   stroke?:           string;
   strokeWidth?:      number;
   strokeDash?:       number[];
+ 
+  // ── Border avancé ──
+  border?:           BorderConfig;
+  
   borderRadius?:     number;
   opacity?:          number;
   shadowColor?:      string;
@@ -182,6 +227,7 @@ export interface BaseElement {
   locked?:   boolean;   // ← nouveau : empêche drag/transform
   name?:     string;    // ← nouveau : label dans le panel Calques
   zIndex?:   number;
+  
   style:     StyleProps;
 }
 

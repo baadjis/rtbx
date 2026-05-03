@@ -7,7 +7,7 @@ import { useCanvas } from './CanvasContext';
 import { sharedBuilderData } from './data';
 import RemoveBgButton from './RemoveBgButton';
 import Image from 'next/image';
-import { ClipShape, GradientConfig, DEFAULT_STOPS } from './types';
+import { ClipShape, GradientConfig, DEFAULT_STOPS, BorderStyle } from './types';
 import ColorDot from './ColorDot';
 import GradientEditor from './GradientEditor';
 
@@ -298,6 +298,196 @@ export default function PropertyPanel({ lang }: Props) {
           </div>
         </div>
       </Section>
+
+      {/* ── BORDER AVANCÉ ── */}
+{(isShape || isText || selected.type === 'bezier') && (
+  <Section>
+    <SectionTitle>{lang === 'fr' ? 'Bordure' : 'Border'}</SectionTitle>
+
+    {/* Style tabs */}
+    <div className="grid grid-cols-3 gap-1.5 mb-3">
+      {([
+        { key: 'none',     label: lang === 'fr' ? 'Aucune' : 'None'   },
+        { key: 'solid',    label: 'Solid'                               },
+        { key: 'dashed',   label: 'Dashed'                              },
+        { key: 'dotted',   label: 'Dotted'                              },
+        { key: 'double',   label: 'Double'                              },
+        { key: 'gradient', label: 'Gradient'                            },
+        { key: 'image',    label: lang === 'fr' ? 'Image' : 'Image'    },
+      ] as { key: BorderStyle; label: string }[]).map((s) => (
+        <button
+          key={s.key}
+          onClick={() => updStyle({
+            border: {
+              ...(style.border ?? { width: 4, color: '#7c3aed' }),
+              style: s.key,
+            }
+          })}
+          className={`py-1.5 text-[10px] font-semibold rounded-lg transition-all ${
+            (style.border?.style ?? 'none') === s.key
+              ? 'bg-violet-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-violet-100'
+          }`}
+        >
+          {s.label}
+        </button>
+      ))}
+    </div>
+
+    {/* Propriétés si border actif */}
+    {style.border && style.border.style !== 'none' && (
+      <div className="space-y-3">
+
+        {/* Épaisseur globale */}
+        <Slider
+          label={lang === 'fr' ? 'Épaisseur' : 'Width'}
+          min={1} max={40}
+          value={style.border.width ?? 4}
+          unit="px"
+          onChange={(v) => updStyle({ border: { ...style.border!, width: v } })}
+        />
+
+        {/* Couleur (si pas gradient ni image) */}
+        {style.border.style !== 'gradient' && style.border.style !== 'image' && (
+          <div className="flex items-center gap-3">
+            <ColorDot
+              value={style.border.color || '#7c3aed'}
+              onChange={(v) => updStyle({ border: { ...style.border!, color: v } })}
+            />
+            <div className="flex-1 h-8 rounded-lg"
+              style={{ backgroundColor: style.border.color || '#7c3aed' }} />
+          </div>
+        )}
+
+        {/* Dash/Gap pour dashed et dotted */}
+        {(style.border.style === 'dashed' || style.border.style === 'dotted') && (
+          <>
+            <Slider
+              label={lang === 'fr' ? 'Taille trait' : 'Dash size'}
+              min={2} max={40}
+              value={style.border.dashSize ?? 10}
+              unit="px"
+              onChange={(v) => updStyle({ border: { ...style.border!, dashSize: v } })}
+            />
+            <Slider
+              label={lang === 'fr' ? 'Espace' : 'Gap'}
+              min={1} max={30}
+              value={style.border.gapSize ?? 6}
+              unit="px"
+              onChange={(v) => updStyle({ border: { ...style.border!, gapSize: v } })}
+            />
+          </>
+        )}
+
+        {/* Gap pour double */}
+        {style.border.style === 'double' && (
+          <Slider
+            label={lang === 'fr' ? 'Espace entre lignes' : 'Lines gap'}
+            min={1} max={20}
+            value={style.border.doubleGap ?? 3}
+            unit="px"
+            onChange={(v) => updStyle({ border: { ...style.border!, doubleGap: v } })}
+          />
+        )}
+
+        {/* Gradient border */}
+        {style.border.style === 'gradient' && (
+          <GradientEditor
+            gradient={style.border.gradient ?? {
+              type: 'linear', direction: 90, stops: DEFAULT_STOPS,
+            }}
+            onChange={(g) => updStyle({ border: { ...style.border!, gradient: g } })}
+            lang={lang}
+          />
+        )}
+
+        {/* Image border */}
+        {style.border.style === 'image' && (
+          <div className="space-y-2">
+            <button
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file'; input.accept = 'image/*';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => updStyle({
+                    border: { ...style.border!, imageSrc: ev.target?.result as string }
+                  });
+                  reader.readAsDataURL(file);
+                };
+                input.click();
+              }}
+              className="w-full py-2.5 rounded-xl border border-dashed border-violet-300
+                dark:border-violet-700 text-xs font-semibold text-violet-600
+                hover:bg-violet-50 transition-all"
+            >
+              📁 {lang === 'fr' ? 'Choisir image de bordure' : 'Choose border image'}
+            </button>
+            <Slider
+              label={lang === 'fr' ? 'Taille du motif' : 'Pattern size'}
+              min={8} max={64}
+              value={style.border.imageSize ?? 32}
+              unit="px"
+              onChange={(v) => updStyle({ border: { ...style.border!, imageSize: v } })}
+            />
+          </div>
+        )}
+
+        {/* Radius des coins */}
+        {isShape && (
+          <Slider
+            label={lang === 'fr' ? 'Arrondi des coins' : 'Corner radius'}
+            min={0} max={100}
+            value={style.border.radius ?? 0}
+            unit="px"
+            onChange={(v) => updStyle({ border: { ...style.border!, radius: v } })}
+          />
+        )}
+
+        {/* Par côté */}
+        <div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+            {lang === 'fr' ? 'Par côté' : 'Per side'}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {(['top','right','bottom','left'] as const).map((side) => (
+              <div key={side} className="space-y-1">
+                <p className="text-[10px] text-gray-400 capitalize">{side}</p>
+                <div className="flex items-center gap-1.5">
+                  <ColorDot
+                    value={style.border?.[side]?.color ?? style.border?.color ?? '#7c3aed'}
+                    onChange={(v) => updStyle({
+                      border: {
+                        ...style.border!,
+                        [side]: { ...style.border?.[side], color: v },
+                      }
+                    })}
+                  />
+                  <input
+                    type="number" min={0} max={40}
+                    value={style.border?.[side]?.width ?? style.border?.width ?? 4}
+                    onChange={(e) => updStyle({
+                      border: {
+                        ...style.border!,
+                        [side]: { ...style.border?.[side], width: Number(e.target.value) },
+                      }
+                    })}
+                    className="w-full px-2 py-1 text-xs rounded-lg bg-gray-50 dark:bg-gray-800
+                      border border-gray-200 dark:border-gray-700 font-mono
+                      focus:outline-none focus:ring-1 focus:ring-violet-400"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    )}
+  </Section>
+)}
 
       {/* ── Border radius ── */}
       {isRect && (

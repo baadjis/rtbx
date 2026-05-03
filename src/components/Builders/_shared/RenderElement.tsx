@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // components/builders/_shared/RenderElement.tsx
 'use client';
@@ -17,6 +18,8 @@ import {
   ClipShape,
   GradientStop,
   DEFAULT_STOPS,
+  BorderConfig,
+  BaseElement,
 } from './types';
 import useImage from 'use-image';
 import Konva from 'konva';
@@ -762,9 +765,205 @@ function LineShape({
         {...stroke}
         {...shadowProps(style)}
       />
+      <BorderRenderer element={element} />
     </Group>
   );
 }
+
+
+// ─── Border renderer ──────────────────────────────────────────────────────────
+
+
+
+function useBorderCanvas(
+  border:  BorderConfig,
+  w:       number,
+  h:       number,
+  bgImage?: HTMLImageElement,
+): HTMLCanvasElement | null {
+  return useMemo(() => {
+    if (!border || border.style === 'none') return null;
+
+    const bw     = border.width || 2;
+    const color  = border.color || '#000000';
+    const canvas = document.createElement('canvas');
+    canvas.width  = w;
+    canvas.height = h;
+    const ctx    = canvas.getContext('2d')!;
+    const r      = border.radius ?? 0;
+
+    const drawRoundRect = (
+      x: number, y: number,
+      rw: number, rh: number,
+      radius: number,
+    ) => {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + rw - radius, y);
+      ctx.quadraticCurveTo(x + rw, y, x + rw, y + radius);
+      ctx.lineTo(x + rw, y + rh - radius);
+      ctx.quadraticCurveTo(x + rw, y + rh, x + rw - radius, y + rh);
+      ctx.lineTo(x + radius, y + rh);
+      ctx.quadraticCurveTo(x, y + rh, x, y + rh - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    };
+
+    switch (border.style) {
+
+      case 'solid': {
+        // Par côté ou global
+        if (border.top || border.right || border.bottom || border.left) {
+          const sides = {
+            top:    border.top    ?? { width: bw, color },
+            right:  border.right  ?? { width: bw, color },
+            bottom: border.bottom ?? { width: bw, color },
+            left:   border.left   ?? { width: bw, color },
+          };
+          // Top
+          ctx.fillStyle = sides.top.color;
+          ctx.fillRect(0, 0, w, sides.top.width);
+          // Right
+          ctx.fillStyle = sides.right.color;
+          ctx.fillRect(w - sides.right.width, 0, sides.right.width, h);
+          // Bottom
+          ctx.fillStyle = sides.bottom.color;
+          ctx.fillRect(0, h - sides.bottom.width, w, sides.bottom.width);
+          // Left
+          ctx.fillStyle = sides.left.color;
+          ctx.fillRect(0, 0, sides.left.width, h);
+        } else {
+          ctx.strokeStyle = color;
+          ctx.lineWidth   = bw;
+          drawRoundRect(bw/2, bw/2, w - bw, h - bw, r);
+          ctx.stroke();
+        }
+        break;
+      }
+
+      case 'dashed': {
+        const dash = border.dashSize ?? 10;
+        const gap  = border.gapSize  ?? 6;
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = bw;
+        ctx.setLineDash([dash, gap]);
+        drawRoundRect(bw/2, bw/2, w - bw, h - bw, r);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        break;
+      }
+
+      case 'dotted': {
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = bw;
+        ctx.setLineDash([bw, border.gapSize ?? bw * 1.5]);
+        ctx.lineCap = 'round';
+        drawRoundRect(bw/2, bw/2, w - bw, h - bw, r);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.lineCap = 'butt';
+        break;
+      }
+
+      case 'double': {
+        const gap = border.doubleGap ?? 3;
+        const hw  = Math.max(1, Math.floor(bw / 3));
+        // Outer
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = hw;
+        drawRoundRect(hw/2, hw/2, w - hw, h - hw, r);
+        ctx.stroke();
+        // Inner
+        const offset = hw + gap;
+        drawRoundRect(offset + hw/2, offset + hw/2, w - offset*2 - hw, h - offset*2 - hw, Math.max(0, r - offset));
+        ctx.stroke();
+        break;
+      }
+
+      case 'gradient': {
+        if (!border.gradient) break;
+        const g      = border.gradient;
+        const stops  = (g.stops?.length >= 2 ? g.stops : DEFAULT_STOPS)
+          .slice().sort((a, b) => a.position - b.position);
+        const cx2    = w / 2, cy2 = h / 2;
+        let   grad: CanvasGradient;
+
+        if (g.type === 'radial') {
+          grad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, Math.min(w,h)/2);
+        } else {
+          const rad = ((g.direction ?? 90) * Math.PI) / 180;
+          const dx  = Math.cos(rad) * cx2;
+          const dy  = Math.sin(rad) * cy2;
+          grad = ctx.createLinearGradient(cx2-dx, cy2-dy, cx2+dx, cy2+dy);
+        }
+        stops.forEach((s) => grad.addColorStop(s.position, s.color));
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth   = bw;
+        drawRoundRect(bw/2, bw/2, w - bw, h - bw, r);
+        ctx.stroke();
+        break;
+      }
+
+      case 'image': {
+        if (!bgImage) break;
+        const tileSize = border.imageSize ?? 32;
+        const pattern  = ctx.createPattern(bgImage, 'repeat');
+        if (!pattern) break;
+
+        ctx.strokeStyle = pattern;
+        ctx.lineWidth   = tileSize;
+        drawRoundRect(tileSize/2, tileSize/2, w - tileSize, h - tileSize, r);
+        ctx.stroke();
+        break;
+      }
+    }
+
+    return canvas;
+  }, [
+    border?.style, border?.width, border?.color,
+    border?.dashSize, border?.gapSize, border?.doubleGap,
+    border?.radius, border?.imageSize,
+    border?.top?.width, border?.top?.color,
+    border?.right?.width, border?.right?.color,
+    border?.bottom?.width, border?.bottom?.color,
+    border?.left?.width, border?.left?.color,
+
+    JSON.stringify(border?.gradient?.stops),
+    
+    border?.gradient?.type, border?.gradient?.direction,
+    bgImage, w, h,
+  ]);
+}
+
+// ─── BorderRenderer ───────────────────────────────────────────────────────────
+function BorderRenderer({ element }: { element: BaseElement }) {
+  const border  = element.style?.border;
+  if (!border || border.style === 'none' || !border.width) return null;
+
+  const [bgImg] = useImage(
+    border.style === 'image' ? (border.imageSrc ?? '') : '',
+    'anonymous',
+  );
+
+  const canvas     = useBorderCanvas(border, element.width, element.height, bgImg ?? undefined);
+  const canvasUrl  = useMemo(() => canvas?.toDataURL() ?? '', [canvas]);
+  const [img]      = useImage(canvasUrl);
+
+  if (!img) return null;
+
+  return (
+    <KonvaImage
+      x={0} y={0}
+      width={element.width}
+      height={element.height}
+      image={img}
+      listening={false}
+    />
+  );
+}
+
 // ─── Shape renderer (inchangé) ────────────────────────────────────────────────
 function ShapeRenderer({ element, onSelect, isSelected }: {
   element: ShapeElement; onSelect: (id: string) => void; isSelected: boolean;
@@ -818,13 +1017,37 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
   }
 
   switch (element.type as ShapeType) {
-    case 'rectangle':
-      return (
-        <Rect {...shared}
-          cornerRadius={style.borderRadius ?? 0}
-          {...fill} {...stroke}
-        />
-      );
+    // ← Pour rectangle (exemple) :
+case 'rectangle': {
+  return (
+    <Group
+      id={element.id}
+      x={x} y={y}
+      width={w} height={h}
+      rotation={element.rotation ?? 0}
+      opacity={style.opacity ?? 1}
+      draggable={!element.locked}
+      onClick={() => onSelect(element.id)}
+      onTap={() => onSelect(element.id)}
+    >
+      {/* Shape principale */}
+      <Rect
+        x={0} y={0}
+        width={w} height={h}
+        cornerRadius={style?.border?.radius ?? 0}
+        {...fill}
+        // ← stroke simple si pas de border avancé
+        stroke={!style.border ? style.stroke : undefined}
+        strokeWidth={!style.border ? (style.strokeWidth ?? 0) : 0}
+        {...shadowProps(style)}
+        listening={true}
+        {...(isSelected ? SELECTION : {})}
+      />
+      {/* Border avancé par dessus */}
+      <BorderRenderer element={element} />
+    </Group>
+  );
+}
 
  case 'circle': {
   return (
@@ -1031,7 +1254,7 @@ export default function RenderElement({ element, onSelect }: {
     case 'image':
       return <FilteredImageElement element={element as ImageElement} onSelect={onSelect} />;
 
-   case 'container':
+case 'container':
 case 'group': {
   const grp = element as ContainerElement | GroupElement;
   return (
