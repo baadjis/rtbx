@@ -1031,7 +1031,7 @@ export default function RenderElement({ element, onSelect }: {
     case 'image':
       return <FilteredImageElement element={element as ImageElement} onSelect={onSelect} />;
 
-    case 'container':
+   case 'container':
 case 'group': {
   const grp = element as ContainerElement | GroupElement;
   return (
@@ -1042,14 +1042,13 @@ case 'group': {
       width={grp.width}
       height={grp.height}
       rotation={grp.rotation ?? 0}
-      opacity={grp.style.opacity ?? 1}
+      opacity={grp.style?.opacity ?? 1}
       draggable={!grp.locked}
       onClick={() => onSelect(grp.id)}
       onTap={() => onSelect(grp.id)}
     >
-      {/* Hitbox couvrant tout le groupe — indispensable pour drag + click */}
+      {/* Hitbox — couvre tout le groupe */}
       <Rect
-        x={0} y={0}
         width={grp.width}
         height={grp.height}
         fill="rgba(0,0,0,0.001)"
@@ -1058,13 +1057,17 @@ case 'group': {
         dash={isSelected ? [5, 4] as number[] : undefined}
         listening={true}
       />
-      {grp.children.map((child) => (
-        <RenderElement
-          key={child.id}
-          element={child}
-          onSelect={() => onSelect(grp.id)} // ← clic enfant sélectionne le groupe
-        />
-      ))}
+
+      {/* Enfants — listening=false pour bloquer sélection individuelle */}
+      <Group listening={false}>
+        {grp.children.map((child) => (
+          <RenderElement
+            key={child.id}
+            element={child}
+            onSelect={() => onSelect(grp.id)}
+          />
+        ))}
+      </Group>
     </Group>
   );
 }

@@ -115,35 +115,37 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
   setSelectedId(id);
 };
 
-  const groupElements = (ids: string[]) => {
+const groupElements = (ids: string[]) => {
   if (ids.length < 2) return;
   const toGroup = elements.filter((el) => ids.includes(el.id));
   if (toGroup.length < 2) return;
 
-  // Calcule le bounding box du groupe
+  // Bounding box du groupe
   const minX = Math.min(...toGroup.map((el) => el.x));
   const minY = Math.min(...toGroup.map((el) => el.y));
   const maxX = Math.max(...toGroup.map((el) => el.x + el.width));
   const maxY = Math.max(...toGroup.map((el) => el.y + el.height));
+
+  const groupW = maxX - minX;
+  const groupH = maxY - minY;
 
   const newGroup: GroupElement = {
     id:       uuidv4(),
     type:     'group',
     x:        minX,
     y:        minY,
-    width:    maxX - minX,
-    height:   maxY - minY,
+    width:    groupW,
+    height:   groupH,
     rotation: 0,
-    // Positions des enfants relatives au groupe
+    // ← positions relatives au coin supérieur gauche du groupe
     children: toGroup.map((el) => ({
       ...el,
-      x: el.x - minX,
-      y: el.y - minY,
+      x: el.x - minX,  // ← relatif au groupe
+      y: el.y - minY,  // ← relatif au groupe
     })),
     style: {},
   };
 
-  // Remplace les éléments groupés par le groupe
   const newElements = [
     ...elements.filter((el) => !ids.includes(el.id)),
     newGroup,
@@ -161,9 +163,9 @@ const ungroupElements = (groupId: string) => {
   // Remet les enfants à leurs positions absolues
   const children = grp.children.map((child) => ({
     ...child,
-    id: uuidv4(), // nouvel id pour éviter conflits
-    x:  child.x + grp.x,
-    y:  child.y + grp.y,
+    id: uuidv4(),
+    x:  Math.round(child.x + grp.x),
+    y:  Math.round(child.y + grp.y),
   }));
 
   const newElements = [

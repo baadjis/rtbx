@@ -126,7 +126,37 @@ export default function Transformer() {
     node.scaleX(1);
     node.scaleY(1);
 
-    if (selectedElement.type === 'text') {
+   if (selectedElement.type === 'group' || selectedElement.type === 'container') {
+  const newWidth  = Math.max(5, rawW * scaleX);
+  const newHeight = Math.max(5, rawH * scaleY);
+  const grp       = selectedElement as any;
+
+  // Scale les enfants proportionnellement
+  const scaledChildren = grp.children.map((child: any) => ({
+    ...child,
+    x:      child.x      * scaleX,
+    y:      child.y      * scaleY,
+    width:  child.width  * scaleX,
+    height: child.height * scaleY,
+    // Scale la police si texte
+    ...(child.type === 'text' ? {
+      fontSize: Math.max(8, Math.round((child.fontSize || 32) * ((scaleX + scaleY) / 2))),
+    } : {}),
+  }));
+
+  node.scaleX(1);
+  node.scaleY(1);
+
+  updateElement(selectedElement.id, {
+    x:        Math.round(node.x()),
+    y:        Math.round(node.y()),
+    width:    Math.round(newWidth),
+    height:   Math.round(newHeight),
+    children: scaledChildren,
+    rotation: Math.round(node.rotation()),
+  } as any);
+
+} else if (selectedElement.type === 'text') {
       const oldFontSize = (selectedElement as any).fontSize || 32;
       const newWidth    = Math.max(20, rawW * scaleX);
       const newHeight   = Math.max(20, rawH * scaleY);
