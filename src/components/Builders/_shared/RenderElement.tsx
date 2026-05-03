@@ -723,18 +723,19 @@ function FilteredImageElement({ element, onSelect }: {
 }
 
 // ─── Helper : wraps any Line-based shape in Group + hitbox ───────────────────
-function LineShape({
-  element, points, closed = true, isSelected, onSelect, fill, stroke,
-}: {
-  element:    ShapeElement;
-  points:     number[];
-  closed?:    boolean;
-  isSelected: boolean;
-  onSelect:   (id: string) => void;
-  fill:       Record<string, any>;
-  stroke:     Record<string, any>;
+function LineShape({ element, points, closed = true, isSelected, onSelect, fill, stroke, strokeWidth, dash }: {
+  element:     ShapeElement;
+  points:      number[];
+  closed?:     boolean;
+  isSelected:  boolean;
+  onSelect:    (id: string) => void;
+  fill:        Record<string, any>;
+  stroke?:     string;
+  strokeWidth?: number;
+  dash?:       number[];
 }) {
   const { style, x, y, width: w, height: h } = element;
+  const hasBorder = !!(style.border && style.border.style !== 'none' && style.border.width);
 
   return (
     <Group
@@ -747,25 +748,28 @@ function LineShape({
       onClick={() => onSelect(element.id)}
       onTap={() => onSelect(element.id)}
     >
-      {/* Hitbox — listening={true} pour capturer drag/click */}
+      {/* Hitbox */}
       <Rect
         width={w} height={h}
         fill="rgba(0,0,0,0.001)"
         stroke={isSelected ? '#7c3aed' : undefined}
         strokeWidth={isSelected ? 2 : 0}
         dash={isSelected ? [5, 4] as number[] : undefined}
-        listening={true}   // ← était false, corrigé
+        listening={true}
       />
-      {/* La Line ne capte pas les events, le Rect s'en charge */}
+      {/* Shape */}
       <Line
         points={points}
         closed={closed}
-        listening={false}  // ← reste false
+        listening={false}
         {...fill}
-        {...stroke}
+        stroke={!hasBorder ? stroke : undefined}
+        strokeWidth={!hasBorder ? (strokeWidth ?? 0) : 0}
+        dash={!hasBorder ? dash : undefined}
         {...shadowProps(style)}
       />
-      <BorderRenderer element={element} />
+      {/* Border avancé */}
+      {hasBorder && <BorderRenderer element={element} />}
     </Group>
   );
 }
@@ -968,28 +972,26 @@ function BorderRenderer({ element }: { element: BaseElement }) {
 function ShapeRenderer({ element, onSelect, isSelected }: {
   element: ShapeElement; onSelect: (id: string) => void; isSelected: boolean;
 }) {
+  const { style, x, y, width: w, height: h } = element;
+  const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2;
+
   const handlers = {
     onClick:   () => onSelect(element.id),
     onTap:     () => onSelect(element.id),
     draggable: !element.locked,
   };
-  const { style, x, y, width: w, height: h } = element;
-  const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2;
-  const sel    = isSelected ? SELECTION : {};
+
   const fill   = gradientFillProps(style, w, h);
-  const stroke = {
-    stroke:      style.stroke,
-    strokeWidth: style.strokeWidth ?? 0,
-    dash:        style.strokeDash,
-  };
-  const shared = {
-    id: element.id, x, y, width: w, height: h,
-    rotation: element.rotation ?? 0,
-    opacity:  style.opacity ?? 1,
-    ...sel, ...handlers, ...shadowProps(style),
+  const hasBorder = !!(style.border && style.border.style !== 'none' && style.border.width);
+
+  // Stroke simple — utilisé seulement si pas de border avancé
+  const simpleStroke = {
+    stroke:      !hasBorder ? (style.stroke ?? undefined) : undefined,
+    strokeWidth: !hasBorder ? (style.strokeWidth ?? 0)    : 0,
+    dash:        !hasBorder ? (style.strokeDash ?? undefined) : undefined,
   };
 
-  // Shapes avec Line — juste les points changent
+  // ── Line shapes — délègue à LineShape ─────────────────────────────────────
   const lineShapes: Partial<Record<ShapeType, number[]>> = {
     triangle: polygonPoints(cx, cy, r, 3),
     pentagon: polygonPoints(cx, cy, r, 5),
@@ -997,11 +999,10 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
     star:     starPoints(cx, cy, r, r * 0.45, element.numPoints ?? 5),
     diamond:  diamondPoints(w, h),
     cross:    crossPoints(w, h),
-    octagon: polygonPoints(cx, cy, r, 8),  // ← 1 ligne suffit
-    blob:    blobPoints(cx, cy, r),  
+    octagon:  polygonPoints(cx, cy, r, 8),
+    blob:     blobPoints(cx, cy, r),
   };
 
-  // ← Si c'est une Line shape, on délègue à LineShape
   if (element.type in lineShapes) {
     return (
       <LineShape
@@ -1011,96 +1012,115 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
         isSelected={isSelected}
         onSelect={onSelect}
         fill={fill}
-        stroke={stroke}
+        stroke={!hasBorder ? style?.stroke : undefined}
+        strokeWidth={!hasBorder ? (style.strokeWidth ?? 0) : 0}
+        dash={!hasBorder ? style.strokeDash : undefined}
       />
     );
   }
 
   switch (element.type as ShapeType) {
-    // ← Pour rectangle (exemple) :
-case 'rectangle': {
-  return (
-    <Group
-      id={element.id}
-      x={x} y={y}
-      width={w} height={h}
-      rotation={element.rotation ?? 0}
-      opacity={style.opacity ?? 1}
-      draggable={!element.locked}
-      onClick={() => onSelect(element.id)}
-      onTap={() => onSelect(element.id)}
-    >
-      {/* Shape principale */}
-      <Rect
-        x={0} y={0}
-        width={w} height={h}
-        cornerRadius={style?.border?.radius ?? 0}
-        {...fill}
-        // ← stroke simple si pas de border avancé
-        stroke={!style.border ? style?.stroke : undefined}
-        strokeWidth={!style.border ? (style.strokeWidth ?? 0) : 0}
-        {...shadowProps(style)}
-        listening={true}
-        {...(isSelected ? SELECTION : {})}
-      />
-      {/* Border avancé par dessus */}
-      <BorderRenderer element={element} />
-    </Group>
-  );
-}
 
- case 'circle': {
-  return (
-    <Group
-      id={element.id}
-      x={x} y={y}
-      width={w} height={h}
-      rotation={element.rotation ?? 0}
-      opacity={style.opacity ?? 1}
-      draggable={!element.locked}
-      onClick={() => onSelect(element.id)}
-      onTap={() => onSelect(element.id)}
-    >
-      <Rect
-        width={w} height={h}
-        fill="rgba(0,0,0,0.001)"
-        stroke={isSelected ? '#7c3aed' : undefined}
-        strokeWidth={isSelected ? 2 : 0}
-        dash={isSelected ? [5, 4] as number[] : undefined}
-        listening={true}
-      />
-      <Circle
-        x={cx} y={cy}
-        radius={r}
-        listening={false}
-        {...fill} {...stroke}
-        {...shadowProps(style)}
-      />
-    </Group>
-  );
-}
-
-    case 'line':
+    // ── Rectangle ────────────────────────────────────────────────────────────
+    case 'rectangle': {
       return (
-        <Line {...shared}
+        <Group
+          id={element.id}
+          x={x} y={y}
+          width={w} height={h}
+          rotation={element.rotation ?? 0}
+          opacity={style.opacity ?? 1}
+          {...handlers}
+        >
+          <Rect
+            x={0} y={0}
+            width={w} height={h}
+            cornerRadius={style.borderRadius ?? style.border?.radius ?? 0}
+            {...fill}
+            {...simpleStroke}
+            {...shadowProps(style)}
+            {...(isSelected ? SELECTION : {})}
+            listening={true}
+          />
+          {hasBorder && <BorderRenderer element={element} />}
+        </Group>
+      );
+    }
+
+    // ── Circle ───────────────────────────────────────────────────────────────
+    case 'circle': {
+      return (
+        <Group
+          id={element.id}
+          x={x} y={y}
+          width={w} height={h}
+          rotation={element.rotation ?? 0}
+          opacity={style.opacity ?? 1}
+          {...handlers}
+        >
+          {/* Hitbox */}
+          <Rect
+            width={w} height={h}
+            fill="rgba(0,0,0,0.001)"
+            stroke={isSelected ? '#7c3aed' : undefined}
+            strokeWidth={isSelected ? 2 : 0}
+            dash={isSelected ? [5, 4] as number[] : undefined}
+            listening={true}
+          />
+          <Circle
+            x={cx} y={cy}
+            radius={r}
+            {...fill}
+            {...simpleStroke}
+            {...shadowProps(style)}
+            listening={false}
+          />
+          {hasBorder && <BorderRenderer element={element} />}
+        </Group>
+      );
+    }
+
+    // ── Line ─────────────────────────────────────────────────────────────────
+    case 'line': {
+      return (
+        <Line
+          id={element.id}
+          x={x} y={y}
+          width={w} height={h}
+          rotation={element.rotation ?? 0}
+          opacity={style.opacity ?? 1}
           points={element.points ?? [0, 0, w, 0]}
           stroke={style.stroke || style.fill || '#7c3aed'}
           strokeWidth={style.strokeWidth ?? 3}
           dash={style.strokeDash}
+          {...shadowProps(style)}
+          {...(isSelected ? SELECTION : {})}
+          {...handlers}
         />
       );
+    }
 
-    case 'arrow':
+    // ── Arrow ─────────────────────────────────────────────────────────────────
+    case 'arrow': {
       return (
-        <Arrow {...shared}
+        <Arrow
+          id={element.id}
+          x={x} y={y}
+          width={w} height={h}
+          rotation={element.rotation ?? 0}
+          opacity={style.opacity ?? 1}
           points={element.points ?? [0, h / 2, w, h / 2]}
           stroke={style.stroke || style.fill || '#7c3aed'}
           strokeWidth={style.strokeWidth ?? 3}
           fill={style.fill || '#7c3aed'}
           pointerLength={14}
           pointerWidth={12}
+          {...shadowProps(style)}
+          {...(isSelected ? SELECTION : {})}
+          {...handlers}
         />
       );
+    }
 
     default:
       return null;
