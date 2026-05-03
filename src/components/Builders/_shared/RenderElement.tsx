@@ -1037,7 +1037,7 @@ case 'rectangle': {
         cornerRadius={style?.border?.radius ?? 0}
         {...fill}
         // ← stroke simple si pas de border avancé
-        stroke={!style.border ? style.stroke : undefined}
+        stroke={!style.border ? style?.stroke : undefined}
         strokeWidth={!style.border ? (style.strokeWidth ?? 0) : 0}
         {...shadowProps(style)}
         listening={true}
