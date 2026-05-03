@@ -1081,46 +1081,46 @@ function ShapeRenderer({ element, onSelect, isSelected }: {
     }
 
     // ── Line ─────────────────────────────────────────────────────────────────
-    case 'line': {
-      return (
-        <Line
-          id={element.id}
-          x={x} y={y}
-          width={w} height={h}
-          rotation={element.rotation ?? 0}
-          opacity={style.opacity ?? 1}
-          points={element.points ?? [0, 0, w, 0]}
-          stroke={style.stroke || style.fill || '#7c3aed'}
-          strokeWidth={style.strokeWidth ?? 3}
-          dash={style.strokeDash}
-          {...shadowProps(style)}
-          {...(isSelected ? SELECTION : {})}
-          {...handlers}
-        />
-      );
-    }
+  // ── Line ─────────────────────────────────────────────────────────────────────
+case 'line': {
+  return (
+    <Line
+      id={element.id}
+      x={x} y={y}
+      width={w} height={h}
+      rotation={element.rotation ?? 0}
+      opacity={style.opacity ?? 1}
+      points={element.points ?? [0, 0, w, 0]}
+      stroke={isSelected ? '#7c3aed' : (style.stroke || style.fill || '#7c3aed')}
+      strokeWidth={isSelected ? 2 : (style.strokeWidth ?? 3)}
+      dash={isSelected ? [5, 4] as number[] : style.strokeDash}
+      {...shadowProps(style)}
+      {...handlers}
+    />
+  );
+}
 
-    // ── Arrow ─────────────────────────────────────────────────────────────────
-    case 'arrow': {
-      return (
-        <Arrow
-          id={element.id}
-          x={x} y={y}
-          width={w} height={h}
-          rotation={element.rotation ?? 0}
-          opacity={style.opacity ?? 1}
-          points={element.points ?? [0, h / 2, w, h / 2]}
-          stroke={style.stroke || style.fill || '#7c3aed'}
-          strokeWidth={style.strokeWidth ?? 3}
-          fill={style.fill || '#7c3aed'}
-          pointerLength={14}
-          pointerWidth={12}
-          {...shadowProps(style)}
-          {...(isSelected ? SELECTION : {})}
-          {...handlers}
-        />
-      );
-    }
+// ── Arrow ─────────────────────────────────────────────────────────────────────
+case 'arrow': {
+  return (
+    <Arrow
+      id={element.id}
+      x={x} y={y}
+      width={w} height={h}
+      rotation={element.rotation ?? 0}
+      opacity={style.opacity ?? 1}
+      points={element.points ?? [0, h / 2, w, h / 2]}
+      stroke={isSelected ? '#7c3aed' : (style.stroke || style.fill || '#7c3aed')}
+      strokeWidth={isSelected ? 2 : (style.strokeWidth ?? 3)}
+      dash={isSelected ? [5, 4] as number[] : undefined}
+      fill={style.fill || '#7c3aed'}
+      pointerLength={14}
+      pointerWidth={12}
+      {...shadowProps(style)}
+      {...handlers}
+    />
+  );
+}
 
     default:
       return null;
