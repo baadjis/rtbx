@@ -39,7 +39,7 @@ export default async function PublicSpacePage({
     .eq('slug', cleanSlug)
     .maybeSingle();
 
-  if (error) console.error("Erreur DB:", error.message);
+  if (error) console.log("Erreur DB:", error.message);
   if (!space) return notFound();
 
   // 2. LOGIQUE DE NOM DYNAMIQUE (Gère le cas où profiles est null)
