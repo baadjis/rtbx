@@ -92,25 +92,32 @@ useEffect(() => {
 
 
 const handleActivate = async () => {
-    // Ta validation juridique intacte
+    // Validation juridique
     if (!legalTerms || (accountType === 'organization' && !legalAuth)) {
         alert(t.error_legal); return;
     }
-    setLoading(true)
+
+    // Vérification de la disponibilité du slug avant envoi
+    if (isSlugAvailable === false) {
+        alert(lang === 'fr' ? "Ce pseudo est déjà pris" : "This handle is taken");
+        return;
+    }
+
+    setLoading(true);
     
-    // Préparation de l'objet exactement comme ton insert original
     const payload = {
         user_id: currentUser?.id || null,
         email: email.toLowerCase().trim(),
+        slug: slug.toLowerCase().trim(), // On envoie le pseudo pour l'URL
         account_type: accountType,
         organization_name: accountType === 'organization' ? orgNameField : null,
-        social_data: links.filter(l => l.handle.trim() !== ''),
+        social_data: links.filter((l: any) => l.handle.trim() !== ''),
         theme_color: fgColor,
         bg_color: bgColor,
         logo_url: logo,
         legal_accepted_at: new Date().toISOString(),
         is_authorized_representative: accountType === 'organization',
-        lang: lang // On ajoute la langue pour le mail
+        lang: lang
     };
 
     try {
@@ -128,11 +135,12 @@ const handleActivate = async () => {
             alert(result.error);
         }
     } catch (err) {
+        console.log(err)
         alert("Erreur lors de l'activation");
     } finally {
         setLoading(false);
     }
-}
+};
   
 
   // FONCTION DE TÉLÉCHARGEMENT RECTIFIÉE

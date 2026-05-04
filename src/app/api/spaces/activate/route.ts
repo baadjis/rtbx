@@ -1,20 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { getSpaceWelcomeEmail } from '@/utils/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Utilisation de la clé SERVICE_ROLE pour bypasser le RLS
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! 
+);
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const supabase = await createClient();
 
-    // 1. Insertion exacte avec TES champs
-    const { data, error } = await supabase.from('spaces').insert([{
-        user_id: body.user_id,
+    // 1. Insertion dans la table spaces via le client Admin
+    const { data, error } = await supabaseAdmin.from('spaces').insert([{
+        user_id: body.user_id || null,
         email: body.email,
+        slug: body.slug,
         account_type: body.account_type,
         organization_name: body.organization_name,
         social_data: body.social_data,
@@ -27,16 +33,18 @@ export async function POST(request: Request) {
 
     if (error) throw error;
 
-    // 2. Envoi de l'e-mail après succès
+    // 2. Préparation du nom affiché pour l'e-mail
     const displayName = body.account_type === 'organization' ? body.organization_name : body.email;
     
-   const htmlContent = getSpaceWelcomeEmail({
-  displayName: displayName,
-  slug: data.slug || data.id, // On utilise le slug s'il existe, sinon l'ID
-  spaceId: data.id,           // L'identifiant technique
-  editUrl: `https://www.rtbx.space/edit/space?token=${data.edit_token}`,
-}, body.lang);
+    // 3. Génération du contenu de l'e-mail avec le lien d'édition secret (edit_token)
+    const htmlContent = getSpaceWelcomeEmail({
+      displayName: displayName,
+      slug: data.slug || data.id,
+      spaceId:data.id,
+      editUrl: `https://www.rtbx.space/edit/space?token=${data.edit_token}`,
+    }, body.lang);
 
+    // 4. Envoi via Resend
     await resend.emails.send({
       from: 'RetailBox Space <hello@rtbx.space>',
       to: body.email,
@@ -44,9 +52,10 @@ export async function POST(request: Request) {
       html: htmlContent
     });
 
-    return NextResponse.json({ success: true, id: data.id });
+    return NextResponse.json({ success: true, id: data.slug || data.id });
 
   } catch (err: any) {
+    console.error("API Activation Error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
