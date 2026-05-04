@@ -182,6 +182,7 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
         <RedoIcon />
       </ToolbarBtn>
       
+      <Divider />
 
       <button
   type="button"
