@@ -13,30 +13,26 @@ export default async function PublicSpacePage({ params }: { params: Promise<{ sl
   const { slug } = await params;
   const supabase = await createClient();
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as LangType;
+  const lang = (cookieStore.get('lang')?.value || 'fr') as 'fr' | 'en';
   const t = Data[lang];
-  
 
-  // LOGIQUE MAGIQUE : On cherche d'abord par le SLUG, puis par l'ID si le slug ressemble à un UUID
-  let query = supabase.from('spaces').select('*, profiles(*)');
-  
-  // Si le paramètre ressemble à un UUID (36 caractères avec des tirets)
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+  // Requête sécurisée : On ne demande que le nécessaire
+  const { data: space, error } = await supabase
+    .from('spaces')
+    .select(`
+      *,
+      profiles (
+        first_name,
+        last_name
+      )
+    `)
+    .eq('slug', slug.toLowerCase())
+    .maybeSingle();
 
-  if (isUuid) {
-    query = query.eq('id', slug);
-  } else {
-    query = query.eq('slug', slug.toLowerCase());
-  }
-
-  const { data: space, error } = await query.single();
-
-  // Si on ne trouve rien, on affiche la page 404
   if (error || !space) return notFound();
 
-  // --- LOGIQUE DE NOM AFFICHÉ ---
   const isOrg = space.account_type === 'organization';
-  const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`.trim() || space.email;
+  const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`;
     const SOCIAL_CONFIG = get_social_config(lang)
     const socialLinks = space.social_data || [];
     
