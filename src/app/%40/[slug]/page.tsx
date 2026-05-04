@@ -35,7 +35,7 @@ export default async function PublicSpacePage({
   if (error) console.error("Erreur Supabase:", error);
 
   // 3. Si pas de données, on renvoie la 404
-  if (!space) return notFound();
+  if (!space) return (<h1>{slug}</h1>);
 
  
   const isOrg = space.account_type === 'organization';
