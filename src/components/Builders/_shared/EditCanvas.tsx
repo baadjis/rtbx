@@ -9,10 +9,11 @@ import TransformerComponent from './Transformer';
 import TextEditorOverlay from './TextEditorOverlay';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { DrawElement } from './types';
+import { DrawElement, Guide } from './types';
 
 // ── Preview en cours de dessin Bézier ────────────────────────────────────────
 import { Circle } from 'react-konva';
+import { computeSmartGuides } from './useSmatGuides';
 
 function BezierPreview({ points }: { points: { x: number; y: number }[] }) {
   const flat = points.flatMap((p) => [p.x, p.y]);
@@ -42,13 +43,15 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
     drawTool, drawColor, drawSize,
     addElement, updateElement,
     zoom,
-    editingTextId
+    editingTextId,guides, setGuides, canvasWidth, canvasHeight
   } = useCanvas();
 
   const containerRef  = useRef<HTMLDivElement>(null);
   const canvasWrapRef = useRef<HTMLDivElement>(null);
   const [baseScale, setBaseScale]       = useState(1);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  const [snapEnabled, setSnapEnabled] = useState(true);
 
   // ── Draw state (local — pas dans le store pendant le dessin) ──────────────
   const isDrawing     = useRef(false);
@@ -167,6 +170,36 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
     currentLineId.current = null;
   };
 
+
+  // Ajoute les imports :
+
+
+// ── SmartGuides layer ─────────────────────────────────────────────────────────
+// Composant qui affiche les lignes guides
+function SmartGuidesLayer({ guides, w, h }: {
+  guides: Guide[]; w: number; h: number;
+}) {
+  return (
+    <>
+      {guides.map((g, i) => (
+        <Line
+          key={i}
+          points={
+            g.orientation === 'vertical'
+              ? [g.position, 0, g.position, h]
+              : [0, g.position, w, g.position]
+          }
+          stroke={g.snap === 'center' ? '#f97316' : '#7c3aed'}
+          strokeWidth={1}
+          dash={[4, 4]}
+          listening={false}
+          opacity={0.8}
+        />
+      ))}
+    </>
+  );
+}
+
   const wrapW = containerSize.width  || designWidth;
   const wrapH = containerSize.height || designHeight;
 
@@ -191,6 +224,40 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
           scaleX={scale}
           scaleY={scale}
           style={{ cursor: getCursor() }}
+
+           onDragMove={(e) => {
+    if (!snapEnabled) return;
+    const target = e.target;
+    if (!target || target === target.getStage()) return;
+
+    const draggingEl = elements.find((el) => el.id === target.id());
+    if (!draggingEl) return;
+
+    const others = elements.filter((el) => el.id !== draggingEl.id);
+
+    // Position actuelle du nœud
+    const current = {
+      ...draggingEl,
+      x: target.x(),
+      y: target.y(),
+    };
+
+    const { guides: newGuides, x, y } = computeSmartGuides(
+      current, others, designWidth, designHeight,
+    );
+
+    setGuides(newGuides);
+
+    // Applique le snap
+    if (newGuides.length > 0) {
+      target.x(x);
+      target.y(y);
+    }
+  }}
+  onDragEnd={() => {
+    // Cache les guides quand le drag est terminé
+    setGuides([]);
+  }}
           // ── Mouse ──
           onMouseDown={(e) => {
             if (drawTool) { handleDrawStart(e); return; }

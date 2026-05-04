@@ -37,6 +37,12 @@ export interface BezierElement extends BaseElement {
   closed?:  boolean;       // courbe fermée ou ouverte
   tension?: number;        // 0 = angles droits, 1 = très courbé
 }
+// guide 
+export interface Guide {
+  orientation: 'horizontal' | 'vertical';
+  position:    number;  // x pour vertical, y pour horizontal
+  snap?:       'center' | 'edge';
+}
 
 
 

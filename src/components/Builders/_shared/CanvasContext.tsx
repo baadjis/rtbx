@@ -5,7 +5,7 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import Konva from 'konva';
 import { v4 as uuidv4 } from 'uuid';
-import { BezierElement, CanvasElement, CanvasTemplate, DrawTool, GroupElement } from './types';
+import { BezierElement, CanvasElement, CanvasTemplate, DrawTool, GroupElement, Guide } from './types';
 
 type CanvasContextType = {
   stageRef: React.RefObject<Konva.Stage|null>;
@@ -55,6 +55,10 @@ setDrawColor:    (color: string) => void;
 setDrawSize:     (size: number) => void;
 groupElements:   (ids: string[]) => void;
 ungroupElements: (groupId: string) => void;
+guides:     Guide[];
+setGuides:  (guides: Guide[]) => void;
+snapEnabled:    boolean;
+setSnapEnabled: (v: boolean) => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -64,6 +68,8 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [snapEnabled, setSnapEnabled] = useState(true);
 
   const [drawTool,  setDrawTool]  = useState<DrawTool | null>(null);
   const [drawColor, setDrawColor] = useState('#7c3aed');
@@ -357,7 +363,8 @@ const toggleLock = (id: string) => {
      ungroupElements,
      canvasWidth:  width,
      canvasHeight: height,
-
+     guides, setGuides,
+     snapEnabled, setSnapEnabled,
 
     }}>
       {children}

@@ -95,9 +95,11 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
 
   //const [exportOpen, setExportOpen] = useState(false);
   const { addElement, undo, redo, canUndo, canRedo, zoom, zoomIn, 
-    zoomOut, resetZoom
+    zoomOut, resetZoom,guides, setGuides 
 
    } = useCanvas();
+
+   const [snapEnabled, setSnapEnabled] = useState(true);
 
   const addImage = () => {
     const input = document.createElement('input');
@@ -179,7 +181,30 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
       <ToolbarBtn onClick={redo} disabled={!canRedo} title="Rétablir (Ctrl+Y)">
         <RedoIcon />
       </ToolbarBtn>
+      
 
+      <button
+  type="button"
+  onClick={() => setSnapEnabled((s) => !s)}
+  title={snapEnabled
+    ? (lang === 'fr' ? 'Désactiver SmartGuides' : 'Disable SmartGuides')
+    : (lang === 'fr' ? 'Activer SmartGuides'    : 'Enable SmartGuides')
+  }
+  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
+    transition-all duration-150 select-none shrink-0 ${
+    snapEnabled
+      ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
+      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+  }`}
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
+    <path d="M12 2v20M2 12h20"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+  <span className="hidden sm:inline text-xs">
+    {lang === 'fr' ? 'Guides' : 'Guides'}
+  </span>
+</button>
       <Divider />
 
       {/* ── [5] Export ── */}
