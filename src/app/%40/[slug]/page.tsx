@@ -29,11 +29,8 @@ export default async function PublicSpacePage({
   // 1. LEFT JOIN (Pas de !inner) : On récupère le Space même si le Profil est vide
     const { data: space, error } = await supabase
     .from('spaces')
-    .select(`
-      *
-     
-    `)
-    .eq('slug', slug.toLowerCase())
+    .select('*')
+    .eq('slug', slug)
     .maybeSingle();
 
   if (error || !space) {
