@@ -154,7 +154,7 @@ const handleActivate = async () => {
     link.click()
   }
   const handle= slug || generatedId;
-  const publicUrl = generatedId ? `https://www.rtbx.space/@/${handle}` : "https://www.rtbx.space"
+  const publicUrl = generatedId ? `https://www.rtbx.space/u/${handle}` : "https://www.rtbx.space"
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">

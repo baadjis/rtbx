@@ -218,7 +218,7 @@ export const getSpaceWelcomeEmail = (data: { displayName: string, slug: string, 
       <h2 style="color:#4f46e5;">Félicitations, votre identité est réservée ! 🚀</h2>
       <p>Bonjour <strong>${data.displayName}</strong>,</p>
       <p>Votre Espace Public est accessible ici : <br/>
-         <a href="https://rtbx.space/@/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
+         <a href="https://rtbx.space/u/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
       </p>
       
       <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
@@ -234,7 +234,7 @@ export const getSpaceWelcomeEmail = (data: { displayName: string, slug: string, 
       <h2 style="color:#4f46e5;">Congratulations, your identity is reserved! 🚀</h2>
       <p>Hello <strong>${data.displayName}</strong>,</p>
       <p>Your Public Space is live at: <br/>
-         <a href="https://rtbx.space/@/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
+         <a href="https://rtbx.space/u/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
       </p>
       
       <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
