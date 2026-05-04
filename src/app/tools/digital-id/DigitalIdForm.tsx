@@ -154,7 +154,7 @@ const handleActivate = async () => {
     link.click()
   }
   const handle= slug || generatedId;
-  const publicUrl = generatedId ? `https://www.rtbx.space/u/${handle}` : "https://www.rtbx.space"
+  const publicUrl = handle ? `https://www.rtbx.space/u/${handle}` : "https://www.rtbx.space"
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
@@ -208,7 +208,7 @@ const handleActivate = async () => {
     <div className={`flex items-center bg-gray-50 dark:bg-slate-800 rounded-2xl px-4 border-2 transition-all ${
         isSlugAvailable === true ? 'border-green-500' : isSlugAvailable === false ? 'border-red-500' : 'border-transparent'
     }`}>
-        <span className="text-gray-400 font-bold border-r border-gray-200 dark:border-slate-700 pr-3 text-sm">rtbx.space/@/</span>
+        <span className="text-gray-400 font-bold border-r border-gray-200 dark:border-slate-700 pr-3 text-sm">rtbx.space/u/</span>
         <input 
             value={slug}
             onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
@@ -319,15 +319,15 @@ const handleActivate = async () => {
               </h3>
               {generatedId && (
                 <div className="mb-8 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                    <p className="text-indigo-600 dark:text-indigo-400 font-black text-sm tracking-tight">rtbx.space/@/{generatedId}</p>
+                    <p className="text-indigo-600 dark:text-indigo-400 font-black text-sm tracking-tight">rtbx.space/@/{handle}</p>
                 </div>
               )}
               <div className="space-y-4 w-full">
-                <button onClick={downloadQR} disabled={!generatedId} className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 disabled:opacity-30 border-none cursor-pointer">
+                <button onClick={downloadQR} disabled={!handle} className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 disabled:opacity-30 border-none cursor-pointer">
                     <Download className="w-6 h-6" /> {t.btn_dl_did}
                 </button>
                 {generatedId && (
-                    <Link href={`/@/${generatedId}`} target="_blank" className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-400 rounded-2xl font-black border border-gray-100 dark:border-slate-800 no-underline flex items-center justify-center gap-2 hover:bg-gray-100 transition-all">
+                    <Link href={`/u/${handle}`} target="_blank" className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-400 rounded-2xl font-black border border-gray-100 dark:border-slate-800 no-underline flex items-center justify-center gap-2 hover:bg-gray-100 transition-all">
                         {t.open_page} <ArrowRight size={18} />
                     </Link>
                 )}
