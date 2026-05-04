@@ -8,7 +8,7 @@ import Konva from 'konva';
 import { computeSmartGuides } from './useSmatGuides';
 
 export default function Transformer() {
-  const { selectedId, elements, updateElement,canvasWidth, canvasHeight,snapEnabled ,setGuides,guides} = useCanvas();
+  const { selectedId, elements, updateElement,canvasWidth, canvasHeight,snapEnabled ,setGuides,guides,gridEnabled,gridSize} = useCanvas();
   const transformerRef = useRef<Konva.Transformer>(null);
   const selectedElement = elements.find((el) => el.id === selectedId);
 
@@ -102,6 +102,15 @@ export default function Transformer() {
     };
 
     const others = elements.filter((el) => el.id !== selectedId);
+    const snapToGrid = (val: number, size: number) => Math.round(val / size) * size;
+
+// Dans onDragMove du Transformer :
+if (gridEnabled) {
+  const gx = snapToGrid(selectedNode.x(), gridSize);
+  const gy = snapToGrid(selectedNode.y(), gridSize);
+  selectedNode.x(gx);
+  selectedNode.y(gy);
+}
     const { guides: newGuides, x, y } = computeSmartGuides(
       current, others, canvasWidth, canvasHeight,
     );

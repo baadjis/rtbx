@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LangType } from '@/lib/lang/types';
 import ExportBtn from './ExportBtn';
 
-type Props = { extraTools?: string[]; lang: 'fr' | 'en' };
+type Props = { extraTools?: string[]; lang: LangType };
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const UndoIcon = () => (
@@ -95,11 +95,14 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
 
   //const [exportOpen, setExportOpen] = useState(false);
   const { addElement, undo, redo, canUndo, canRedo, zoom, zoomIn, 
-    zoomOut, resetZoom,guides, setGuides 
+    zoomOut, resetZoom,guides, setGuides ,
+    gridEnabled, toggleGrid,
+  rulersEnabled, toggleRulers,
+  snapEnabled, setSnapEnabled,gridSize,setGridSize
 
    } = useCanvas();
 
-   const [snapEnabled, setSnapEnabled] = useState(true);
+   
 
   const addImage = () => {
     const input = document.createElement('input');
@@ -186,7 +189,7 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
 
       <button
   type="button"
-  onClick={() => setSnapEnabled((s) => !s)}
+  onClick={() => setSnapEnabled(!snapEnabled)}
   title={snapEnabled
     ? (lang === 'fr' ? 'Désactiver SmartGuides' : 'Disable SmartGuides')
     : (lang === 'fr' ? 'Activer SmartGuides'    : 'Enable SmartGuides')
@@ -204,6 +207,63 @@ export default function Toolbar({ extraTools = [], lang }: Props) {
   </svg>
   <span className="hidden sm:inline text-xs">
     {lang === 'fr' ? 'Guides' : 'Guides'}
+  </span>
+</button>
+
+<Divider />
+{gridEnabled && (
+  <div className="flex items-center gap-1.5">
+    <span className="text-[10px] text-gray-400">px</span>
+    <input
+      type="number"
+      min={5} max={100}
+      value={gridSize}
+      onChange={(e) => setGridSize(Number(e.target.value))}
+      className="w-12 px-2 py-1.5 text-xs font-mono rounded-lg
+        bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+        focus:outline-none focus:ring-1 focus:ring-violet-400
+        text-gray-700 dark:text-gray-200"
+    />
+  </div>
+)}
+
+{/* Grid */}
+<button
+  type="button"
+  onClick={toggleGrid}
+  title={lang === 'fr' ? 'Grille' : 'Grid'}
+  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
+    transition-all select-none shrink-0 ${
+    gridEnabled
+      ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
+      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+  }`}
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
+    <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/>
+  </svg>
+  <span className="hidden sm:inline text-xs">
+    {lang === 'fr' ? 'Grille' : 'Grid'}
+  </span>
+</button>
+
+{/* Rulers */}
+<button
+  type="button"
+  onClick={toggleRulers}
+  title={lang === 'fr' ? 'Règles' : 'Rulers'}
+  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
+    transition-all select-none shrink-0 ${
+    rulersEnabled
+      ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
+      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+  }`}
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
+    <path d="M3 7h18v10H3zM7 7v10M11 7v10M15 7v10M7 7v3M11 7v5M15 7v3"/>
+  </svg>
+  <span className="hidden sm:inline text-xs">
+    {lang === 'fr' ? 'Règles' : 'Rulers'}
   </span>
 </button>
       <Divider />

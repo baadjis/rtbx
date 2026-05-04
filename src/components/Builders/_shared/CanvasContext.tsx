@@ -59,6 +59,12 @@ guides:     Guide[];
 setGuides:  (guides: Guide[]) => void;
 snapEnabled:    boolean;
 setSnapEnabled: (v: boolean) => void;
+gridEnabled:    boolean;
+gridSize:       number;
+rulersEnabled:  boolean;
+toggleGrid:     () => void;
+toggleRulers:   () => void;
+setGridSize:    (size: number) => void;
 };
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -84,6 +90,12 @@ export function CanvasProvider({ children, width, height }: { children: ReactNod
   const zoomIn    = () => setZoom((z) => Math.min(z + 0.1, 3));
   const zoomOut   = () => setZoom((z) => Math.max(z - 0.1, 0.2));
   const resetZoom = () => setZoom(1);
+   const [gridEnabled,   setGridEnabled]   = useState(false);
+   const [gridSize,      setGridSize]      = useState(20);
+   const [rulersEnabled, setRulersEnabled] = useState(false);
+
+   const toggleGrid    = () => setGridEnabled((v) => !v);
+   const toggleRulers  = () => setRulersEnabled((v) => !v);
 
   const saveToHistory = (newElements: CanvasElement[]) => {
     setHistory(prev => {
@@ -365,6 +377,8 @@ const toggleLock = (id: string) => {
      canvasHeight: height,
      guides, setGuides,
      snapEnabled, setSnapEnabled,
+     gridEnabled, gridSize, rulersEnabled,
+     toggleGrid, toggleRulers, setGridSize,
 
     }}>
       {children}

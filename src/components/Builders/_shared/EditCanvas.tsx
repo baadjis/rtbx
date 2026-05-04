@@ -14,6 +14,8 @@ import { DrawElement, Guide } from './types';
 // ── Preview en cours de dessin Bézier ────────────────────────────────────────
 import { Circle } from 'react-konva';
 import { computeSmartGuides } from './useSmatGuides';
+import RulerLayer from './RulerLayer';
+import GridLayer from './GridLayer';
 
 function BezierPreview({ points }: { points: { x: number; y: number }[] }) {
   const flat = points.flatMap((p) => [p.x, p.y]);
@@ -71,15 +73,18 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
     drawTool, drawColor, drawSize,
     addElement, updateElement,
     zoom,
-    editingTextId,guides, setGuides, canvasWidth, canvasHeight
+    editingTextId,guides, setGuides, canvasWidth, canvasHeight,gridEnabled, gridSize, rulersEnabled,
+    snapEnabled,
   } = useCanvas();
+
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
 
   const containerRef  = useRef<HTMLDivElement>(null);
   const canvasWrapRef = useRef<HTMLDivElement>(null);
   const [baseScale, setBaseScale]       = useState(1);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  const [snapEnabled, setSnapEnabled] = useState(true);
+  //const [snapEnabled, setSnapEnabled] = useState(true);
 
   // ── Draw state (local — pas dans le store pendant le dessin) ──────────────
   const isDrawing     = useRef(false);
@@ -211,22 +216,41 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
       className="flex items-center justify-center w-full h-full min-h-0 p-4 relative">
 
       <div ref={canvasWrapRef} className="relative bg-white"
-       style={{
-  width: wrapW,
-  height: wrapH,
-  borderRadius: 16,
-  boxShadow: '0 24px 64px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07)',
-  // overflow: 'hidden' ← supprime cette ligne
-  outline: '1px solid rgba(0,0,0,0.06)',
-}}
+      
+      style={{
+        width:        wrapW + (rulersEnabled ? 20 : 0),
+        height:       wrapH + (rulersEnabled ? 20 : 0),
+        borderRadius: rulersEnabled ? 0 : 16,
+        boxShadow:    '0 24px 64px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07)',
+        outline:      '1px solid rgba(0,0,0,0.06)',
+      }}
       >
+       {/* ── Règles ── */}
+      {rulersEnabled && (
+        <RulerLayer
+          width={designWidth}
+          height={designHeight}
+          scale={scale}
+          mouseX={mousePos?.x}
+          mouseY={mousePos?.y}
+        />
+      )}
+
+
         <Stage
-          ref={stageRef}
+           ref={stageRef}
           width={designWidth}
           height={designHeight}
           scaleX={scale}
           scaleY={scale}
           style={{ cursor: getCursor() }}
+          onMouseMove={(e) => {
+            // ← Tracking position souris pour les règles
+            const stage = e.target.getStage();
+            const pos   = stage?.getPointerPosition();
+            if (pos) setMousePos({ x: pos.x / scale, y: pos.y / scale });
+          }}
+          onMouseLeave={() => setMousePos(null)}
 
            onDragMove={(e) => {
     if (!snapEnabled) return;
@@ -271,7 +295,7 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
             }
             if (e.target === e.target.getStage()) selectElement(null);
           }}
-          onMouseMove={handleDrawMove}
+         
           onMouseUp={handleDrawEnd}
           // ── Touch ──
           onTouchStart={(e) => {
@@ -297,6 +321,14 @@ onTap={(e) => {
 }}
         >
           <Layer>
+             {/* Grille en premier (sous les éléments) */}
+            {gridEnabled && (
+              <GridLayer
+                width={designWidth}
+                height={designHeight}
+                gridSize={gridSize}
+              />
+            )}
             {elements.map((el) => (
               <RenderElement key={el.id} element={el} onSelect={selectElement} />
             ))}
