@@ -34,6 +34,34 @@ function BezierPreview({ points }: { points: { x: number; y: number }[] }) {
 
 type Props = { designWidth: number; designHeight: number };
 
+
+// ── SmartGuides layer ─────────────────────────────────────────────────────────
+// Composant qui affiche les lignes guides
+function SmartGuidesLayer({ guides, w, h }: {
+  guides: Guide[]; w: number; h: number;
+}) {
+  return (
+    <>
+      {guides.map((g, i) => (
+        <Line
+          key={i}
+          points={
+            g.orientation === 'vertical'
+              ? [g.position, 0, g.position, h]
+              : [0, g.position, w, g.position]
+          }
+          stroke={g.snap === 'center' ? '#f97316' : '#7c3aed'}
+          strokeWidth={1}
+          dash={[4, 4]}
+          listening={false}
+          opacity={0.8}
+        />
+      ))}
+    </>
+  );
+}
+
+
 export default function EditCanvas({ designWidth, designHeight }: Props) {
   const {
     stageRef, elements, selectElement,
@@ -174,31 +202,6 @@ export default function EditCanvas({ designWidth, designHeight }: Props) {
   // Ajoute les imports :
 
 
-// ── SmartGuides layer ─────────────────────────────────────────────────────────
-// Composant qui affiche les lignes guides
-function SmartGuidesLayer({ guides, w, h }: {
-  guides: Guide[]; w: number; h: number;
-}) {
-  return (
-    <>
-      {guides.map((g, i) => (
-        <Line
-          key={i}
-          points={
-            g.orientation === 'vertical'
-              ? [g.position, 0, g.position, h]
-              : [0, g.position, w, g.position]
-          }
-          stroke={g.snap === 'center' ? '#f97316' : '#7c3aed'}
-          strokeWidth={1}
-          dash={[4, 4]}
-          listening={false}
-          opacity={0.8}
-        />
-      ))}
-    </>
-  );
-}
 
   const wrapW = containerSize.width  || designWidth;
   const wrapH = containerSize.height || designHeight;
@@ -297,6 +300,9 @@ onTap={(e) => {
             {elements.map((el) => (
               <RenderElement key={el.id} element={el} onSelect={selectElement} />
             ))}
+            
+
+   
 
             {/* Preview Bézier */}
             {bezierDrawing && bezierPoints.length > 0 && (
@@ -317,7 +323,8 @@ onTap={(e) => {
                 listening={false}
               />
             )}
-
+            {/* SmartGuides */}
+            <SmartGuidesLayer guides={guides} w={designWidth} h={designHeight} />
             <TransformerComponent />
           </Layer>
         </Stage>

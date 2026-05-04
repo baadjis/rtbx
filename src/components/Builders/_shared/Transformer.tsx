@@ -5,9 +5,10 @@ import { Transformer as KonvaTransformer } from 'react-konva';
 import { useCanvas } from './CanvasContext';
 import { useRef, useEffect } from 'react';
 import Konva from 'konva';
+import { computeSmartGuides } from './useSmatGuides';
 
 export default function Transformer() {
-  const { selectedId, elements, updateElement,canvasWidth, canvasHeight } = useCanvas();
+  const { selectedId, elements, updateElement,canvasWidth, canvasHeight,snapEnabled ,setGuides,guides} = useCanvas();
   const transformerRef = useRef<Konva.Transformer>(null);
   const selectedElement = elements.find((el) => el.id === selectedId);
 
@@ -91,17 +92,46 @@ export default function Transformer() {
   const selectedNode = stage.findOne(`#${selectedId}`);
   if (!selectedNode) return;
 
+  const onDragMove = () => {
+    if (!selectedElement || !snapEnabled) return;
+
+    const current = {
+      ...selectedElement,
+      x: selectedNode.x(),
+      y: selectedNode.y(),
+    };
+
+    const others = elements.filter((el) => el.id !== selectedId);
+    const { guides: newGuides, x, y } = computeSmartGuides(
+      current, others, canvasWidth, canvasHeight,
+    );
+
+    setGuides(newGuides);
+
+    // Applique le snap directement sur le nœud
+    if (newGuides.length > 0) {
+      selectedNode.x(x);
+      selectedNode.y(y);
+    }
+  };
+
   const onDragEnd = () => {
     if (!selectedElement) return;
+    setGuides([]); // ← cache les guides
     updateElement(selectedElement.id, {
       x: Math.round(selectedNode.x()),
       y: Math.round(selectedNode.y()),
     });
   };
 
-  selectedNode.on('dragend', onDragEnd);
-  return () => { selectedNode.off('dragend', onDragEnd); };
-}, [selectedId, selectedElement, updateElement]);
+  selectedNode.on('dragmove', onDragMove);
+  selectedNode.on('dragend',  onDragEnd);
+
+  return () => {
+    selectedNode.off('dragmove', onDragMove);
+    selectedNode.off('dragend',  onDragEnd);
+  };
+}, [selectedId, selectedElement, elements, updateElement, setGuides, snapEnabled, canvasWidth, canvasHeight]);
 
   // ── handleTransformEnd ────────────────────────────────────────────────────
   const handleTransformEnd = () => {
