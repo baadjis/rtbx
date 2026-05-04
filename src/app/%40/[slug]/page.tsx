@@ -15,8 +15,8 @@ export default async function PublicSpacePage({
   params: Promise<{ slug: string }> 
 }) {
   // 1. On attend la résolution de params et on récupère 'slug'
-  const { slug } = await params;
-  const cleanSlug = slug;
+ const resolvedParams = await params;
+ const slug = resolvedParams.slug;
 
   const supabase = await createClient();
   const cookieStore = await cookies();
@@ -27,7 +27,7 @@ export default async function PublicSpacePage({
   // On récupère tout de 'spaces' et juste le nécessaire de 'profiles'
   
   // 1. LEFT JOIN (Pas de !inner) : On récupère le Space même si le Profil est vide
-  const { data: space, error } = await supabase
+    const { data: space, error } = await supabase
     .from('spaces')
     .select(`
       *,
@@ -36,29 +36,25 @@ export default async function PublicSpacePage({
         last_name
       )
     `)
-    .eq('slug', cleanSlug)
+    .eq('slug', slug.toLowerCase())
     .maybeSingle();
 
-  if (error) console.log("Erreur DB:", error.message);
-  if (!space) return notFound();
+  if (error || !space) {
+    console.error("Erreur ou Space introuvable");
+    return notFound();
+  }
+
+ 
 
   // 2. LOGIQUE DE NOM DYNAMIQUE (Gère le cas où profiles est null)
-  let displayName = "";
-  const isOrg=space.account_type === 'organization'
-
-  if (isOrg) {
-    // Priorité au nom de l'entreprise
-    displayName = space.organization_name || "Organization";
+   let displayName = "User";
+   const isOrg=space.account_type === 'organization'
+  if (isOrg && space.organization_name) {
+    displayName = space.organization_name;
+  } else if (space.profiles && (space.profiles.first_name || space.profiles.last_name)) {
+    displayName = `${space.profiles.first_name || ''} ${space.profiles.last_name || ''}`.trim();
   } else {
-    // Mode personnel : on regarde si on a un profil (membre) ou pas (guest)
-    if (space.profiles) {
-      displayName = `${space.profiles.first_name} ${space.profiles.last_name}`.trim();
-    } 
-    
-    // Si toujours vide (cas du Guest), on utilise le slug comme pseudo
-    if (!displayName) {
-      displayName = space.slug || "User";
-    }
+    displayName = space.slug || "RetailBox User";
   }
  
   
