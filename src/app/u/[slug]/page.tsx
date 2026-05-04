@@ -30,11 +30,7 @@ export default async function PublicSpacePage({
     const { data: space, error } = await supabase
     .from('spaces')
     .select(`
-      *,
-      profiles (
-        first_name,
-        last_name
-      )
+      *
     `)
     .eq('slug', slug.toLowerCase())
     .maybeSingle();
