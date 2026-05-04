@@ -36,7 +36,7 @@ export default async function PublicSpacePage({
         last_name
       )
     `)
-    .eq('slug', cleanSlug)
+    .eq('slug', 'cnd')
     .maybeSingle();
 
   if (error) console.error("Erreur DB:", error.message);
