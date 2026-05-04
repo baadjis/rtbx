@@ -29,7 +29,10 @@ export default async function PublicSpacePage({ params }: { params: Promise<{ sl
     .eq('slug', slug.toLowerCase())
     .maybeSingle();
 
-  if (error || !space) return notFound();
+  if (error || !space) {
+   console.log(error)
+   return notFound();
+  }
 
   const isOrg = space.account_type === 'organization';
   const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`;
