@@ -15,8 +15,8 @@ export default async function PublicSpacePage({
   params: Promise<{ slug: string }> 
 }) {
   // 1. On attend la résolution de params et on récupère 'slug'
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const { slug } = await params;
+  const cleanSlug = slug.toLowerCase().trim();
 
   const supabase = await createClient();
   const cookieStore = await cookies();
@@ -25,21 +25,43 @@ export default async function PublicSpacePage({
 
   // 2. La requête Supabase (Attention aux backticks et aux parenthèses)
   // On récupère tout de 'spaces' et juste le nécessaire de 'profiles'
+  
+  // 1. LEFT JOIN (Pas de !inner) : On récupère le Space même si le Profil est vide
   const { data: space, error } = await supabase
     .from('spaces')
-    .select('*, profiles(first_name, last_name)')
-    .eq('slug', slug.toLowerCase())
+    .select(`
+      *,
+      profiles (
+        first_name,
+        last_name
+      )
+    `)
+    .eq('slug', cleanSlug)
     .maybeSingle();
 
-  // Debug pour toi en console terminal
-  if (error) console.error("Erreur Supabase:", error);
+  if (error) console.error("Erreur DB:", error.message);
+  if (!space) return notFound();
 
-  // 3. Si pas de données, on renvoie la 404
-  if (!space) return (<h1>{slug}</h1>);
+  // 2. LOGIQUE DE NOM DYNAMIQUE (Gère le cas où profiles est null)
+  let displayName = "";
+  const isOrg=space.account_type === 'organization'
 
+  if (isOrg) {
+    // Priorité au nom de l'entreprise
+    displayName = space.organization_name || "Organization";
+  } else {
+    // Mode personnel : on regarde si on a un profil (membre) ou pas (guest)
+    if (space.profiles) {
+      displayName = `${space.profiles.first_name} ${space.profiles.last_name}`.trim();
+    } 
+    
+    // Si toujours vide (cas du Guest), on utilise le slug comme pseudo
+    if (!displayName) {
+      displayName = space.slug || "User";
+    }
+  }
  
-  const isOrg = space.account_type === 'organization';
-  const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`;
+  
     const SOCIAL_CONFIG = get_social_config(lang)
     const socialLinks = space.social_data || [];
     
