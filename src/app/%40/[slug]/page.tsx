@@ -16,7 +16,7 @@ export default async function PublicSpacePage({
 }) {
   // 1. On attend la résolution de params et on récupère 'slug'
   const { slug } = await params;
-  const cleanSlug = slug.toLowerCase().trim();
+  const cleanSlug = slug;
 
   const supabase = await createClient();
   const cookieStore = await cookies();
@@ -36,7 +36,7 @@ export default async function PublicSpacePage({
         last_name
       )
     `)
-    .eq('slug', 'cnd')
+    .eq('slug', cleanSlug)
     .maybeSingle();
 
   if (error) console.error("Erreur DB:", error.message);
