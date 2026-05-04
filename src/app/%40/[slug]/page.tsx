@@ -9,31 +9,35 @@ import { Data } from '../data';
 import Image from 'next/image';
 import { LangType } from '@/lib/lang/types';
 
-export default async function PublicSpacePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function PublicSpacePage({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
+  // 1. On attend la résolution de params et on récupère 'slug'
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+
   const supabase = await createClient();
   const cookieStore = await cookies();
   const lang = (cookieStore.get('lang')?.value || 'fr') as 'fr' | 'en';
   const t = Data[lang];
 
-  // Requête sécurisée : On ne demande que le nécessaire
+  // 2. La requête Supabase (Attention aux backticks et aux parenthèses)
+  // On récupère tout de 'spaces' et juste le nécessaire de 'profiles'
   const { data: space, error } = await supabase
     .from('spaces')
-    .select(`
-      *,
-      profiles (
-        first_name,
-        last_name
-      )
-    `)
+    .select('*, profiles(first_name, last_name)')
     .eq('slug', slug.toLowerCase())
     .maybeSingle();
 
-  if (error || !space) {
-   console.log(error)
-   return notFound();
-  }
+  // Debug pour toi en console terminal
+  if (error) console.error("Erreur Supabase:", error);
 
+  // 3. Si pas de données, on renvoie la 404
+  if (!space) return notFound();
+
+ 
   const isOrg = space.account_type === 'organization';
   const displayName = isOrg ? space.organization_name : `${space.profiles?.first_name || ''} ${space.profiles?.last_name || ''}`;
     const SOCIAL_CONFIG = get_social_config(lang)
