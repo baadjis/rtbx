@@ -30,11 +30,8 @@ export default async function PublicSpacePage({
     const { data: space, error } = await supabase
     .from('spaces')
     .select(`
-      *,
-      profiles (
-        first_name,
-        last_name
-      )
+      *
+     
     `)
     .eq('slug', slug.toLowerCase())
     .maybeSingle();
@@ -60,7 +57,8 @@ export default async function PublicSpacePage({
   
     const SOCIAL_CONFIG = get_social_config(lang)
     const socialLinks = space.social_data || [];
-    
+    const bgColor = space.bg_color || '#0f172a';
+    const themeColor = space.theme_color || '#4f46e5';
 
    return (
      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-white relative overflow-hidden">
