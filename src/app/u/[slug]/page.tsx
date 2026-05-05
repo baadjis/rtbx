@@ -134,8 +134,7 @@ export default async function PublicSpacePage({
                               alt={link.network} 
                               width={30} 
                               height={30} 
-                              className="object-contain brightness-0 invert opacity-90 group-hover:opacity-100 transition-all duration-300"
-                              unoptimized
+                              className="object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"                              unoptimized
                             />
                         </div>
                         <div className="text-left">
