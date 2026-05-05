@@ -81,7 +81,7 @@ export default async function PublicSpacePage({
         <div className="space-y-6 animate-in fade-in zoom-in duration-700">
             <div className="w-28 h-28 mx-auto p-1 rounded-[2.8rem] shadow-2xl border-4 border-white/10" 
                  style={{ background: `linear-gradient(to tr, ${themeColor}, #9333ea)` }}>
-                <div className="relative w-full aspect-square bg-slate-900 rounded-[2.5rem] overflow-hidden flex items-center justify-center text-white">
+                <div className="relative w-full aspect-square bg-slate-900 rounded-full overflow-hidden flex items-center justify-center text-white">
   {imageUrl ? (
     <Image
       src={imageUrl}
