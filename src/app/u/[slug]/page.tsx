@@ -20,9 +20,6 @@ export default async function PublicSpacePage({
   const lang = (cookieStore.get('lang')?.value || 'fr') as 'fr' | 'en';
   const t = Data[lang];
 
-  // --- ÉTAPE 1 : RECHERCHE DYNAMIQUE ---
-  
-  // On cherche d'abord dans la table SPACES
   let { data: entity } = await supabase
     .from('spaces')
     .select("*")
@@ -31,7 +28,6 @@ export default async function PublicSpacePage({
 
   let isProfileOnly = false;
 
-  // Si pas de Space, on cherche dans la table PROFILES
   if (!entity) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -47,9 +43,6 @@ export default async function PublicSpacePage({
 
   if (!entity) return notFound();
 
-  // --- ÉTAPE 2 : LOGIQUE D'AFFICHAGE ---
-  
-  // Détermination du nom
   let displayName = "";
   if (isProfileOnly) {
     displayName = entity.full_name || `${entity.first_name || ''} ${entity.last_name || ''}`.trim() || entity.slug;
@@ -57,10 +50,8 @@ export default async function PublicSpacePage({
     displayName = entity.account_type === 'organization' ? (entity.organization_name || entity.slug) : entity.slug;
   }
 
-  // Détermination de l'image (Logo ou Avatar)
   const imageUrl = isProfileOnly ? entity.avatar_url : entity.logo_url;
 
-  // Réglages visuels
   const themeColor = entity.theme_color || '#4f46e5';
   const bgColor = entity.bg_color || '#0f172a';
   const socialLinks = entity.social_data || [];
@@ -70,17 +61,27 @@ export default async function PublicSpacePage({
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-white relative overflow-hidden"
          style={{ backgroundColor: bgColor }}>
       
-      {/* Background radial "Splendide" */}
+      {/* 🌈 Background desktop */}
       <div 
-  className="absolute inset-0 pointer-events-none"
-  style={{
-    background: `
-      radial-gradient(circle at 50% 20%, ${themeColor} 0%, transparent 60%),
-      radial-gradient(circle at 80% 80%, rgba(147,51,234,0.25) 0%, transparent 60%),
-      radial-gradient(circle at 20% 80%, rgba(79,70,229,0.25) 0%, transparent 60%)
-    `
-  }}
-/>
+        className="absolute inset-0 pointer-events-none hidden md:block"
+        style={{
+          background: `
+            radial-gradient(circle at 50% 15%, ${themeColor} 0%, transparent 55%),
+            radial-gradient(circle at 85% 85%, rgba(147,51,234,0.35) 0%, transparent 60%),
+            radial-gradient(circle at 15% 85%, rgba(79,70,229,0.35) 0%, transparent 60%)
+          `
+        }}
+      ></div>
+
+      {/* 🌈 Background mobile (plus visible) */}
+      <div 
+        className="absolute inset-0 pointer-events-none md:hidden"
+        style={{
+          background: `
+            radial-gradient(circle at 50% 10%, ${themeColor} 0%, transparent 45%)
+          `
+        }}
+      ></div>
 
       <div className="relative z-10 w-full max-w-md space-y-12 text-center">
         
@@ -90,10 +91,13 @@ export default async function PublicSpacePage({
                  style={{ background: `linear-gradient(to tr, ${themeColor}, #9333ea)` }}>
                 <div className="w-full h-full bg-slate-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden relative text-white">
                   {imageUrl ? (
-                    <Image src={imageUrl}
-                     alt="Identity" fill className="object-contain" unoptimized 
-                     width={100} height={100}
-                     />
+                    <Image 
+                      src={imageUrl}
+                      alt="Identity" 
+                      fill 
+                      className="object-contain" 
+                      unoptimized 
+                    />
                   ) : (
                     <span className="text-4xl font-black uppercase">{displayName?.[0] || 'R'}</span>
                   )}
@@ -114,7 +118,7 @@ export default async function PublicSpacePage({
         </div>
 
         {/* --- LIENS --- */}
-        <div className="space-y-4 w-full">
+        <div className="space-y-4 w-full px-1 md:px-0">
             {socialLinks.length > 0 ? socialLinks.map((link: any, i: number) => {
                 const config = SOCIAL_CONFIG[link.network];
                 if (!config) return null;
@@ -124,10 +128,14 @@ export default async function PublicSpacePage({
                     <a key={i} href={finalUrl} target="_blank" rel="noopener noreferrer"
                       className="group flex items-center gap-5 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-[2rem] transition-all duration-500 backdrop-blur-md no-underline shadow-sm hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all p-2.5">
+                        <div className="w-12 h-12 bg-white/15 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/25 transition-all p-2.5 shadow-inner">
                             <Image 
                               src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
-                              alt={link.network} width={30} height={30} className="object-contain grayscale group-hover:grayscale-0 transition-all duration-500" unoptimized
+                              alt={link.network} 
+                              width={30} 
+                              height={30} 
+                              className="object-contain brightness-0 invert opacity-90 group-hover:opacity-100 transition-all duration-300"
+                              unoptimized
                             />
                         </div>
                         <div className="text-left">
@@ -137,7 +145,9 @@ export default async function PublicSpacePage({
                            </span>
                         </div>
                         <div className="ml-auto opacity-0 group-hover:opacity-40 transition-all pr-2 translate-x-2 group-hover:translate-x-0">
-                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                             <path d="M5 12h14m-7-7 7 7-7 7"/>
+                           </svg>
                         </div>
                     </a>
                 )
