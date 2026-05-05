@@ -73,7 +73,7 @@ export default async function PublicSpacePage({
         }}
       ></div>
 
-      {/* 🌈 Background mobile (plus visible) */}
+      {/* 🌈 Background mobile */}
       <div 
         className="absolute inset-0 pointer-events-none md:hidden"
         style={{
@@ -83,6 +83,8 @@ export default async function PublicSpacePage({
         }}
       ></div>
 
+      {/* 🌑 Overlay contraste (FIX LISIBILITÉ) */}
+     <div className="absolute inset-0 pointer-events-none bg-black/40 md:bg-black/20"></div>
       <div className="relative z-10 w-full max-w-md space-y-12 text-center">
         
         {/* --- HEADER --- */}
@@ -126,19 +128,24 @@ export default async function PublicSpacePage({
 
                 return (
                     <a key={i} href={finalUrl} target="_blank" rel="noopener noreferrer"
-                      className="group flex items-center gap-5 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-[2rem] transition-all duration-500 backdrop-blur-md no-underline shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                      className="group flex items-center gap-5 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-[2rem] transition-all duration-500 backdrop-blur-xl no-underline shadow-sm hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <div className="w-12 h-12 bg-black/40 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/25 transition-all p-2.5 shadow-inner">
+                        <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/25 transition-all p-2.5 shadow-inner">
                             <Image 
                               src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
                               alt={link.network} 
                               width={30} 
                               height={30} 
-className="object-contain opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"                            />
+                              className="object-contain opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
+                            />
                         </div>
                         <div className="text-left">
-                           <span className="block text-lg font-bold text-slate-200 group-hover:text-white">{link.network}</span>
-                           <span className="block text-[10px] text-gray-500 font-black uppercase tracking-widest group-hover:text-indigo-400">
+                           <span 
+                             className="block text-lg font-bold text-white"
+                             style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
+                             {link.network}
+                           </span>
+                           <span className="block text-[10px] text-white/60 font-black uppercase tracking-widest group-hover:text-indigo-400">
                              {link.network === "WhatsApp" ? t.follow_action : t.view_action}
                            </span>
                         </div>
