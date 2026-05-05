@@ -23,9 +23,9 @@ export default function WalletSwitcher({ user, profile, spaces, lang }: any) {
       case 'vcard':
         return `BEGIN:VCARD\nVERSION:3.0\nFN:${fullName}\nORG:${profile?.company || ''}\nTITLE:${profile?.job_title || ''}\nTEL:${profile?.phone || ''}\nURL:${profile?.linkedin_url || ''}\nEND:VCARD`;
       case 'social':
-        if (selectedSpaceIndex === 0) return `https://www.rtbx.space/@/${profile?.slug || user.id}`;
+        if (selectedSpaceIndex === 0) return `https://www.rtbx.space/u/${profile?.slug || user.id}`;
         const space = spaces[selectedSpaceIndex - 1];
-        return `https://www.rtbx.space/@/${space.slug || space.id}`;
+        return `https://www.rtbx.space/u/${space.slug || space.id}`;
     }
   };
 
