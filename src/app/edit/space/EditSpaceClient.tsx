@@ -129,7 +129,7 @@ export default function EditSpaceClient({ space, lang, token }: any) {
 
       {/* Bouton pour voir le résultat */}
       <div className="text-center">
-        <a href={`/@/${space.slug || space.id}`} className="text-indigo-600 font-bold hover:underline">
+        <a href={`/u/${space.slug || space.id}`} className="text-indigo-600 font-bold hover:underline">
             {lang === 'fr' ? 'Voir mon Space public' : 'View my public Space'} →
         </a>
       </div>
