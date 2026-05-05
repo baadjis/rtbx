@@ -52,6 +52,18 @@ export const formatSocialUrl = (network: string, handle: string,lang:'fr'|'en') 
   
   // On nettoie le @ uniquement ici pour la construction de l'URL
   const cleanHandle = val.replace('@', '');
+  if (network === "Facebook") {
+  
+
+  // si c’est un nombre → profil
+  if (/^\d+$/.test(cleanHandle)) {
+    return `https://www.facebook.com/profile.php?id=${cleanHandle}`
+  }
+
+  // sinon → username (page OU profil)
+  return `https://www.facebook.com/${cleanHandle}`
+}
+
   
   return `${config.baseUrl}${cleanHandle}`;
 };
