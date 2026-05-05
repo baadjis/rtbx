@@ -162,11 +162,11 @@ export default async function PublicSpacePage({
         </div>
 
         {/* --- FOOTER --- */}
-        <div className="pt-10 space-y-6">
+        <div className="pt-7 space-y-6">
             <Link href="/" className="inline-block no-underline opacity-20 hover:opacity-100 transition-all duration-700">
                 <BrandLogo />
             </Link>
-            <p className="text-[8px] font-black text-gray-600 uppercase tracking-[0.4em]">{t.footer_text}</p>
+            <p className="text-[8px] font-black text-white/60 uppercase tracking-[0.4em]">{t.footer_text}</p>
         </div>
       </div>
     </div>
