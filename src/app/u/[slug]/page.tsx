@@ -72,7 +72,7 @@ export default async function PublicSpacePage({
       
       {/* Background radial "Splendide" */}
       <div className="absolute inset-0 opacity-40 pointer-events-none" 
-           style={{ backgroundImage: `radial-gradient(circle at 50% 20%, ${themeColor} 0%, transparent 75%)` }}>
+           style={{ backgroundImage: `radial-gradient(circle at 50% 20%, ${themeColor} 0%,#0E0E82 25%, transparent 75%)` }}>
       </div>
 
       <div className="relative z-10 w-full max-w-md space-y-12 text-center">
