@@ -65,9 +65,32 @@ export default async function PublicSpacePage({
 
     return (
                     <a  href={finalUrl} target="_blank" rel="noopener noreferrer"
-                      className="group flex items-center gap-5 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-[2rem] transition-all duration-500 backdrop-blur-xl no-underline shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                    className="
+group relative flex items-center gap-5 p-4 
+bg-white/5 hover:bg-white/10 
+border border-white/5 hover:border-transparent 
+rounded-[2rem] 
+transition-all duration-500 ease-out 
+backdrop-blur-xl 
+no-underline shadow-sm 
+hover:scale-[1.035] active:scale-[0.98]
+
+before:absolute before:inset-0 before:rounded-[2rem]
+before:p-[1px] before:opacity-0 group-hover:before:opacity-100
+before:transition-all before:duration-500
+before:bg-[linear-gradient(120deg,rgba(255,255,255,0.25),rgba(255,255,255,0.05),rgba(255,255,255,0.25))]
+before:mask-[linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
+before:mask-composite:exclude
+
+after:absolute after:inset-0 after:rounded-[2rem]
+after:opacity-0 group-hover:after:opacity-100
+after:transition-all after:duration-700
+after:bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.15),transparent_70%)]
+
+hover:shadow-[0_10px_40px_rgba(0,0,0,0.35)]
+"         
                     >
-                        <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/25 transition-all p-2.5 shadow-inner">
+                        <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner group-hover:scale-105">
                             <Image 
                               src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
                               alt={link.network} 
