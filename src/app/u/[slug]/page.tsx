@@ -58,7 +58,7 @@ export default async function PublicSpacePage({
   const socialLinks = entity.social_data || [];
   const SOCIAL_CONFIG = get_social_config(lang);
 
-  const RenderSocialLink=(link:any)=>{
+  function RenderSocialLink({link}:{link:any}){
     const config = SOCIAL_CONFIG[link.network];
     if (!config) return null;
     const finalUrl = formatSocialUrl(link.network, link.handle, lang);
