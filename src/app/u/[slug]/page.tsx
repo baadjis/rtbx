@@ -64,31 +64,22 @@ export default async function PublicSpacePage({
     const finalUrl = formatSocialUrl(link.network, link.handle, lang);
 
     return (
-        <a 
+         <a 
   href={finalUrl} 
   target="_blank" 
   rel="noopener noreferrer"
   className="group relative block rounded-[2rem] p-[1px] transition-all duration-500 hover:scale-[1.04]"
 >
   
-  {/* 🌈 BORDER ANIMÉ */}
-  <div 
-    className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-500 animate-[spin_6s_linear_infinite]"
-    style={{
-      background: `conic-gradient(from 0deg, ${themeColor}, transparent, ${themeColor})`
-      
-    }}
-  />
+  {/* BORDER GRADIENT */}
+  <div className="
+    absolute inset-0 rounded-[2rem]
+    opacity-0 group-hover:opacity-100
+    transition-all duration-500
+    bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500
+  " />
 
-  {/* 💡 GLOW */}
-  <div 
-    className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"
-    style={{
-      background: `radial-gradient(circle, ${themeColor}55, transparent 70%)`
-    }}
-  />
-
-  {/* 📦 CONTENT (ton code inchangé) */}
+  {/* CONTENT */}
   <div className="
     relative flex items-center gap-5 p-4 
     bg-black/60 md:bg-white/5
@@ -98,6 +89,7 @@ export default async function PublicSpacePage({
     backdrop-blur-xl 
     shadow-sm 
     transition-all duration-500
+    group-hover:shadow-[0_0_25px_rgba(99,102,241,0.5)]
   ">
 
     <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner group-hover:scale-105">
