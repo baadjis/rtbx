@@ -184,7 +184,7 @@ export default async function PublicSpacePage({
                              {link.network}
                            </span>
                            <span className="block text-[10px] text-white/60 font-black uppercase tracking-widest group-hover:text-indigo-400">
-                             {link.network === "WhatsApp" ? t.follow_action : t.view_action}
+                             {link.action}
                            </span>
                         </div>
                         <div className="ml-auto opacity-0 group-hover:opacity-40 transition-all pr-2 translate-x-2 group-hover:translate-x-0">
