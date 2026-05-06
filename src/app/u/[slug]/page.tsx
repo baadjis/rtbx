@@ -85,7 +85,7 @@ export default async function PublicSpacePage({
     transition-all duration-500
   ">
 
-    <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner group-hover:scale-105">
+    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner group-hover:scale-105">
       <Image 
         src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
         alt={link.network} 
