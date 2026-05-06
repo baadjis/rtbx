@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import { Data } from '../data';
 import Image from 'next/image';
 
+
 export default async function PublicSpacePage({ 
   params 
 }: { 
@@ -56,6 +57,65 @@ export default async function PublicSpacePage({
   const bgColor = entity.bg_color || '#0f172a';
   const socialLinks = entity.social_data || [];
   const SOCIAL_CONFIG = get_social_config(lang);
+
+  const RenderSocialLink=(link:any)=>{
+    const config = SOCIAL_CONFIG[link.network];
+    if (!config) return null;
+    const finalUrl = formatSocialUrl(link.network, link.handle, lang);
+
+    return (
+  <a  href={finalUrl} target="_blank" rel="noopener noreferrer"
+className="
+group relative flex items-center gap-5 p-4 
+bg-white/5 hover:bg-white/10 
+border border-white/5 hover:border-transparent 
+rounded-[2rem] 
+transition-all duration-500 ease-out 
+backdrop-blur-xl 
+no-underline shadow-sm 
+hover:scale-[1.035] active:scale-[0.98]
+
+before:absolute before:inset-0 before:rounded-[2rem]
+before:p-[1px] before:opacity-0 group-hover:before:opacity-100
+before:transition-all before:duration-500
+before:bg-[linear-gradient(120deg,rgba(255,255,255,0.25),rgba(255,255,255,0.05),rgba(255,255,255,0.25))]
+before:mask-[linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
+before:mask-composite:exclude
+
+after:absolute after:inset-0 after:rounded-[2rem]
+after:opacity-0 group-hover:after:opacity-100
+after:transition-all after:duration-700
+after:bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.15),transparent_70%)]
+
+hover:shadow-[0_10px_40px_rgba(0,0,0,0.35)]
+"                    >
+                        <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/25 transition-all p-2.5 shadow-inner">
+                            <Image 
+                              src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
+                              alt={link.network} 
+                              width={30} 
+                              height={30} 
+                              className="object-contain opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
+                            />
+                        </div>
+                        <div className="text-left">
+                           <span 
+                             className="block text-lg font-bold text-white"
+                             style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
+                             {link.network}
+                           </span>
+                           <span className="block text-[10px] text-white/60 font-black uppercase tracking-widest group-hover:text-indigo-400">
+                             {link.network === "WhatsApp" ? t.follow_action : t.view_action}
+                           </span>
+                        </div>
+                        <div className="ml-auto opacity-0 group-hover:opacity-40 transition-all pr-2 translate-x-2 group-hover:translate-x-0">
+                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                             <path d="M5 12h14m-7-7 7 7-7 7"/>
+                           </svg>
+                        </div>
+                    </a>
+                )
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-white relative overflow-hidden"
@@ -122,40 +182,7 @@ export default async function PublicSpacePage({
         {/* --- LIENS --- */}
         <div className="space-y-4 w-full px-1 md:px-0">
             {socialLinks.length > 0 ? socialLinks.map((link: any, i: number) => {
-                const config = SOCIAL_CONFIG[link.network];
-                if (!config) return null;
-                const finalUrl = formatSocialUrl(link.network, link.handle, lang);
-
-                return (
-                    <a key={i} href={finalUrl} target="_blank" rel="noopener noreferrer"
-                      className="group flex items-center gap-5 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-[2rem] transition-all duration-500 backdrop-blur-xl no-underline shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-                    >
-                        <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/25 transition-all p-2.5 shadow-inner">
-                            <Image 
-                              src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
-                              alt={link.network} 
-                              width={30} 
-                              height={30} 
-                              className="object-contain opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
-                            />
-                        </div>
-                        <div className="text-left">
-                           <span 
-                             className="block text-lg font-bold text-white"
-                             style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
-                             {link.network}
-                           </span>
-                           <span className="block text-[10px] text-white/60 font-black uppercase tracking-widest group-hover:text-indigo-400">
-                             {link.network === "WhatsApp" ? t.follow_action : t.view_action}
-                           </span>
-                        </div>
-                        <div className="ml-auto opacity-0 group-hover:opacity-40 transition-all pr-2 translate-x-2 group-hover:translate-x-0">
-                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                             <path d="M5 12h14m-7-7 7 7-7 7"/>
-                           </svg>
-                        </div>
-                    </a>
-                )
+                return(<RenderSocialLink link={link} key={i}/>)
             }) : (
               <div className="py-10 opacity-30 italic font-medium">No links available</div>
             )}
