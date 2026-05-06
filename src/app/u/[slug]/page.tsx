@@ -71,8 +71,7 @@ export default async function PublicSpacePage({
       rel="noopener noreferrer"
       className="group block rounded-[2rem] p-[1px] transition-all duration-300 hover:scale-[1.02]"
       style={{
-        background: `linear-gradient(135deg, ${themeColor}, transparent, ${themeColor})`
-      }}
+  background: `linear-gradient(135deg, ${themeColor}55, transparent 40%, ${themeColor}55)`      }}
     >
       <div
         className="
