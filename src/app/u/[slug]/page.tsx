@@ -71,13 +71,7 @@ export default async function PublicSpacePage({
   className="group relative block rounded-[2rem] p-[1px] transition-all duration-500 hover:scale-[1.04]"
 >
   
-  {/* BORDER GRADIENT */}
-  <div className="
-    absolute inset-0 rounded-[2rem]
-    opacity-0 group-hover:opacity-100
-    transition-all duration-500
-    bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500
-  " />
+  
 
   {/* CONTENT */}
   <div className="
