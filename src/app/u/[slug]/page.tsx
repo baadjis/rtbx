@@ -64,33 +64,27 @@ export default async function PublicSpacePage({
     const finalUrl = formatSocialUrl(link.network, link.handle, lang);
 
     return (
-         <a 
+       <a 
   href={finalUrl} 
   target="_blank" 
   rel="noopener noreferrer"
   className="group relative block rounded-[2rem] p-[1px] transition-all duration-500 hover:scale-[1.04]"
 >
   
-  {/* 🌈 BORDER GRADIENT */}
+  {/* BORDER GRADIENT */}
   <div className="
-    absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100
+    absolute inset-0 rounded-[2rem]
+    opacity-0 group-hover:opacity-100
     transition-all duration-500
-    bg-[linear-gradient(120deg,rgba(255,255,255,0.4),rgba(255,255,255,0.05),rgba(255,255,255,0.4))]
-    blur-[2px]
+    bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500
   " />
 
-  {/* 💡 GLOW */}
-  <div className="
-    absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100
-    transition-all duration-700
-    bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent_70%)]
-  " />
-
-  {/* 📦 CONTENT (TON CODE) */}
+  {/* CONTENT */}
   <div className="
     relative flex items-center gap-5 p-4 
-    bg-white/5 group-hover:bg-white/10 
-    border border-white/5 group-hover:border-white/20
+    bg-black/60 md:bg-white/5
+    group-hover:bg-black/70 md:group-hover:bg-white/10
+    border border-white/10
     rounded-[2rem] 
     backdrop-blur-xl 
     shadow-sm 
