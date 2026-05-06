@@ -83,7 +83,7 @@ export default async function PublicSpacePage({
                              {link.network}
                            </span>
                            <span className="block text-[10px] text-white/60 font-black uppercase tracking-widest group-hover:text-indigo-400">
-                             {link.network === "WhatsApp" ? t.follow_action : t.view_action}
+                             {config.action}
                            </span>
                         </div>
                         <div className="ml-auto opacity-0 group-hover:opacity-40 transition-all pr-2 translate-x-2 group-hover:translate-x-0">
@@ -160,7 +160,8 @@ export default async function PublicSpacePage({
         {/* --- LIENS --- */}
         <div className="space-y-4 w-full px-1 md:px-0">
             {socialLinks.length > 0 ? socialLinks.map((link: any, i: number) => {
-                const config = SOCIAL_CONFIG[link.network];
+               return <RenderSocialLink link={link} key={i}/>
+                {/*const config = SOCIAL_CONFIG[link.network];
                 if (!config) return null;
                 const finalUrl = formatSocialUrl(link.network, link.handle, lang);
 
@@ -193,7 +194,9 @@ export default async function PublicSpacePage({
                            </svg>
                         </div>
                     </a>
-                )
+                    
+                )*/}
+
             }) : (
               <div className="py-10 opacity-30 italic font-medium">No links available</div>
             )}
