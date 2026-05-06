@@ -75,7 +75,8 @@ export default async function PublicSpacePage({
   <div 
     className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-500 animate-[spin_6s_linear_infinite]"
     style={{
-      background: `conic-gradient(from 0deg, ${themeColor}, transparent, ${themeColor})`
+      background: `conic-gradient(from 0deg, ${themeColor}, transparent, ${themeColor})`,
+      willChange: "transform"
     }}
   />
 
