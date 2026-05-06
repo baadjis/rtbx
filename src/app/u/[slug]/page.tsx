@@ -51,12 +51,31 @@ export default async function PublicSpacePage({
     displayName = entity.account_type === 'organization' ? (entity.organization_name || entity.slug) : entity.slug;
   }
 
+
+
   const imageUrl = isProfileOnly ? entity.avatar_url : entity.logo_url;
 
   const themeColor = entity.theme_color || '#4f46e5';
   const bgColor = entity.bg_color || '#0f172a';
   const socialLinks = entity.social_data || [];
   const SOCIAL_CONFIG = get_social_config(lang);
+
+  function getAdaptiveGradient(color: string) {
+  // enlève le #
+  const c = color.replace("#", "");
+
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+
+  // luminance simple
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  // clair ou sombre
+  const opacity = brightness > 140 ? "22" : "55";
+
+  return `linear-gradient(135deg, ${color}${opacity}, transparent 50%, ${color}${opacity})`;
+}
 
  function RenderSocialLink({ link }: { link: any }) {
   const config = SOCIAL_CONFIG[link.network];
@@ -70,8 +89,9 @@ export default async function PublicSpacePage({
       target="_blank"
       rel="noopener noreferrer"
       className="group block rounded-[2rem] p-[1px] transition-all duration-300 hover:scale-[1.02]"
-      style={{
-  background: `linear-gradient(135deg, ${themeColor}55, transparent 40%, ${themeColor}55)`      }}
+     style={{
+  background: getAdaptiveGradient(themeColor)
+}}
     >
       <div
         className="
