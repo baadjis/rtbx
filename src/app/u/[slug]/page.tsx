@@ -58,7 +58,7 @@ export default async function PublicSpacePage({
   const socialLinks = entity.social_data || [];
   const SOCIAL_CONFIG = get_social_config(lang);
 
-  function RenderSocialLink({ link }: { link: any }) {
+ function RenderSocialLink({ link }: { link: any }) {
   const config = SOCIAL_CONFIG[link.network];
   if (!config) return null;
 
@@ -77,8 +77,8 @@ export default async function PublicSpacePage({
       <div
         className="
           flex items-center gap-5 p-4
-          bg-white/10
-          group-hover:bg-white/15
+          bg-black/30 md:bg-white/5
+          group-hover:bg-black/40 md:group-hover:bg-white/10
           border border-white/10
           rounded-[2rem]
           backdrop-blur-xl
