@@ -15,7 +15,8 @@ const data = {
     visit_subscribe: "voir et s’abonner",
 
     listen: "écouter",
-    watch: "regarder"
+    watch: "regarder",
+    follow_channel:"suivre la chaine",
   },
   en: {
     pseudo: "Ex: user_name",
@@ -31,7 +32,9 @@ const data = {
     visit_subscribe: "view & subscribe",
 
     listen: "listen",
-    watch: "watch"
+    watch: "watch",
+    follow_channel:"Follow channel"
+
   }
 }
  
@@ -44,7 +47,7 @@ const data = {
 
     "TikTok": { folder: "tiktok", baseUrl: "https://tiktok.com/@", ph: t.pseudo, action: t.follow },
 
-    "WhatsApp": { folder: "whatsapp", baseUrl: "https://whatsapp.com/channel/", ph: t.channel_id, action: t.follow },
+    "WhatsApp": { folder: "whatsapp", baseUrl: "https://whatsapp.com/channel/", ph: t.channel_id, action: t.follow_channel },
 
     "YouTube": { folder: "youtube", baseUrl: "https://youtube.com/@", ph: t.channel, action: t.visit_subscribe },
 
