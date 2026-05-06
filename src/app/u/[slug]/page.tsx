@@ -71,17 +71,24 @@ export default async function PublicSpacePage({
   className="group relative block rounded-[2rem] p-[1px] transition-all duration-500 hover:scale-[1.04]"
 >
   
-  
+  {/* BORDER GRADIENT */}
+  <div className="
+    absolute inset-0 rounded-[2rem]
+    opacity-0 group-hover:opacity-100
+    transition-all duration-500
+    bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500
+  " />
 
   {/* CONTENT */}
   <div className="
-    flex items-center gap-5 p-4 
+    relative flex items-center gap-5 p-4 
     bg-black/60 md:bg-white/5
-    rounded-[2rem]
-    backdrop-blur-xl 
-    transition-all duration-300
     group-hover:bg-black/70 md:group-hover:bg-white/10
-    group-hover:shadow-lg
+    border border-white/10
+    rounded-[2rem] 
+    backdrop-blur-xl 
+    shadow-sm 
+    transition-all duration-500
   ">
 
     <div className="w-12 h-12 bg-black/50 md:bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner group-hover:scale-105">
