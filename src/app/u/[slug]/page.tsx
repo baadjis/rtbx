@@ -159,7 +159,7 @@ export default async function PublicSpacePage({
     <BrandLogo />
 
     <p className="text-sm font-bold text-white">
-      RetailBox
+      rtbx.space
     </p>
   </div>
 
