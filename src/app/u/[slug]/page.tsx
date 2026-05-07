@@ -162,9 +162,9 @@ export default async function PublicSpacePage({
         rtbx.space
       </p>
 
-      <p className="text-[10px] uppercase tracking-[0.2em] text-white/50">
-        Your modern social space
-      </p>
+      <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 leading-tight">
+  Your modern social space
+</p>
     </div>
   </Link>
 
