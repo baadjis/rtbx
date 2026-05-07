@@ -59,19 +59,20 @@ export function SpaceAvatar({
 
   return (
     <div
-      className={`
-        group
-        w-28 h-28 mx-auto p-[2px]
-        shadow-2xl
-        border border-white/10
-        transition-all duration-500
-        hover:scale-105
-        ${current.outer}
-      `}
-      style={{
-        background: `linear-gradient(135deg, ${themeColor}, #9333ea)`
-      }}
-    >
+  className={`
+    group
+    w-28 h-28 mx-auto p-[2px]
+    shadow-2xl
+    border border-white/10
+    transition-all duration-500
+    hover:scale-[1.12]
+    hover:z-20
+    ${current.outer}
+  `}
+  style={{
+    background: `linear-gradient(135deg, ${themeColor}, #9333ea)`
+  }}
+>
       <div
         className={`
           w-full h-full
@@ -90,12 +91,11 @@ export function SpaceAvatar({
   fill
   unoptimized
   className={`
-    object-contain
-    scale-[1.08]
-    group-hover:scale-[1.18]
-    transition-transform duration-700 ease-out
-    ${variant === "diamond" ? "-rotate-45" : ""}
-  `}
+    
+  object-contain
+  transition-all duration-500
+  ${variant === "diamond" ? "-rotate-45" : ""}
+`}
 />
         ) : (
           <span
