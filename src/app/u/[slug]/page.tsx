@@ -137,41 +137,48 @@ export default async function PublicSpacePage({
         </div>
 
 {/* --- FOOTER --- */}
-<div className="pt-2 space-y-5">
+{/* --- FOOTER --- */}
+<div className="pt-4 pb-24 md:pb-10 space-y-4 flex flex-col items-center">
   <Link
     href="/"
     className="
-      inline-flex flex-col items-start gap-1
-      px-5 py-3
-      rounded-2xl
+      inline-flex flex-col items-start gap-2
+      px-5 py-4
+      rounded-[2rem]
       bg-white/10
       hover:bg-white/15
       border border-white/10
       backdrop-blur-xl
       transition-all duration-300
-      hover:scale-105
+      hover:scale-[1.02]
       hover:shadow-lg
       no-underline
+      max-w-full
     "
   >
-    
-    <div className="flex items-center gap-4">
-  <BrandLogo />
+    {/* Logo + domain */}
+    <div className="flex items-center gap-3">
+      <div className="-mb-6">
+        <BrandLogo />
+      </div>
 
-  <p className="text-sm font-bold text-white leading-none pt-[1px]">
-    rtbx.space
-  </p>
-</div>
+      <p className="text-sm font-bold text-white leading-none -translate-y-[1px]">
+        rtbx.space
+      </p>
+    </div>
 
-  <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 leading-tight text-left">
-    Your modern social space
-  </p>
+    {/* CTA */}
+    <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 leading-tight text-left">
+      Your modern social space
+    </p>
   </Link>
 
-  <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">
+  {/* Footer text */}
+  <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] text-center px-4">
     {t.footer_text}
   </p>
 </div>
+{/*end footer*/}
       </div>
     </div>
   )
