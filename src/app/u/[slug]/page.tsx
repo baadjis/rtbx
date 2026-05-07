@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { Data } from '../data';
 import Image from 'next/image';
 import RenderSocialLink from './RenderSocialLink';
+import { LangType } from '@/lib/lang/types';
 
 
 export default async function PublicSpacePage({ 
@@ -18,7 +19,7 @@ export default async function PublicSpacePage({
   const lowerSlug = slug.toLowerCase();
   const supabase = await createClient();
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as 'fr' | 'en';
+  const lang = (cookieStore.get('lang')?.value || 'fr') as LangType;
   const t = Data[lang];
 
   let { data: entity } = await supabase
@@ -93,22 +94,28 @@ export default async function PublicSpacePage({
         
         {/* --- HEADER --- */}
         <div className="space-y-6 animate-in fade-in zoom-in duration-700">
-            <div className="w-28 h-28 mx-auto p-1 rounded-[2.8rem] shadow-2xl border-4 border-white/10" 
-                 style={{ background: `linear-gradient(to tr, ${themeColor}, #9333ea)` }}>
-                <div className="w-full h-full bg-slate-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden relative text-white">
-                  {imageUrl ? (
-                    <Image 
-                      src={imageUrl}
-                      alt="Identity" 
-                      fill 
-                      className="object-contain" 
-                      unoptimized 
-                    />
-                  ) : (
-                    <span className="text-4xl font-black uppercase">{displayName?.[0] || 'R'}</span>
-                  )}
-                </div>
-            </div>
+            <div
+  className="w-28 h-28 mx-auto p-[2px] rounded-[2.8rem] shadow-2xl border border-white/10"
+  style={{
+    background: `linear-gradient(135deg, ${themeColor}, #9333ea)`
+  }}
+>
+  <div className="w-full h-full rounded-[2.6rem] flex items-center justify-center overflow-hidden relative bg-white/5 backdrop-blur-md">
+    {imageUrl ? (
+      <Image
+        src={imageUrl}
+        alt="Identity"
+        fill
+        className="object-contain p-2"
+        unoptimized
+      />
+    ) : (
+      <span className="text-4xl font-black uppercase text-white">
+        {displayName?.[0] || "R"}
+      </span>
+    )}
+  </div>
+</div>
 
             <div>
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-3 leading-tight uppercase italic">
