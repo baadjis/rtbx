@@ -61,7 +61,7 @@ export function SpaceAvatar({
     <div
   className={`
     group
-    w-28 h-28 mx-auto p-[2px]
+    w-30 h-30 mx-auto p-[2px]
     shadow-2xl
     border border-white/10
     transition-all duration-500
