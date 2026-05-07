@@ -65,7 +65,7 @@ export function SpaceAvatar({
     shadow-2xl
     border border-white/10
     transition-all duration-500
-    hover:scale-[1.12]
+    hover:scale-[1.18]
     hover:z-20
     hover:shadow-[0_0_40px_rgba(255,255,255,0.15)]
     ${current.outer}
