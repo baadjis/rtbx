@@ -58,13 +58,15 @@ function getAdaptiveGlow(color: string) {
       <div
         className="
     flex items-center gap-5 p-4
-    bg-white/10
+    
     group-hover:bg-white/15
     border border-white/15
     rounded-[2rem]
-    backdrop-blur-xl
+    
     transition-all duration-300
     shadow-[0_8px_32px_rgba(0,0,0,0.12)]
+    bg-white/10
+    backdrop-blur-xl
   "
         style={{
           boxShadow: `0 0 0px transparent`
