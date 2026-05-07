@@ -154,7 +154,7 @@ export default async function PublicSpacePage({
       no-underline
     "
   >
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-5 p-4">
     <BrandLogo />
 
     <p className="text-sm font-bold text-white text-left">
