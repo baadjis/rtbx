@@ -136,8 +136,7 @@ export default async function PublicSpacePage({
             )}
         </div>
 
-        {/* --- FOOTER --- */}
-        {/* --- FOOTER --- */}
+{/* --- FOOTER --- */}
 <div className="pt-2 space-y-5">
   <Link
     href="/"
@@ -158,7 +157,7 @@ export default async function PublicSpacePage({
     <div className="flex items-center gap-3">
     <BrandLogo />
 
-    <p className="text-sm font-bold text-white">
+    <p className="text-sm font-bold text-white text-left">
       rtbx.space
     </p>
   </div>
