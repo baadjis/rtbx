@@ -154,13 +154,14 @@ export default async function PublicSpacePage({
       no-underline
     "
   >
-    <div className="flex items-center gap-5">
-    <BrandLogo />
+    
+    <div className="flex items-center gap-3">
+  <BrandLogo />
 
-    <p className="text-sm font-bold text-white text-left">
-      rtbx.space
-    </p>
-  </div>
+  <p className="text-sm font-bold text-white leading-none pt-[1px]">
+    rtbx.space
+  </p>
+</div>
 
   <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 leading-tight text-left">
     Your modern social space
