@@ -155,7 +155,7 @@ export default async function PublicSpacePage({
     "
   >
     
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
   <BrandLogo />
 
   <p className="text-sm font-bold text-white leading-none pt-[1px]">
