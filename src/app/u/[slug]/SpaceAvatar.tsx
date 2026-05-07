@@ -85,17 +85,18 @@ export function SpaceAvatar({
       >
         {imageUrl ? (
           <Image
-            src={imageUrl}
-            alt="Identity"
-            fill
-            unoptimized
-            className={`
-              object-cover
-              transition-transform duration-700 ease-out
-              group-hover:scale-110
-              ${variant === "diamond" ? "-rotate-45 scale-125 group-hover:scale-[1.4]" : ""}
-            `}
-          />
+  src={imageUrl}
+  alt="Identity"
+  fill
+  unoptimized
+  className={`
+    object-contain
+    scale-[1.08]
+    group-hover:scale-[1.18]
+    transition-transform duration-700 ease-out
+    ${variant === "diamond" ? "-rotate-45" : ""}
+  `}
+/>
         ) : (
           <span
             className={`
