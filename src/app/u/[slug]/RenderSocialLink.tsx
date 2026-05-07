@@ -69,15 +69,22 @@ function getAdaptiveGlow(color: string) {
           boxShadow: `0 0 0px transparent`
         }}
       >
-        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner group-hover:scale-105">
-          <Image
-            src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
-            alt={link.network}
-            width={30}
-            height={30}
-            className="object-contain opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
-          />
-        </div>
+        <div
+  className="rounded-2xl p-[1px] transition-all duration-300 group-hover:scale-105"
+  style={{
+    background: `linear-gradient(135deg, ${themeColor}55, rgba(255,255,255,0.08))`
+  }}
+>
+  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 p-2.5 shadow-inner">
+    <Image
+      src={`/social_assets/${config.folder}/glyph/digital/png/full.png`}
+      alt={link.network}
+      width={30}
+      height={30}
+      className="object-contain opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
+    />
+  </div>
+</div>
 
         <div className="text-left">
           <span className="block text-lg font-bold text-white">
