@@ -168,7 +168,7 @@ export default async function PublicSpacePage({
     </div>
 
     {/* CTA */}
-    <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 leading-tight text-left">
+    <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 leading-tight text-center">
       Your modern social space
     </p>
   </Link>
