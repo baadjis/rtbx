@@ -137,12 +137,41 @@ export default async function PublicSpacePage({
         </div>
 
         {/* --- FOOTER --- */}
-        <div className="pt-7 space-y-6">
-            <Link href="/" className="inline-block no-underline opacity-20 hover:opacity-100 transition-all duration-700">
-                <BrandLogo />
-            </Link>
-            <p className="text-[8px] font-black text-white/60 uppercase tracking-[0.4em]">{t.footer_text}</p>
-        </div>
+        {/* --- FOOTER --- */}
+<div className="pt-2 space-y-5">
+  <Link
+    href="/"
+    className="
+      inline-flex items-center gap-3
+      px-5 py-3
+      rounded-2xl
+      bg-white/10
+      hover:bg-white/15
+      border border-white/10
+      backdrop-blur-xl
+      transition-all duration-300
+      hover:scale-105
+      hover:shadow-lg
+      no-underline
+    "
+  >
+    <BrandLogo />
+
+    <div className="text-left">
+      <p className="text-sm font-bold text-white">
+        rtbx.space
+      </p>
+
+      <p className="text-[10px] uppercase tracking-[0.2em] text-white/50">
+        Your modern social space
+      </p>
+    </div>
+  </Link>
+
+  <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">
+    {t.footer_text}
+  </p>
+</div>
       </div>
     </div>
   )
