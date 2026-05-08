@@ -67,7 +67,7 @@ export function SpaceAvatar({
     shadow-2xl
     border border-white/10
     transition-all duration-500
-    hover:scale-[1.30]
+    hover:scale-[1.80]
     hover:z-20
     hover:shadow-[0_0_40px_rgba(255,255,255,0.15)]
     ${current.outer}
@@ -85,8 +85,8 @@ export function SpaceAvatar({
       bg-white/5
       backdrop-blur-md
       transition-all duration-500
-      p-5
-      group-hover:p-1
+      p-7
+      group-hover:p-2
       ${current.inner}
     `}
   >
