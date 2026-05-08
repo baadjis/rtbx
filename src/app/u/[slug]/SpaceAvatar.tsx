@@ -58,14 +58,14 @@ export function SpaceAvatar({
   const current = variants[variant];
 
   return (
-    <div
+   <div
   className={`
     group
     w-30 h-30 mx-auto p-[2px]
     shadow-2xl
     border border-white/10
     transition-all duration-500
-    hover:scale-[1.80]
+    hover:scale-[1.25]
     hover:z-20
     hover:shadow-[0_0_40px_rgba(255,255,255,0.15)]
     ${current.outer}
@@ -74,41 +74,43 @@ export function SpaceAvatar({
     background: `linear-gradient(135deg, ${themeColor}, #9333ea)`
   }}
 >
-      <div
+  <div
+    className={`
+      w-full h-full
+      flex items-center justify-center
+      overflow-hidden
+      relative
+      bg-white/5
+      backdrop-blur-md
+      transition-all duration-500
+      p-2
+      group-hover:p-0
+      ${current.inner}
+    `}
+  >
+    {imageUrl ? (
+      <Image
+        src={imageUrl}
+        alt="Identity"
+        fill
+        unoptimized
         className={`
-          w-full h-full
-          flex items-center justify-center
-          overflow-hidden
-          relative
-          bg-white/5
-          backdrop-blur-md
-          ${current.inner}
+          object-contain
+          transition-all duration-500
+          ${variant === "diamond" ? "-rotate-45" : ""}
+        `}
+      />
+    ) : (
+      <span
+        className={`
+          text-4xl font-black uppercase text-white
+          ${variant === "diamond" ? "-rotate-45" : ""}
         `}
       >
-        {imageUrl ? (
-          <Image
-  src={imageUrl}
-  alt="Identity"
-  fill
-  unoptimized
-  className={`
-    
-  object-contain
-  transition-all duration-500
-  ${variant === "diamond" ? "-rotate-45" : ""}
-`}
-/>
-        ) : (
-          <span
-            className={`
-              text-4xl font-black uppercase text-white
-              ${variant === "diamond" ? "-rotate-45" : ""}
-            `}
-          >
-            {displayName?.[0] || "R"}
-          </span>
-        )}
-      </div>
-    </div>
+        {displayName?.[0] || "R"}
+      </span>
+    )}
+  </div>
+</div>
   );
 }
