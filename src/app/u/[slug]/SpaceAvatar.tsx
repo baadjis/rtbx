@@ -86,7 +86,7 @@ export function SpaceAvatar({
       backdrop-blur-md
       transition-all duration-500
       p-7
-      group-hover:p-2
+      group-hover:p-5
       ${current.inner}
     `}
   >
