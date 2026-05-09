@@ -27,7 +27,7 @@ const ORG_SUBCATEGORIES = [
   {
     id: 'institution',
     icon: ShieldCheck,
-    labelKey: 'Institution'
+    labelKey: 'org_type_institution'
   }
 ]
 
