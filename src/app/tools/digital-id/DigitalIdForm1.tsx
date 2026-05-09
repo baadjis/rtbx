@@ -845,6 +845,7 @@ export default function DigitalIDForm({
     to-violet-600
     bg-clip-text
     text-transparent
+    text-center
   ">
     QRCode 
   </h2>
