@@ -36,7 +36,7 @@ fr: {
 
   org_type_ngo: "ONG",
   org_type_association: "Association",
-  org_type_government: "Gouvernement",
+  org_type_government: "Gouvernementale",
   org_type_institution: "Institution",
 
 
@@ -93,7 +93,7 @@ en: {
   label_org_type: "Organization type",
   org_type_ngo: "NGO",
   org_type_association: "Association",
-  org_type_government: "Government",
+  org_type_government: "Governmental",
   org_type_institution: "Institution",
 
 
