@@ -21,8 +21,9 @@ export async function POST(request: Request) {
         user_id: body.user_id || null,
         email: body.email,
         slug: body.slug,
-        account_type: body.account_type,
-        organization_name: body.organization_name,
+        space_type: body.space_type,
+        space_subtype:body.space_subtype,
+        entity_name: body.entity_name,
         social_data: body.social_data,
         theme_color: body.theme_color,
         bg_color: body.bg_color,
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     if (error) throw error;
 
     // 2. Préparation du nom affiché pour l'e-mail
-    const displayName = body.account_type === 'organization' ? body.organization_name : body.email;
+    const displayName = body.space_type === 'organization' ? body.entity_name : body.email;
     
     // 3. Génération du contenu de l'e-mail avec le lien d'édition secret (edit_token)
     const htmlContent = getSpaceWelcomeEmail({
