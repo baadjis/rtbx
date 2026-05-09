@@ -834,8 +834,8 @@ export default function DigitalIDForm({
           {/* ================================================= */}
 
            <div className="lg:pt-2 text-center self-start lg:sticky lg:top-10">
-
-                            {/* DESIGN */}
+            <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
+              {/* DESIGN */}
 
               <div className="pt-6 border-t border-gray-100 dark:border-slate-800 space-y-6">
 
@@ -933,9 +933,6 @@ export default function DigitalIDForm({
                 </div>
 
               </div>
-
-            <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
-
               <div className="p-8 bg-white rounded-[2.5rem] mb-10 border border-gray-50 shadow-inner relative group overflow-hidden">
 
                 <QRCodeCanvas
