@@ -50,7 +50,8 @@ fr: {
   manangement_email:"Email de gestion",
   label_entity_name: "Nom de l'entité",
   ph_entity_name: "Ex: RetailBox Studio",
-  identity_activated:"Identité Activée"
+  identity_activated:"Identité Activée",
+  did_delete:"Supprimer"
 
 },
 en: {
@@ -109,7 +110,9 @@ en: {
 
   label_entity_name: "Entity name",
   ph_entity_name: "Ex: RetailBox Studio",
-  identity_activated:"Identity Activated"
+  identity_activated:"Identity Activated",
+  did_delete:"Delete"
+
 
 
 }
