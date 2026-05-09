@@ -204,7 +204,7 @@ const handleActivate = async () => {
               </div>
 
               <div className="space-y-4">
-    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Choisir votre lien public</label>
+    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">{t.choose_public_link}</label>
     <div className={`flex items-center bg-gray-50 dark:bg-slate-800 rounded-2xl px-4 border-2 transition-all ${
         isSlugAvailable === true ? 'border-green-500' : isSlugAvailable === false ? 'border-red-500' : 'border-transparent'
     }`}>

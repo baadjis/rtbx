@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import DigitalIDForm from './DigitalIdForm';
+import DigitalIDForm from './DigitalIdForm1';
 import { LangType } from '@/lib/lang/types';
 
 export default async function DigitalIDPage() {
