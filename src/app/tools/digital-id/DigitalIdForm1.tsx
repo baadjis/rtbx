@@ -834,14 +834,22 @@ export default function DigitalIDForm({
       <div className="self-start lg:sticky lg:top-8"> 
       
       <div className="mb-8">
-  <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-    QRCode
+  <h2 className="
+    text-4xl md:text-5xl
+    font-black
+    tracking-tight
+    italic
+    leading-tight
+    bg-gradient-to-r
+    from-indigo-600
+    to-violet-600
+    bg-clip-text
+    text-transparent
+  ">
+    QRCode 
   </h2>
-
-  <p className="text-sm text-gray-500 dark:text-slate-400 mt-2">
-    Design
-  </p>
 </div>
+       
            
       <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
               {/* DESIGN */}
