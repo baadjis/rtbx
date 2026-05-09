@@ -401,8 +401,7 @@ export default function DigitalIDForm({
 
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start lg:items-start">
           {/* ================================================= */}
           {/* LEFT */}
           {/* ================================================= */}
@@ -710,104 +709,7 @@ export default function DigitalIDForm({
 
               </div>
 
-              {/* DESIGN */}
-
-              <div className="pt-6 border-t border-gray-100 dark:border-slate-800 space-y-6">
-
-                <h4 className="text-xs font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
-
-                  <Palette size={14} />
-
-                  {lang === 'fr'
-                    ? 'Personnalisation'
-                    : 'Customization'}
-
-                </h4>
-
-                <div className="grid grid-cols-2 gap-4">
-
-                  <div className="space-y-2">
-
-                    <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
-                      Couleur QR
-                    </label>
-
-                    <input
-                      type="color"
-                      value={fgColor}
-                      onChange={(e) =>
-                        setFgColor(e.target.value)
-                      }
-                      className="w-full h-12 rounded-xl cursor-pointer border-none bg-gray-50 dark:bg-slate-800 p-1"
-                    />
-
-                  </div>
-
-                  <div className="space-y-2">
-
-                    <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
-                      Fond
-                    </label>
-
-                    <input
-                      type="color"
-                      value={bgColor}
-                      onChange={(e) =>
-                        setBgColor(e.target.value)
-                      }
-                      className="w-full h-12 rounded-xl cursor-pointer border-none bg-gray-50 dark:bg-slate-800 p-1"
-                    />
-
-                  </div>
-
-                </div>
-
-                <div className="space-y-2">
-
-                  <label className="text-[9px] font-black text-gray-400 uppercase ml-2 flex justify-between">
-
-                    {t.label_logo}
-
-                    {logo && (
-                      <button
-                        onClick={() => setLogo(null)}
-                        className="text-red-500 text-[9px] font-bold bg-transparent border-none cursor-pointer hover:underline"
-                      >
-                        {t.did_delete}
-                      </button>
-                    )}
-
-                  </label>
-
-                  <div className="relative group h-14 bg-gray-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center hover:border-indigo-400 transition-colors">
-
-                    {logo ? (
-                      <Image
-                        src={logo}
-                        alt="Logo"
-                        width={40}
-                        height={40}
-                        className="h-10 object-contain"
-                      />
-                    ) : (
-                      <Upload
-                        size={20}
-                        className="text-gray-300"
-                      />
-                    )}
-
-                    <input
-                      type="file"
-                      onChange={handleLogoUpload}
-                      accept="image/*"
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                    />
-
-                  </div>
-
-                </div>
-
-              </div>
+              
 
               {/* LEGAL */}
 
@@ -931,10 +833,106 @@ export default function DigitalIDForm({
           {/* RIGHT */}
           {/* ================================================= */}
 
-          <div className="lg:sticky lg:top-24 text-center">
-
+           <div className="lg:pt-2 text-center self-start lg:sticky lg:top-10">
             <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
+              {/* DESIGN */}
 
+              <div className="pt-6 border-t border-gray-100 dark:border-slate-800 space-y-6">
+
+                <h4 className="text-xs font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
+
+                  <Palette size={14} />
+
+                  {lang === 'fr'
+                    ? 'Personnalisation'
+                    : 'Customization'}
+
+                </h4>
+
+                <div className="grid grid-cols-2 gap-4">
+
+                  <div className="space-y-2">
+
+                    <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
+                      Couleur QR
+                    </label>
+
+                    <input
+                      type="color"
+                      value={fgColor}
+                      onChange={(e) =>
+                        setFgColor(e.target.value)
+                      }
+                      className="w-full h-12 rounded-xl cursor-pointer border-none bg-gray-50 dark:bg-slate-800 p-1"
+                    />
+
+                  </div>
+
+                  <div className="space-y-2">
+
+                    <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
+                      Fond
+                    </label>
+
+                    <input
+                      type="color"
+                      value={bgColor}
+                      onChange={(e) =>
+                        setBgColor(e.target.value)
+                      }
+                      className="w-full h-12 rounded-xl cursor-pointer border-none bg-gray-50 dark:bg-slate-800 p-1"
+                    />
+
+                  </div>
+
+                </div>
+
+                <div className="space-y-2">
+
+                  <label className="text-[9px] font-black text-gray-400 uppercase ml-2 flex justify-between">
+
+                    {t.label_logo}
+
+                    {logo && (
+                      <button
+                        onClick={() => setLogo(null)}
+                        className="text-red-500 text-[9px] font-bold bg-transparent border-none cursor-pointer hover:underline"
+                      >
+                        {t.did_delete}
+                      </button>
+                    )}
+
+                  </label>
+
+                  <div className="relative group h-14 bg-gray-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center hover:border-indigo-400 transition-colors">
+
+                    {logo ? (
+                      <Image
+                        src={logo}
+                        alt="Logo"
+                        width={40}
+                        height={40}
+                        className="h-10 object-contain"
+                      />
+                    ) : (
+                      <Upload
+                        size={20}
+                        className="text-gray-300"
+                      />
+                    )}
+
+                    <input
+                      type="file"
+                      onChange={handleLogoUpload}
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+
+                  </div>
+
+                </div>
+
+              </div>
               <div className="p-8 bg-white rounded-[2.5rem] mb-10 border border-gray-50 shadow-inner relative group overflow-hidden">
 
                 <QRCodeCanvas
