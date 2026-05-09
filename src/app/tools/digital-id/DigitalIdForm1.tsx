@@ -401,15 +401,13 @@ export default function DigitalIDForm({
 
         </Link>
 
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start lg:items-start">
-          {/* ================================================= */}
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start lg:items-start">          {/* ================================================= */}
           {/* LEFT */}
           {/* ================================================= */}
 
-          <div className="space-y-8">
-
-            <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight italic bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent leading-tight">
-              {t.did_title}
+       <div className="space-y-8 self-start">
+            <h1 className="text-center text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight italic bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent leading-tight">          
+                  {t.did_title}
             </h1>
 
             <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800 space-y-8">
@@ -833,8 +831,8 @@ export default function DigitalIDForm({
           {/* RIGHT */}
           {/* ================================================= */}
 
-           <div className="lg:pt-2 text-center self-start lg:sticky lg:top-24">
-            <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
+      <div className="self-start lg:sticky lg:top-8">          
+      <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
               {/* DESIGN */}
 
               {/* 4. DESIGN */}
