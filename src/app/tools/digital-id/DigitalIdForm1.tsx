@@ -852,7 +852,7 @@ export default function DigitalIDForm({
   <div className="grid grid-cols-2 gap-4">
     <div className="space-y-2">
       <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
-        Couleur QR
+        {t.label_qr}
       </label>
 
       <input

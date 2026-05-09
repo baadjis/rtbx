@@ -51,7 +51,8 @@ fr: {
   label_entity_name: "Nom de l'entité",
   ph_entity_name: "Ex: RetailBox Studio",
   identity_activated:"Identité Activée",
-  did_delete:"Supprimer"
+  did_delete:"Supprimer",
+  qr_color:"Couleur QR"
 
 },
 en: {
@@ -111,7 +112,9 @@ en: {
   label_entity_name: "Entity name",
   ph_entity_name: "Ex: RetailBox Studio",
   identity_activated:"Identity Activated",
-  did_delete:"Delete"
+  did_delete:"Delete",
+  qr_color:"QR Colour"
+
 
 
 
