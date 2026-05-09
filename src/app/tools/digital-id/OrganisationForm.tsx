@@ -12,22 +12,22 @@ const ORG_SUBCATEGORIES = [
   {
     id: 'ngo',
     icon: HeartHandshake,
-    label: 'NGO'
+    labelKey: 'org_type_ngo'
   },
   {
     id: 'association',
     icon: Building2,
-    label: 'Association'
+    labelKey: 'org_type_association'
   },
   {
     id: 'government',
     icon: Landmark,
-    label: 'Government'
+    labelKey: 'org_type_government'
   },
   {
     id: 'institution',
     icon: ShieldCheck,
-    label: 'Institution'
+    labelKey: 'Institution'
   }
 ]
 
@@ -129,7 +129,7 @@ export default function OrganizationSubcategorySelect({
                         }
                       `}
                     >
-                      {item.label}
+                      {t[item.labelKey]}
                     </p>
                   </div>
 
