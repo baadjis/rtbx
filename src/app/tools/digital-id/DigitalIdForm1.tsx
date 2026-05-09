@@ -2,23 +2,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { QRCodeCanvas } from 'qrcode.react'
-import Image from 'next/image'
+
 import Link from 'next/link'
 
 import {
-  Download,
-  Plus,
-  Trash2,
   ArrowLeft,
   ShieldCheck,
-  Link2,
-  Upload,
   X,
-  Palette,
   Loader2,
   CheckCircle2,
-  ArrowRight,
   Mail,
   Scale
 } from 'lucide-react'
@@ -29,11 +21,12 @@ import { Data } from './data'
 import { LangType } from '@/lib/lang/types'
 
 import { get_social_config } from '@/utils/social-config'
-import { getQrIcon, ICON_PATHS } from '@/utils/qr-utils'
 
 import SpaceTypeSelect from './SpaceTypeSelect'
 import OrganizationSubcategorySelect from './OrganisationForm'
 import PersonalSubcategorySelect from './PersonalForm'
+import QRCodeDesign from './QRcodeDesign'
+import SocialLinksAdd from './SocialLinksAdd'
 
 export default function DigitalIDForm({
   lang
@@ -48,7 +41,6 @@ export default function DigitalIDForm({
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const SOCIAL_CONFIG = get_social_config(lang)
 
   // =========================================================
   // USER
@@ -222,22 +214,7 @@ export default function DigitalIDForm({
   // LOGO
   // =========================================================
 
-  const handleLogoUpload = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-
-    const file = e.target.files?.[0]
-
-    if (file) {
-
-      const reader = new FileReader()
-
-      reader.onloadend = () =>
-        setLogo(reader.result as string)
-
-      reader.readAsDataURL(file)
-    }
-  }
+ 
 
   // =========================================================
   // ACTIVATE
@@ -340,29 +317,7 @@ export default function DigitalIDForm({
     }
   }
 
-  // =========================================================
-  // DOWNLOAD
-  // =========================================================
-
-  const downloadQR = () => {
-
-    const canvas = document.getElementById(
-      'did-qr-canvas'
-    ) as HTMLCanvasElement
-
-    if (!canvas) return
-
-    const url = canvas.toDataURL('image/png')
-
-    const link = document.createElement('a')
-
-    link.download =
-      `retailbox-space-${spaceType}.png`
-
-    link.href = url
-
-    link.click()
-  }
+ 
 
   // =========================================================
   // URL
@@ -370,40 +325,14 @@ export default function DigitalIDForm({
 
   const handle = slug || generatedId
 
-  const publicUrl = handle
-    ? `https://www.rtbx.space/u/${handle}`
-    : 'https://www.rtbx.space'
+  
 
   // =========================================================
   // UI
   // =========================================================
 
-  return (
-
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
-
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-
-        {/* BACK */}
-
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 font-bold mb-10 no-underline border-none"
-        >
-
-          <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
-
-            <ArrowLeft size={18} />
-
-          </div>
-
-          {t.back}
-
-        </Link>
-
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start lg:items-start">          {/* ================================================= */}
-          {/* LEFT */}
-          {/* ================================================= */}
+  function Left(){
+    return( 
 
        <div className="space-y-8 self-start">
             <h1 className="text-center text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight italic bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent leading-tight">          
@@ -558,155 +487,7 @@ export default function DigitalIDForm({
               </div>
 
               {/* SOCIALS */}
-
-              <div className="space-y-4">
-
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
-
-                  <Link2 size={14} />
-
-                  {t.label_socials || 'Réseaux sociaux'}
-
-                </label>
-
-                {links.map((link, i) => {
-
-                  const networkConfig =
-                    SOCIAL_CONFIG[
-                      link.network as keyof typeof SOCIAL_CONFIG
-                    ]
-
-                  return (
-
-                    <div
-                      key={link.id}
-                      className="
-                        flex flex-col
-                        p-5
-                        bg-gray-50 dark:bg-slate-800/50
-                        rounded-[2rem]
-                        border border-gray-100 dark:border-slate-700
-                        gap-3
-                      "
-                    >
-
-                      <div className="flex gap-2">
-
-                        <select
-                          value={link.network}
-                          onChange={(e) =>
-                            updateLink(
-                              i,
-                              'network',
-                              e.target.value
-                            )
-                          }
-                          className="
-                            flex-1 p-3
-                            bg-white dark:bg-slate-800
-                            border-none rounded-xl
-                            font-bold text-sm
-                            dark:text-white
-                          "
-                        >
-
-                          {Object.keys(SOCIAL_CONFIG).map(net => (
-                            <option
-                              key={net}
-                              value={net}
-                            >
-                              {net}
-                            </option>
-                          ))}
-
-                        </select>
-
-                        <button
-                          onClick={() =>
-                            setLinks(
-                              links.filter(
-                                (_, idx) => idx !== i
-                              )
-                            )
-                          }
-                          className="
-                            p-3
-                            text-red-500
-                            bg-red-50
-                            dark:bg-red-900/20
-                            rounded-xl
-                            border-none
-                            cursor-pointer
-                          "
-                        >
-
-                          <Trash2 size={18} />
-
-                        </button>
-
-                      </div>
-
-                      <input
-                        value={link.handle}
-                        onChange={(e) =>
-                          updateLink(
-                            i,
-                            'handle',
-                            e.target.value
-                          )
-                        }
-                        placeholder={
-                          networkConfig.ph ||
-                          t.ph_handle
-                        }
-                        className="
-                          w-full p-4
-                          bg-white dark:bg-slate-800
-                          border-none rounded-xl
-                          font-bold text-sm
-                          dark:text-white
-                          focus:ring-2 focus:ring-indigo-500
-                        "
-                      />
-
-                    </div>
-                  )
-                })}
-
-                <button
-                  onClick={() =>
-                    setLinks([
-                      ...links,
-                      {
-                        id: crypto.randomUUID(),
-                        network: 'Instagram',
-                        handle: ''
-                      }
-                    ])
-                  }
-                  className="
-                    w-full py-4
-                    border-2 border-dashed
-                    border-gray-200 dark:border-slate-700
-                    rounded-3xl
-                    text-gray-400
-                    font-bold
-                    hover:border-indigo-400
-                    transition-all
-                    bg-transparent
-                    cursor-pointer
-                    flex items-center justify-center gap-2
-                  "
-                >
-
-                  <Plus size={18} />
-
-                  {t.btn_add_net}
-
-                </button>
-
-              </div>
-
+              <SocialLinksAdd  links={links} setLinks={setLinks} updateLink={updateLink} t={t} lang={lang}/>
               
 
               {/* LEGAL */}
@@ -825,194 +606,48 @@ export default function DigitalIDForm({
 
             </div>
 
+          </div>)
+  }
+
+  return (
+
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
+
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+
+        {/* BACK */}
+
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 font-bold mb-10 no-underline border-none"
+        >
+
+          <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+
+            <ArrowLeft size={18} />
+
           </div>
+
+          {t.back}
+
+        </Link>
+
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start lg:items-start">          {/* ================================================= */}
+       
+           <Left/>
 
           {/* ================================================= */}
           {/* RIGHT */}
           {/* ================================================= */}
-
-      <div className="self-start lg:sticky lg:top-8"> 
-      
-      <div className="mb-8">
-  <h2 className="
-    text-4xl md:text-5xl
-    font-black
-    tracking-tight
-    italic
-    leading-tight
-    bg-gradient-to-r
-    from-indigo-600
-    to-violet-600
-    bg-clip-text
-    text-transparent
-    text-center
-  ">
-    QRCode 
-  </h2>
-</div>
-       
-           
-      <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 md:p-12 shadow-[0_30px_60px_rgba(79,70,229,0.08)] border border-gray-100 dark:border-slate-800 flex flex-col items-center transition-colors">
-              {/* DESIGN */}
-
-              {/* 4. DESIGN */}
-<div className="mb-8 bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 space-y-6">
-  
-  <h4 className="text-xs font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
-    <Palette size={14}/>
-    {lang === 'fr' ? 'Personnalisation' : 'Customization'}
-  </h4>
-
-  <div className="grid grid-cols-2 gap-4">
-    <div className="space-y-2">
-      <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
-        {t.label_qr}
-      </label>
-
-      <input
-        type="color"
-        value={fgColor}
-        onChange={(e) => setFgColor(e.target.value)}
-        className="w-full h-12 rounded-xl cursor-pointer border-none bg-gray-50 dark:bg-slate-800 p-1"
-      />
-    </div>
-
-    <div className="space-y-2">
-      <label className="text-[9px] font-black text-gray-400 uppercase ml-2">
-        Fond
-      </label>
-
-      <input
-        type="color"
-        value={bgColor}
-        onChange={(e) => setBgColor(e.target.value)}
-        className="w-full h-12 rounded-xl cursor-pointer border-none bg-gray-50 dark:bg-slate-800 p-1"
-      />
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <label className="text-[9px] font-black text-gray-400 uppercase ml-2 flex justify-between">
-      {t.label_logo}
-
-      {logo && (
-        <button
-          onClick={() => setLogo(null)}
-          className="text-red-500 text-[9px] font-bold bg-transparent border-none cursor-pointer hover:underline"
-        >
-          Supprimer
-        </button>
-      )}
-    </label>
-
-    <div className="relative group h-14 bg-gray-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center hover:border-indigo-400 transition-colors">
-      
-      {logo ? (
-        <Image
-          src={logo}
-          alt="Logo"
-          className="h-10 object-contain"
-          width={40}
-          height={40}
-        />
-      ) : (
-        <Upload size={20} className="text-gray-300" />
-      )}
-
-      <input
-        type="file"
-        onChange={handleLogoUpload}
-        accept="image/*"
-        className="absolute inset-0 opacity-0 cursor-pointer"
-      />
-    </div>
-  </div>
-</div>
-              <div className="p-8 bg-white rounded-[2.5rem] mb-10 border border-gray-50 shadow-inner relative group overflow-hidden">
-
-                <QRCodeCanvas
-                  id="did-qr-canvas"
-                  value={publicUrl}
-                  size={260}
-                  level="H"
-                  marginSize={4}
-                  fgColor={fgColor}
-                  bgColor={bgColor}
-                  imageSettings={
-                    logo
-                      ? {
-                          src: logo,
-                          height: 50,
-                          width: 50,
-                          excavate: true
-                        }
-                      : {
-                          src: getQrIcon(
-                            ICON_PATHS.users,
-                            fgColor
-                          ),
-                          height: 40,
-                          width: 40,
-                          excavate: true
-                        }
-                  }
-                />
-
-              </div>
-
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4">
-
-                {spaceType} Space
-
-              </h3>
-
-              {generatedId && (
-
-                <div className="mb-8 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800">
-
-                  <p className="text-indigo-600 dark:text-indigo-400 font-black text-sm tracking-tight">
-                    rtbx.space/@/{handle}
-                  </p>
-
-                </div>
-
-              )}
-
-              <div className="space-y-4 w-full">
-
-                <button
-                  onClick={downloadQR}
-                  disabled={!handle}
-                  className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 disabled:opacity-30 border-none cursor-pointer"
-                >
-
-                  <Download className="w-6 h-6" />
-
-                  {t.btn_dl_did}
-
-                </button>
-
-                {generatedId && (
-
-                  <Link
-                    href={`/u/${handle}`}
-                    target="_blank"
-                    className="w-full py-4 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-400 rounded-2xl font-black border border-gray-100 dark:border-slate-800 no-underline flex items-center justify-center gap-2 hover:bg-gray-100 transition-all"
-                  >
-
-                    {t.open_page}
-
-                    <ArrowRight size={18} />
-
-                  </Link>
-
-                )}
-
-              </div>
-
-            </div>
-
-          </div>
+          <QRCodeDesign logo={logo} setLogo={setLogo} bgColor={bgColor} 
+          setBgColor={setBgColor} 
+          fgColor={fgColor} setFgColor={setFgColor}  handle={handle} 
+          generatedId={generatedId}
+          spaceType={spaceType}
+          lang={lang}
+          t={t}
+          
+          />
 
         </div>
 
