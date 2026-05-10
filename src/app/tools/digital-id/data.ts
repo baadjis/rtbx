@@ -34,6 +34,12 @@ fr: {
   ph_org_name: "Ex: RetailBox Foundation",
   label_org_type: "Type d'organisation",
 
+  desc_personal: "Créateur, branding personnel et présence sociale",
+desc_organization: "ONG, association, institution ou organisation publique",
+desc_developer: "Portfolio développeur, projets et présence technique",
+desc_business: "Restaurant, salon, boutique ou activité commerciale",
+desc_startup: "Produit, équipe, SaaS ou jeune entreprise innovante",
+
   org_type_ngo: "ONG",
   org_type_association: "Association",
   org_type_government: "Gouvernementale",
@@ -52,7 +58,7 @@ fr: {
   ph_entity_name: "Ex: RetailBox Studio",
   identity_activated:"Identité Activée",
   did_delete:"Supprimer",
-  qr_color:"Couleur QR"
+  
 
 },
 en: {
@@ -92,6 +98,13 @@ en: {
   ph_org_name: "Ex: RetailBox Foundation",
 
   label_org_type: "Organization type",
+
+  desc_personal: "Creator, personal branding and social presence",
+desc_organization: "NGO, association, institution or public organization",
+desc_developer: "Developer portfolio, projects and technical presence",
+desc_business: "Restaurant, barber, shop or commercial activity",
+desc_startup: "Product, team, SaaS or innovative startup",
+
   org_type_ngo: "NGO",
   org_type_association: "Association",
   org_type_government: "Governmental",
@@ -113,7 +126,6 @@ en: {
   ph_entity_name: "Ex: RetailBox Studio",
   identity_activated:"Identity Activated",
   did_delete:"Delete",
-  qr_color:"QR Colour"
 
 
 
