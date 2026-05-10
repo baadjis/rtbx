@@ -44,16 +44,7 @@ export default function OrganizationSubcategorySelect({
   t: any
 }) {
   return (
-    <div className="space-y-5 animate-in slide-in-from-top-4 duration-500">
-
-     
-
-      {/* SUBCATEGORY */}
-      <div className="space-y-3">
-
-        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
-          {t.label_org_type || "Organization type"}
-        </label>
+    
 
         <div className="grid grid-cols-2 gap-3">
 
@@ -139,7 +130,6 @@ export default function OrganizationSubcategorySelect({
           })}
 
         </div>
-      </div>
-    </div>
+     
   )
 }

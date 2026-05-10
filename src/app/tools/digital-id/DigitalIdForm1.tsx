@@ -364,7 +364,7 @@ export default function DigitalIDForm({
 
               {/* ORGANIZATION */}
 
-              {spaceType === 'personal' && (
+              {spaceType === 'organization' && (
 
   <BuilderSection
     icon={User}
@@ -372,7 +372,7 @@ export default function DigitalIDForm({
     subtitle={t.template_subtitle}
   >
 
-    <PersonalSubcategorySelect
+    <OrganizationSubcategorySelect
       subcategory={spaceSubType}
       setSubcategory={setSpaceSubType}
       t={t}

@@ -35,11 +35,7 @@ export default function PersonalSubcategorySelect({
   t: any
 }) {
   return (
-    <div className="space-y-4 animate-in slide-in-from-top-4 duration-500">
-
-      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
-        {t.label_personal_type}
-      </label>
+    
 
       <div className="grid grid-cols-2 gap-3">
 
@@ -126,10 +122,6 @@ export default function PersonalSubcategorySelect({
 
       </div>
 
-      {/* Vanilla hint */}
-      <p className="text-[10px] text-gray-400 font-bold px-1">
-        {t.personal_type_default_hint}
-      </p>
-    </div>
+     
   )
 }
