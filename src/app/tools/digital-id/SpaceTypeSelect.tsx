@@ -54,15 +54,9 @@ export default function SpaceTypeSelect({
   t: any
 }) {
   return (
-    <div className="space-y-4">
+    
 
-      {/* LABEL */}
-      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
-        <Globe size={14} />
-        {t.label_account_type}
-      </label>
-
-      {/* GRID */}
+     
       <div className="grid grid-cols-2 gap-3">
 
         {SPACE_TYPES.map((type) => {
@@ -210,6 +204,6 @@ export default function SpaceTypeSelect({
           )
         })}
       </div>
-    </div>
+    
   )
 }
