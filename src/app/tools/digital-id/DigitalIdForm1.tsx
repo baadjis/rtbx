@@ -367,7 +367,7 @@ export default function DigitalIDForm({
               {spaceType === 'organization' && (
 
   <BuilderSection
-    icon={User}
+    icon={Link2}
     title={t.template_title}
     subtitle={t.template_subtitle}
   >

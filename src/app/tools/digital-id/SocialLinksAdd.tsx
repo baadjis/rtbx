@@ -11,15 +11,9 @@ export default function SocialLinksAdd({links,setLinks,updateLink,t,lang}:
 
             return(
     
-              <div className="space-y-4">
+              <>
 
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
-
-                  <Link2 size={14} />
-
-                  {t.label_socials || 'Réseaux sociaux'}
-
-                </label>
+                
 
                 {links.map((link, i) => {
 
@@ -157,7 +151,7 @@ export default function SocialLinksAdd({links,setLinks,updateLink,t,lang}:
 
                 </button>
 
-              </div>
+              </>
             )
 
 
