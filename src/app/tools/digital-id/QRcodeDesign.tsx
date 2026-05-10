@@ -12,8 +12,8 @@ import { getQrIcon, ICON_PATHS } from '@/utils/qr-utils'
 
 type QrcodeDesignProps={
         
-        logo:any
-        setLogo:any,
+        qrLogo:any
+        setQrLogo:any,
         fgColor:string,
         setFgColor:any,
         bgColor:string,
@@ -28,8 +28,9 @@ type QrcodeDesignProps={
 }
 
 export default function QRCodeDesign({
-    logo,setLogo,fgColor,setFgColor,bgColor,setBgColor,handle,generatedId,lang,t,
-    spaceType
+    qrLogo,setQrLogo,fgColor,setFgColor,bgColor,setBgColor,handle,generatedId,lang,t,
+    spaceType,
+    
     
 
 }:QrcodeDesignProps){
@@ -45,7 +46,7 @@ export default function QRCodeDesign({
       const reader = new FileReader()
 
       reader.onloadend = () =>
-        setLogo(reader.result as string)
+        setQrLogo(reader.result as string)
 
       reader.readAsDataURL(file)
     }
@@ -145,9 +146,9 @@ export default function QRCodeDesign({
     <label className="text-[9px] font-black text-gray-400 uppercase ml-2 flex justify-between">
       {t.label_logo}
 
-      {logo && (
+      {qrLogo && (
         <button
-          onClick={() => setLogo(null)}
+          onClick={() => setQrLogo(null)}
           className="text-red-500 text-[9px] font-bold bg-transparent border-none cursor-pointer hover:underline"
         >
           {t.did_delete}
@@ -157,9 +158,9 @@ export default function QRCodeDesign({
 
     <div className="relative group h-14 bg-gray-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center hover:border-indigo-400 transition-colors">
       
-      {logo ? (
+      {qrLogo ? (
         <Image
-          src={logo}
+          src={qrLogo}
           alt="Logo"
           className="h-10 object-contain"
           width={40}
@@ -189,9 +190,9 @@ export default function QRCodeDesign({
                   fgColor={fgColor}
                   bgColor={bgColor}
                   imageSettings={
-                    logo
+                    qrLogo
                       ? {
-                          src: logo,
+                          src: qrLogo,
                           height: 50,
                           width: 50,
                           excavate: true

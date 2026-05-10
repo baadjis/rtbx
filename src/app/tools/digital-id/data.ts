@@ -72,6 +72,10 @@ socials_title: "Liens sociaux",
 socials_subtitle: "Ajoutez vos réseaux, plateformes et points de contact",
 
 legal_subtitle: "Confirmez les informations et les autorisations nécessaires",
+label_avatar: "Photo / Avatar",
+avatar_hint: "Affiché sur votre space public",
+upload_avatar: "Ajouter une image",
+remove: "Supprimer",
   
 
 },
@@ -158,6 +162,10 @@ socials_title: "Social Links",
 socials_subtitle: "Add your networks, platforms and contact points",
 
 legal_subtitle: "Confirm the required information and permissions",
+label_avatar: "Profile Photo / Avatar",
+avatar_hint: "Displayed on your public space",
+upload_avatar: "Upload image",
+remove: "Remove",
 
 
 

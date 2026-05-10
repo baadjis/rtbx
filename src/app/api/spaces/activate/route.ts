@@ -27,7 +27,8 @@ export async function POST(request: Request) {
         social_data: body.social_data,
         theme_color: body.theme_color,
         bg_color: body.bg_color,
-        logo_url: body.logo_url,
+        qr_logo: body.logo_url,
+        avatar_ul:body.avatar_url,
         legal_accepted_at: body.legal_accepted_at,
         is_authorized_representative: body.is_authorized_representative
     }]).select().single();

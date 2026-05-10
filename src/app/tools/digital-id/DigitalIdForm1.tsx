@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import {
   ArrowLeft,
@@ -16,7 +17,8 @@ import {
   Globe,
   Users,
   User,
-  Link2
+  Link2,
+  Upload
 } from 'lucide-react'
 
 import { createBrowserClient } from '@supabase/ssr'
@@ -46,6 +48,8 @@ export default function DigitalIDForm({
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
+  const [avatar, setAvatar]=useState<string|null>(null)
+  const [qrLogo, setQrLogo]=useState<string|null>(null)
 
   // =========================================================
   // USER
@@ -112,8 +116,7 @@ export default function DigitalIDForm({
   const [bgColor, setBgColor] =
     useState('#ffffff')
 
-  const [logo, setLogo] =
-    useState<string | null>(null)
+ 
 
   // =========================================================
   // LEGAL
@@ -124,6 +127,8 @@ export default function DigitalIDForm({
 
   const [legalAuth, setLegalAuth] =
     useState(false)
+
+
 
   // =========================================================
   // SLUG
@@ -273,7 +278,8 @@ export default function DigitalIDForm({
 
       bg_color: bgColor,
 
-      logo_url: logo,
+      avatar_url: avatar,
+      qr_logo:qrLogo,
 
       legal_accepted_at:
         new Date().toISOString(),
@@ -322,6 +328,23 @@ export default function DigitalIDForm({
     }
   }
 
+  const handleImageUpload = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: (v: string | null) => void
+) => {
+
+  const file = e.target.files?.[0]
+
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onloadend = () =>
+    setter(reader.result as string)
+
+  reader.readAsDataURL(file)
+}
+
  
 
   // =========================================================
@@ -337,6 +360,14 @@ export default function DigitalIDForm({
   // =========================================================
 
   function Left(){
+    const hasValidLinks = links.some(
+  (link: any) => link.handle?.trim() !== ''
+)
+
+const canActivate =
+  legalTerms &&
+  (spaceType !== 'organization' || legalAuth) &&
+  hasValidLinks
     return( 
 
        <div className="space-y-8 self-start">
@@ -436,6 +467,110 @@ export default function DigitalIDForm({
                 </div>
 
               )}
+
+              <div className="space-y-3">
+
+  <div className="flex items-center justify-between">
+
+    <div>
+
+      <label className="
+        text-[10px]
+        font-black
+        text-gray-400
+        uppercase
+        tracking-widest
+        ml-2
+      ">
+        {t.label_avatar}
+      </label>
+
+      <p className="
+        text-[11px]
+        text-gray-400
+        ml-2 mt-1
+      ">
+        {t.avatar_hint}
+      </p>
+
+    </div>
+
+    {avatar && (
+      <button
+        onClick={() => setAvatar(null)}
+        className="
+          text-red-500
+          text-[10px]
+          font-bold
+          hover:underline
+        "
+      >
+        {t.remove}
+      </button>
+    )}
+
+  </div>
+
+  <div
+    className="
+      relative
+      h-28
+      rounded-[2rem]
+      overflow-hidden
+      border-2 border-dashed
+      border-gray-200 dark:border-slate-700
+      bg-gray-50 dark:bg-slate-800
+      hover:border-indigo-400
+      transition-all
+      group
+    "
+  >
+
+    {avatar ? (
+
+      <Image
+        src={avatar}
+        alt="Avatar"
+        fill
+        className="object-cover"
+        unoptimized
+      />
+
+    ) : (
+
+      <div className="
+        absolute inset-0
+        flex flex-col items-center justify-center
+        gap-2
+        text-gray-400
+      ">
+
+        <Upload size={22} />
+
+        <span className="text-[11px] font-bold">
+          {t.upload_avatar}
+        </span>
+
+      </div>
+
+    )}
+
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) =>
+        handleImageUpload(e, setAvatar)
+      }
+      className="
+        absolute inset-0
+        opacity-0
+        cursor-pointer
+      "
+    />
+
+  </div>
+
+</div>
 
               {/* EMAIL */}
 
@@ -604,20 +739,33 @@ export default function DigitalIDForm({
 
                 <button
                   onClick={handleActivate}
-                  disabled={loading}
-                  className="
-                    w-full py-5
-                    bg-indigo-600
-                    text-white
-                    rounded-[2rem]
-                    font-black text-lg
-                    shadow-xl shadow-indigo-200
-                    hover:bg-indigo-700
-                    transition-all
-                    border-none
-                    cursor-pointer
-                    flex items-center justify-center gap-3
-                  "
+                  disabled={loading || !canActivate}
+                  className={`
+  w-full py-5
+  rounded-[2rem]
+  font-black text-lg
+  shadow-xl shadow-indigo-200
+  transition-all
+  border-none
+  flex items-center justify-center gap-3
+
+  ${
+    canActivate
+      ? `
+        bg-indigo-600
+        hover:bg-indigo-700
+        cursor-pointer
+        text-white
+      `
+      : `
+        bg-gray-200 dark:bg-slate-800
+        text-gray-400
+        cursor-not-allowed
+        shadow-none
+      `
+  }
+`}
+                
                 >
 
                   {loading
@@ -685,7 +833,7 @@ export default function DigitalIDForm({
           {/* ================================================= */}
           {/* RIGHT */}
           {/* ================================================= */}
-          <QRCodeDesign logo={logo} setLogo={setLogo} bgColor={bgColor} 
+          <QRCodeDesign qrLogo={qrLogo} setQrLogo={setQrLogo} bgColor={bgColor} 
           setBgColor={setBgColor} 
           fgColor={fgColor} setFgColor={setFgColor}  handle={handle} 
           generatedId={generatedId}

@@ -53,7 +53,7 @@ export default async function PublicSpacePage({
 
 
 
-  const imageUrl = isProfileOnly ? entity.avatar_url : entity.logo_url;
+  const imageUrl = isProfileOnly ? entity.avatar_url : entity.avatar_url;
 
   const themeColor = entity.theme_color || '#4f46e5';
   const bgColor = entity.bg_color || '#0f172a';
