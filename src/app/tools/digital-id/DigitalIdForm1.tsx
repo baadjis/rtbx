@@ -12,7 +12,11 @@ import {
   Loader2,
   CheckCircle2,
   Mail,
-  Scale
+  Scale,
+  Globe,
+  Users,
+  User,
+  Link2
 } from 'lucide-react'
 
 import { createBrowserClient } from '@supabase/ssr'
@@ -27,6 +31,7 @@ import OrganizationSubcategorySelect from './OrganisationForm'
 import PersonalSubcategorySelect from './PersonalForm'
 import QRCodeDesign from './QRcodeDesign'
 import SocialLinksAdd from './SocialLinksAdd'
+import BuilderSection from './BuilderSection'
 
 export default function DigitalIDForm({
   lang
@@ -339,37 +344,71 @@ export default function DigitalIDForm({
                   {t.did_title}
             </h1>
 
-            <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800 space-y-8">
+            <div className="space-y-6">
 
               {/* SPACE TYPE */}
 
-              <SpaceTypeSelect
-                accountType={spaceType}
-                setAccountType={setSpaceType}
-                t={t}
-              />
+              <BuilderSection
+              icon={Globe}
+              title={t.space_type_title}
+             subtitle={t.space_type_subtitle}
+            >
+
+  <SpaceTypeSelect
+    accountType={spaceType}
+    setAccountType={setSpaceType}
+    t={t}
+  />
+
+</BuilderSection>
 
               {/* ORGANIZATION */}
 
-              {spaceType === 'organization' && (
-                <OrganizationSubcategorySelect
-                  subcategory={spaceSubType}
-                  setSubcategory={setSpaceSubType}
-                  t={t}
-                />
-              )}
+              {spaceType === 'personal' && (
+
+  <BuilderSection
+    icon={User}
+    title={t.template_title}
+    subtitle={t.template_subtitle}
+  >
+
+    <PersonalSubcategorySelect
+      subcategory={spaceSubType}
+      setSubcategory={setSpaceSubType}
+      t={t}
+    />
+
+  </BuilderSection>
+
+)}
 
               {/* PERSONAL */}
 
-              {spaceType === 'personal' && (
-                <PersonalSubcategorySelect
-                  subcategory={spaceSubType}
-                  setSubcategory={setSpaceSubType}
-                  t={t}
-                />
-              )}
+             {spaceType === 'personal' && (
+
+  <BuilderSection
+    icon={User}
+    title={t.template_title}
+    subtitle={t.template_subtitle}
+  >
+
+    <PersonalSubcategorySelect
+      subcategory={spaceSubType}
+      setSubcategory={setSpaceSubType}
+      t={t}
+    />
+
+  </BuilderSection>
+
+)}
 
               {/* ENTITY NAME */}
+
+              <BuilderSection
+  icon={Link2}
+  title={t.identity_title}
+  subtitle={t.identity_subtitle}
+>
 
               {spaceType !== 'personal' && (
 
@@ -486,23 +525,30 @@ export default function DigitalIDForm({
 
               </div>
 
+              </BuilderSection>
+
               {/* SOCIALS */}
+              <BuilderSection
+  icon={Users}
+  title={t.socials_title}
+  subtitle={t.socials_subtitle}
+>
               <SocialLinksAdd  links={links} setLinks={setLinks} updateLink={updateLink} t={t} lang={lang}/>
-              
+  </BuilderSection>
 
               {/* LEGAL */}
+              
+                <BuilderSection
+  icon={Scale}
+  title={t.legal_title}
+  subtitle={t.legal_subtitle}
+>
+              
 
-              <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] border border-gray-100 dark:border-slate-700 space-y-4">
 
-                <div className="flex items-center gap-3 mb-2 text-indigo-600 dark:text-indigo-400">
+  {/* legal stuff */}
 
-                  <Scale size={18} />
 
-                  <h4 className="text-xs font-black uppercase tracking-widest">
-                    {t.legal_title}
-                  </h4>
-
-                </div>
 
                 <label className="flex items-start gap-3 cursor-pointer group">
 
@@ -549,8 +595,8 @@ export default function DigitalIDForm({
                   </label>
 
                 )}
-
-              </div>
+</BuilderSection>
+            
 
               {/* BUTTON */}
 

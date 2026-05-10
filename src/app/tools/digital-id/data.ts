@@ -58,6 +58,20 @@ desc_startup: "Produit, équipe, SaaS ou jeune entreprise innovante",
   ph_entity_name: "Ex: RetailBox Studio",
   identity_activated:"Identité Activée",
   did_delete:"Supprimer",
+
+   space_type_title: "Type de Space",
+space_type_subtitle: "Choisissez l’identité principale de votre espace",
+
+template_title: "Template",
+template_subtitle: "Sélectionnez la structure adaptée à votre usage",
+
+identity_title: "Identité publique",
+identity_subtitle: "Définissez le nom et le lien public de votre space",
+
+socials_title: "Liens sociaux",
+socials_subtitle: "Ajoutez vos réseaux, plateformes et points de contact",
+
+legal_subtitle: "Confirmez les informations et les autorisations nécessaires",
   
 
 },
@@ -126,6 +140,24 @@ desc_startup: "Product, team, SaaS or innovative startup",
   ph_entity_name: "Ex: RetailBox Studio",
   identity_activated:"Identity Activated",
   did_delete:"Delete",
+
+
+ 
+
+
+space_type_title: "Space Type",
+space_type_subtitle: "Choose the main identity of your space",
+
+template_title: "Template",
+template_subtitle: "Select the structure that fits your use case",
+
+identity_title: "Public Identity",
+identity_subtitle: "Define your public name and public space link",
+
+socials_title: "Social Links",
+socials_subtitle: "Add your networks, platforms and contact points",
+
+legal_subtitle: "Confirm the required information and permissions",
 
 
 
