@@ -199,7 +199,9 @@ const handleActivate = async () => {
               )}
               {/* 2. EMAIL DE GESTION */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2"><Mail size={14}/> Email de gestion</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2"><Mail size={14}/> 
+                {t.manangement_email}
+                </label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={!!currentUser} placeholder="votre@email.com" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 disabled:opacity-50" />
               </div>
 

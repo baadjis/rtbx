@@ -146,8 +146,7 @@ export async function POST(
       is_authorized_representative:
         body.is_authorized_representative || false,
 
-      lang:
-        body.lang || 'en'
+      
 
     }
 
