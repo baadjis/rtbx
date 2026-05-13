@@ -349,14 +349,7 @@ export default function DigitalIDForm({
 
   const handle = slug || generatedId
 
-  
-
-  // =========================================================
-  // UI
-  // =========================================================
-
-  function Left(){
-    const hasValidLinks = links.some(
+   const hasValidLinks = links.some(
   (link: any) => link.handle?.trim() !== ''
 )
 
@@ -364,9 +357,38 @@ const canActivate =
   legalTerms &&
   (spaceType !== 'organization' || legalAuth) &&
   hasValidLinks
-    return( 
+  // =========================================================
+  // UI
+  // =========================================================
 
-       <div className="space-y-10">
+  
+
+  return (
+
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
+
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+
+        {/* BACK */}
+
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 font-bold mb-10 no-underline border-none"
+        >
+
+          <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+
+            <ArrowLeft size={18} />
+
+          </div>
+
+          {t.back}
+
+        </Link>
+          <div className="max-w-5xl mx-auto">
+           
+            {/*left*/}
+            <div className="space-y-10">
            
            <div className="text-center space-y-5">
 
@@ -886,6 +908,8 @@ const canActivate =
 
                 )}
               </BuilderSection>
+
+              {/*end left*/}
             
 
               {/* BUTTON */}
@@ -953,34 +977,7 @@ const canActivate =
 
             </div>
 
-          </div>)
-  }
-
-  return (
-
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-300">
-
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-
-        {/* BACK */}
-
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 font-bold mb-10 no-underline border-none"
-        >
-
-          <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-gray-100 dark:border-slate-800 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
-
-            <ArrowLeft size={18} />
-
           </div>
-
-          {t.back}
-
-        </Link>
-          <div className="max-w-5xl mx-auto">
-           <Left/>
-
          
 
         </div>
