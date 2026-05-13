@@ -7,6 +7,7 @@ import RenderSocialLink from './RenderSocialLink';
 import { LangType } from '@/lib/lang/types';
 import { SpaceAvatar } from './SpaceAvatar';
 import Footer from './Footer';
+import { getLang } from '@/lib/lang/lang-getter';
 
 
 export default async function PublicSpacePage({ 
@@ -17,8 +18,7 @@ export default async function PublicSpacePage({
   const { slug } = await params;
   const lowerSlug = slug.toLowerCase();
   const supabase = await createClient();
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as LangType;
+  const lang = await getLang() as LangType
   const t = Data[lang];
 
   let { data: entity } = await supabase

@@ -26,7 +26,6 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Data } from './data'
 import { LangType } from '@/lib/lang/types'
 
-import { get_social_config } from '@/utils/social-config'
 
 import SpaceTypeSelect from './SpaceTypeSelect'
 import OrganizationSubcategorySelect from './OrganisationForm'
@@ -49,7 +48,6 @@ export default function DigitalIDForm({
   )
 
   const [avatar, setAvatar]=useState<string|null>(null)
-  const [qrLogo, setQrLogo]=useState<string|null>(null)
 
   // =========================================================
   // USER
@@ -113,8 +111,7 @@ export default function DigitalIDForm({
   const [fgColor, setFgColor] =
     useState('#4f46e5')
 
-  const [bgColor, setBgColor] =
-    useState('#ffffff')
+  
 
  
 
@@ -275,11 +272,7 @@ export default function DigitalIDForm({
       ),
 
       theme_color: fgColor,
-
-      bg_color: bgColor,
-
       avatar_url: avatar,
-      qr_logo:qrLogo,
 
       legal_accepted_at:
         new Date().toISOString(),
@@ -304,10 +297,13 @@ export default function DigitalIDForm({
       )
 
       const result = await response.json()
+    
 
       if (result.success) {
 
         setGeneratedId(result.id)
+        window.location.href =
+    `/u/${result.slug}/onboarding?token=${result.edit_token}`
 
       } else {
 
@@ -370,12 +366,55 @@ const canActivate =
   hasValidLinks
     return( 
 
-       <div className="space-y-8 self-start">
-            <h1 className="text-center text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight italic bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent leading-tight">          
-                  {t.did_title}
-            </h1>
+       <div className="space-y-10">
+           
+           <div className="text-center space-y-5">
 
-            <div className="space-y-6">
+  <div className="
+    inline-flex items-center gap-2
+    px-4 py-2
+    rounded-full
+    bg-indigo-50 dark:bg-indigo-500/10
+    border border-indigo-100 dark:border-indigo-500/20
+    text-indigo-600
+    text-xs font-black uppercase tracking-widest
+  ">
+    <Globe size={14} />
+    RTBX SPACE
+  </div>
+
+  <div className="space-y-4">
+
+    <h1 className="
+      text-5xl md:text-6xl
+      font-black
+      tracking-tight
+      leading-[0.95]
+      bg-gradient-to-r
+      from-indigo-600
+      via-violet-600
+      to-cyan-500
+      bg-clip-text
+      text-transparent
+    ">
+      {t.did_title}
+    </h1>
+
+    <p className="
+      max-w-2xl mx-auto
+      text-base md:text-lg
+      text-gray-500 dark:text-slate-400
+      leading-relaxed
+      font-medium
+    ">
+      {t.did_subtitle}
+    </p>
+
+  </div>
+
+</div>
+
+            <div className="space-y-8">
 
               {/* SPACE TYPE */}
 
@@ -433,46 +472,19 @@ const canActivate =
 
 )}
 
-              {/* ENTITY NAME */}
+             {/* IDENTITY */}
 
-              <BuilderSection
+<BuilderSection
   icon={Link2}
   title={t.identity_title}
   subtitle={t.identity_subtitle}
 >
 
-              {spaceType !== 'personal' && (
+  {/* ENTITY NAME */}
 
-                <div className="space-y-2 animate-in slide-in-from-top-4 duration-500">
+  {spaceType !== 'personal' && (
 
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
-                    {t.label_entity_name}
-                  </label>
-
-                  <input
-                    value={entityName}
-                    onChange={(e) =>
-                      setEntityName(e.target.value)
-                    }
-                    placeholder={t.ph_entity_name}
-                    className="
-                      w-full p-4
-                      bg-gray-50 dark:bg-slate-800
-                      border-none rounded-2xl
-                      font-bold dark:text-white
-                      focus:ring-2 focus:ring-indigo-500
-                    "
-                  />
-
-                </div>
-
-              )}
-
-              <div className="space-y-3">
-
-  <div className="flex items-center justify-between">
-
-    <div>
+    <div className="space-y-2">
 
       <label className="
         text-[10px]
@@ -482,208 +494,351 @@ const canActivate =
         tracking-widest
         ml-2
       ">
-        {t.label_avatar}
+        {t.label_entity_name}
       </label>
 
-      <p className="
-        text-[11px]
-        text-gray-400
-        ml-2 mt-1
-      ">
-        {t.avatar_hint}
-      </p>
+      <input
+        value={entityName}
+        onChange={(e) =>
+          setEntityName(e.target.value)
+        }
+        placeholder={t.ph_entity_name}
+        className="
+          w-full p-4
+          bg-gray-50 dark:bg-slate-800
+          border-none rounded-2xl
+          font-bold dark:text-white
+          focus:ring-2 focus:ring-indigo-500
+        "
+      />
 
     </div>
 
-    {avatar && (
-      <button
-        onClick={() => setAvatar(null)}
-        className="
-          text-red-500
-          text-[10px]
-          font-bold
-          hover:underline
-        "
-      >
-        {t.remove}
-      </button>
-    )}
+  )}
 
-  </div>
+  {/* EMAIL */}
 
-  <div
-    className="
-      relative
-      h-28
-      rounded-[2rem]
-      overflow-hidden
-      border-2 border-dashed
-      border-gray-200 dark:border-slate-700
-      bg-gray-50 dark:bg-slate-800
-      hover:border-indigo-400
-      transition-all
-      group
-    "
-  >
+  <div className="space-y-2">
 
-    {avatar ? (
+    <label className="
+      text-[10px]
+      font-black
+      text-gray-400
+      uppercase
+      tracking-widest
+      ml-2 flex items-center gap-2
+    ">
 
-      <Image
-        src={avatar}
-        alt="Avatar"
-        fill
-        className="object-cover"
-        unoptimized
-      />
+      <Mail size={14} />
 
-    ) : (
+      {t.manangement_email}
 
-      <div className="
-        absolute inset-0
-        flex flex-col items-center justify-center
-        gap-2
-        text-gray-400
-      ">
-
-        <Upload size={22} />
-
-        <span className="text-[11px] font-bold">
-          {t.upload_avatar}
-        </span>
-
-      </div>
-
-    )}
+    </label>
 
     <input
-      type="file"
-      accept="image/*"
+      type="email"
+      value={email}
       onChange={(e) =>
-        handleImageUpload(e, setAvatar)
+        setEmail(e.target.value)
       }
+      disabled={!!currentUser}
+      placeholder="votre@email.com"
       className="
-        absolute inset-0
-        opacity-0
-        cursor-pointer
+        w-full p-4
+        bg-gray-50 dark:bg-slate-800
+        border-none rounded-2xl
+        font-bold dark:text-white
+        focus:ring-2 focus:ring-indigo-500
+        disabled:opacity-50
       "
     />
 
   </div>
 
-</div>
+  {/* SLUG */}
 
-              {/* EMAIL */}
+  <div className="space-y-4">
 
-              <div className="space-y-2">
+    <label className="
+      text-[10px]
+      font-black
+      text-gray-400
+      uppercase
+      tracking-widest
+      ml-2
+    ">
+      {t.choose_public_link}
+    </label>
 
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
+    <div
+      className={`
+        flex items-center
+        bg-gray-50 dark:bg-slate-800
+        rounded-2xl px-4
+        border-2 transition-all
 
-                  <Mail size={14} />
+        ${
+          isSlugAvailable === true
+            ? 'border-green-500'
+            : isSlugAvailable === false
+            ? 'border-red-500'
+            : 'border-transparent'
+        }
+      `}
+    >
 
-                  {t.manangement_email}
+      <span className="
+        text-gray-400
+        font-bold
+        border-r border-gray-200
+        dark:border-slate-700
+        pr-3 text-sm
+      ">
+        rtbx.space/u/
+      </span>
 
-                </label>
+      <input
+        value={slug}
+        onChange={(e) =>
+          setSlug(
+            e.target.value
+              .toLowerCase()
+              .replace(/[^a-z0-9-]/g, '')
+          )
+        }
+        placeholder="votre-nom"
+        className="
+          flex-1 p-4
+          bg-transparent
+          border-none
+          focus:ring-0
+          font-bold
+          dark:text-white
+        "
+      />
 
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                  disabled={!!currentUser}
-                  placeholder="votre@email.com"
-                  className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
-                />
+      {isSlugAvailable === true && (
+        <CheckCircle2
+          className="text-green-500 ml-2"
+          size={18}
+        />
+      )}
 
-              </div>
+      {isSlugAvailable === false && (
+        <X
+          className="text-red-500 ml-2"
+          size={18}
+        />
+      )}
 
-              {/* SLUG */}
+    </div>
 
-              <div className="space-y-4">
+  </div>
 
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
-                  {t.choose_public_link}
-                </label>
+</BuilderSection>
 
-                <div
-                  className={`
-                    flex items-center
-                    bg-gray-50 dark:bg-slate-800
-                    rounded-2xl px-4
-                    border-2 transition-all
+{/* SOCIALS */} 
+<BuilderSection icon={Users} title={t.socials_title} subtitle={t.socials_subtitle} > 
+  <SocialLinksAdd links={links} setLinks={setLinks} 
+  updateLink={updateLink} t={t} 
+  lang={lang}/>
 
-                    ${
-                      isSlugAvailable === true
-                        ? 'border-green-500'
-                        : isSlugAvailable === false
-                        ? 'border-red-500'
-                        : 'border-transparent'
-                    }
-                  `}
-                >
+</BuilderSection>
 
-                  <span className="text-gray-400 font-bold border-r border-gray-200 dark:border-slate-700 pr-3 text-sm">
-                    rtbx.space/u/
-                  </span>
+{/* BRANDING */}
 
-                  <input
-                    value={slug}
-                    onChange={(e) =>
-                      setSlug(
-                        e.target.value
-                          .toLowerCase()
-                          .replace(
-                            /[^a-z0-9-]/g,
-                            ''
-                          )
-                      )
-                    }
-                    placeholder="votre-nom"
-                    className="flex-1 p-4 bg-transparent border-none focus:ring-0 font-bold dark:text-white"
-                  />
-
-                  {isSlugAvailable === true && (
-                    <CheckCircle2
-                      className="text-green-500 ml-2"
-                      size={18}
-                    />
-                  )}
-
-                  {isSlugAvailable === false && (
-                    <X
-                      className="text-red-500 ml-2"
-                      size={18}
-                    />
-                  )}
-
-                </div>
-
-              </div>
-
-              </BuilderSection>
-
-              {/* SOCIALS */}
-              <BuilderSection
-  icon={Users}
-  title={t.socials_title}
-  subtitle={t.socials_subtitle}
+<BuilderSection
+  icon={Upload}
+  title={t.branding_title}
+  subtitle={t.branding_subtitle}
 >
-              <SocialLinksAdd  links={links} setLinks={setLinks} updateLink={updateLink} t={t} lang={lang}/>
+
+  <div className="grid md:grid-cols-2 gap-6">
+
+    {/* AVATAR */}
+
+    <div className="space-y-3">
+
+      <div className="flex items-center justify-between">
+
+        <div>
+
+          <label className="
+            text-[10px]
+            font-black
+            text-gray-400
+            uppercase
+            tracking-widest
+            ml-2
+          ">
+            {t.label_avatar}
+          </label>
+
+          <p className="
+            text-[11px]
+            text-gray-400
+            ml-2 mt-1
+          ">
+            {t.avatar_hint}
+          </p>
+
+        </div>
+
+        {avatar && (
+          <button
+            onClick={() => setAvatar(null)}
+            className="
+              text-red-500
+              text-[10px]
+              font-bold
+              hover:underline
+            "
+          >
+            {t.remove}
+          </button>
+        )}
+
+      </div>
+
+      <div className="
+        relative
+        h-44
+        rounded-[2rem]
+        overflow-hidden
+        border-2 border-dashed
+        border-gray-200 dark:border-slate-700
+        bg-gray-50 dark:bg-slate-800
+        hover:border-indigo-400
+        transition-all
+      ">
+
+        {avatar ? (
+
+          <Image
+            src={avatar}
+            alt="Avatar"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+
+        ) : (
+
+          <div className="
+            absolute inset-0
+            flex flex-col items-center justify-center
+            gap-3
+            text-gray-400
+          ">
+
+            <Upload size={24} />
+
+            <span className="text-xs font-bold">
+              {t.upload_avatar}
+            </span>
+
+          </div>
+
+        )}
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            handleImageUpload(e, setAvatar)
+          }
+          className="
+            absolute inset-0
+            opacity-0
+            cursor-pointer
+          "
+        />
+
+      </div>
+
+    </div>
+
+    {/* THEME + QR */}
+
+    <div className="space-y-6">
+
+      {/* THEME COLOR */}
+
+      <div className="space-y-2">
+
+        <label className="
+          text-[10px]
+          font-black
+          text-gray-400
+          uppercase
+          tracking-widest
+          ml-2
+        ">
+          {t.label_theme_color}
+        </label>
+
+        <div className="
+          flex items-center gap-4
+          p-4 rounded-2xl
+          bg-gray-50 dark:bg-slate-800
+        ">
+
+          <input
+            type="color"
+            value={fgColor}
+            onChange={(e) =>
+              setFgColor(e.target.value)
+            }
+            className="
+              w-16 h-16
+              rounded-2xl
+              border-none
+              cursor-pointer
+              bg-transparent
+            "
+          />
+
+          <div>
+
+            <p className="
+              font-black text-sm
+              dark:text-white
+            ">
+              {fgColor}
+            </p>
+
+            <p className="
+              text-xs text-gray-400
+            ">
+              {t.theme_color_hint}
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* QR LOGO */}
+
+     
+
+    </div>
+
+  </div>
+
   </BuilderSection>
 
-              {/* LEGAL */}
+
+  {/* LEGAL */}
               
-                <BuilderSection
-  icon={Scale}
-  title={t.legal_title}
-  subtitle={t.legal_subtitle}
->
-              
+  <BuilderSection
+      icon={Scale}
+      title={t.legal_title}
+      subtitle={t.legal_subtitle}
+  >
 
-
-  {/* legal stuff */}
-
-
+                {/* legal stuff */}
 
                 <label className="flex items-start gap-3 cursor-pointer group">
 
@@ -730,7 +885,7 @@ const canActivate =
                   </label>
 
                 )}
-</BuilderSection>
+              </BuilderSection>
             
 
               {/* BUTTON */}
@@ -764,9 +919,7 @@ const canActivate =
         shadow-none
       `
   }
-`}
-                
-                >
+`} >
 
                   {loading
                     ? <Loader2 className="animate-spin" />
@@ -825,23 +978,10 @@ const canActivate =
           {t.back}
 
         </Link>
-
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start lg:items-start">          {/* ================================================= */}
-       
+          <div className="max-w-5xl mx-auto">
            <Left/>
 
-          {/* ================================================= */}
-          {/* RIGHT */}
-          {/* ================================================= */}
-          <QRCodeDesign qrLogo={qrLogo} setQrLogo={setQrLogo} bgColor={bgColor} 
-          setBgColor={setBgColor} 
-          fgColor={fgColor} setFgColor={setFgColor}  handle={handle} 
-          generatedId={generatedId}
-          spaceType={spaceType}
-          lang={lang}
-          t={t}
-          
-          />
+         
 
         </div>
 

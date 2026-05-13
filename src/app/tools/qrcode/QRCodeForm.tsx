@@ -5,8 +5,9 @@ import { QRCodeCanvas } from 'qrcode.react'
 import { Download, Type, ArrowLeft, Plus, Trash2, Settings2, FileText, Upload, X } from 'lucide-react'
 import Link from 'next/link'
 import { Data } from './data'
+import { LangType } from '@/lib/lang/types'
 
-export default function QRCodeForm({ lang }: { lang: 'fr' | 'en' }) {
+export default function QRCodeForm({ lang }: { lang:LangType }) {
   const t = Data[lang]
   
   const [mode, setMode] = useState<'url' | 'kv'>('url')

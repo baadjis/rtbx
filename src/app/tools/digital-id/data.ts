@@ -76,6 +76,29 @@ label_avatar: "Photo / Avatar",
 avatar_hint: "Affiché sur votre space public",
 upload_avatar: "Ajouter une image",
 remove: "Supprimer",
+did_subtitle:
+  "Créez votre identité numérique publique, partageable et personnalisable.",
+
+branding_title:
+  "Branding & identité visuelle",
+
+branding_subtitle:
+  "Ajoutez votre avatar, vos couleurs et votre identité visuelle.",
+
+label_theme_color:
+  "Couleur principale",
+
+theme_color_hint:
+  "Cette couleur sera utilisée sur votre espace public.",
+
+label_qr_logo:
+  "Logo QR",
+
+qr_logo_hint:
+  "Visible uniquement dans les QR Codes générés.",
+
+upload_qr_logo:
+  "Ajouter un logo QR",
   
 
 },
@@ -166,6 +189,29 @@ label_avatar: "Profile Photo / Avatar",
 avatar_hint: "Displayed on your public space",
 upload_avatar: "Upload image",
 remove: "Remove",
+did_subtitle:
+  "Create your public, shareable and customizable digital identity.",
+
+branding_title:
+  "Branding & visual identity",
+
+branding_subtitle:
+  "Add your avatar, colors and visual identity.",
+
+label_theme_color:
+  "Primary color",
+
+theme_color_hint:
+  "This color will be used on your public space.",
+
+label_qr_logo:
+  "QR logo",
+
+qr_logo_hint:
+  "Visible only inside generated QR codes.",
+
+upload_qr_logo:
+  "Upload QR logo",
 
 
 

@@ -25,10 +25,10 @@ export async function POST(request: Request) {
         space_subtype:body.space_subtype,
         entity_name: body.entity_name,
         social_data: body.social_data,
-        theme_color: body.theme_color,
-        bg_color: body.bg_color,
-        qr_logo: body.logo_url,
-        avatar_ul:body.avatar_url,
+        theme_color: body?.theme_color||null,
+        bg_color: body?.bg_color||null,
+        qr_logo_url: body?.qr_logo_url||null,
+        avatar_ul:body?.avatar_url||null,
         legal_accepted_at: body.legal_accepted_at,
         is_authorized_representative: body.is_authorized_representative
     }]).select().single();

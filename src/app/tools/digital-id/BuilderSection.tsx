@@ -11,13 +11,13 @@ export default function BuilderSection({
   return (
     <div
       className="
-        bg-white dark:bg-slate-900
-        rounded-[2.5rem]
-        border border-gray-100 dark:border-slate-800
-        p-6 md:p-8
-        shadow-sm
-        space-y-6
-      "
+  relative overflow-hidden
+  bg-white dark:bg-slate-900
+  border border-gray-100 dark:border-slate-800
+  rounded-[2.5rem]
+  p-6 md:p-8
+  shadow-[0_10px_40px_rgba(0,0,0,0.04)]
+"
     >
 
       {/* HEADER */}

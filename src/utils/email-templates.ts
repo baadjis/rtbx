@@ -1,3 +1,5 @@
+import { LangType } from "@/lib/lang/types";
+
 const theme = {
   primary: '#4f46e5',    // Indigo
   secondary: '#9333ea',  // Violet
@@ -210,42 +212,279 @@ export const getFormInvitationEmail = (data: { orgName: string, formTitle: strin
   return EmailWrapper(content, lang);
 };
 
-// --- TEMPLATE : BIENVENUE / CRÉATION DE SPACE ---
-// --- TEMPLATE : BIENVENUE SPACE (RECTIFIÉ) ---
-export const getSpaceWelcomeEmail = (data: { displayName: string, slug: string, spaceId: string, editUrl: string }, lang: 'fr' | 'en') => {
+// --- TEMPLATE : BIENVENUE SPACE ---
+export const getSpaceWelcomeEmail = (
+  data: {
+    displayName: string
+    slug: string
+    spaceId: string
+    editUrl: string
+    publicUrl: string
+    onboardingUrl: string
+  },
+  lang: LangType
+) => {
+
   const content = {
+
     fr: `
-      <h2 style="color:#4f46e5;">Félicitations, votre identité est réservée ! 🚀</h2>
-      <p>Bonjour <strong>${data.displayName}</strong>,</p>
-      <p>Votre Espace Public est accessible ici : <br/>
-         <a href="https://rtbx.space/u/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
+      <h2 style="color:#4f46e5; margin-bottom:12px;">
+        Félicitations, votre Space est maintenant actif 🚀
+      </h2>
+
+      <p>
+        Bonjour <strong>${data.displayName}</strong>,
       </p>
-      
-      <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
-        <p style="margin:0; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:1px;">Informations de gestion</p>
-        <p style="margin:10px 0; font-size:14px; color:#1e293b;">
-           <strong>Space ID :</strong> <code style="background:#eee; padding:2px 5px;">${data.spaceId}</code><br/>
-           <strong>Lien d'édition :</strong> <a href="${data.editUrl}" style="color:#4f46e5;">Modifier mon profil →</a>
+
+      <p>
+        Votre identité publique RetailBox a été créée avec succès.
+      </p>
+
+      <div style="
+        margin:30px 0;
+        padding:28px;
+        background:linear-gradient(135deg,#eef2ff 0%,#f5f3ff 100%);
+        border-radius:24px;
+        border:1px solid #e0e7ff;
+      ">
+
+        <p style="
+          margin:0 0 10px 0;
+          font-size:11px;
+          font-weight:800;
+          color:#6366f1;
+          text-transform:uppercase;
+          letter-spacing:1px;
+        ">
+          Votre espace public
         </p>
-        <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Conservez cet e-mail. Ces accès sont privés et vous appartiennent.</p>
+
+        <a
+          href="${data.publicUrl}"
+          style="
+            font-size:20px;
+            font-weight:800;
+            color:#4f46e5;
+            text-decoration:none;
+            word-break:break-all;
+          "
+        >
+          ${data.publicUrl.replace('https://', '')}
+        </a>
+
+
+        
+
+      </div>
+
+      <div style="
+        margin:30px 0;
+        padding:25px;
+        background-color:#f8fafc;
+        border-radius:20px;
+        border:1px solid #e2e8f0;
+      ">
+
+        <p style="
+          margin:0;
+          font-size:11px;
+          font-weight:800;
+          color:#64748b;
+          text-transform:uppercase;
+          letter-spacing:1px;
+        ">
+          Informations de gestion
+        </p>
+
+        <div style="
+          margin-top:14px;
+          font-size:14px;
+          color:#1e293b;
+          line-height:1.8;
+        ">
+          <strong>Space ID :</strong>
+
+          <code style="
+            background:#e2e8f0;
+            padding:3px 8px;
+            border-radius:8px;
+          ">
+            ${data.spaceId}
+          </code>
+
+          <br/>
+
+          <strong>Lien d’édition :</strong>
+
+          <a
+            href="${data.editUrl}"
+            style="
+              color:#4f46e5;
+              font-weight:700;
+              text-decoration:none;
+            "
+          >
+            Gérer mon Space →
+          </a>
+          
+          <br/>
+
+          <a href="${data.onboardingUrl}">
+             Commencer la configuration →
+           </a>
+
+
+        </div>
+
+      </div>
+
+      <div style="
+        margin-top:30px;
+        padding:18px;
+        border-radius:16px;
+        background:#fff7ed;
+        border:1px solid #fed7aa;
+      ">
+        <p style="
+          margin:0;
+          font-size:12px;
+          color:#9a3412;
+          line-height:1.7;
+        ">
+          Conservez cet e-mail en sécurité.
+          Le lien d’édition est privé et permet de gérer votre Space sans compte utilisateur.
+        </p>
       </div>
     `,
+
     en: `
-      <h2 style="color:#4f46e5;">Congratulations, your identity is reserved! 🚀</h2>
-      <p>Hello <strong>${data.displayName}</strong>,</p>
-      <p>Your Public Space is live at: <br/>
-         <a href="https://rtbx.space/u/${data.slug}" style="font-size:18px; font-weight:bold; color:#4f46e5;">rtbx.space/@/${data.slug}</a>
+      <h2 style="color:#4f46e5; margin-bottom:12px;">
+        Congratulations, your Space is now live 🚀
+      </h2>
+
+      <p>
+        Hello <strong>${data.displayName}</strong>,
       </p>
-      
-      <div style="margin: 30px 0; padding: 25px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
-        <p style="margin:0; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:1px;">Management Details</p>
-        <p style="margin:10px 0; font-size:14px; color:#1e293b;">
-           <strong>Space ID:</strong> <code style="background:#eee; padding:2px 5px;">${data.spaceId}</code><br/>
-           <strong>Edit Link:</strong> <a href="${data.editUrl}" style="color:#4f46e5;">Manage my profile →</a>
+
+      <p>
+        Your RetailBox public identity has been successfully created.
+      </p>
+
+      <div style="
+        margin:30px 0;
+        padding:28px;
+        background:linear-gradient(135deg,#eef2ff 0%,#f5f3ff 100%);
+        border-radius:24px;
+        border:1px solid #e0e7ff;
+      ">
+
+        <p style="
+          margin:0 0 10px 0;
+          font-size:11px;
+          font-weight:800;
+          color:#6366f1;
+          text-transform:uppercase;
+          letter-spacing:1px;
+        ">
+          Your public space
         </p>
-        <p style="margin:0; font-size:11px; color:#94a3b8; font-style:italic;">Keep this email safe. These access points are private and belong to you.</p>
+
+        <a
+          href="${data.publicUrl}"
+          style="
+            font-size:20px;
+            font-weight:800;
+            color:#4f46e5;
+            text-decoration:none;
+            word-break:break-all;
+          "
+        >
+          ${data.publicUrl.replace('https://', '')}
+        </a>
+
+      </div>
+
+      <div style="
+        margin:30px 0;
+        padding:25px;
+        background-color:#f8fafc;
+        border-radius:20px;
+        border:1px solid #e2e8f0;
+      ">
+
+        <p style="
+          margin:0;
+          font-size:11px;
+          font-weight:800;
+          color:#64748b;
+          text-transform:uppercase;
+          letter-spacing:1px;
+        ">
+          Management details
+        </p>
+
+        <div style="
+          margin-top:14px;
+          font-size:14px;
+          color:#1e293b;
+          line-height:1.8;
+        ">
+          <strong>Space ID:</strong>
+
+          <code style="
+            background:#e2e8f0;
+            padding:3px 8px;
+            border-radius:8px;
+          ">
+            ${data.spaceId}
+          </code>
+
+          <br/>
+
+          <strong>Edit link:</strong>
+
+          <a
+            href="${data.editUrl}"
+            style="
+              color:#4f46e5;
+              font-weight:700;
+              text-decoration:none;
+            "
+          >
+            Manage my Space →
+          </a>
+
+            <br/>
+
+            <a href="${data.onboardingUrl}">
+              Configure my Space →
+            </a>
+        </div>
+
+      </div>
+
+      <div style="
+        margin-top:30px;
+        padding:18px;
+        border-radius:16px;
+        background:#fff7ed;
+        border:1px solid #fed7aa;
+      ">
+        <p style="
+          margin:0;
+          font-size:12px;
+          color:#9a3412;
+          line-height:1.7;
+        ">
+          Keep this email safe.
+          The edit link is private and allows you to manage your Space without a user account.
+        </p>
       </div>
     `
-  }[lang];
-  return EmailWrapper(content, lang);
-};
+
+  }[lang]
+
+  return EmailWrapper(content, lang)
+}
+
+
