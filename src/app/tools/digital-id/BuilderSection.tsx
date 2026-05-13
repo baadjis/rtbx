@@ -9,60 +9,50 @@ export default function BuilderSection({
   const Icon = icon
 
   return (
-    <div
-      className="
-  relative overflow-hidden
+    <div className="
   bg-white dark:bg-slate-900
-  border border-gray-100 dark:border-slate-800
   rounded-[2.5rem]
   p-6 md:p-8
-  shadow-[0_10px_40px_rgba(0,0,0,0.04)]
-"
-    >
+  border border-gray-100 dark:border-slate-800
+  shadow-sm
+">
 
-      {/* HEADER */}
-      <div className="flex items-start gap-4">
+  {/* HEADER */}
+  <div className="flex items-start gap-4">
 
-        <div className="
-          w-12 h-12
-          rounded-2xl
-          bg-indigo-500/10
-          text-indigo-600
-          flex items-center justify-center
-          shrink-0
-        ">
-          <Icon size={22} />
-        </div>
-
-        <div>
-
-          <h3 className="
-            text-sm
-            font-black
-            uppercase
-            tracking-widest
-            text-gray-900 dark:text-white
-          ">
-            {title}
-          </h3>
-
-          {subtitle && (
-            <p className="
-              mt-1
-              text-xs
-              text-gray-400
-              leading-relaxed
-            ">
-              {subtitle}
-            </p>
-          )}
-
-        </div>
-
-      </div>
-
-      {children}
-
+    <div className="
+      w-14 h-14 rounded-2xl
+      bg-indigo-50 dark:bg-indigo-500/10
+      flex items-center justify-center
+      text-indigo-600
+      shrink-0
+    ">
+      <Icon size={24} />
     </div>
+
+    <div>
+      <h3 className="
+        text-lg font-black
+        text-gray-900 dark:text-white
+      ">
+        {title}
+      </h3>
+
+      <p className="
+        text-sm text-gray-500
+        mt-1 leading-relaxed
+      ">
+        {subtitle}
+      </p>
+    </div>
+
+  </div>
+
+  {/* CONTENT */}
+  <div className="mt-8">
+    {children}
+  </div>
+
+</div>
   )
 }
