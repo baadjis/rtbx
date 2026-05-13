@@ -142,6 +142,7 @@ export default function SocialLinksAdd({links,setLinks,updateLink,t,lang}:
                     bg-transparent
                     cursor-pointer
                     flex items-center justify-center gap-2
+                    mt-8
                   "
                 >
 
