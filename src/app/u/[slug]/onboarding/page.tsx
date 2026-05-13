@@ -34,9 +34,7 @@ export default async function Page({
         space_type,
         space_subtype,
         avatar_url,
-        qr_logo,
         theme_color,
-        bg_color,
         social_data,
         edit_token
       `)

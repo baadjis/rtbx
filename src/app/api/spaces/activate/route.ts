@@ -293,7 +293,8 @@ export async function POST(
         onboardingUrl,
 
       public_url:
-        publicUrl
+        publicUrl,
+      edit_token:data.edit_token
 
     })
 

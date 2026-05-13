@@ -90,7 +90,7 @@ export default function DigitalIDForm({
   // EMAIL
   // =========================================================
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState<string>('')
 
   // =========================================================
   // LINKS
@@ -131,7 +131,7 @@ export default function DigitalIDForm({
   // SLUG
   // =========================================================
 
-  const [slug, setSlug] = useState('')
+  const [slug, setSlug] = useState<string>('')
 
   const [isSlugAvailable, setIsSlugAvailable] =
     useState<boolean | null>(null)
