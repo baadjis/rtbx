@@ -1,9 +1,9 @@
 import { createClient } from '@/utils/supabase/server';
 import { notFound, redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
 import EditSpaceClient from './EditSpaceClient';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getLang } from '@/lib/lang/lang-getter';
 
 export default async function EditSpacePage({ 
   searchParams 
@@ -26,8 +26,8 @@ export default async function EditSpacePage({
 
   if (error || !space) return notFound();
 
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as 'en' | 'fr';
+
+  const lang = await getLang()
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 transition-colors duration-500">

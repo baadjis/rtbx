@@ -300,7 +300,7 @@ export default function SpaceOnboardingPage({
                   </div>
 
                   <Link
-                    href={`/edit/${token}`}
+                    href={{ pathname:`/edit` ,query:{token:token}}}
                     className="inline-flex items-center gap-2 text-violet-600 font-black hover:gap-3 transition-all no-underline"
                   >
                     {t.btn_edit}
