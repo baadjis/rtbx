@@ -90,6 +90,7 @@ label_theme_color:
 
 theme_color_hint:
   "Cette couleur sera utilisée sur votre espace public.",
+theme_preview_hint:'Couleur principale de votre identité',
 
 label_qr_logo:
   "Logo QR",
@@ -203,6 +204,7 @@ label_theme_color:
 
 theme_color_hint:
   "This color will be used on your public space.",
+theme_preview_hint:'Primary color of your identity',
 
 label_qr_logo:
   "QR logo",

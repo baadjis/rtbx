@@ -123,72 +123,117 @@ export default function Branding({avatar,setAvatar,fgColor,setFgColor,handleImag
     </div>
 
     {/* THEME + QR */}
+<div className="space-y-3 flex flex-col h-full">
 
-<div className="flex flex-col h-full items-center justify-center">
-      {/* THEME COLOR */}
+  {/* HEADER */}
 
-      <div className="space-y-2">
+  <div>
 
-        <label className="
-          text-[10px]
-          font-black
-          text-gray-400
-          uppercase
-          tracking-widest
-          ml-2
+    <label className="
+      text-[10px]
+      font-black
+      text-gray-400
+      uppercase
+      tracking-widest
+      ml-2
+    ">
+      {t.label_theme_color}
+    </label>
+
+    <p className="
+      text-[11px]
+      text-gray-400
+      ml-2 mt-1
+    ">
+      {t.theme_color_hint}
+    </p>
+
+  </div>
+
+  {/* CARD */}
+
+  <div className="
+    flex-1 min-h-[220px]
+    rounded-[2rem]
+    bg-gray-50 dark:bg-slate-800
+    border border-gray-100 dark:border-slate-700
+    flex flex-col items-center justify-center
+    p-8
+    relative overflow-hidden
+  ">
+
+    {/* PREVIEW GLOW */}
+
+    <div
+      className="
+        absolute top-0 right-0
+        w-40 h-40 rounded-full
+        blur-3xl opacity-20
+      "
+      style={{
+        background: fgColor
+      }}
+    />
+
+    {/* COLOR PICKER */}
+
+    <input
+      type="color"
+      value={fgColor}
+      onChange={(e) =>
+        setFgColor(e.target.value)
+      }
+      className="
+        relative z-10
+        w-24 h-24
+        rounded-[2rem]
+        border-none
+        cursor-pointer
+        bg-transparent
+      "
+    />
+
+    {/* VALUE */}
+
+    <div className="relative z-10 mt-5 text-center">
+
+      <p className="
+        font-black
+        text-base
+        dark:text-white
+      ">
+        {fgColor}
+      </p>
+
+      <div className="
+        mt-3 inline-flex items-center gap-2
+        px-3 py-2 rounded-full
+        bg-white dark:bg-slate-900
+        border border-gray-200 dark:border-slate-700
+      ">
+
+        <div
+          className="w-3 h-3 rounded-full"
+          style={{
+            background: fgColor
+          }}
+        />
+
+        <span className="
+          text-[11px]
+          font-bold
+          text-gray-500
         ">
-          {t.label_theme_color}
-        </label>
-
-        <div className="
-           flex items-center gap-4
-          p-5 rounded-[2rem]
-          bg-gray-50 dark:bg-slate-800
-         border border-gray-100 dark:border-slate-700
-         flex-1 min-h-[220px]
-        ">
-
-          <input
-            type="color"
-            value={fgColor}
-            onChange={(e) =>
-              setFgColor(e.target.value)
-            }
-            className="
-              w-16 h-16
-              rounded-2xl
-              border-none
-              cursor-pointer
-              bg-transparent
-            "
-          />
-
-          <div>
-
-            <p className="
-              font-black text-sm
-              dark:text-white
-            ">
-              {fgColor}
-            </p>
-
-            <p className="
-              text-xs text-gray-400
-            ">
-              {t.theme_color_hint}
-            </p>
-
-          </div>
-
-        </div>
+          {t.theme_preview_hint}
+        </span>
 
       </div>
 
-      {/* QR LOGO */}
-
-     
-
     </div>
+
+  </div>
+
+</div>
 
   </div>
 
