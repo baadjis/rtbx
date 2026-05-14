@@ -87,12 +87,16 @@ export function SpaceAvatar({
 
       <div
         className={`
-          relative
-          mx-auto
-          p-[4px]
-          border border-white/10
-          shadow-2xl
-          transition-all duration-500
+          group
+    w-30 h-30 mx-auto 
+    p-[4px]
+    hover:p-[2px]
+    shadow-2xl
+    border border-white/10
+    transition-all duration-500
+    hover:scale-[1.30]
+    hover:z-20
+    hover:shadow-[0_0_40px_rgba(255,255,255,0.15)]
 
           ${current.outer}
           ${currentSize.wrapper}
@@ -121,11 +125,16 @@ export function SpaceAvatar({
           className={`
             relative
             w-full h-full
-            overflow-hidden
-            bg-white/5
-            backdrop-blur-md
-            flex items-center justify-center
-            transition-all duration-500
+    flex items-center justify-center
+    overflow-hidden
+    relative
+    bg-white/5
+    backdrop-blur-md
+    transition-all duration-500
+
+    group-hover:w-[220px]
+    group-hover:h-[140px]
+    group-hover:rounded-3xl
 
             ${current.inner}
 
@@ -147,14 +156,13 @@ export function SpaceAvatar({
               fill
               unoptimized
               className={`
-                object-cover
-                transition-all duration-500
+                object-contain
+    transition-all duration-500
+    p-2
+    group-hover:p-4
+    ${variant === "diamond" ? "-rotate-45 group-hover:rotate-0" : ""}
 
-                ${
-                  variant === 'diamond'
-                    ? '-rotate-45'
-                    : ''
-                }
+                
 
                 ${
                   !editMode
