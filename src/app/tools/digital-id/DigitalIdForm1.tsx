@@ -33,6 +33,7 @@ import PersonalSubcategorySelect from './PersonalForm'
 import QRCodeDesign from './QRcodeDesign'
 import SocialLinksAdd from './SocialLinksAdd'
 import BuilderSection from './BuilderSection'
+import Branding from './Branding'
 
 export default function DigitalIDForm({
   lang
@@ -675,179 +676,11 @@ const canActivate =
   subtitle={t.branding_subtitle}
 >
 
-  <div className="grid md:grid-cols-2 gap-6">
-
-    {/* AVATAR */}
-
-    <div className="space-y-3">
-
-      <div className="flex items-center justify-between">
-
-        <div>
-
-          <label className="
-            text-[10px]
-            font-black
-            text-gray-400
-            uppercase
-            tracking-widest
-            ml-2
-          ">
-            {t.label_avatar}
-          </label>
-
-          <p className="
-            text-[11px]
-            text-gray-400
-            ml-2 mt-1
-          ">
-            {t.avatar_hint}
-          </p>
-
-        </div>
-
-        {avatar && (
-          <button
-            onClick={() => setAvatar(null)}
-            className="
-              text-red-500
-              text-[10px]
-              font-bold
-              hover:underline
-            "
-          >
-            {t.remove}
-          </button>
-        )}
-
-      </div>
-
-      <div className="
-        relative
-        h-44
-        rounded-[2rem]
-        overflow-hidden
-        border-2 border-dashed
-        border-gray-200 dark:border-slate-700
-        bg-gray-50 dark:bg-slate-800
-        hover:border-indigo-400
-        transition-all
-      ">
-
-        {avatar ? (
-
-          <Image
-            src={avatar}
-            alt="Avatar"
-            fill
-            className="object-cover"
-            unoptimized
-          />
-
-        ) : (
-
-          <div className="
-            absolute inset-0
-            flex flex-col items-center justify-center
-            gap-3
-            text-gray-400
-          ">
-
-            <Upload size={24} />
-
-            <span className="text-xs font-bold">
-              {t.upload_avatar}
-            </span>
-
-          </div>
-
-        )}
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) =>
-            handleImageUpload(e, setAvatar)
-          }
-          className="
-            absolute inset-0
-            opacity-0
-            cursor-pointer
-          "
-        />
-
-      </div>
-
-    </div>
-
-    {/* THEME + QR */}
-
-    <div className="space-y-6">
-
-      {/* THEME COLOR */}
-
-      <div className="space-y-2">
-
-        <label className="
-          text-[10px]
-          font-black
-          text-gray-400
-          uppercase
-          tracking-widest
-          ml-2
-        ">
-          {t.label_theme_color}
-        </label>
-
-        <div className="
-          flex items-center gap-4
-          p-4 rounded-2xl
-          bg-gray-50 dark:bg-slate-800
-        ">
-
-          <input
-            type="color"
-            value={fgColor}
-            onChange={(e) =>
-              setFgColor(e.target.value)
-            }
-            className="
-              w-16 h-16
-              rounded-2xl
-              border-none
-              cursor-pointer
-              bg-transparent
-            "
-          />
-
-          <div>
-
-            <p className="
-              font-black text-sm
-              dark:text-white
-            ">
-              {fgColor}
-            </p>
-
-            <p className="
-              text-xs text-gray-400
-            ">
-              {t.theme_color_hint}
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* QR LOGO */}
-
-     
-
-    </div>
-
-  </div>
+  <Branding t={t} avatar={avatar} setAvatar={setAvatar} 
+  fgColor={fgColor} setFgColor={setFgColor}
+  handleImageUpload={handleImageUpload}
+  
+  />
 
   </BuilderSection>
 
