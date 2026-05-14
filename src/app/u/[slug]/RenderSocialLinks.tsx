@@ -3,41 +3,11 @@
 
 import { LangType } from "@/lib/lang/types";
 import { formatSocialUrl, get_social_config } from '@/utils/social-config';
+import { getAdaptiveGlow, getAdaptiveGradient } from "@/utils/styles-utils";
 import Image from 'next/image';
 
 
-function getBrightness(color: string) {
-  const c = color.replace("#", "");
-
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-
-  return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
-function getAdaptiveGradient(color: string) {
-  const brightness = getBrightness(color);
-
-  const opacity = brightness > 140 ? "22" : "55";
-
-  return `linear-gradient(
-    135deg,
-    ${color}${opacity},
-    transparent 50%,
-    ${color}${opacity}
-  )`;
-}
-
-function getAdaptiveGlow(color: string) {
-  const brightness = getBrightness(color);
-
-  return brightness > 140
-    ? `${color}33`
-    : `${color}66`;
-}
-
- export default function RenderSocialLink({ link ,themeColor,lang}: { link: any,themeColor:any,lang:LangType }) {
+ export function RenderSocialLink({ link ,themeColor,lang}: { link: any,themeColor:any,lang:LangType }) {
       const SOCIAL_CONFIG = get_social_config(lang);
 
     const config = SOCIAL_CONFIG[link.network];
@@ -127,4 +97,21 @@ function getAdaptiveGlow(color: string) {
       </div>
     </a>
   );
+}
+
+
+export default function RenderSocialLinks({themeColor,lang,socialLinks}:{themeColor:any,socialLinks:any[],lang:LangType}){
+     return(
+      <div className="space-y-4 w-full px-1 md:px-0">
+                  {socialLinks.length > 0 ? socialLinks.map((link: any, i: number) => {
+                     return <RenderSocialLink link={link} themeColor={themeColor} 
+                     lang={lang}
+                       key={i} />
+                      
+      
+                  }) : (
+                    <div className="py-10 opacity-30 italic font-medium">No links available</div>
+                  )}
+              </div>
+     )
 }

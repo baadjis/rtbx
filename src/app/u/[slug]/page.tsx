@@ -3,11 +3,11 @@ import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Data } from '../data';
-import RenderSocialLink from './RenderSocialLink';
 import { LangType } from '@/lib/lang/types';
-import { SpaceAvatar } from './SpaceAvatar';
-import Footer from './Footer';
+import Footer from '@/components/spaces/SpaceFooter';
 import { getLang } from '@/lib/lang/lang-getter';
+import RenderSocialLinks from '@/components/spaces/RenderSocialLinks';
+import SpaceHeader from '@/components/spaces/SpaceHeader';
 
 
 export default async function PublicSpacePage({ 
@@ -92,34 +92,15 @@ export default async function PublicSpacePage({
       <div className="relative z-10 w-full max-w-md space-y-12 text-center">
         
         {/* --- HEADER --- */}
-        <div className="space-y-6 animate-in fade-in zoom-in duration-700">
-            
-            <SpaceAvatar imageUrl={imageUrl}  themeColor={themeColor} displayName={displayName} variant='circle'/>
-            <div>
-                <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-3 leading-tight uppercase italic">
-                    {displayName}
-                </h1>
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
-                   <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: themeColor }}></div>
-                   <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">
-                      {isProfileOnly ? t.badge_personal : (entity.space_type === 'organization' ? 'Verified Organization' : t.badge_label)}
-                   </span>
-                </div>
-            </div>
-        </div>
+        <SpaceHeader isProfileOnly={isProfileOnly} imageUrl={imageUrl} t={t} 
+        entity={entity}
+        themeColor={themeColor}
+        displayName={displayName}
+        
+        />
 
         {/* --- LIENS --- */}
-        <div className="space-y-4 w-full px-1 md:px-0">
-            {socialLinks.length > 0 ? socialLinks.map((link: any, i: number) => {
-               return <RenderSocialLink link={link} themeColor={themeColor} 
-               lang={lang}
-                 key={i} />
-                
-
-            }) : (
-              <div className="py-10 opacity-30 italic font-medium">No links available</div>
-            )}
-        </div>
+        <RenderSocialLinks  lang={lang} socialLinks={socialLinks} themeColor={themeColor} />
 
 {/* --- FOOTER --- */}
        <Footer t={t}/>
