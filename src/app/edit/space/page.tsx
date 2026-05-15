@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { notFound, redirect } from 'next/navigation';
-import EditSpaceClient from './EditSpaceClient';
+import EditSpaceClient from './EditSpaceClient1';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { getLang } from '@/lib/lang/lang-getter';

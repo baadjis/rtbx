@@ -9,6 +9,10 @@ export const Data = {
     editing: "Mode édition",
     saving: "Enregistrement...",
     saved: "Modifications enregistrées",
+     ph_handle: "Lien ou @identifiant",
+    btn_add_net: "Ajouter un réseau",
+
+
   },
   en: {
     badge_label: "MY DIGITAL PRESENCE",
@@ -20,5 +24,7 @@ export const Data = {
     editing: "Editing mode",
     saving: "Saving...",
     saved: "Changes saved",
+    ph_handle: "Link or @handle",
+    btn_add_net: "Add a network",
   }
 };

@@ -6,6 +6,8 @@ import RenderSocialLinks from './RenderSocialLinks'
 import SpaceHeader from './SpaceHeader'
 import { LangType } from '@/lib/lang/types'
 import { Data } from './data'
+import SocialLinksAdd from './SocialLinksAdd'
+import { Link2 } from 'lucide-react'
 
 type SpaceViewProps = {
   entity: any
@@ -18,10 +20,12 @@ type SpaceViewProps = {
   isProfileOnly:boolean
 
   // edit actions
-  onSave?: () => void
+  onSave?:  any
   onDeleteLink?: (index: number)=>void
   // live edition
   setEditableName?: any
+  setLinks?:any
+  updateLink?:any
   
 }
 
@@ -35,7 +39,9 @@ export default function SpaceView({
   onSave,
   setEditableName,
   onDeleteLink,
-  isProfileOnly
+  isProfileOnly,
+  setLinks,
+  updateLink,
 }: SpaceViewProps) {
 
 
@@ -186,6 +192,90 @@ export default function SpaceView({
           editMode={editMode}
           onDeleteLink={onDeleteLink}
         />
+
+
+        {/* ================================================= */}
+{/* LINKS */}
+{/* ================================================= */}
+
+<RenderSocialLinks
+  lang={lang}
+  socialLinks={socialLinks}
+  themeColor={themeColor}
+  editMode={editMode}
+/>
+
+{/* ================================================= */}
+{/* EDIT SOCIALS */}
+{/* ================================================= */}
+
+{editMode && (
+
+  <div className="
+    space-y-5
+    mt-8
+
+    rounded-[2.5rem]
+
+    border border-white/10
+
+    bg-white/5
+    backdrop-blur-2xl
+
+    p-5
+  ">
+
+    <div className="flex items-center gap-3">
+
+      <div
+        className="
+          w-11 h-11
+          rounded-2xl
+
+          flex items-center justify-center
+
+          bg-white/10
+          border border-white/10
+        "
+      >
+
+        <Link2 size={18} />
+
+      </div>
+
+      <div className="text-left">
+
+        <p className="
+          text-sm font-black
+          uppercase tracking-[0.18em]
+        ">
+          {t.edit_links}
+        </p>
+
+        <p className="
+          text-xs text-white/50
+        ">
+          {t.edit_links_hint}
+        </p>
+
+      </div>
+
+    </div>
+
+    <SocialLinksAdd
+      links={socialLinks}
+      setLinks={
+       setLinks
+      }
+      updateLink={updateLink
+      }
+      t={t}
+      lang={lang}
+    />
+
+  </div>
+
+)}
 
         {/* ================================================= */}
         {/* FOOTER */}
