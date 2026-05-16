@@ -10,6 +10,7 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [links,setLinks]=useState(space.social_data||[])
   const [editableSpace, setEditableSpace] =
   useState({
     ...space,
@@ -29,7 +30,7 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
   //const links = editableSpace.social_data || []
 
 
- const updateLink = (
+ /*const updateLink = (
   index: number,
   field: string,
   value: string
@@ -56,14 +57,42 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
     ...editableSpace,
     social_data: updated
   })
-}
+}*/
+ // =========================================================
+  // UPDATE LINK
+  // =========================================================
 
-const setLinks = (newLinks:any[]) => {
+  const updateLink = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+
+    const newLinks = [...links]
+
+    let cleanValue = value
+
+    if (
+      field === 'handle' &&
+      value.startsWith('@')
+    ) {
+      cleanValue = value.substring(1)
+    }
+
+    newLinks[index] = {
+      ...newLinks[index],
+      [field]: cleanValue
+    }
+
+    setLinks(newLinks)
+  }
+
+/*const setLinks = (newLinks:any[]) => {
   setEditableSpace({
     ...editableSpace,
     social_data: newLinks
   })
-}
+}*/
 
   const handleUpdate = async () => {
     
@@ -76,7 +105,7 @@ const setLinks = (newLinks:any[]) => {
     editableSpace.entity_name,
 
   social_data:
-    editableSpace.social_data,
+    links,
 
   theme_color:
     editableSpace.theme_color,
