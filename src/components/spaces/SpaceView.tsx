@@ -22,6 +22,8 @@ type SpaceViewProps = {
   // edit actions
   onSave?:  any
   onDeleteLink?: (index: number)=>void
+  onUpdateLink?: (index: number)=>void
+
   // live edition
   setEditableName?: any
   setLinks?:any
@@ -40,6 +42,7 @@ export default function SpaceView({
   onSave,
   setEditableName,
   onDeleteLink,
+  onUpdateLink,
   isProfileOnly,
   setLinks,
   updateLink,
@@ -195,6 +198,7 @@ export default function SpaceView({
           themeColor={themeColor}
           editMode={editMode}
           onDeleteLink={onDeleteLink}
+          onUpdateLink={onUpdateLink}
         />
 
 

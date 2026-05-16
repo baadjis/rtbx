@@ -2,7 +2,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Trash2, ExternalLink, GripVertical } from 'lucide-react'
+import { Trash2, ExternalLink, GripVertical, Pencil } from 'lucide-react'
 
 import { LangType } from '@/lib/lang/types'
 
@@ -27,7 +27,7 @@ type RenderSocialLinkProps = {
   /* ACTIONS */
   onDelete?: () => void
   onClick?: () => void
-
+  onUpdate? :()=>void
   /* OPTIONAL */
   draggable?: boolean
 }
@@ -40,6 +40,7 @@ export function RenderSocialLink({
   editMode = false,
 
   onDelete,
+  onUpdate,
   onClick,
 
   draggable = false
@@ -237,61 +238,91 @@ export function RenderSocialLink({
         </div>
 
         {/* RIGHT ACTION */}
+{/* RIGHT ACTION */}
 
-        <div className="ml-auto flex items-center gap-2">
+<div className="ml-auto flex items-center gap-2">
 
-          {!editMode && (
+  {!editMode && (
 
-            <div className="
-              opacity-0
-              group-hover:opacity-40
+    <div className="
+      opacity-0
+      group-hover:opacity-40
 
-              transition-all
+      transition-all
 
-              pr-2
-              translate-x-2
-              group-hover:translate-x-0
-            ">
+      pr-2
+      translate-x-2
+      group-hover:translate-x-0
+    ">
 
-              <ExternalLink
-                size={18}
-                className="text-white"
-              />
+      <ExternalLink
+        size={18}
+        className="text-white"
+      />
 
-            </div>
+    </div>
 
-          )}
+  )}
 
-          {editMode && onDelete && (
+  {editMode && onUpdate && (
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete()
-              }}
-              className="
-                w-10 h-10
-                rounded-xl
+    <button
+      onClick={(e) => {
+        e.stopPropagation()
+        onUpdate()
+      }}
+      className="
+        w-10 h-10
+        rounded-xl
 
-                flex items-center justify-center
+        flex items-center justify-center
 
-                bg-red-500/15
-                hover:bg-red-500
+        bg-white/10
+        hover:bg-indigo-500
 
-                text-red-300
-                hover:text-white
+        text-white/70
+        hover:text-white
 
-                transition-all duration-300
-              "
-            >
+        transition-all duration-300
+      "
+    >
 
-              <Trash2 size={16} />
+      <Pencil size={16} />
 
-            </button>
+    </button>
 
-          )}
+  )}
 
-        </div>
+  {editMode && onDelete && (
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation()
+        onDelete()
+      }}
+      className="
+        w-10 h-10
+        rounded-xl
+
+        flex items-center justify-center
+
+        bg-red-500/15
+        hover:bg-red-500
+
+        text-red-300
+        hover:text-white
+
+        transition-all duration-300
+      "
+    >
+
+      <Trash2 size={16} />
+
+    </button>
+
+  )}
+
+</div>
 
         {/* GLOW */}
 
@@ -328,8 +359,9 @@ export default function RenderSocialLinks({
   lang,
 
   editMode = false,
-
+   
   onDeleteLink,
+  onUpdateLink,
   draggable = false
 }: {
   themeColor: string
@@ -339,7 +371,9 @@ export default function RenderSocialLinks({
   editMode?: boolean
 
   onDeleteLink?: (index: number) => void
+  onUpdateLink?: (index: number) => void
 
+  
   draggable?: boolean
 }) {
 
@@ -372,6 +406,10 @@ export default function RenderSocialLinks({
               onDelete={() =>
                 onDeleteLink?.(i)
               }
+
+              onUpdate={() =>
+               onUpdateLink?.(i)
+            }
             />
 
           )

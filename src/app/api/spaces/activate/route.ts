@@ -5,9 +5,6 @@ import {
   createSpace
 } from '@/lib/spaces/service'
 
-import {
-  SpaceAddSchema
-} from '@/lib/spaces/validators'
 
 
 import { Resend } from 'resend'
@@ -333,9 +330,6 @@ export async function POST1(
 }
 
 
-
-
-
 /**
  * =========================================================
  * POST /api/spaces/activate
@@ -369,33 +363,10 @@ export async function POST(
   try {
 
     // =====================================================
-    // PARSE BODY
+    // BODY
     // =====================================================
 
     const body = await request.json()
-
-    // =====================================================
-    // VALIDATION
-    // =====================================================
-
-    const validation =
-      SpaceAddSchema.safeParse(body)
-
-    if (!validation.success) {
-
-      return NextResponse.json(
-        {
-          success: false,
-
-          error:
-            validation.error
-        },
-        {
-          status: 400
-        }
-      )
-
-    }
 
     // =====================================================
     // CREATE SPACE
@@ -438,8 +409,7 @@ export async function POST(
           body.legal_accepted_at,
 
         is_authorized_representative:
-          body.is_authorized_representative,
-        
+          body.is_authorized_representative
       })
 
     // =====================================================
@@ -468,7 +438,7 @@ export async function POST(
       createdSpace.email
 
     // =====================================================
-    // EMAIL HTML
+    // EMAIL TEMPLATE
     // =====================================================
 
     const htmlContent =
@@ -516,13 +486,6 @@ export async function POST(
 
     } catch (mailError) {
 
-      /**
-       * IMPORTANT:
-       *
-       * Space creation should NOT fail
-       * if email delivery fails.
-       */
-
       console.error(
         'SPACE EMAIL ERROR:',
         mailError
@@ -531,25 +494,19 @@ export async function POST(
     }
 
     // =====================================================
-    // SUCCESS RESPONSE
+    // RESPONSE
     // =====================================================
 
     return NextResponse.json({
 
       success: true,
 
-      /**
-       * Public identity
-       */
       id:
         createdSpace.id,
 
       slug:
         createdSpace.slug,
 
-      /**
-       * URLs
-       */
       public_url:
         publicUrl,
 
@@ -559,9 +516,6 @@ export async function POST(
       edit_url:
         editUrl,
 
-      /**
-       * Management
-       */
       edit_token:
         createdSpace.edit_token
 
@@ -573,6 +527,33 @@ export async function POST(
       'SPACE ACTIVATE ERROR:',
       err
     )
+
+    // =====================================================
+    // ZOD VALIDATION
+    // =====================================================
+
+    if (
+      err?.name === 'ZodError'
+    ) {
+
+      return NextResponse.json(
+        {
+          success: false,
+
+          error:
+            err.errors?.[0]?.message ||
+            'Invalid payload'
+        },
+        {
+          status: 400
+        }
+      )
+
+    }
+
+    // =====================================================
+    // GENERIC ERROR
+    // =====================================================
 
     return NextResponse.json(
       {

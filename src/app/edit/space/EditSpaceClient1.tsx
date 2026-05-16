@@ -10,13 +10,7 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-   const [links, setLinks] = useState<any[]>([
-    {
-      id: crypto.randomUUID(),
-      network: 'Instagram',
-      handle: ''
-    }
-  ])
+  const [links, setLinks] = useState<any[]>([])
   const [editableSpace, setEditableSpace] =
   useState({
     ...space,
@@ -91,6 +85,7 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
     }
 
     setLinks(newLinks)
+
   }
 
 /*const setLinks = (newLinks:any[]) => {
@@ -99,6 +94,59 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
     social_data: newLinks
   })
 }*/
+
+// =========================================================
+// DELETE EXISTING LINK
+// =========================================================
+
+const onDeleteLink = (index: number) => {
+
+  const updated =
+    editableSpace.social_data.filter(
+      (_: any, i: number) => i !== index
+    )
+
+  setEditableSpace({
+    ...editableSpace,
+    social_data: updated
+  })
+
+}
+
+const onUpdateLink = (
+  index: number
+) => {
+
+  const current =
+    editableSpace.social_data[index]
+
+  const handle =
+    prompt(
+      'Handle',
+      current.handle
+    )
+
+  if (
+    handle === null
+  ) return
+
+  const updated =
+    [...editableSpace.social_data]
+
+  updated[index] = {
+    ...updated[index],
+    handle:
+      handle.startsWith('@')
+        ? handle.substring(1)
+        : handle
+  }
+
+  setEditableSpace({
+    ...editableSpace,
+    social_data: updated
+  })
+
+}
 
   const handleUpdate = async () => {
     
@@ -110,8 +158,16 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
   entity_name:
     editableSpace.entity_name,
 
-  social_data:
-    [...editableSpace.social_data,links],
+  social_data: [
+
+  ...editableSpace.social_data,
+
+  ...links.filter(
+    (l: any) =>
+      l.handle?.trim() !== ''
+  )
+
+],
 
   theme_color:
     editableSpace.theme_color,
@@ -162,7 +218,8 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
       entity_name: v
     })
   }
-
+   onDeleteLink={onDeleteLink}
+   onUpdateLink={onUpdateLink}
   isProfileOnly={isProfileOnly}
 
   onSave={handleUpdate}
