@@ -74,6 +74,8 @@ export default function SpaceView({
   // =========================================================
 
   const imageUrl = entity.avatar_url
+  const publicUrl=`/u/${entity.slug}`
+  const homeUrl =`/`
 
   const themeColor =
     entity.theme_color || '#4f46e5'
@@ -194,16 +196,7 @@ export default function SpaceView({
         />
 
 
-        {/* ================================================= */}
-{/* LINKS */}
-{/* ================================================= */}
-
-<RenderSocialLinks
-  lang={lang}
-  socialLinks={socialLinks}
-  themeColor={themeColor}
-  editMode={editMode}
-/>
+      
 
 {/* ================================================= */}
 {/* EDIT SOCIALS */}
@@ -292,6 +285,8 @@ export default function SpaceView({
   saved={saved}
 
   hasChanges={true}
+  publicUrl={publicUrl}
+  homeUrl={homeUrl}
 />
 
       </div>
