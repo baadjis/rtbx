@@ -26,6 +26,7 @@ type SpaceViewProps = {
   setEditableName?: any
   setLinks?:any
   updateLink?:any
+  links?:any
   
 }
 
@@ -42,6 +43,7 @@ export default function SpaceView({
   isProfileOnly,
   setLinks,
   updateLink,
+  links
 }: SpaceViewProps) {
 
 
@@ -256,7 +258,7 @@ export default function SpaceView({
     </div>
 
     <SocialLinksAdd
-      links={socialLinks}
+      links={links}
       setLinks={
        setLinks
       }

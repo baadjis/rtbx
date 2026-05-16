@@ -10,7 +10,13 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [links,setLinks]=useState(space.social_data||[])
+   const [links, setLinks] = useState<any[]>([
+    {
+      id: crypto.randomUUID(),
+      network: 'Instagram',
+      handle: ''
+    }
+  ])
   const [editableSpace, setEditableSpace] =
   useState({
     ...space,
@@ -105,7 +111,7 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
     editableSpace.entity_name,
 
   social_data:
-    links,
+    [...editableSpace.social_data,links],
 
   theme_color:
     editableSpace.theme_color,
@@ -145,7 +151,7 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
 
   entity={editableSpace}
 
-  
+  links={links}
   setLinks={setLinks}
 
   updateLink={updateLink}
