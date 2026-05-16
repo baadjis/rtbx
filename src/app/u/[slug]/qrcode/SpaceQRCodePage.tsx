@@ -21,14 +21,16 @@ import Link from 'next/link'
 import { LangType } from '@/lib/lang/types'
 import { Data } from './data'
 
+
 export default function SpaceQRCodePage({
   space,
   lang
 }: {
   space: any,
   lang:LangType
-}) {
 
+}) {
+  
   const publicUrl = `https://rtbx.space/u/${space.slug}`
   const t= Data[lang]
 

@@ -11,6 +11,8 @@ export const Data = {
     saved: "Modifications enregistrées",
      ph_handle: "Lien ou @identifiant",
     btn_add_net: "Ajouter un réseau",
+    edit_links: 'Modifier les liens',
+    edit_links_hint: 'Ajoutez, supprimez ou réorganisez vos réseaux'
 
 
   },
@@ -26,5 +28,7 @@ export const Data = {
     saved: "Changes saved",
     ph_handle: "Link or @handle",
     btn_add_net: "Add a network",
+    edit_links: 'Edit links', 
+edit_links_hint: 'Add, remove or reorder your networks',
   }
 };

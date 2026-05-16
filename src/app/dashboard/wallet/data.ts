@@ -24,7 +24,7 @@ export const DATA = {
     sub_social: "All your links in one scan",
     switch_space: "Choose space to share",
     personal_space: "My Social Card (Personal)",
-    data_is_protected:"your personal data  is well protected with OAuth 2.0. protocol"
+    data_is_protected:"your personal data  is well protected with OAuth 2.0. "
 
   }
 };

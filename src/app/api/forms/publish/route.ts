@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         const html = getFormInvitationEmail({ orgName: form.org_name, formTitle: form.title, formLink: link }, lang);
 
         await resend.emails.send({
-          from: 'RetailBox <forms@rtbx.space>',
+          from: 'RetailBox forms <forms@rtbx.space>',
           to: invite.email,
           subject: lang === 'fr' ? `Votre avis : ${form.title}` : `Your feedback: ${form.title}`,
           html: html
