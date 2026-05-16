@@ -149,51 +149,89 @@ const onUpdateLink = (
 }
 
   const handleUpdate = async () => {
-    
-    setLoading(true)
 
-    const { error } = await supabase
-      .from('spaces')
-      .update({
-  entity_name:
-    editableSpace.entity_name,
+  setLoading(true)
 
-  social_data: [
+  const payload = {
 
-  ...editableSpace.social_data,
+    entity_name:
+      editableSpace.entity_name,
 
-  ...links.filter(
-    (l: any) =>
-      l.handle?.trim() !== ''
-  )
+    social_data: [
 
-],
+      ...editableSpace.social_data,
 
-  theme_color:
-    editableSpace.theme_color,
+      ...links.filter(
+        (l: any) =>
+          l.handle?.trim() !== ''
+      )
 
-  bg_color:
-    editableSpace.bg_color,
+    ],
 
-  avatar_url:
-    editableSpace.avatar_url,
+    theme_color:
+      editableSpace.theme_color,
 
-  updated_at:
-    new Date().toISOString()
-}).eq('edit_token', token) // Sécurité par le token
+    bg_color:
+      editableSpace.bg_color,
 
-    if (!error) {
-      setSuccess(true)
-      setTimeout(() => {
-          setSuccess(false)
-          router.refresh()
-      }, 3000)
-    } else {
-      alert(error.message)
-    }
-    setLoading(false)
+    avatar_url:
+      editableSpace.avatar_url,
+
+    updated_at:
+      new Date().toISOString()
+
   }
 
+  console.log(
+    'UPDATE PAYLOAD',
+    payload
+  )
+
+  console.log(
+    'TOKEN',
+    token
+  )
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from('spaces')
+    .update(payload)
+    .eq('edit_token', token)
+    .select()
+
+  console.log(
+    'UPDATE RESULT',
+    data
+  )
+
+  console.log(
+    'UPDATE ERROR',
+    error
+  )
+
+  if (!error) {
+
+    setSuccess(true)
+    setLinks([])
+    setTimeout(() => {
+
+      setSuccess(false)
+
+      router.refresh()
+
+    }, 3000)
+
+  } else {
+
+    alert(error.message)
+
+  }
+
+  setLoading(false)
+
+}
   
 
 
