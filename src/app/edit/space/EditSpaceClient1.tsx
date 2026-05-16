@@ -148,91 +148,111 @@ const onUpdateLink = (
 
 }
 
-  const handleUpdate = async () => {
+ const handleUpdate = async () => {
 
-  setLoading(true)
+  try {
 
-  const payload = {
+    setLoading(true)
 
-    entity_name:
-      editableSpace.entity_name,
+    const payload = {
 
-    social_data: [
+      entity_name:
+        editableSpace.entity_name,
 
-      ...editableSpace.social_data,
+      social_data: [
 
-      ...links.filter(
-        (l: any) =>
-          l.handle?.trim() !== ''
+        ...editableSpace.social_data,
+
+        ...links.filter(
+          (l: any) =>
+            l.handle?.trim() !== ''
+        )
+
+      ],
+
+      theme_color:
+        editableSpace.theme_color,
+
+      bg_color:
+        editableSpace.bg_color,
+
+      avatar_url:
+        editableSpace.avatar_url
+
+    }
+
+    const response =
+      await fetch(
+        '/api/spaces/update',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body: JSON.stringify({
+
+            token,
+
+            payload
+
+          })
+        }
       )
 
-    ],
+    const result =
+      await response.json()
 
-    theme_color:
-      editableSpace.theme_color,
+    if (!response.ok) {
 
-    bg_color:
-      editableSpace.bg_color,
+      throw new Error(
+        result.error ||
+        'Update failed'
+      )
 
-    avatar_url:
-      editableSpace.avatar_url,
+    }
 
-    updated_at:
-      new Date().toISOString()
-
-  }
-
-  console.log(
-    'UPDATE PAYLOAD',
-    payload
-  )
-
-  console.log(
-    'TOKEN',
-    token
-  )
-
-  const {
-    data,
-    error
-  } = await supabase
-    .from('spaces')
-    .update(payload)
-    .eq('edit_token', token)
-    .select()
-
-  console.log(
-    'UPDATE RESULT',
-    data
-  )
-
-  console.log(
-    'UPDATE ERROR',
-    error
-  )
-
-  if (!error) {
+    /* SUCCESS */
 
     setSuccess(true)
+
+    /* IMPORTANT */
+
+    setEditableSpace({
+      ...editableSpace,
+      social_data:
+        payload.social_data
+    })
+
+    /* RESET NEW LINKS */
+
     setLinks([])
+
     setTimeout(() => {
 
       setSuccess(false)
 
       router.refresh()
 
-    }, 3000)
+    }, 2000)
 
-  } else {
+  } catch (err: any) {
 
-    alert(error.message)
+    console.error(err)
+
+    alert(
+      err.message
+    )
+
+  } finally {
+
+    setLoading(false)
 
   }
 
-  setLoading(false)
-
 }
-  
 
 
   
