@@ -438,7 +438,8 @@ export async function POST(
           body.legal_accepted_at,
 
         is_authorized_representative:
-          body.is_authorized_representative
+          body.is_authorized_representative,
+        
       })
 
     // =====================================================
