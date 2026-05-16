@@ -1,6 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { createClient } from '@supabase/supabase-js'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
+import {
+  createSpace
+} from '@/lib/spaces/service'
+
+import {
+  SpaceAddSchema
+} from '@/lib/spaces/validators'
+
+
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
 
@@ -10,12 +21,15 @@ const resend = new Resend(
   process.env.RESEND_API_KEY
 )
 
+
+import { createClient } from '@supabase/supabase-js'
+
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function POST(
+export async function POST1(
   request: Request
 ) {
 
@@ -310,6 +324,264 @@ export async function POST(
         error:
           err?.message ||
           'Unknown error'
+      },
+      {
+        status: 500
+      }
+    )
+
+  }
+
+}
+
+
+
+
+
+/**
+ * =========================================================
+ * POST /api/spaces/activate
+ * =========================================================
+ *
+ * Creates a new public Space identity.
+ *
+ * Responsibilities:
+ *
+ * - validates payload
+ * - normalizes email + slug
+ * - creates secure edit_token
+ * - inserts into database
+ * - sends onboarding email
+ * - returns management URLs
+ *
+ * This route is safe to expose to:
+ *
+ * - frontend onboarding
+ * - internal tools
+ * - MCP tools
+ * - automation flows
+ *
+ * =========================================================
+ */
+
+export async function POST(
+  request: Request
+) {
+
+  try {
+
+    // =====================================================
+    // PARSE BODY
+    // =====================================================
+
+    const body = await request.json()
+
+    // =====================================================
+    // VALIDATION
+    // =====================================================
+
+    const validation =
+      SpaceAddSchema.safeParse(body)
+
+    if (!validation.success) {
+
+      return NextResponse.json(
+        {
+          success: false,
+
+          error:
+            validation.error
+        },
+        {
+          status: 400
+        }
+      )
+
+    }
+
+    // =====================================================
+    // CREATE SPACE
+    // =====================================================
+
+    const createdSpace =
+      await createSpace({
+
+        user_id:
+          body.user_id,
+
+        email:
+          body.email,
+
+        slug:
+          body.slug,
+
+        space_type:
+          body.space_type,
+
+        space_subtype:
+          body.space_subtype,
+
+        entity_name:
+          body.entity_name,
+
+        social_data:
+          body.social_data || [],
+
+        theme_color:
+          body.theme_color || '#4f46e5',
+
+        bg_color:
+          body.bg_color || '#0f172a',
+
+        avatar_url:
+          body.avatar_url || null,
+
+        legal_accepted_at:
+          body.legal_accepted_at,
+
+        is_authorized_representative:
+          body.is_authorized_representative
+      })
+
+    // =====================================================
+    // URLS
+    // =====================================================
+
+    const publicUrl =
+      `https://rtbx.space/u/${createdSpace.slug}`
+
+    const onboardingUrl =
+      `https://rtbx.space/u/${createdSpace.slug}/onboarding`
+
+    const editUrl =
+      `https://rtbx.space/edit/space?token=${createdSpace.edit_token}`
+
+    // =====================================================
+    // DISPLAY NAME
+    // =====================================================
+
+    const displayName =
+
+      createdSpace.entity_name ||
+
+      createdSpace.slug ||
+
+      createdSpace.email
+
+    // =====================================================
+    // EMAIL HTML
+    // =====================================================
+
+    const htmlContent =
+      getSpaceWelcomeEmail(
+        {
+          displayName,
+
+          slug:
+            createdSpace.slug,
+
+          spaceId:
+            createdSpace.id,
+
+          publicUrl,
+
+          onboardingUrl,
+
+          editUrl
+        },
+        body.lang || 'en'
+      )
+
+    // =====================================================
+    // SEND EMAIL
+    // =====================================================
+
+    try {
+
+      await resend.emails.send({
+
+        from:
+          'RetailBox Space <hello@rtbx.space>',
+
+        to:
+          createdSpace.email,
+
+        subject:
+          body.lang === 'fr'
+            ? 'Votre espace est prêt'
+            : 'Your space is ready',
+
+        html:
+          htmlContent
+      })
+
+    } catch (mailError) {
+
+      /**
+       * IMPORTANT:
+       *
+       * Space creation should NOT fail
+       * if email delivery fails.
+       */
+
+      console.error(
+        'SPACE EMAIL ERROR:',
+        mailError
+      )
+
+    }
+
+    // =====================================================
+    // SUCCESS RESPONSE
+    // =====================================================
+
+    return NextResponse.json({
+
+      success: true,
+
+      /**
+       * Public identity
+       */
+      id:
+        createdSpace.id,
+
+      slug:
+        createdSpace.slug,
+
+      /**
+       * URLs
+       */
+      public_url:
+        publicUrl,
+
+      onboarding_url:
+        onboardingUrl,
+
+      edit_url:
+        editUrl,
+
+      /**
+       * Management
+       */
+      edit_token:
+        createdSpace.edit_token
+
+    })
+
+  } catch (err: any) {
+
+    console.error(
+      'SPACE ACTIVATE ERROR:',
+      err
+    )
+
+    return NextResponse.json(
+      {
+        success: false,
+
+        error:
+          err?.message ||
+          'Unknown server error'
       },
       {
         status: 500
