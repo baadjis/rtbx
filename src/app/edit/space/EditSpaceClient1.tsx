@@ -61,7 +61,7 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
 const setLinks = (newLinks:any[]) => {
   setEditableSpace({
     ...editableSpace,
-    social_data: [...editableSpace.social_data, newLinks]
+    social_data: newLinks
   })
 }
 
