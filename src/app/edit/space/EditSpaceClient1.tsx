@@ -201,7 +201,7 @@ const onUpdateLink = (
 
   return (
    <SpaceView
-  editMode
+  editMode={true}
 
   lang={lang}
 
