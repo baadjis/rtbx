@@ -10,8 +10,10 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [links, setLinks] = useState<any[]>([{ id: crypto.randomUUID(), network: 'Instagram', handle: '' }])
-
+const [links, setLinks] =
+  useState<any[]>(
+    space.social_data || []
+  )
  
 
   const [editableSpace, setEditableSpace] =
@@ -19,10 +21,10 @@ export default function EditSpaceClient({ space,isProfileOnly, lang, token }: an
     ...space
   })
 
-const [socialLinks, setSocialLinks] =
+/*const [socialLinks, setSocialLinks] =
   useState(
     space.social_data || []
-  )
+  )*/
   
   const router = useRouter()
   const t= Data[lang as LangType]
@@ -106,7 +108,7 @@ const [socialLinks, setSocialLinks] =
 // DELETE EXISTING LINK
 // =========================================================
 
-const onDeleteLink = (index: number) => {
+/*const onDeleteLink = (index: number) => {
 
   const updated =
     editableSpace.social_data.filter(
@@ -118,9 +120,9 @@ const onDeleteLink = (index: number) => {
     social_data: updated
   })
 
-}
+}*/
 
-const onUpdateLink = (
+/*const onUpdateLink = (
   index: number
 ) => {
 
@@ -148,12 +150,62 @@ const onUpdateLink = (
         : handle
   }
 
-  setSocialLinks(updated
+  setSocialLinks([...updated]
+  )
+
+}*/
+
+const onDeleteLink = (
+  index: number
+) => {
+
+  setLinks(
+
+    links.filter(
+      (_: any, i: number) =>
+        i !== index
+    )
+
   )
 
 }
 
- const handleUpdate = async () => {
+const onUpdateLink = (
+  index: number
+) => {
+
+  const current =
+    links[index]
+
+  const handle =
+    prompt(
+      'Handle',
+      current.handle
+    )
+
+  if (
+    handle === null
+  ) return
+
+  const updated =
+    [...links]
+
+  updated[index] = {
+
+    ...updated[index],
+
+    handle:
+      handle.startsWith('@')
+        ? handle.substring(1)
+        : handle
+
+  }
+
+  setLinks(updated)
+
+}
+
+ /*const handleUpdate = async () => {
 
   const mergedLinks = [
 
@@ -243,11 +295,10 @@ const cleanLinks = mergedLinks
 
     }
 
-    /* SUCCESS */
-
+  
     setSuccess(true)
 
-    /* IMPORTANT */
+    
 
     setEditableSpace({
       ...editableSpace,
@@ -255,7 +306,7 @@ const cleanLinks = mergedLinks
         payload.social_data
     })
 
-    /* RESET NEW LINKS */
+    
 
     setLinks([])
 
@@ -274,6 +325,120 @@ const cleanLinks = mergedLinks
     alert(
       err.message
     )
+
+  } finally {
+
+    setLoading(false)
+
+  }
+
+}*/
+
+const handleUpdate = async () => {
+
+  try {
+
+    setLoading(true)
+
+    const cleanLinks = links
+
+      .filter(
+        (l: any) =>
+
+          l &&
+          l.network &&
+          l.handle &&
+          l.handle.trim() !== ''
+      )
+
+      .map((l: any) => ({
+
+        id:
+          l.id ||
+          crypto.randomUUID(),
+
+        network:
+          String(l.network),
+
+        handle:
+          String(l.handle)
+            .replace('@', '')
+            .trim()
+
+      }))
+
+    const payload = {
+
+      entity_name:
+        editableSpace.entity_name,
+
+      social_data:
+        cleanLinks,
+
+      theme_color:
+        editableSpace.theme_color,
+
+      bg_color:
+        editableSpace.bg_color,
+
+      avatar_url:
+        editableSpace.avatar_url
+
+    }
+
+    const response =
+      await fetch(
+        '/api/spaces/update',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body: JSON.stringify({
+
+            token,
+
+            payload
+
+          })
+        }
+      )
+
+    const result =
+      await response.json()
+
+    if (!response.ok) {
+
+      throw new Error(
+
+        result.error ||
+
+        'Update failed'
+
+      )
+
+    }
+
+    setSuccess(true)
+
+    setLinks(cleanLinks)
+
+    setTimeout(() => {
+
+      setSuccess(false)
+
+      router.refresh()
+
+    }, 2000)
+
+  } catch (err: any) {
+
+    console.error(err)
+
+    alert(err.message)
 
   } finally {
 
