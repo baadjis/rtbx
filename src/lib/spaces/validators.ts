@@ -67,6 +67,7 @@ export const SpaceAddSchema = z.object({
   entity_name: z
     .string()
     .max(120)
+    .nullable()
     .optional(),
 
   social_data: z
@@ -111,7 +112,7 @@ export const SpaceUpdateSchema = z.object({
 
   entity_name: z
     .string()
-    .max(120)
+    .max(120).nullable()
     .optional(),
 
   social_data: z
