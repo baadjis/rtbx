@@ -91,9 +91,6 @@ export async function POST(
 
           bg_color:
             body.bg_color,
-
-          updated_at:
-            new Date().toISOString()
         }
       )
 

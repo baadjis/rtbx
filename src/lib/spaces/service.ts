@@ -208,6 +208,7 @@ export async function updateSpace(
       .single()
 
   if (error) {
+    console.log(error)
     throw new Error(error.message)
   }
 

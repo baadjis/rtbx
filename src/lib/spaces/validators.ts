@@ -130,12 +130,10 @@ export const SpaceUpdateSchema = z.object({
 
   avatar_url: z
     .string()
-    .url()
+    .nullable()
     .optional(),
 
-  updated_at: z
-    .string()
-    .optional()
+  
 
 })
 

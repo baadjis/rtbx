@@ -27,7 +27,7 @@ export type SpaceUpdatePayload = {
 
   avatar_url?: string
 
-  updated_at?: string
+
 }
 
 export type SpaceAddPayload = {
