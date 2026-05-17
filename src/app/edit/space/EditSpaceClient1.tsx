@@ -10,22 +10,29 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [links, setLinks] = useState<any[]>([])
+  const [links, setLinks] = useState<any[]>([{ id: crypto.randomUUID(), network: 'Instagram', handle: '' }])
+
+ 
+
   const [editableSpace, setEditableSpace] =
   useState({
-    ...space,
-    social_data: space.social_data || []
+    ...space
   })
+
+const [socialLinks, setSocialLinks] =
+  useState(
+    space.social_data || []
+  )
   
   const router = useRouter()
   const t= Data[lang as LangType]
   // On initialise l'état avec les données existantes du Space
   
 
-  const supabase = createBrowserClient(
+  /*const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  )*/
 
   //const links = editableSpace.social_data || []
 
@@ -118,7 +125,7 @@ const onUpdateLink = (
 ) => {
 
   const current =
-    editableSpace.social_data[index]
+    socialLinks[index]
 
   const handle =
     prompt(
@@ -131,7 +138,7 @@ const onUpdateLink = (
   ) return
 
   const updated =
-    [...editableSpace.social_data]
+    [...socialLinks]
 
   updated[index] = {
     ...updated[index],
@@ -141,14 +148,45 @@ const onUpdateLink = (
         : handle
   }
 
-  setEditableSpace({
-    ...editableSpace,
-    social_data: updated
-  })
+  setSocialLinks(updated
+  )
 
 }
 
  const handleUpdate = async () => {
+
+  const mergedLinks = [
+
+  ...socialLinks,
+
+  ...links
+
+]
+
+const cleanLinks = mergedLinks
+  .filter(
+    (l: any) =>
+
+      l &&
+      l.network &&
+      l.handle &&
+      l.handle.trim() !== ''
+  )
+  .map((l: any) => ({
+
+    id:
+      l.id ||
+      crypto.randomUUID(),
+
+    network:
+      String(l.network),
+
+    handle:
+      String(l.handle)
+        .replace('@', '')
+        .trim()
+
+  }))
 
   try {
 
@@ -159,16 +197,7 @@ const onUpdateLink = (
       entity_name:
         editableSpace.entity_name,
 
-      social_data: [
-
-        ...editableSpace.social_data,
-
-        ...links.filter(
-          (l: any) =>
-            l.handle?.trim() !== ''
-        )
-
-      ],
+      social_data: cleanLinks,
 
       theme_color:
         editableSpace.theme_color,
