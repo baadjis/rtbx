@@ -10,10 +10,19 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-const [links, setLinks] =
+const [socialLinks, setSocialLinks] =
   useState<any[]>(
     space.social_data || []
   )
+
+const [links, setLinks] =
+  useState<any[]>([
+    {
+      id: crypto.randomUUID(),
+      network: 'Instagram',
+      handle: ''
+    }
+  ])
  
 
   const [editableSpace, setEditableSpace] =
@@ -159,14 +168,13 @@ const onDeleteLink = (
   index: number
 ) => {
 
-  setLinks(
-
-    links.filter(
+  const updated =
+    socialLinks.filter(
       (_: any, i: number) =>
         i !== index
     )
 
-  )
+  setSocialLinks(updated)
 
 }
 
@@ -175,7 +183,7 @@ const onUpdateLink = (
 ) => {
 
   const current =
-    links[index]
+    socialLinks[index]
 
   const handle =
     prompt(
@@ -188,7 +196,7 @@ const onUpdateLink = (
   ) return
 
   const updated =
-    [...links]
+    [...socialLinks]
 
   updated[index] = {
 
@@ -201,7 +209,7 @@ const onUpdateLink = (
 
   }
 
-  setLinks(updated)
+  setSocialLinks(updated)
 
 }
 
@@ -340,7 +348,15 @@ const handleUpdate = async () => {
 
     setLoading(true)
 
-    const cleanLinks = links
+    const mergedLinks = [
+
+      ...socialLinks,
+
+      ...links
+
+    ]
+
+    const cleanLinks = mergedLinks
 
       .filter(
         (l: any) =>
@@ -424,7 +440,19 @@ const handleUpdate = async () => {
 
     setSuccess(true)
 
-    setLinks(cleanLinks)
+    /* IMPORTANT */
+
+    setSocialLinks(cleanLinks)
+
+    /* RESET ADD DRAFTS */
+
+    setLinks([
+      {
+        id: crypto.randomUUID(),
+        network: 'Instagram',
+        handle: ''
+      }
+    ])
 
     setTimeout(() => {
 
@@ -447,8 +475,6 @@ const handleUpdate = async () => {
   }
 
 }
-
-
   
 
   return (

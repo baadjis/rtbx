@@ -194,7 +194,7 @@ export default function SpaceView({
 
         <RenderSocialLinks
           lang={lang}
-          socialLinks={links}
+          socialLinks={socialLinks}
           themeColor={themeColor}
           editMode={editMode}
           onDeleteLink={onDeleteLink}
