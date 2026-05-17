@@ -408,7 +408,7 @@ const handleUpdate = async () => {
             payload
 
           })
-    alert(body)
+  
 
     const response =
       await fetch(
