@@ -70,28 +70,16 @@ export async function POST(
       )
 
     }
+    const payload=body.payload
 
     // =====================================================
     // UPDATE
     // =====================================================
-
+    
     const updatedSpace =
       await updateSpace(
         token,
-        {
-
-          entity_name:
-            body.entity_name,
-
-          social_data:
-            body.social_data,
-
-          theme_color:
-            body.theme_color,
-
-          bg_color:
-            body.bg_color,
-        }
+        payload
       )
 
     // =====================================================
