@@ -10,7 +10,7 @@ import SpaceView from '@/components/spaces/SpaceView'
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-const [socialLinks, setSocialLinks] =
+  const [socialLinks, setSocialLinks] =
   useState<any[]>(
     space.social_data || []
   )
@@ -401,6 +401,14 @@ const handleUpdate = async () => {
         editableSpace.avatar_url
 
     }
+    const body=JSON.stringify({
+
+            token,
+
+            payload
+
+          })
+    alert(body)
 
     const response =
       await fetch(
@@ -413,13 +421,7 @@ const handleUpdate = async () => {
               'application/json'
           },
 
-          body: JSON.stringify({
-
-            token,
-
-            payload
-
-          })
+          body: body
         }
       )
 
