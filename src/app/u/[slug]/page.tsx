@@ -43,7 +43,7 @@ export default async function PublicSpacePage({
 
   return (
 
-    <SpaceView  entity={entity} lang={lang} isProfileOnly={isProfileOnly}/>
+    <SpaceView  entity={entity} lang={lang} isProfileOnly={isProfileOnly} socialLinks={entity.social_data}/>
 
     
   )

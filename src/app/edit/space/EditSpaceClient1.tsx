@@ -499,6 +499,7 @@ const handleUpdate = async () => {
    onDeleteLink={onDeleteLink}
    onUpdateLink={onUpdateLink}
   isProfileOnly={isProfileOnly}
+  socialLinks={socialLinks}
 
   onSave={handleUpdate}
 

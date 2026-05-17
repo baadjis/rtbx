@@ -21,6 +21,7 @@ type SpaceViewProps = {
 
   // edit actions
   onSave?:  any
+  socialLinks:any[]
   onDeleteLink?: (index: number)=>void
   onUpdateLink?: (index: number)=>void
 
@@ -29,6 +30,7 @@ type SpaceViewProps = {
   setLinks?:any
   updateLink?:any
   links?:any
+
   
 }
 
@@ -43,6 +45,7 @@ export default function SpaceView({
   setEditableName,
   onDeleteLink,
   onUpdateLink,
+  socialLinks,
   isProfileOnly,
   setLinks,
   updateLink,
@@ -88,8 +91,8 @@ export default function SpaceView({
   const bgColor =
     entity.bg_color || '#0f172a'
 
-  const socialLinks =
-    entity.social_data || []
+  /*const socialLinks =
+    entity.social_data || []*/
 
   // =========================================================
   // UI
