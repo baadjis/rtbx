@@ -401,6 +401,7 @@ const handleUpdate = async () => {
         editableSpace.avatar_url
 
     }
+    alert(payload)
     const body=JSON.stringify({
 
             token,
