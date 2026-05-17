@@ -7,6 +7,10 @@ export type SocialLink = {
 export type SpaceType =
   | 'personal'
   | 'organization'
+  | 'business'
+  | 'developper'
+
+
 
 export type SpaceSubtype =
   | string

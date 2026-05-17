@@ -42,13 +42,13 @@ export const SpaceAddSchema = z.object({
 
   user_id: z
     .string()
-    .uuid()
     .nullable()
     .optional(),
 
   email: z
     .string()
-    .email(),
+    .min(3)
+    .max(40),
 
   slug: z
     .string()
@@ -86,7 +86,7 @@ export const SpaceAddSchema = z.object({
 
   avatar_url: z
     .string()
-    .url()
+    .nullable()
     .optional(),
 
   edit_token: z
