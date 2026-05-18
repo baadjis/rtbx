@@ -31,6 +31,6 @@ export const Data = {
     btn_add_net: "Add a network",
     edit_links: 'Edit links', 
 edit_links_hint: 'Add, remove or reorder your networks',
-add_link:"Add Link"
+add_link:"Add a network"
   }
 };
