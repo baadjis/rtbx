@@ -226,7 +226,7 @@ export default function Footer({
                 text-white/70
               ">
 
-                Edit mode
+                {t.edit_mode}
 
               </span>
 

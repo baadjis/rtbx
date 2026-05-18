@@ -13,7 +13,11 @@ export const Data = {
     btn_add_net: "Ajouter un réseau",
     edit_links: 'Modifier les liens',
     edit_links_hint: 'Ajoutez, supprimez ou réorganisez vos réseaux',
-    add_link: 'Ajouter un réseau social'
+    add_link: 'Ajouter un réseau social',
+    view_public:"Voir",
+    edit_mode:"Mode Edition",
+    exit:"Exiter"
+
 
 
   },
@@ -30,7 +34,10 @@ export const Data = {
     ph_handle: "Link or @handle",
     btn_add_net: "Add a network",
     edit_links: 'Edit links', 
-edit_links_hint: 'Add, remove or reorder your networks',
-add_link:"Add a network"
+    edit_links_hint: 'Add, remove or reorder your networks',
+    add_link:"Add a network",
+    view_public:"View",
+    edit_mode:"Edit Mode",
+    exit:"Exit"
   }
 };
