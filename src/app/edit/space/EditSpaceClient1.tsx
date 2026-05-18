@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import {  useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 import { Data } from '../../tools/digital-id/data' // On peut réutiliser les traductions settings
 import { LangType } from '@/lib/lang/types'
 import SpaceView from '@/components/spaces/SpaceView'
+import { get_social_config } from '@/utils/social-config'
 
 export default function EditSpaceClient({ space,isProfileOnly, lang, token }: any) {
+  const SOCIAL_CONFIG =
+  get_social_config(lang)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [socialLinks, setSocialLinks] =
@@ -30,10 +32,33 @@ const [links, setLinks] =
     ...space
   })
 
+  
+
   const [
   showAddLinks,
   setShowAddLinks
 ] = useState(false)
+
+const usedNetworks = [
+
+  ...(socialLinks || []),
+  ...(links || [])
+
+]
+  .filter(Boolean)
+  .map(
+    (l: any) => l.network
+  )
+
+const socialLinksOptions =
+
+  Object.keys(SOCIAL_CONFIG)
+
+    .filter(
+      (network) =>
+
+        !usedNetworks.includes(network)
+    )
 
 /*const [socialLinks, setSocialLinks] =
   useState(
@@ -528,6 +553,9 @@ const handleUpdate = async () => {
    showAddLinks={showAddLinks}
   isProfileOnly={isProfileOnly}
   socialLinks={socialLinks}
+  socialLinksOptions={
+    socialLinksOptions
+  }
   
   onSave={handleUpdate}
 

@@ -146,11 +146,13 @@ export default function DigitalIDForm({
 
   const usedNetworks = [
 
-  ...links
+  ...(links || [])
 
-].map(
-  (l: any) => l.network
-)
+]
+  .filter(Boolean)
+  .map(
+    (l: any) => l.network
+  )
 
 const socialLinksOptions =
 
