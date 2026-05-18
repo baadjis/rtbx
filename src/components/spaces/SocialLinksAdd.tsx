@@ -1,27 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { LangType } from "@/lib/lang/types"
 import { get_social_config } from "@/utils/social-config"
-import { Link2, Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 
-export default function SocialLinksAdd({links,setLinks,updateLink,t,lang}:
-    {links:any[],setLinks:any,updateLink:any,t:any,lang:LangType}){
+type SocialLinksAddProps={
+  links:any[],
+  setLinks:any,
+  updateLink:any,
+  t:any,
+  lang:LangType
+  socialLinksOptions:any
+}
 
-      const SOCIAL_CONFIG = get_social_config(lang)
+export default function SocialLinksAdd({links,setLinks,socialLinksOptions,updateLink,t,lang}:
+    SocialLinksAddProps){
 
+    const SOCIAL_CONFIG = get_social_config(lang)
 
             return(
-    
               <>
-
-                
-
                 {links.map((link, i) => {
 
                   const networkConfig =
                     SOCIAL_CONFIG[
                       link.network as keyof typeof SOCIAL_CONFIG
                     ]
-
                   return (
 
                     <div
@@ -56,7 +59,7 @@ export default function SocialLinksAdd({links,setLinks,updateLink,t,lang}:
                           "
                         >
 
-                          {Object.keys(SOCIAL_CONFIG).map(net => (
+                          {Object.keys(socialLinksOptions).map(net => (
                             <option
                               key={net}
                               value={net}
@@ -145,7 +148,6 @@ export default function SocialLinksAdd({links,setLinks,updateLink,t,lang}:
                     mt-8
                   "
                 >
-
                   <Plus size={18} />
 
                   {t.btn_add_net}

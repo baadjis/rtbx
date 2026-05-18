@@ -23,6 +23,7 @@ type SpaceViewProps = {
   // edit actions
   onSave?:  any
   socialLinks:any[]
+  socialLinksOptions:any
   onDeleteLink?: (index: number)=>void
   onUpdateLink?: (index: number)=>void
   onExitEdit?:()=>void
@@ -53,6 +54,7 @@ export default function SpaceView({
   showAddLinks,
   onExitEdit,
   socialLinks,
+  socialLinksOptions,
   isProfileOnly,
   setLinks,
   updateLink,
@@ -280,6 +282,7 @@ export default function SpaceView({
       }
       t={t}
       lang={lang}
+      socialLinksOptions={socialLinksOptions}
     />
 
   </div>
@@ -290,7 +293,7 @@ export default function SpaceView({
         {/* FOOTER */}
         {/* ================================================= */}
 
-        <Footer
+<Footer
   t={t}
 
   editMode={editMode}

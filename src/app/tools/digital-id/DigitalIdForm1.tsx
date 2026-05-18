@@ -31,9 +31,10 @@ import SpaceTypeSelect from './SpaceTypeSelect'
 import OrganizationSubcategorySelect from './OrganisationForm'
 import PersonalSubcategorySelect from './PersonalForm'
 import QRCodeDesign from './QRcodeDesign'
-import SocialLinksAdd from './SocialLinksAdd'
+import SocialLinksAdd from '@/components/spaces/SocialLinksAdd'
 import BuilderSection from './BuilderSection'
 import Branding from './Branding'
+import { get_social_config } from '@/utils/social-config'
 
 export default function DigitalIDForm({
   lang
@@ -47,6 +48,9 @@ export default function DigitalIDForm({
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+
+  const SOCIAL_CONFIG =
+    get_social_config(lang)
 
   const [avatar, setAvatar]=useState<string|null>(null)
 
@@ -105,6 +109,8 @@ export default function DigitalIDForm({
     }
   ])
 
+
+
   // =========================================================
   // DESIGN
   // =========================================================
@@ -136,6 +142,25 @@ export default function DigitalIDForm({
 
   const [isSlugAvailable, setIsSlugAvailable] =
     useState<boolean | null>(null)
+
+
+  const usedNetworks = [
+
+  ...links
+
+].map(
+  (l: any) => l.network
+)
+
+const socialLinksOptions =
+
+  Object.keys(SOCIAL_CONFIG)
+
+    .filter(
+      (network) =>
+
+        !usedNetworks.includes(network)
+    )
 
   // =========================================================
   // USER CHECK
@@ -664,7 +689,11 @@ const canActivate =
 <BuilderSection icon={Users} title={t.socials_title} subtitle={t.socials_subtitle} > 
   <SocialLinksAdd links={links} setLinks={setLinks} 
   updateLink={updateLink} t={t} 
-  lang={lang}/>
+  lang={lang}
+  socialLinksOptions={socialLinksOptions}
+  
+  
+  />
 
 </BuilderSection>
 
