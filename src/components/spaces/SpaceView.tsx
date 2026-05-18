@@ -218,7 +218,7 @@ export default function SpaceView({
 {/* EDIT SOCIALS */}
 {/* ================================================= */}
 
-{editMode && (
+{editMode && showAddLinks &&(
 
   <div className="
     space-y-5
@@ -271,7 +271,7 @@ export default function SpaceView({
 
     </div>
 
-    {showAddLinks && <SocialLinksAdd
+     <SocialLinksAdd
       links={links}
       setLinks={
        setLinks
@@ -280,7 +280,7 @@ export default function SpaceView({
       }
       t={t}
       lang={lang}
-    />}
+    />
 
   </div>
 
