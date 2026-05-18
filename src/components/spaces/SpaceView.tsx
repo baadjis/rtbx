@@ -17,6 +17,7 @@ type SpaceViewProps = {
   editMode?: boolean
   saving?: boolean
   saved?: boolean
+  showAddLinks?:boolean,
   isProfileOnly:boolean
 
   // edit actions
@@ -24,6 +25,9 @@ type SpaceViewProps = {
   socialLinks:any[]
   onDeleteLink?: (index: number)=>void
   onUpdateLink?: (index: number)=>void
+  onExitEdit?:()=>void
+  onAddLink?:()=>void
+
 
   // live edition
   setEditableName?: any
@@ -45,6 +49,9 @@ export default function SpaceView({
   setEditableName,
   onDeleteLink,
   onUpdateLink,
+  onAddLink,
+  showAddLinks,
+  onExitEdit,
   socialLinks,
   isProfileOnly,
   setLinks,
@@ -264,7 +271,7 @@ export default function SpaceView({
 
     </div>
 
-    <SocialLinksAdd
+    {showAddLinks && <SocialLinksAdd
       links={links}
       setLinks={
        setLinks
@@ -273,7 +280,7 @@ export default function SpaceView({
       }
       t={t}
       lang={lang}
-    />
+    />}
 
   </div>
 
@@ -289,6 +296,8 @@ export default function SpaceView({
   editMode={editMode}
 
   onSave={onSave}
+  onExitEdit={onExitEdit}
+  onAddLink={onAddLink}
 
   loading={saving}
   saved={saved}
@@ -296,6 +305,7 @@ export default function SpaceView({
   hasChanges={true}
   publicUrl={publicUrl}
   homeUrl={homeUrl}
+
 />
 
       </div>

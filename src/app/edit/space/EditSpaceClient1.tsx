@@ -30,6 +30,11 @@ const [links, setLinks] =
     ...space
   })
 
+  const [
+  showAddLinks,
+  setShowAddLinks
+] = useState(false)
+
 /*const [socialLinks, setSocialLinks] =
   useState(
     space.social_data || []
@@ -210,6 +215,20 @@ const onUpdateLink = (
   }
 
   setSocialLinks(updated)
+
+}
+
+const onExitEdit = () => {
+
+  router.push(
+    `/u/${space.slug}`
+  )
+
+}
+
+const onAddLink = () => {
+
+  setShowAddLinks(true)
 
 }
 
@@ -444,6 +463,7 @@ const handleUpdate = async () => {
     }
 
     setSuccess(true)
+    setShowAddLinks(false)
 
     /* IMPORTANT */
 
@@ -503,9 +523,11 @@ const handleUpdate = async () => {
   }
    onDeleteLink={onDeleteLink}
    onUpdateLink={onUpdateLink}
+   onExitEdit={onExitEdit}
+   onAddLink={onAddLink}
   isProfileOnly={isProfileOnly}
   socialLinks={socialLinks}
-
+  
   onSave={handleUpdate}
 
   saving={loading}
