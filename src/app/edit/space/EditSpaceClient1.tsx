@@ -525,6 +525,7 @@ const handleUpdate = async () => {
    onUpdateLink={onUpdateLink}
    onExitEdit={onExitEdit}
    onAddLink={onAddLink}
+   showAddLinks={showAddLinks}
   isProfileOnly={isProfileOnly}
   socialLinks={socialLinks}
   
