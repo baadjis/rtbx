@@ -23,7 +23,7 @@ type SpaceViewProps = {
   // edit actions
   onSave?:  any
   socialLinks:any[]
-  socialLinksOptions:any
+  socialLinksOptions?:any
   onDeleteLink?: (index: number)=>void
   onUpdateLink?: (index: number)=>void
   onExitEdit?:()=>void
