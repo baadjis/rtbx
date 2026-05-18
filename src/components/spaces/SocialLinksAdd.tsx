@@ -59,7 +59,7 @@ export default function SocialLinksAdd({links,setLinks,socialLinksOptions,update
                           "
                         >
 
-                          {Object.keys(socialLinksOptions).map(net => (
+                          {socialLinksOptions.map((net:any) => (
                             <option
                               key={net}
                               value={net}
