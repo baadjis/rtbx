@@ -248,12 +248,23 @@ export default function SocialLinksAdd({
                   )
                 }
                 className="
-                  flex-1 p-3
-                  bg-white dark:bg-slate-800
-                  border-none rounded-xl
-                  font-bold text-sm
-                  dark:text-white
-                "
+  flex-1 p-3
+
+  bg-white
+  dark:bg-slate-800
+
+  text-black
+  dark:text-white
+
+  border border-black/10
+  dark:border-white/10
+
+  rounded-xl
+
+  font-bold text-sm
+
+  outline-none
+"
               >
 
                 {socialLinksOptions.map((net: any) => (
@@ -279,15 +290,31 @@ export default function SocialLinksAdd({
                     )
                   )
                 }
+                
                 className="
-                  p-3
-                  text-red-500
-                  bg-red-50
-                  dark:bg-red-900/20
-                  rounded-xl
-                  border-none
-                  cursor-pointer
-                "
+  w-full p-4
+
+  bg-white
+  dark:bg-slate-800
+
+  text-black
+  dark:text-white
+
+  placeholder:text-black/40
+  dark:placeholder:text-white/40
+
+  border border-black/10
+  dark:border-white/10
+
+  rounded-xl
+
+  font-bold text-sm
+
+  outline-none
+
+  focus:ring-2
+  focus:ring-indigo-500
+"
               >
 
                 <Trash2 size={18} />
