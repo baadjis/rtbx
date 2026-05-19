@@ -274,7 +274,7 @@ export default function SocialLinksAdd({
                   <option
                    key={net}
                  value={net}
-                 className="text-black"
+                 
                 >
 
                     {net}
@@ -295,29 +295,14 @@ export default function SocialLinksAdd({
                 }
                 
                 className="
-  w-full p-4
-
-  bg-white
-  dark:bg-slate-800
-
-  text-black
-  dark:text-white
-
-  placeholder:text-black/40
-  dark:placeholder:text-white/40
-
-  border border-black/10
-  dark:border-white/10
-
-  rounded-xl
-
-  font-bold text-sm
-
-  outline-none
-
-  focus:ring-2
-  focus:ring-indigo-500
-"
+                            p-3
+                            text-red-500
+                            bg-red-50
+                            dark:bg-red-900/20
+                            rounded-xl
+                            border-none
+                            cursor-pointer
+                          "
               >
 
                 <Trash2 size={18} />
@@ -344,16 +329,28 @@ export default function SocialLinksAdd({
                 t.ph_handle
               }
               className={`
-                w-full p-4
+                 w-full p-4
 
-                bg-white dark:bg-slate-800
+  bg-white
+  dark:bg-slate-800
 
-                rounded-xl
+  text-black
+  dark:text-white
 
-                font-bold text-sm
-                dark:text-white
+  placeholder:text-black/40
+  dark:placeholder:text-white/40
 
-                focus:ring-2
+  border border-black/10
+  dark:border-white/10
+
+  rounded-xl
+
+  font-bold text-sm
+
+  outline-none
+
+  focus:ring-2
+  focus:ring-indigo-500
 
                 transition-all
 
