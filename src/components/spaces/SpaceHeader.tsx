@@ -83,6 +83,8 @@ export default function SpaceHeader({
           displayName={displayName}
           variant={variant}
           editMode={editMode}
+          onUpload={onAvatarUpload}
+          onRemove={onRemoveAvatar}
         />
 
         {editMode && (
