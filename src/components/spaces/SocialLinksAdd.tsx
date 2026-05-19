@@ -247,8 +247,10 @@ export default function SocialLinksAdd({
                     e.target.value
                   )
                 }
-                className="
+               className="
   flex-1 p-3
+
+  appearance-none
 
   bg-white
   dark:bg-slate-800
@@ -270,9 +272,10 @@ export default function SocialLinksAdd({
                 {socialLinksOptions.map((net: any) => (
 
                   <option
-                    key={net}
-                    value={net}
-                  >
+                   key={net}
+                 value={net}
+                 className="text-black"
+                >
 
                     {net}
 
