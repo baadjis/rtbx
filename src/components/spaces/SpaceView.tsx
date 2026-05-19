@@ -19,6 +19,7 @@ type SpaceViewProps = {
   saved?: boolean
   showAddLinks?:boolean,
   isProfileOnly:boolean
+  avatar_url?:string
 
   // edit actions
   onSave?:  any
@@ -28,6 +29,11 @@ type SpaceViewProps = {
   onUpdateLink?: (index: number)=>void
   onExitEdit?:()=>void
   onAddLink?:()=>void
+  onAvatarUpload?: (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => void
+
+  onRemoveAvatar?: () => void
 
 
   // live edition
@@ -46,8 +52,13 @@ export default function SpaceView({
   editMode = false,
   saving = false,
   saved = false,
+  avatar_url,
   onSave,
   setEditableName,
+  onAvatarUpload,
+  onRemoveAvatar,
+
+
   onDeleteLink,
   onUpdateLink,
   onAddLink,
@@ -192,12 +203,14 @@ export default function SpaceView({
           editMode={editMode}
           entity={entity}
           isProfileOnly={isProfileOnly}
-          imageUrl={imageUrl}
+          imageUrl={avatar_url}
           themeColor={themeColor}
           displayName={displayName}
           t={t}
           setEditableName={setEditableName}
           variant="circle"
+          onAvatarUpload={onAvatarUpload}
+          onRemoveAvatar={onRemoveAvatar}
         />
 
         {/* ================================================= */}

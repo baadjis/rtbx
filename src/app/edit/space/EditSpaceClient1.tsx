@@ -38,6 +38,7 @@ const [links, setLinks] =
   showAddLinks,
   setShowAddLinks
 ] = useState(false)
+const [avatar_url,setAvataurl]=useState(space?.avatar_url || null)
 
 const usedNetworks = [
 
@@ -388,6 +389,25 @@ const cleanLinks = mergedLinks
 
 }*/
 
+ const onAvatarUpload = (
+  e: React.ChangeEvent<HTMLInputElement>,
+ 
+) => {
+
+  const file = e.target.files?.[0]
+
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onloadend = () =>
+    setAvataurl(reader.result as string)
+
+  reader.readAsDataURL(file)
+}
+
+
+
 const handleUpdate = async () => {
 
   try {
@@ -443,8 +463,7 @@ const handleUpdate = async () => {
       bg_color:
         editableSpace.bg_color,
 
-      avatar_url:
-        editableSpace.avatar_url
+      avatar_url
 
     }
     const body=JSON.stringify({
@@ -558,7 +577,9 @@ const handleUpdate = async () => {
   socialLinksOptions={
     socialLinksOptions
   }
-  
+  onAvatarUpload={onAvatarUpload}
+  avatar_url={avatar_url}
+  onRemoveAvatar={()=>setAvataurl(null)}
   onSave={handleUpdate}
 
   saving={loading}
