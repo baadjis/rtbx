@@ -101,7 +101,7 @@ export default function SpaceView({
   // DATA
   // =========================================================
 
-  const imageUrl = entity.avatar_url
+  //const imageUrl = entity.avatar_url
   const publicUrl=`/u/${entity.slug}`
   const homeUrl =`/`
 

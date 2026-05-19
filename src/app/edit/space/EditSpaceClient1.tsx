@@ -43,10 +43,16 @@ const [avatar_url,setAvataurl]=useState(space?.avatar_url || null)
 const usedNetworks = [
 
   ...(socialLinks || []),
+
   ...(links || [])
+    .filter(
+      (l: any) =>
+        l.handle?.trim() !== ''
+    )
 
 ]
   .filter(Boolean)
+
   .map(
     (l: any) => l.network
   )
@@ -554,7 +560,10 @@ const handleUpdate = async () => {
 
   lang={lang}
 
-  entity={editableSpace}
+  entity={{
+  ...editableSpace,
+  avatar_url
+}}
 
   links={links}
   setLinks={setLinks}
