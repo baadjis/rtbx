@@ -17,6 +17,7 @@ const data = {
     listen: "écouter",
     watch: "regarder",
     follow_channel:"suivre la chaine",
+    invalid_url:"Invalid URL"
   },
   en: {
     pseudo: "Ex: user_name",
@@ -33,42 +34,328 @@ const data = {
 
     listen: "listen",
     watch: "watch",
-    follow_channel:"Follow channel"
+    follow_channel:"Follow channel",
+    invalid_url:"Le lien est invalide"
+
 
   }
 }
  
 
- export function get_social_config(lang: LangType):Record<string, { folder?: string, baseUrl: string, ph: string ,action:string}> {
+ export function get_social_config(
+  lang: LangType
+): Record<
+  string,
+  {
+    folder?: string
+    baseUrl: string
+    ph: string
+    action: string
+
+    /**
+     * Accepted domains / aliases
+     * used for validation
+     */
+    aliases?: string[]
+  }
+> {
+
   const t = data[lang]
 
   return {
-    "Instagram": { folder: "instagram", baseUrl: "https://instagram.com/", ph: t.pseudo, action: t.follow },
 
-    "TikTok": { folder: "tiktok", baseUrl: "https://tiktok.com/@", ph: t.pseudo, action: t.follow },
+    "Instagram": {
+      folder: "instagram",
+      baseUrl: "https://instagram.com/",
+      ph: t.pseudo,
+      action: t.follow,
 
-    "WhatsApp": { folder: "whatsapp", baseUrl: "https://whatsapp.com/channel/", ph: t.channel_id, action: t.follow_channel },
+      aliases: [
+        "instagram.com",
+        "www.instagram.com"
+      ]
+    },
 
-    "YouTube": { folder: "youtube", baseUrl: "https://youtube.com/@", ph: t.channel, action: t.visit_subscribe },
+    "TikTok": {
+      folder: "tiktok",
+      baseUrl: "https://tiktok.com/@",
+      ph: t.pseudo,
+      action: t.follow,
 
-    "LinkedIn": { folder: "linkedin", baseUrl: "https://linkedin.com/in/", ph: t.profil_id, action: t.visit_profile },
+      aliases: [
+        "tiktok.com",
+        "www.tiktok.com"
+      ]
+    },
 
-    "X (Twitter)": { folder: "x", baseUrl: "https://x.com/", ph: t.pseudo, action: t.follow },
+    "WhatsApp": {
+      folder: "whatsapp",
+      baseUrl: "https://whatsapp.com/channel/",
+      ph: t.channel_id,
+      action: t.follow_channel,
 
-    "Facebook": { folder: "facebook", baseUrl: "https://facebook.com/", ph: t.profil_id, action: t.visit_profile },
+      aliases: [
+        "whatsapp.com",
+        "www.whatsapp.com",
+        "chat.whatsapp.com"
+      ]
+    },
 
-    // 🔥 AJOUTS PROPRES
-    "Threads": { folder: "threads", baseUrl: "https://threads.net/@", ph: t.pseudo, action: t.follow },
+    "YouTube": {
+      folder: "youtube",
+      baseUrl: "https://youtube.com/@",
+      ph: t.channel,
+      action: t.visit_subscribe,
 
-    "Pinterest": { folder: "pinterest", baseUrl: "https://pinterest.com/", ph: t.pseudo, action: t.follow },
+      aliases: [
+        "youtube.com",
+        "www.youtube.com",
+        "youtu.be"
+      ]
+    },
 
-    "Twitch": { folder: "twitch", baseUrl: "https://twitch.tv/", ph: t.pseudo, action: t.watch },
+    "LinkedIn": {
+      folder: "linkedin",
+      baseUrl: "https://linkedin.com/in/",
+      ph: t.profil_id,
+      action: t.visit_profile,
 
-    "Spotify": { folder: "spotify", baseUrl: "https://open.spotify.com/user/", ph: t.user_id, action: t.listen },
+      aliases: [
+        "linkedin.com",
+        "www.linkedin.com"
+      ]
+    },
 
-    "Website": { folder: "website", baseUrl: "", ph: t.my_website, action: t.visit }
+    "X (Twitter)": {
+      folder: "x",
+      baseUrl: "https://x.com/",
+      ph: t.pseudo,
+      action: t.follow,
+
+      aliases: [
+        "x.com",
+        "www.x.com",
+        "twitter.com",
+        "www.twitter.com"
+      ]
+    },
+
+    "Facebook": {
+      folder: "facebook",
+      baseUrl: "https://facebook.com/",
+      ph: t.profil_id,
+      action: t.visit_profile,
+
+      aliases: [
+        "facebook.com",
+        "www.facebook.com",
+        "fb.com",
+        "m.facebook.com"
+      ]
+    },
+
+    "Threads": {
+      folder: "threads",
+      baseUrl: "https://threads.net/@",
+      ph: t.pseudo,
+      action: t.follow,
+
+      aliases: [
+        "threads.net",
+        "www.threads.net"
+      ]
+    },
+
+    "Pinterest": {
+      folder: "pinterest",
+      baseUrl: "https://pinterest.com/",
+      ph: t.pseudo,
+      action: t.follow,
+
+      aliases: [
+        "pinterest.com",
+        "www.pinterest.com"
+      ]
+    },
+
+    "Twitch": {
+      folder: "twitch",
+      baseUrl: "https://twitch.tv/",
+      ph: t.pseudo,
+      action: t.watch,
+
+      aliases: [
+        "twitch.tv",
+        "www.twitch.tv"
+      ]
+    },
+
+    "Spotify": {
+      folder: "spotify",
+      baseUrl: "https://open.spotify.com/user/",
+      ph: t.user_id,
+      action: t.listen,
+
+      aliases: [
+        "spotify.com",
+        "open.spotify.com"
+      ]
+    },
+
+    "Website": {
+      folder: "website",
+      baseUrl: "",
+      ph: t.my_website,
+      action: t.visit,
+
+      aliases: []
+    }
   }
 }
+
+
+
+
+export function validateSocialInput(
+  network: string,
+  value: string,
+  lang: LangType
+) {
+
+  const SOCIAL_CONFIG =
+    get_social_config(lang)
+
+  const config =
+    SOCIAL_CONFIG[
+      network as keyof typeof SOCIAL_CONFIG
+    ]
+
+  if (!config) {
+
+    return {
+      valid: false,
+      error: 'Unknown network'
+    }
+
+  }
+
+  const clean =
+    value.trim()
+
+  /**
+   * Empty
+   */
+
+  if (!clean) {
+
+    return {
+      valid: false,
+      error: 'Empty value'
+    }
+
+  }
+
+  /**
+   * WEBSITE
+   */
+
+  if (network === 'Website') {
+
+    try {
+
+      const url =
+        clean.startsWith('http')
+          ? clean
+          : `https://${clean}`
+
+      new URL(url)
+
+      return {
+        valid: true
+      }
+
+    } catch {
+
+      return {
+        valid: false,
+        error: 'Invalid website URL'
+      }
+
+    }
+
+  }
+
+  /**
+   * HANDLE MODE
+   *
+   * Example:
+   * johndoe
+   * @johndoe
+   */
+
+  const isUrl =
+
+    clean.startsWith('http://') ||
+    clean.startsWith('https://') ||
+    clean.includes('.com/') ||
+    clean.includes('.tv/') ||
+    clean.includes('.net/')
+
+  if (!isUrl) {
+
+    return {
+      valid: true
+    }
+
+  }
+
+  /**
+   * URL MODE
+   */
+
+  try {
+
+    const parsedUrl =
+      new URL(clean)
+
+    const hostname =
+      parsedUrl.hostname.toLowerCase()
+
+    const allowedDomains =
+      config.aliases || []
+
+    const matches =
+      allowedDomains.some(
+        (domain) =>
+
+          hostname === domain ||
+
+          hostname.endsWith(`.${domain}`)
+      )
+
+    if (!matches) {
+
+      return {
+        valid: false,
+        error: `This is not a valid ${network} URL`
+      }
+
+    }
+
+    return {
+      valid: true
+    }
+
+  } catch {
+
+    return {
+      valid: false,
+      error: 'Invalid URL'
+    }
+
+  }
+}
+
 
 export const formatSocialUrl = (network: string, handle: string,lang:'fr'|'en') => {
   const SOCIAL_CONFIG=get_social_config(lang)

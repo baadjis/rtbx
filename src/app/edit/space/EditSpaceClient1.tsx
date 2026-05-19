@@ -253,7 +253,9 @@ const onExitEdit = () => {
 
 const onAddLink = () => {
 
-  setShowAddLinks(true)
+ setShowAddLinks(
+    !showAddLinks
+  )
 
 }
 

@@ -219,71 +219,165 @@ export default function SpaceView({
 {/* ================================================= */}
 {/* EDIT SOCIALS */}
 {/* ================================================= */}
+{/* ================================================= */}
+{/* ADD LINKS MODAL */}
+{/* ================================================= */}
 
-{editMode && showAddLinks &&(
+{editMode && showAddLinks && (
 
-  <div className="
-    space-y-5
-    mt-8
+  <div
+    className="
+      fixed inset-0
+      z-[100]
 
-    rounded-[2.5rem]
+      flex items-center justify-center
 
-    border border-white/10
+      p-4
 
-    bg-white/5
-    backdrop-blur-2xl
+      bg-black/70
+      backdrop-blur-xl
+    "
+  >
 
-    p-5
-  ">
+    {/* MODAL */}
 
-    <div className="flex items-center gap-3">
+    <div
+      className="
+        relative
+
+        w-full
+        max-w-lg
+
+        rounded-[2.5rem]
+
+        bg-white
+        dark:bg-slate-900
+
+        border border-white/10
+
+        shadow-2xl
+
+        overflow-hidden
+      "
+    >
+
+      {/* HEADER */}
 
       <div
         className="
-          w-11 h-11
-          rounded-2xl
+          flex items-center justify-between
 
-          flex items-center justify-center
+          px-6 py-5
 
-          bg-white/10
-          border border-white/10
+          border-b
+          border-black/5
+          dark:border-white/10
         "
       >
 
-        <Link2 size={18} />
+        <div className="flex items-center gap-3">
+
+          <div
+            className="
+              w-11 h-11
+              rounded-2xl
+
+              flex items-center justify-center
+
+              bg-indigo-500/10
+            "
+          >
+
+            <Link2
+              size={18}
+              className="
+                text-indigo-600
+                dark:text-indigo-400
+              "
+            />
+
+          </div>
+
+          <div>
+
+            <p
+              className="
+                text-sm
+                font-black
+                uppercase
+                tracking-[0.18em]
+
+                text-black
+                dark:text-white
+              "
+            >
+              {t.edit_links}
+            </p>
+
+            <p
+              className="
+                text-xs
+                text-black/50
+                dark:text-white/50
+              "
+            >
+              {t.edit_links_hint}
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* CLOSE */}
+
+        <button
+          onClick={onAddLink}
+          className="
+            w-10 h-10
+
+            rounded-xl
+
+            flex items-center justify-center
+
+            bg-black/5
+            hover:bg-black/10
+
+            dark:bg-white/10
+            dark:hover:bg-white/15
+
+            transition-all
+          "
+        >
+
+          ✕
+
+        </button>
 
       </div>
 
-      <div className="text-left">
+      {/* BODY */}
 
-        <p className="
-          text-sm font-black
-          uppercase tracking-[0.18em]
-        ">
-          {t.edit_links}
-        </p>
+      <div
+        className="
+          p-6
 
-        <p className="
-          text-xs text-white/50
-        ">
-          {t.edit_links_hint}
-        </p>
+          max-h-[75vh]
+          overflow-y-auto
+        "
+      >
+
+        <SocialLinksAdd
+          links={links}
+          setLinks={setLinks}
+          updateLink={updateLink}
+          t={t}
+          lang={lang}
+          socialLinksOptions={socialLinksOptions}
+        />
 
       </div>
 
     </div>
-
-     <SocialLinksAdd
-      links={links}
-      setLinks={
-       setLinks
-      }
-      updateLink={updateLink
-      }
-      t={t}
-      lang={lang}
-      socialLinksOptions={socialLinksOptions}
-    />
 
   </div>
 
