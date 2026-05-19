@@ -53,6 +53,7 @@ export default function DigitalIDForm({
     get_social_config(lang)
 
   const [avatar, setAvatar]=useState<string|null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // =========================================================
   // USER
@@ -249,13 +250,44 @@ const socialLinksOptions =
   // LOGO
   // =========================================================
 
+  /* const handleImageUpload = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: (v: string | null) => void
+) => {
+
+  const file = e.target.files?.[0]
+
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onloadend = () =>
+    setter(reader.result as string)
+
+  reader.readAsDataURL(file)
+}*/
+
+// Nouvelle fonction (dans DigitalIDForm)
+const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  // 1. Preview immédiate (base64)
+  const reader = new FileReader();
+  reader.onloadend = () => setAvatar(reader.result as string);
+  reader.readAsDataURL(file);
+
+  // 2. On garde le fichier pour l'upload plus tard
+  setSelectedFile(file);
+};
+
  
 
   // =========================================================
   // ACTIVATE
   // =========================================================
 
-  const handleActivate = async () => {
+  /*const handleActivate = async () => {
 
     if (
       !legalTerms ||
@@ -350,25 +382,95 @@ const socialLinksOptions =
       setLoading(false)
 
     }
+  }*/
+
+
+  const handleActivate = async () => {
+  if (
+    !legalTerms ||
+    (spaceType === 'organization' && !legalAuth)
+  ) {
+    alert(t.error_legal);
+    return;
   }
 
-  const handleImageUpload = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setter: (v: string | null) => void
-) => {
+  if (isSlugAvailable === false) {
+    alert(lang === 'fr' ? 'Ce pseudo est déjà pris' : 'This handle is taken');
+    return;
+  }
 
-  const file = e.target.files?.[0]
+  setLoading(true);
 
-  if (!file) return
+  let finalAvatarUrl: string | null = null;
 
-  const reader = new FileReader()
+  // Upload de l'avatar AVANT la création du Space
+  if (selectedFile) {
+    try {
+      const fileExt = selectedFile.name.split('.').pop()?.toLowerCase() || 'png';
+      const fileName = `space-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
 
-  reader.onloadend = () =>
-    setter(reader.result as string)
+      const { error: uploadError } = await supabase.storage
+        .from('uploads_digitalid')
+        .upload(filePath, selectedFile, {
+          cacheControl: '3600',
+          upsert: true,
+        });
 
-  reader.readAsDataURL(file)
-}
+      if (uploadError) throw uploadError;
 
+      const { data: urlData } = supabase.storage
+        .from('uploads_digitalid')
+        .getPublicUrl(filePath);
+
+      finalAvatarUrl = urlData.publicUrl;
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de l'upload de l'image. Veuillez réessayer.");
+      setLoading(false);
+      return;
+    }
+  }
+
+  const payload = {
+    user_id: currentUser?.id || null,
+    email: email.toLowerCase().trim(),
+    slug: slug.toLowerCase().trim(),
+    space_type: spaceType,
+    space_subtype: spaceSubType || null,
+    entity_name: entityName || null,
+    social_data: links.filter((l: any) => l.handle.trim() !== ''),
+    theme_color: fgColor,
+    avatar_url: finalAvatarUrl,        // ← URL Supabase au lieu de base64
+    legal_accepted_at: new Date().toISOString(),
+    is_authorized_representative: spaceType === 'organization',
+    lang,
+  };
+
+  try {
+    const response = await fetch('/api/spaces/activate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      setGeneratedId(result.id);
+      window.location.href = `/u/${result.slug}/onboarding?token=${result.edit_token}`;
+    } else {
+      alert(result.error || 'Erreur lors de la création');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Erreur serveur');
+  } finally {
+    setLoading(false);
+  }
+};
+
+ 
  
 
   // =========================================================

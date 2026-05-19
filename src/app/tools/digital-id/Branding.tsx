@@ -108,8 +108,8 @@ export default function Branding({avatar,setAvatar,fgColor,setFgColor,handleImag
         <input
           type="file"
           accept="image/*"
-          onChange={(e) =>
-            handleImageUpload(e, setAvatar)
+          onChange={
+            handleImageUpload
           }
           className="
             absolute inset-0
