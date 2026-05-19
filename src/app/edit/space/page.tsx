@@ -24,7 +24,12 @@ export default async function EditSpacePage({
     .eq('edit_token', token)
     .single();
 
+
+  
+
   if (error || !space) return notFound();
+
+  const isProfileOnly=space?.user_id==null
 
 
   const lang = await getLang()
@@ -34,7 +39,10 @@ export default async function EditSpacePage({
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
         {/* On passe les données au composant Client */}
-        <EditSpaceClient space={space} lang={lang} token={token} />
+        <EditSpaceClient space={space} lang={lang} token={token} 
+        isProfileOnly={isProfileOnly}
+        
+        />
       </main>
       <Footer />
     </div>
