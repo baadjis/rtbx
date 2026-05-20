@@ -92,7 +92,7 @@ export function SpaceAvatar({
               src={imageUrl}
               alt="Space Avatar"
               fill
-              unoptimized
+              unoptimized={imageUrl?.startsWith('data:')}   // ← Important pour base64
               className={`
                 object-contain
                 transition-all duration-500
