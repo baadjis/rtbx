@@ -15,7 +15,10 @@ export const Data={fr: {
   loyalty_title: "Gestion Fidélité" ,
   total_customers: "Clients Fidèles" ,
   total_points: "Points Distribués",
-  recent_activity: "Activité Récente"
+  recent_activity: "Activité Récente",
+  link_google_avis:"Liez vos établissements Google Maps pour centraliser vos outils marketing et suivre vos avis." ,
+  search_my_business:"Rechercher mon établissement"
+
 
 },
 en: {
@@ -34,5 +37,10 @@ en: {
   loyalty_title: "Loyalty Management" ,
   total_customers: "Loyal Customers" ,
   total_points: "Total Points",
-  recent_activity: "Recent Activity"
+  recent_activity: "Recent Activity",
+  link_google_avis: "Link your Google Maps locations to centralize your marketing tools and track reviews.",
+  search_my_business:"Search for my business"
+
+  
+
 }}

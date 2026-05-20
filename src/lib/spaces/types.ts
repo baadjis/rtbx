@@ -5,11 +5,11 @@ export type SocialLink = {
 }
 
 export type SpaceType =
-  | 'personal'
-  | 'organization'
-  | 'business'
-  | 'developper'
-
+  'personal' |
+  'organization' |
+  'developer' |
+  'startup' |
+  'business'
 
 
 export type SpaceSubtype =

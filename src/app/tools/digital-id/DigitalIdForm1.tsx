@@ -35,6 +35,7 @@ import SocialLinksAdd from '@/components/spaces/SocialLinksAdd'
 import BuilderSection from './BuilderSection'
 import Branding from './Branding'
 import { get_social_config } from '@/utils/social-config'
+import { SpaceType } from '@/lib/spaces/types'
 
 export default function DigitalIDForm({
   lang
@@ -75,11 +76,7 @@ export default function DigitalIDForm({
   // =========================================================
 
   const [spaceType, setSpaceType] = useState<
-    'personal' |
-    'organization' |
-    'developer' |
-    'startup' |
-    'business'
+   SpaceType
   >('personal')
 
   const [spaceSubType, setSpaceSubType] =
