@@ -100,6 +100,7 @@ qr_logo_hint:
 
 upload_qr_logo:
   "Ajouter un logo QR",
+delete_avatar_hint:"Supprimer l'avatar ?"
   
 
 },
@@ -214,6 +215,8 @@ qr_logo_hint:
 
 upload_qr_logo:
   "Upload QR logo",
+delete_avatar_hint:"Delete avatar?"
+
 
 
 

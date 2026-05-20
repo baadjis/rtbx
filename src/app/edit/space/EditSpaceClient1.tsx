@@ -6,7 +6,6 @@ import { Data } from '../../tools/digital-id/data'
 import { LangType } from '@/lib/lang/types'
 import SpaceView from '@/components/spaces/SpaceView'
 import { get_social_config } from '@/utils/social-config'
-import { createBrowserClient } from '@supabase/ssr'
 
 export default function EditSpaceClient({ space, isProfileOnly, lang, token }: any) {
   const SOCIAL_CONFIG = get_social_config(lang)
@@ -30,10 +29,7 @@ export default function EditSpaceClient({ space, isProfileOnly, lang, token }: a
   const router = useRouter()
   const t = Data[lang as LangType]
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  
 
   const usedNetworks = [
     ...(socialLinks || []),
@@ -58,18 +54,19 @@ export default function EditSpaceClient({ space, isProfileOnly, lang, token }: a
   setSelectedAvatarFile(file)
 }
 
-  // ====================== REMOVE AVATAR ======================
- 
 // ====================== REMOVE AVATAR ======================
 const onRemoveAvatar = async () => {
   if (!avatar_url) return
 
-  const confirmDelete = window.confirm("Supprimer l'avatar ?")
+  const confirmDelete = window.confirm(t.delete_avatar_hint||"Supprimer l'avatar ?")
   if (!confirmDelete) return
 
-  setAvataurl(null)           // Mise à jour immédiate de la preview
+  // Mise à jour immédiate de la preview
+  setAvataurl(null)
   setSelectedAvatarFile(null)
 }
+
+
 
   // ====================== HANDLE UPDATE ======================
   const handleUpdate = async () => {
