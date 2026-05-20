@@ -60,7 +60,7 @@ const saveToDatabase = async (place: any) => {
   if (user && place.place_id) {
     await supabase.from('businesses').upsert({
       user_id: user.id,
-      place_id: place.place_id,
+      google_place_id: place.place_id,
       name: place.name,
       address: place.formatted_address,
       business_type: place.business_type // SAUVEGARDE EN BASE

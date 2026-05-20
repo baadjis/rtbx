@@ -25,8 +25,9 @@ export default function BusinessDetailsClient({ business, t, lang, loyaltyStats,
   const [reviews, setReviews] = useState<any[]>([])
   const [googleMeta, setGoogleMeta] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  
 
-  const fetchGoogleData = () => {
+  /*const fetchGoogleData = () => {
     if (!window.google || !business.place_id) return
     
     const service = new window.google.maps.places.PlacesService(document.createElement('div'))
@@ -43,7 +44,57 @@ export default function BusinessDetailsClient({ business, t, lang, loyaltyStats,
       }
       setLoading(false)
     })
+  }*/
+
+  const fetchGoogleData = () => {
+
+  if (
+    typeof window === 'undefined' ||
+    !window.google ||
+    !window.google.maps ||
+    !window.google.maps.places ||
+    !business.place_id
+  ) {
+    return
   }
+
+  const service =
+    new window.google.maps.places.PlacesService(
+      document.createElement('div')
+    )
+
+  service.getDetails(
+    {
+      placeId: business.google_place_id,
+      fields: [
+        'reviews',
+        'rating',
+        'user_ratings_total'
+      ]
+    },
+    (place: any, status: any) => {
+
+      if (
+        status ===
+        window.google.maps.places.PlacesServiceStatus.OK
+      ) {
+
+        setReviews(
+          place.reviews || []
+        )
+
+        setGoogleMeta({
+          rating: place.rating,
+          total: place.user_ratings_total
+        })
+
+      }
+
+      setLoading(false)
+
+    }
+  )
+}
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8 animate-in fade-in duration-700">
@@ -177,11 +228,11 @@ export default function BusinessDetailsClient({ business, t, lang, loyaltyStats,
                             </div>
                         </div>
                     )) : (
-                        <p className="text-sm text-gray-400 italic text-center py-4">Aucun scan récent.</p>
+                        <p className="text-sm text-gray-400 italic text-center py-4">{ t.non_recent_scan ||"Aucun scan récent."}</p>
                     )}
                 </div>
                 <Link href="/scan" className="w-full mt-8 py-4 bg-gray-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-950 transition-all no-underline border-none">
-                    Nouveau Scan <ArrowRight size={14} />
+                   {t.new_scan ||"Nouveau Scan "} <ArrowRight size={14} />
                 </Link>
             </div>
         </div>

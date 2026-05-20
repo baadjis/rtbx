@@ -5,7 +5,7 @@ export const Data={fr: {
   add_business: "Lier un commerce",
   business_total: "établissements enregistrés",
   manage: "Gérer",
-   biz_details: "Gestion de l'établissement",
+  biz_details: "Gestion de l'établissement",
   latest_reviews: "Derniers avis clients",
   no_reviews: "Aucun avis récent trouvé.",
   view_on_maps: "Voir sur Google Maps",
@@ -17,8 +17,9 @@ export const Data={fr: {
   total_points: "Points Distribués",
   recent_activity: "Activité Récente",
   link_google_avis:"Liez vos établissements Google Maps pour centraliser vos outils marketing et suivre vos avis." ,
-  search_my_business:"Rechercher mon établissement"
-
+  search_my_business:"Rechercher mon établissement",
+  new_scan :"Nouveau Scan ",
+  non_recent_scan :"Aucun scan récent.",
 
 },
 en: {
@@ -27,7 +28,7 @@ en: {
   add_business: "Link a business",
   business_total: "registered businesses",
   manage: "Manage",
-   biz_details: "Business Management",
+  biz_details: "Business Management",
   latest_reviews: "Latest customer reviews",
   no_reviews: "No recent reviews found.",
   view_on_maps: "View on Google Maps",
@@ -39,7 +40,10 @@ en: {
   total_points: "Total Points",
   recent_activity: "Recent Activity",
   link_google_avis: "Link your Google Maps locations to centralize your marketing tools and track reviews.",
-  search_my_business:"Search for my business"
+  search_my_business:"Search for my business",
+  new_scan :"Nouveau Scan ",
+  non_recent_scan :"no new scan.",
+
 
   
 
