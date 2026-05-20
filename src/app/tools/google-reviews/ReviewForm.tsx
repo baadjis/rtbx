@@ -64,7 +64,7 @@ const saveToDatabase = async (place: any) => {
       name: place.name,
       address: place.formatted_address,
       business_type: place.business_type // SAUVEGARDE EN BASE
-    }, { onConflict: 'user_id, place_id' })
+    }, { onConflict: 'user_id, google_place_id' })
     setIsSaved(true)
   }
 }
