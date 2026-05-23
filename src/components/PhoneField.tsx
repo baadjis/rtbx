@@ -71,7 +71,8 @@ export default function PhoneField({
 
         <PhoneInput
           key={country}
-          defaultCountry='FR'
+          international={false}
+          defaultCountry={country}
 
           country={
             country 

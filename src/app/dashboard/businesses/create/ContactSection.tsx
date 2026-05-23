@@ -2,6 +2,7 @@
 'use client'
 
 import PhoneField from '@/components/PhoneField'
+import { CountryCode } from 'libphonenumber-js/core'
 
 import {
   Mail
@@ -17,7 +18,7 @@ type ContactSectionProps = {
   phone: string
   setPhone: any
 
-  country?: string
+  country?: CountryCode
 
 }
 
