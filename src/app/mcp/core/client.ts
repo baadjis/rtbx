@@ -42,10 +42,10 @@ export const getDefaultModel = () => {
     return models.gpt4o;
   }
 
-  if (process.env.GROQ_API_KEY) {
+  /*if (process.env.GROQ_API_KEY) {
     console.log('🚀 MCP → Using Groq Llama 3.1 70B');
     return models.groqLlama70B;
-  }
+  }*/
 
   console.warn('⚠️ No LLM API key found. Using Groq fast fallback.');
   return models.groqFast;
