@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/mcp-server.ts
 import { NextResponse } from 'next/server';
-import { runMCPAgent } from './agents/main-agent';
-import {mcpConfig} from './core/config';
+import { runMCPAgent } from '../agents/main-agent';
+import {mcpConfig} from '../core/config';
 
 /**
  * =========================================================
