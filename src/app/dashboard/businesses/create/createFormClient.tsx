@@ -327,7 +327,7 @@ export default function BusinessCreateForm({
           name,
 
           address,
-          country,
+          country:en[country],
           postal_code,
           city,
 
@@ -619,7 +619,7 @@ export default function BusinessCreateForm({
     setEmail={setEmail}
     phone={phone}
     setPhone={setPhone}
-    country={getCountryCode(country)}
+    country={country}
     t={t}
   />
 
