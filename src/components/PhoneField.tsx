@@ -6,6 +6,7 @@ import PhoneInput from 'react-phone-number-input'
 import {
   Phone
 } from 'lucide-react'
+import { CountryCode } from 'libphonenumber-js/core'
 
 type Props = {
 
@@ -15,7 +16,7 @@ type Props = {
     value: string
   ) => void
 
-  country?: string
+  country?: CountryCode
 
   t: any
 
@@ -69,11 +70,12 @@ export default function PhoneField({
       ">
 
         <PhoneInput
-
-          international
+          key={country}
+          international={false}
+          defaultCountry={country}
 
           country={
-            country as any
+            country 
           }
 
           value={phone}
