@@ -30,6 +30,7 @@ import { Data } from './data'
 import BusinessIdentity from './BusinessIdentity'
 import ContactSection from './ContactSection'
 import BusinessLocation from './BusinessLocation'
+import { getCountryCode } from '@/lib/countries/GetCountryCode'
 
 export default function BusinessCreateForm({
   lang
@@ -615,7 +616,7 @@ export default function BusinessCreateForm({
     setEmail={setEmail}
     phone={phone}
     setPhone={setPhone}
-    country={country}
+    country={getCountryCode(country)}
     t={t}
   />
 
