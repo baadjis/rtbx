@@ -13,7 +13,6 @@ import Link from 'next/link'
 interface Props {
   business: any;
   t: any;
-  lang: string;
   loyaltyStats: {
     totalCustomers: number;
     totalPoints: number;
@@ -21,7 +20,7 @@ interface Props {
   history: any[];
 }
 
-export default function BusinessDetailsClient({ business, t, lang, loyaltyStats, history }: Props) {
+export default function BusinessDetailsClient({ business, t, loyaltyStats, history }: Props) {
   const [reviews, setReviews] = useState<any[]>([])
   const [googleMeta, setGoogleMeta] = useState<any>(null)
   const [loading, setLoading] = useState(true)

@@ -7,8 +7,9 @@ import Link from 'next/link'
 import Script from 'next/script'
 import { createBrowserClient } from '@supabase/ssr' // Ajout de Supabase
 import { Data } from './data'
+import { LangType } from '@/lib/lang/types'
 
-export default function ReviewForm({ lang }: { lang: 'fr' | 'en' }) {
+export default function ReviewForm({ lang }: { lang: LangType }) {
   const t = Data[lang]
   const [placeId, setPlaceId] = useState('')
   const [businessName, setBusinessName] = useState('')

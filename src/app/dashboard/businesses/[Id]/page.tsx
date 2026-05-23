@@ -63,7 +63,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ Id: s
         <BusinessDetailsClient 
           business={business} 
           t={t} 
-          lang={lang} 
+        
           loyaltyStats={loyaltyStats}
           history={history}
         />
