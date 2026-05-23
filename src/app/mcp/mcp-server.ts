@@ -16,40 +16,40 @@ import {mcpConfig} from './core/config';
  * =========================================================
  */
 
+
 export async function POST(request: Request) {
   try {
-    const { messages, temperature, maxSteps } = await request.json();
+    const body = await request.json();
+    console.log('MCP Request received:', { 
+      messageCount: body.messages?.length,
+      hasGroqKey: !!process.env.GROQ_API_KEY 
+    });
 
-    // Validation de base
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
         success: false,
-        error: 'Messages array is required and cannot be empty'
+        error: 'Messages array is required'
       }, { status: 400 });
     }
 
-    // Exécution de l'agent
-    const result = await runMCPAgent(messages, {
-      temperature: temperature || mcpConfig.temperature,
-      maxSteps: maxSteps || mcpConfig.maxSteps,
+    const result = await runMCPAgent(body.messages, {
+      temperature: body.temperature || mcpConfig.temperature,
+      maxSteps: body.maxSteps || 12,
     });
 
     return NextResponse.json({
       success: result.success,
       text: result.text,
-      steps: result.steps,
-      toolCalls: result.toolCalls,
-      usage: result.usage,
-      ...(result.error && { error: result.error }),
+      ...(result.error && { error: result.error })
     });
 
   } catch (error: any) {
-    console.error('MCP Server Error:', error);
-
+    console.error('MCP Server Critical Error:', error);
+    
     return NextResponse.json({
       success: false,
       error: error.message || 'Internal server error',
-      text: "Sorry, an internal error occurred. Please try again later."
+      text: "Désolé, une erreur interne est survenue. Réessaie plus tard."
     }, { status: 500 });
   }
 }
