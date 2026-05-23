@@ -130,7 +130,10 @@ export const businessSchema =
       z.string()
         .nullable()
         .optional(),
-    country_code:z.string().nullable().optional(),
+        
+    country_code:z.string()
+              .nullable()
+              .optional(),
 
     postal_code:
       z.string()
