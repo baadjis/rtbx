@@ -41,11 +41,23 @@ export const Data: Record<
     // IDENTITY
 
     business_identity:
-      'Identité du business',
+  'Identité du business',
 
-    business_identity_subtitle:
-      'Informations principales de votre établissement.',
+business_identity_subtitle:
+  'Définissez le nom et la catégorie de votre activité.',
 
+business_location:
+  'Localisation',
+
+business_location_subtitle:
+  'Indiquez où votre business est situé.',
+
+contact_information:
+  'Informations de contact',
+
+contact_information_subtitle:
+  'Ajoutez les moyens de contacter votre business.',
+    
     business_name:
       'Nom du business',
 
@@ -100,6 +112,8 @@ export const Data: Record<
     business_created:
       'Business créé avec succès'
 
+  
+
   },
 
   // =====================================================
@@ -138,10 +152,24 @@ export const Data: Record<
     // IDENTITY
 
     business_identity:
-      'Business identity',
+  'Business Identity',
 
-    business_identity_subtitle:
-      'Main information about your business.',
+business_identity_subtitle:
+  'Define your business name and category.',
+
+business_location:
+  'Location',
+
+business_location_subtitle:
+  'Tell customers where your business is located.',
+
+contact_information:
+  'Contact Information',
+
+contact_information_subtitle:
+  'Add ways for customers to contact your business.',
+
+    
 
     business_name:
       'Business name',
