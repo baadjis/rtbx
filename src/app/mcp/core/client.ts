@@ -26,7 +26,7 @@ const openai = createOpenAI({
 export const models = {
   claudeSonnet: anthropic('claude-3-5-sonnet-20240620'),
   gpt4o: openai('gpt-4o'),
-  groqLlama70B: groq('llama-3.1-70b-versatile'),
+  groqLlama70B: groq('llama-3.3-70b-versatile'),
   groqFast: groq('llama-3.1-8b-instant'),
 };
 
@@ -42,10 +42,10 @@ export const getDefaultModel = () => {
     return models.gpt4o;
   }
 
-  /*if (process.env.GROQ_API_KEY) {
+  if (process.env.GROQ_API_KEY) {
     console.log('🚀 MCP → Using Groq Llama 3.1 70B');
     return models.groqLlama70B;
-  }*/
+  }
 
   console.warn('⚠️ No LLM API key found. Using Groq fast fallback.');
   return models.groqFast;
