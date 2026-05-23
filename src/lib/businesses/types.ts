@@ -1,5 +1,7 @@
 // lib/businesses/types.ts
 
+import { CountryCode } from "libphonenumber-js/core"
+
 export type BusinessSource =
   | 'google'
   | 'manual'
@@ -66,6 +68,7 @@ export type BusinessType = {
   city?: string | null
 
   country?: string | null
+  country_code?:CountryCode|null
 
   postal_code?: string | null
 
