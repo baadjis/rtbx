@@ -82,7 +82,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
 
     const userResponse = confirmed ? "Oui, confirme et procède." : "Non, annule.";
 
-    const response = await fetch('/api/mcp/chat', {
+    const response = await fetch('/api/mcp/mcp-server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
