@@ -28,7 +28,7 @@ export default function PhoneField({
 
   setPhone,
 
-  country,
+  country='FR',
 
   t
 
