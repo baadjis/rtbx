@@ -2,6 +2,8 @@
 'use client'
 
 import CountrySelect from '@/components/CountrySelect'
+import { CountryCode } from 'libphonenumber-js/core'
+
 
 type BusinessLocationProps = {
 
@@ -16,7 +18,7 @@ type BusinessLocationProps = {
   city: string
   setCity: any
 
-  country: string
+  country: CountryCode
   setCountry: any
 
 }

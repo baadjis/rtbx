@@ -2,6 +2,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import en from 'react-phone-number-input/locale/en.json'
+
 
 import Link from 'next/link'
 import Image from 'next/image'
@@ -31,6 +33,7 @@ import BusinessIdentity from './BusinessIdentity'
 import ContactSection from './ContactSection'
 import BusinessLocation from './BusinessLocation'
 import { getCountryCode } from '@/lib/countries/GetCountryCode'
+import { CountryCode } from 'libphonenumber-js/core'
 
 export default function BusinessCreateForm({
   lang
@@ -92,7 +95,7 @@ export default function BusinessCreateForm({
   const [googlePlaceId, setGooglePlaceId] =
     useState('')
   const [city,setCity]=useState('')
-  const [country,setCountry]=useState('')
+  const [country,setCountry]=useState<CountryCode>('FR')
 
 
   // =====================================================
