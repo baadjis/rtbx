@@ -3,7 +3,7 @@
 export const Data = {
   fr: {
     // MCP Chat
-    mcp_title: "RTBX MCP",
+    mcp_title: "RTBX AI",
     mcp_subtitle: "Ton assistant intelligent",
     mcp_welcome: "Bonjour ! Je suis RTBX MCP, ton assistant IA.\nComment puis-je t'aider aujourd'hui ?",
     mcp_placeholder: "Décris-moi ce que tu veux créer...",
