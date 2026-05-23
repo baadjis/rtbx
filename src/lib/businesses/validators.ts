@@ -103,7 +103,7 @@ export const businessSchema =
         .optional(),
 
     email:
-      z.email()
+      z.string()
         .nullable()
         .optional(),
 
