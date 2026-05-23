@@ -1,29 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/mcp/mcp-server.ts
+// app/api/mcp/server/route.ts
 import { NextResponse } from 'next/server';
-import { runMCPAgent } from '../agents/main-agent';
-import {mcpConfig} from '../core/config';
+import { runMCPAgent } from '@/app/mcp/agents/main-agent';
+import mcpConfig from '@/app/mcp/core/config';
 
 /**
  * =========================================================
  * MCP SERVER ENDPOINT
  * =========================================================
- *
- * Main API endpoint for the MCP Agent.
- * Allows the frontend or external tools to chat with the agent.
- *
- * POST /api/mcp/chat
+ * Route: POST /api/mcp/server
  * =========================================================
  */
-
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('MCP Request received:', { 
-      messageCount: body.messages?.length,
-      hasGroqKey: !!process.env.GROQ_API_KEY 
-    });
 
     if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
@@ -44,7 +35,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error('MCP Server Critical Error:', error);
+    console.log('MCP Server Error:', error);
     
     return NextResponse.json({
       success: false,
