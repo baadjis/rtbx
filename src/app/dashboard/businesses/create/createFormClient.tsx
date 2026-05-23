@@ -16,7 +16,8 @@ import {
   Loader2,
   CheckCircle2,
   Palette,
-  ShieldCheck
+  ShieldCheck,
+  Phone
 } from 'lucide-react'
 
 import { createBrowserClient } from '@supabase/ssr'
@@ -554,50 +555,71 @@ export default function BusinessCreateForm({
 
           </BuilderSection>
 
-          {/* IDENTITY */}
+        
+{/* ===================================================== */}
+{/* BUSINESS IDENTITY */}
+{/* ===================================================== */}
 
-          <BuilderSection
-            icon={Building2}
-            title={t.business_identity}
-            subtitle={t.business_identity_subtitle}
-          >
+<BuilderSection
+  icon={Building2}
+  title={t.business_identity}
+  subtitle={t.business_identity_subtitle}
+>
 
-            <BusinessIdentity  name={name} 
-             businessType={businessType}
-             
-             setBusinessType={setBusinessType}
-             setName={setName}
-            
-             t={t}
-            />
+  <BusinessIdentity
+    name={name}
+    businessType={businessType}
+    setBusinessType={setBusinessType}
+    setName={setName}
+    t={t}
+  />
 
-          </BuilderSection>
+</BuilderSection>
 
-          <BuilderSection>
-            <BusinessLocation 
-            country={country}
-            setCountry={setCountry}
-            city={city}
-            setCity={setCity}
-            address={address}
-            setAddress={setAddress}
-            setPostalCode={setPostalCode}
-            postal_code={postal_code}
-            t={t}
+{/* ===================================================== */}
+{/* LOCATION */}
+{/* ===================================================== */}
 
-            
-            />
+<BuilderSection
+  icon={MapPin}
+  title={t.business_location}
+  subtitle={t.business_location_subtitle}
+>
 
-          </BuilderSection>
+  <BusinessLocation
+    country={country}
+    setCountry={setCountry}
+    city={city}
+    setCity={setCity}
+    address={address}
+    setAddress={setAddress}
+    setPostalCode={setPostalCode}
+    postal_code={postal_code}
+    t={t}
+  />
 
-          <BuilderSection>
-           
-           <ContactSection  email={email} setEmail={setEmail}  phone={phone}
-            setPhone={setPhone}  country={country}
-            t={t}
-           />
+</BuilderSection>
 
-          </BuilderSection>
+{/* ===================================================== */}
+{/* CONTACT */}
+{/* ===================================================== */}
+
+<BuilderSection
+  icon={Phone}
+  title={t.contact_information}
+  subtitle={t.contact_information_subtitle}
+>
+
+  <ContactSection
+    email={email}
+    setEmail={setEmail}
+    phone={phone}
+    setPhone={setPhone}
+    country={country}
+    t={t}
+  />
+
+</BuilderSection>
 
           {/* BRANDING */}
 
