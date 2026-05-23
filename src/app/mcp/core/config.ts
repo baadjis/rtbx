@@ -14,18 +14,14 @@
  */
 
 // app/mcp/core/config.ts
-export const mcpConfig = {
-  defaultModel: 'claude-3-5-sonnet-20240620',
-  fastModel: 'llama-3.1-70b-versatile',
 
+// app/mcp/core/config.ts
+export const mcpConfig = {
   temperature: 0.7,
   maxTokens: 8000,
+  maxSteps: 12,
+  maxMessages: 30,
 
-  // Limites de sécurité
-  maxSteps: 12,                    // Nombre maximum d'actions par conversation
-  maxMessages: 30,                 // Historique max gardé
-
-  // Rate limiting (basique)
   rateLimit: {
     maxRequestsPerMinute: 20,
     maxRequestsPerHour: 200,
@@ -36,3 +32,5 @@ export const mcpConfig = {
     logTools: true,
   },
 } as const;
+
+export default mcpConfig;

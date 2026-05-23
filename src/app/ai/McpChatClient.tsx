@@ -35,45 +35,45 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   ].filter(Boolean);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+  if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = { role: 'user', content: input };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
+  const userMessage: Message = { role: 'user', content: input };
+  
+  setMessages(prev => [...prev, userMessage]);
+  setInput('');
+  setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/mcp/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          messages: [...messages, userMessage],
-          lang 
-        }),
-      });
+  try {
+    const response = await fetch('/api/mcp/mcp-server', {   // ← Corrigé ici
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [...messages, userMessage],
+        lang
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      const newMessage: Message = {
-        role: 'assistant',
-        content: data.text || "Désolé, je n'ai pas pu répondre.",
-        isConfirmation: data.requiresConfirmation || false,
-        pendingAction: data.pendingAction || null
-      };
+    const newMessage: Message = {
+      role: 'assistant',
+      content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
+      isConfirmation: data.requiresConfirmation || false,
+      pendingAction: data.pendingAction || null
+    };
 
-      setMessages(prev => [...prev, newMessage]);
-      setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
+    setMessages(prev => [...prev, newMessage]);
+    setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
 
-    } catch (err) {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: t.mcp_error || "Erreur de connexion. Veuillez réessayer."
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  } catch (err) {
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard."
+    }]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleConfirmation = async (confirmed: boolean) => {
     if (!pendingConfirmation) return;
