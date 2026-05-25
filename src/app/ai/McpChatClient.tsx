@@ -73,7 +73,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/mcp/server', {
+      const response = await fetch('/mcp/server', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -122,7 +122,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     const userResponse = confirmed ? "Oui, confirme et procède." : "Non, annule.";
 
     try {
-      const response = await fetch('/api/mcp/server', {
+      const response = await fetch('/mcp/server', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
