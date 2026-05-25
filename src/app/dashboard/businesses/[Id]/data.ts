@@ -158,7 +158,23 @@ connect:
   'Connecter',
 
 scan_customer:
-  'Scanner un client'
+  'Scanner un client',
+  // FR
+
+google_rating:
+  'Note Google',
+
+trustpilot_rating:
+  'Note Trustpilot',
+
+tripadvisor_rating:
+  'Note Tripadvisor',
+
+booking_rating:
+  'Note Booking',
+
+review_rating:
+  'Note Avis'
 
   
 
@@ -319,7 +335,23 @@ connect:
   'Connect',
 
 scan_customer:
-  'Scan Customer'
+  'Scan Customer',
+  // EN
+
+google_rating:
+  'Google Rating',
+
+trustpilot_rating:
+  'Trustpilot Rating',
+
+tripadvisor_rating:
+  'Tripadvisor Rating',
+
+booking_rating:
+  'Booking Rating',
+
+review_rating:
+  'Review Rating'
 
   }
 
