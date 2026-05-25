@@ -65,14 +65,18 @@ export const updateShortLink = tool({
 // app/mcp/tools/shortener.ts
 export const getUserShortLinks = tool({
   description: 'Get all shortened links belonging to the current authenticated user',
-  inputSchema: z.object({}),   // Empty schema = no parameters needed
-  execute: async () => {
+ inputSchema:z.object({
+    
+ }),
+  
+  execute: async ({}) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch user short links');
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to fetch user short links');
     }
 
     return response.json();
