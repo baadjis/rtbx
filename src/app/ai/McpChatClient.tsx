@@ -161,7 +161,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-3 mb-4">
             <Sparkles className="w-10 h-10 text-indigo-400" />
-            <h1 className="text-5xl font-black tracking-tighter">RTBX MCP</h1>
+            <h1 className="text-5xl font-black tracking-tighter">RTBX AI</h1>
           </div>
           <p className="text-slate-400 text-lg">{t.mcp_subtitle}</p>
         </div>
