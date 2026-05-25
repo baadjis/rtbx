@@ -72,7 +72,7 @@ context: {
   try {
 
     const { code } =
-      await context.params
+      await context.params;
     const {
       user,
       error: authError
@@ -120,9 +120,15 @@ context: {
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: { code: string } }
+  context: {
+    params: Promise<{
+      code: string
+    }>}
 ) {
   try {
+    
+    const { code } =
+      await context.params
     const {
       user,
       error: authError
@@ -135,7 +141,7 @@ export async function DELETE(
       }, { status: 401 });
     }
 
-    const { error } = await deleteLink(params.code);
+    const { error } = await deleteLink(code);
 
     if (error) {
       return NextResponse.json({
