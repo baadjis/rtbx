@@ -64,9 +64,7 @@ export const updateShortLink = tool({
 // =====================================================
 export const getUserShortLinks = tool({
   description: 'Get all shortened links belonging to a user',
-  inputSchema: z.void({
-   
-  }),
+  inputSchema:Object({}),
   execute: async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`
