@@ -104,12 +104,18 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         setCurrentContext('shortener');
       }
 
-    } catch (err) {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard."
-      }]);
-    } finally {
+    } catch (err: any) {
+  let errorText:string = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
+
+  if (err?.error === 'rate_limit') {
+    errorText = t.mcp_rate_limit
+  }
+
+  setMessages(prev => [...prev, {
+    role: 'assistant',
+    content: errorText
+  }]);
+} finally {
       setIsLoading(false);
     }
   };
@@ -137,18 +143,12 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         role: 'assistant',
         content: data.text
       }]);
-    }  catch (err: any) {
-  let errorText :string= t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
-
-  if (err?.error === 'rate_limit') {
-    errorText = t.mcp_rate_limit 
-  }
-
-  setMessages(prev => [...prev, {
-    role: 'assistant',
-    content: errorText
-  }]);
-}finally {
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: "Erreur lors de la confirmation."
+      }]);
+    } finally {
       setPendingConfirmation(null);
       setIsLoading(false);
     }
