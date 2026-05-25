@@ -17,7 +17,7 @@ export async function GET(
   context: {
     params: Promise<{
       code: string
-      limit:string
+      
     }>}
 ) {
   try {
