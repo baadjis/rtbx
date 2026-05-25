@@ -9,6 +9,7 @@ fr: {
   mcp_placeholder: "Décris-moi ce que tu veux créer...",
   mcp_suggestions: "Suggestions rapides :",
   mcp_error: "Désolé, une erreur est survenue. Réessaie plus tard.",
+  mcp_rate_limit:"⏳ Nous avons atteint la limite de requêtes. Veuillez patienter un moment." ,
 
   // Suggestions générales
   mcp_suggestion_create_space: "Créer un nouveau Space",
@@ -43,6 +44,9 @@ en: {
   mcp_placeholder: "Describe what you want to create...",
   mcp_suggestions: "Quick suggestions:",
   mcp_error: "Sorry, an error occurred. Please try again later.",
+  mcp_rate_limit: "⏳ We have reached the request limit. Please wait a moment.",
+
+
 
   // General suggestions
   mcp_suggestion_create_space: "Create a new Space",
