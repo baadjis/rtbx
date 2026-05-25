@@ -141,6 +141,33 @@ export async function getLinkStats(shortCode: string) {
   return { data, error };
 }
 
+
+/* =========================================================
+   GET LINK LOGS
+========================================================= */
+export async function getLinkLogs(shortCode: string, limit: number = 50) {
+  const { data, error } = await supabase
+    .from('link_logs')
+    .select(`
+      id,
+      created_at,
+      country,
+      referrer,
+      device,
+      browser
+    `)
+    .eq('link_id', supabase
+        .from('links')
+        .select('id')
+        .eq('short_code', shortCode)
+        .single()
+    )
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  return { data, error };
+}
+
 export default {
   createLink,
   updateLink,
