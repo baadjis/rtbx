@@ -62,9 +62,10 @@ export const updateShortLink = tool({
 // =====================================================
 // GET USER SHORT LINKS TOOL
 // =====================================================
+// app/mcp/tools/shortener.ts
 export const getUserShortLinks = tool({
-  description: 'Get all shortened links belonging to a user',
-  inputSchema:Object({}),
+  description: 'Get all shortened links belonging to the current authenticated user',
+  inputSchema: z.object({}),   // Empty schema = no parameters needed
   execute: async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`
@@ -77,7 +78,6 @@ export const getUserShortLinks = tool({
     return response.json();
   },
 });
-
 // =====================================================
 // GET SHORT LINK STATS TOOL
 // =====================================================
