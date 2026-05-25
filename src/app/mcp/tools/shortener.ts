@@ -65,7 +65,7 @@ export const updateShortLink = tool({
 export const getUserShortLinks = tool({
   description: 'Get all shortened links belonging to a user',
   inputSchema: z.object({
-    user_id: z.string().describe('The user ID'),
+   
   }),
   execute: async () => {
     const response = await fetch(
