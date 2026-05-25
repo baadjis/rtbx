@@ -19,13 +19,20 @@ import { requireUser } from '@/lib/auth/get-user';
  */
 export async function GET(
   request: Request,
-  { params }: { params: { code: string } }
+  context: {
+    params: Promise<{
+      code: string
+    }>
+  }
 ) {
-  try {
-    // Increment clicks (public action, no auth required)
-    await incrementClicks(params.code);
 
-    const { data, error } = await getLinkByCode(params.code);
+  try {
+    const { code } =
+      await context.params
+    // Increment clicks (public action, no auth required)
+    await incrementClicks(code);
+
+    const { data, error } = await getLinkByCode(code);
 
     if (error || !data) {
       return NextResponse.json({
@@ -57,9 +64,15 @@ export async function GET(
  */
 export async function PATCH(
   request: Request,
-  { params }: { params: { code: string } }
-) {
+
+context: {
+    params: Promise<{
+      code: string
+    }>}) {
   try {
+
+    const { code } =
+      await context.params
     const {
       user,
       error: authError
@@ -74,7 +87,7 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { data, error } = await updateLink(params.code, body);
+    const { data, error } = await updateLink(code, body);
 
     if (error) {
       return NextResponse.json({

@@ -7,10 +7,7 @@ import {
   LinkUpdateInput,
   linkUpdateSchema
 } from '@/lib/shortener/validators';
-import type {
-LinkUpdatePayload,
 
-} from '@/lib/shortener/types';
 
 // =====================================================
 // CREATE SHORT LINK TOOL

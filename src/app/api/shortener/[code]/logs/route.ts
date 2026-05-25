@@ -14,9 +14,15 @@ import { requireUser } from '@/lib/auth/get-user';
  */
 export async function GET(
   request: Request,
-  { params }: { params: { code: string } }
+  context: {
+    params: Promise<{
+      code: string
+      limit:string
+    }>}
 ) {
   try {
+    const { code  }=await context.params
+
     const {
       user,
       error: authError
@@ -32,7 +38,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
 
-    const { data, error } = await getLinkLogs(params.code, limit);
+    const { data, error } = await getLinkLogs(code, limit);
 
     if (error) {
       return NextResponse.json({

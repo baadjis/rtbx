@@ -11,11 +11,14 @@ import { NextResponse } from "next/server";
  * Retrieves statistics for a shortened link.
  * =========================================================
  */
-export async function GET_STATS(
+export async function GET(
   request: Request,
-  { params }: { params: { code: string } }
-) {
+context: {
+    params: Promise<{
+      code: string
+    }>}) {
   try {
+    const {code}=await context.params
     const {
       user,
       error: authError
@@ -28,7 +31,7 @@ export async function GET_STATS(
       }, { status: 401 });
     }
 
-    const { data, error } = await getLinkStats(params.code);
+    const { data, error } = await getLinkStats(code);
 
     if (error || !data) {
       return NextResponse.json({
