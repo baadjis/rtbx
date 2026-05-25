@@ -108,7 +108,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   let errorText:string = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
 
   if (err?.error === 'rate_limit') {
-    errorText = t.mcp_rate_limit
+    errorText = err.text || t.mcp_rate_limit
   }
 
   setMessages(prev => [...prev, {
