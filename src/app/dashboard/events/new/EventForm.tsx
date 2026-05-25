@@ -11,8 +11,10 @@ import {
 import Link from 'next/link'
 import { Data } from '../data'
 import { createBrowserClient } from '@supabase/ssr'
+import { LangType } from '@/lib/lang/types'
+import { eventCategories, getEventCategoryLabel } from '@/lib/events/categories'
 
-export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId: string }) {
+export default function EventForm({ lang, userId }: { lang: LangType, userId: string }) {
   const t = Data[lang]
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -158,12 +160,13 @@ export default function EventForm({ lang, userId }: { lang: 'fr' | 'en', userId:
                   <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
                     <Tag size={14} /> {t.label_category}
                   </label>
-                  <select name="category" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl font-bold dark:text-white focus:ring-2 focus:ring-indigo-500 appearance-none">
-                    <option value="sales">{t.cat_sales}</option>
-                    <option value="training">{t.cat_training}</option>
-                    <option value="networking">{t.cat_networking}</option>
-                    <option value="other">{t.cat_other}</option>
-                  </select>
+                  <select name="category">
+  {eventCategories.map((cat) => (
+    <option key={cat.value} value={cat.value}>
+      {getEventCategoryLabel(cat.value, lang)}
+    </option>
+  ))}
+</select>
                 </div>
 
                 <div className="space-y-3">

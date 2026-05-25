@@ -67,9 +67,9 @@ export const getUserShortLinks = tool({
   inputSchema: z.object({
     user_id: z.string().describe('The user ID'),
   }),
-  execute: async (args: { user_id: string }) => {
+  execute: async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener?user_id=${args.user_id}`
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`
     );
 
     if (!response.ok) {

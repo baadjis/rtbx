@@ -1,43 +1,64 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createClient } from '@/utils/supabase/server';
+// app/api/events/create/route.ts
 import { NextResponse } from 'next/server';
+import { createEvent } from '@/lib/events/service';
+import { requireUser } from '@/lib/auth/get-user';
 
+/**
+ * =========================================================
+ * POST /api/events/create
+ * =========================================================
+ *
+ * Creates a new event for the authenticated user.
+ *
+ * Security model:
+ * - Requires authenticated user (organizer)
+ * - Automatically assigns organizer_id
+ *
+ * Used by:
+ * - Frontend event creation form
+ * - MCP Agent (createEvent tool)
+ * - Mobile applications
+ * =========================================================
+ */
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      user,
+      error: authError
+    } = await requireUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({
+        success: false,
+        error: authError
+      }, { status: 401 });
     }
 
     const body = await request.json();
 
-    // Insertion avec récupération de l'ID généré (.select().single())
-    const { data, error } = await supabase
-      .from('events')
-      .insert([{
-        organizer_id: user.id,
-        title: body.title,
-        description: body.description,
-        category: body.category,
-        visibility: body.visibility,
-        requires_registration: body.requires_registration,
-        location: body.location,
-        start_date: body.start_date,
-        end_date: body.end_date || null,
-        max_capacity: body.max_capacity ? parseInt(body.max_capacity) : null,
-        org_name:body.org_name
-      }])
-      .select('id')
-      .single();
+    const { data, error } = await createEvent({
+      ...body,
+      organizer_id: user.id
+    });
 
-    if (error) throw error;
+    if (error) {
+      return NextResponse.json({
+        success: false,
+        error
+      }, { status: 400 });
+    }
 
-    return NextResponse.json({ success: true, id: data.id });
+    return NextResponse.json({
+      success: true,
+      data
+    });
 
   } catch (err: any) {
-    console.error("Event Creation Error:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('EVENT_CREATE_ERROR:', err);
+    return NextResponse.json({
+      success: false,
+      error: 'Internal server error'
+    }, { status: 500 });
   }
 }
