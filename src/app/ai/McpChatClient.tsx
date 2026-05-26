@@ -83,7 +83,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
       });
 
       const data = await response.json();
-
+      console.log(data)
       const newMessage: Message = {
         role: 'assistant',
         content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
