@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/mcp/mcp-server.ts
+// app/mcp/server/route.ts
 import { NextResponse } from 'next/server';
 import { runMCPAgent } from '../agents/main-agent';
 import mcpConfig from '../core/config';
@@ -11,20 +11,24 @@ import mcpConfig from '../core/config';
  */
 
 export async function POST(request: Request) {
-  const { messages, lang = 'fr', temperature, maxSteps } = await request.json();
+  let lang = 'fr'; // Valeur par défaut sécurisée
 
   try {
+    const body = await request.json();
+    
+    // Récupération sécurisée de lang
+    lang = body.lang || 'fr';
 
-    if (!messages || !Array.isArray(messages)) {
+    if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
         success: false,
         error: 'Messages array is required'
       }, { status: 400 });
     }
 
-    const result = await runMCPAgent(messages, {
-      temperature: temperature || mcpConfig.temperature,
-      maxSteps: maxSteps || 12,
+    const result = await runMCPAgent(body.messages, {
+      temperature: body.temperature || mcpConfig.temperature,
+      maxSteps: body.maxSteps || 12,
     });
 
     return NextResponse.json({
@@ -36,15 +40,14 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('MCP Server Error:', error);
 
-    // === RATE LIMIT DETECTION AMÉLIORÉE ===
     const errorStr = JSON.stringify(error).toLowerCase();
 
+    // === RATE LIMIT DETECTION ===
     if (
       errorStr.includes('rate limit') ||
       errorStr.includes('429') ||
       errorStr.includes('tokens per day') ||
-      errorStr.includes('rate_limit_exceeded') ||
-      errorStr.includes('ai_retryerror')
+      errorStr.includes('rate_limit_exceeded')
     ) {
       return NextResponse.json({
         success: false,
