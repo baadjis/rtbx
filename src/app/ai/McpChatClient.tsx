@@ -73,7 +73,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/mcp/server', {
+      const response = await fetch('/api/mcp/server', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -94,7 +94,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
       setMessages(prev => [...prev, newMessage]);
       setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
 
-      // Détection intelligente du contexte
+      // Détection du contexte pour adapter les suggestions
       const lowerText = (data.text || '').toLowerCase();
       if (lowerText.includes('space') || lowerText.includes('profil')) {
         setCurrentContext('space');
@@ -105,17 +105,17 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
       }
 
     } catch (err: any) {
-  let errorText:string = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
+      let errorText = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
 
-  if (err?.error === 'rate_limit') {
-    errorText = err.text || t.mcp_rate_limit
-  }
+      if (err?.error === 'rate_limit') {
+        errorText = err.text || t.mcp_rate_limit
+      }
 
-  setMessages(prev => [...prev, {
-    role: 'assistant',
-    content: errorText
-  }]);
-} finally {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: errorText
+      }]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -128,7 +128,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     const userResponse = confirmed ? "Oui, confirme et procède." : "Non, annule.";
 
     try {
-      const response = await fetch('/mcp/server', {
+      const response = await fetch('/api/mcp/server', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -167,7 +167,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-3 mb-4">
             <Sparkles className="w-10 h-10 text-indigo-400" />
-            <h1 className="text-5xl font-black tracking-tighter">RTBX AI</h1>
+            <h1 className="text-5xl font-black tracking-tighter">RTBX MCP</h1>
           </div>
           <p className="text-slate-400 text-lg">{t.mcp_subtitle}</p>
         </div>
