@@ -26,7 +26,7 @@ export async function runMCPAgent(
       tools: tools,
       
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
-      maxRetries: 0,                    // ← Désactivé pour économiser les tokens
+      maxRetries: 1,                    // ← Désactivé pour économiser les tokens
     });
 
     return {
