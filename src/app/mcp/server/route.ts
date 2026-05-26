@@ -47,7 +47,8 @@ export async function POST(request: Request) {
       errorStr.includes('rate limit') ||
       errorStr.includes('429') ||
       errorStr.includes('tokens per day') ||
-      errorStr.includes('rate_limit_exceeded')
+      errorStr.includes('rate_limit_exceeded')|| 
+      error.code=="rate_limit_exceeded"
     ) {
       return NextResponse.json({
         success: false,
