@@ -29,10 +29,13 @@ export async function POST(request: Request) {
       maxSteps: body.maxSteps || 12,
     });
 
+    if (!result.success) {
+      throw result.error;   // On remonte l'erreur brute pour meilleure détection
+    }
+
     return NextResponse.json({
-      success: result.success,
+      success: true,
       text: result.text,
-      ...(result.error && { error: result.error })
     });
 
   } catch (error: any) {
@@ -40,7 +43,7 @@ export async function POST(request: Request) {
 
     const errorStr = JSON.stringify(error).toLowerCase();
 
-    // Détection améliorée du Rate Limit Groq
+    // Détection renforcée du Rate Limit
     if (
       errorStr.includes('rate limit') ||
       errorStr.includes('429') ||
@@ -52,7 +55,7 @@ export async function POST(request: Request) {
         success: false,
         error: 'rate_limit',
         text: lang === 'fr'
-          ? "⏳ Nous avons atteint la limite quotidienne de Groq.\n\nVeuillez réessayer demain ou contacter le support pour augmenter la limite."
+          ? "⏳ Nous avons atteint la limite quotidienne de Groq.\n\nVeuillez réessayer demain ou contacter le support."
           : "⏳ We have reached Groq's daily limit.\n\nPlease try again tomorrow."
       }, { status: 429 });
     }

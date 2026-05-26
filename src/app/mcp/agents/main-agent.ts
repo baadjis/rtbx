@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/agents/main-agent.ts
-import { generateText, stepCountIs } from 'ai';
+import { generateText } from 'ai';
 import { tools } from '../tools';
 import { defaultModel } from '../core/client';
 import systemPrompt from '../prompts/system';
-import {mcpConfig} from '../core/config';
+import mcpConfig from '../core/config';
 
 export type Message = {
   role: 'user' | 'assistant' | 'system';
@@ -13,7 +13,7 @@ export type Message = {
 
 /**
  * =========================================================
- * MAIN MCP AGENT - WITH CONFIRMATION LOGIC
+ * MAIN MCP AGENT
  * =========================================================
  */
 export async function runMCPAgent(
@@ -29,10 +29,8 @@ export async function runMCPAgent(
       system: systemPrompt,
       messages: messages,
       tools: tools,
-      stopWhen: [
-        stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 12)
-      ],
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
+      maxRetries: 1,                    // On réduit les retries automatiques
     });
 
     return {
@@ -46,9 +44,10 @@ export async function runMCPAgent(
   } catch (error: any) {
     console.error('MCP Agent Error:', error);
 
+    // On passe l'erreur brute au server pour meilleure détection
     return {
       success: false,
-      error: error.message || 'An error occurred',
+      error: error,
       text: "Sorry, I encountered an error. Could you please try again?",
     };
   }
