@@ -11,11 +11,6 @@ export type Message = {
   content: string;
 };
 
-/**
- * =========================================================
- * MAIN MCP AGENT
- * =========================================================
- */
 export async function runMCPAgent(
   messages: Message[],
   options?: {
@@ -29,8 +24,9 @@ export async function runMCPAgent(
       system: systemPrompt,
       messages: messages,
       tools: tools,
+      
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
-      maxRetries: 1,                    // On réduit les retries automatiques
+      maxRetries: 0,                    // ← Désactivé pour économiser les tokens
     });
 
     return {
@@ -44,7 +40,6 @@ export async function runMCPAgent(
   } catch (error: any) {
     console.error('MCP Agent Error:', error);
 
-    // On passe l'erreur brute au server pour meilleure détection
     return {
       success: false,
       error: error,

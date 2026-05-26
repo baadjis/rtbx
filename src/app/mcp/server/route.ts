@@ -4,12 +4,6 @@ import { NextResponse } from 'next/server';
 import { runMCPAgent } from '../agents/main-agent';
 import mcpConfig from '../core/config';
 
-/**
- * =========================================================
- * MCP SERVER ENDPOINT
- * =========================================================
- */
-
 export async function POST(request: Request) {
   let lang = 'fr';
 
@@ -26,11 +20,11 @@ export async function POST(request: Request) {
 
     const result = await runMCPAgent(body.messages, {
       temperature: body.temperature || mcpConfig.temperature,
-      maxSteps: body.maxSteps || 12,
+      maxSteps: body.maxSteps || mcpConfig.maxSteps,
     });
 
     if (!result.success) {
-      throw result.error;   // On remonte l'erreur brute pour meilleure détection
+      throw result.error;
     }
 
     return NextResponse.json({
@@ -43,24 +37,21 @@ export async function POST(request: Request) {
 
     const errorStr = JSON.stringify(error).toLowerCase();
 
-    // Détection renforcée du Rate Limit
     if (
       errorStr.includes('rate limit') ||
       errorStr.includes('429') ||
       errorStr.includes('tokens per day') ||
-      errorStr.includes('rate_limit_exceeded') ||
-      errorStr.includes('ai_retryerror')
+      errorStr.includes('rate_limit_exceeded')
     ) {
       return NextResponse.json({
         success: false,
         error: 'rate_limit',
         text: lang === 'fr'
-          ? "⏳ Nous avons atteint la limite quotidienne de Groq.\n\nVeuillez réessayer demain ou contacter le support."
+          ? "⏳ Nous avons atteint la limite quotidienne de Groq.\n\nVeuillez réessayer demain."
           : "⏳ We have reached Groq's daily limit.\n\nPlease try again tomorrow."
       }, { status: 429 });
     }
 
-    // Erreur générique
     return NextResponse.json({
       success: false,
       error: 'Internal server error',
