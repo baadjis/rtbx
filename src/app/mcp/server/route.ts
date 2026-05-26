@@ -11,7 +11,7 @@ import mcpConfig from '../core/config';
  */
 
 export async function POST(request: Request) {
- const { messages, lang , temperature, maxSteps } = await request.json();
+  const { messages, lang = 'fr', temperature, maxSteps } = await request.json();
 
   try {
 
@@ -36,14 +36,15 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('MCP Server Error:', error);
 
-    const errorMessage = error.message?.toLowerCase() || '';
+    // === RATE LIMIT DETECTION AMÉLIORÉE ===
+    const errorStr = JSON.stringify(error).toLowerCase();
 
-    // === RATE LIMIT DETECTION (Groq & autres) ===
     if (
-      errorMessage.includes('rate limit') ||
-      errorMessage.includes('429') ||
-      errorMessage.includes('tokens per day') ||
-      errorMessage.includes('rate_limit_exceeded')
+      errorStr.includes('rate limit') ||
+      errorStr.includes('429') ||
+      errorStr.includes('tokens per day') ||
+      errorStr.includes('rate_limit_exceeded') ||
+      errorStr.includes('ai_retryerror')
     ) {
       return NextResponse.json({
         success: false,
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
       }, { status: 429 });
     }
 
-    // Autres erreurs
+    // Erreur générique
     return NextResponse.json({
       success: false,
       error: 'Internal server error',

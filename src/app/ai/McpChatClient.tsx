@@ -104,18 +104,18 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         setCurrentContext('shortener');
       }
 
-    } catch (err: any) {
-      let errorText = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
+     } catch (err: any) {
+  let errorText = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
 
-      if (err?.error === 'rate_limit') {
-        errorText = err.text || t.mcp_rate_limit
-      }
+  if (err?.error === 'rate_limit' || err?.status === 429) {
+    errorText = err.text || t.mcp_rate_limit
+  }
 
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: errorText
-      }]);
-    } finally {
+  setMessages(prev => [...prev, {
+    role: 'assistant',
+    content: errorText
+  }]);
+} finally {
       setIsLoading(false);
     }
   };
