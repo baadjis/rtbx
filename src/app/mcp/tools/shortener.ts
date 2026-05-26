@@ -65,7 +65,7 @@ export const updateShortLink = tool({
 // app/mcp/tools/shortener.ts
 
 
-export const getUserShortLinks = dynamicTool({
+export const getUserShortLinks = tool({
   description: 'Get all shortened links belonging to the current authenticated user. Only call this when the user explicitly asks to see their links.',
   
   // Solution recommandée : on n'utilise pas inputSchema vide
