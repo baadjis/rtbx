@@ -1,5 +1,5 @@
 // app/mcp/tools/shortener.ts
-import { tool } from 'ai';
+import { dynamicTool, tool } from 'ai';
 import { nullable, z } from 'zod';
 import {
     LinkCreateInput,
@@ -65,13 +65,11 @@ export const updateShortLink = tool({
 // app/mcp/tools/shortener.ts
 
 
-export const getUserShortLinks = tool({
+export const getUserShortLinks = dynamicTool({
   description: 'Get all shortened links belonging to the current authenticated user. Only call this when the user explicitly asks to see their links.',
   
   // Solution recommandée : on n'utilise pas inputSchema vide
-  inputSchema: z.object({
-    dummy: z.string().optional().default('ignore'), // Paramètre factice pour satisfaire le compilateur
-  }),   // ou tout simplement omis si possible
+  inputSchema: z.NEVER,  // ou tout simplement omis si possible
 
   execute: async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`, {
