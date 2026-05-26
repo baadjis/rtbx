@@ -64,32 +64,26 @@ export const updateShortLink = tool({
 // =====================================================
 // app/mcp/tools/shortener.ts
 
+
 export const getUserShortLinks = tool({
-  description: 'Get all shortened links belonging to the current authenticated user. Use this only when the user explicitly asks to see their links.',
-  inputSchema: z.object({}), 
+  description: 'Get all shortened links belonging to the current authenticated user. Only call this when the user explicitly asks to see their links.',
+  
+  // Solution recommandée : on n'utilise pas inputSchema vide
+  inputSchema: z.void({}),   // ou tout simplement omis si possible
+
   execute: async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          cache: 'no-store', // Important pour éviter le cache
-        }
-      );
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to fetch user short links');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('getUserShortLinks error:', error);
-      throw error;
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to fetch user short links');
     }
+
+    return response.json();
   },
 });
 // =====================================================
