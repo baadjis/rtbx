@@ -24,14 +24,36 @@ export async function runMCPAgent(
       system: systemPrompt,
       messages: messages,
       tools: tools,
-      
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
-      maxRetries: 1,                    // ← Désactivé pour économiser les tokens
+      maxRetries: 1,
     });
+
+    let finalText = result.text?.trim() || '';
+
+    // Si pas de texte mais des tool calls → on extrait le résultat
+    if (!finalText && result.toolCalls && result.toolCalls.length > 0) {
+      const lastToolCall = result.toolCalls[result.toolCalls.length - 1];
+      
+      // Accès correct au résultat du tool
+      if (lastToolCall && 'result' in lastToolCall) {
+        const toolResult = (lastToolCall as any).result;
+        
+        if (toolResult) {
+          finalText = typeof toolResult === 'string' 
+            ? toolResult 
+            : JSON.stringify(toolResult, null, 2);
+        }
+      }
+    }
+
+    // Fallback si toujours vide
+    if (!finalText) {
+      finalText = "J'ai exécuté l'action demandée. Que puis-je faire d'autre ?";
+    }
 
     return {
       success: true,
-      text: result.text,
+      text: finalText,
       steps: result.steps,
       toolCalls: result.toolCalls,
       usage: result.usage,
