@@ -26,7 +26,7 @@ export async function runMCPAgent(
   tools: tools,
   temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
   stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5), // ✅ v6
-  maxRetries: 1,
+  maxRetries: 0,
 });
 
     let finalText = result.text?.trim() || '';

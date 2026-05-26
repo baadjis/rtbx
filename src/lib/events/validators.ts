@@ -19,5 +19,36 @@ export const eventPublishSchema = z.object({
   lang: z.enum(['fr', 'en']).default('fr'),
 });
 
+
+// lib/events/validators.ts — ajouts
+export const registerEventSchema = z.object({
+  eventId: z.string().min(1, 'eventId requis'),
+  name: z.string().min(2, 'Nom requis'),
+  email: z.string().email('Email invalide'),
+  lang: z.enum(['fr', 'en']).default('fr'),
+  origin: z.string().optional(),
+  company_name: z.string().max(150).optional().nullable(),
+  professional_role: z.string().max(100).optional().nullable(),
+  custom_data: z.record(z.string(), z.any()).optional().default({}),
+  opt_in_discovery: z.boolean().default(false),
+  opt_in_merchant: z.boolean().default(false),
+});
+
+export const sendBadgesSchema = z.object({
+  eventId: z.string().min(1, 'eventId requis'),
+  lang: z.enum(['fr', 'en']).default('fr'),
+});
+
+export const sendInviteSchema = z.object({
+  email: z.string().email('Email invalide'),
+  eventId: z.string().min(1, 'eventId requis'),
+  lang: z.enum(['fr', 'en']).default('fr'),
+});
+
+export type SendInviteInput = z.infer<typeof sendInviteSchema>;
+
+export type RegisterEventInput = z.infer<typeof registerEventSchema>;
+export type SendBadgesInput = z.infer<typeof sendBadgesSchema>;
+
 export type EventCreateInput = z.infer<typeof eventCreateSchema>;
 export type EventPublishInput = z.infer<typeof eventPublishSchema>;
