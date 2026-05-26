@@ -1,6 +1,6 @@
 // app/mcp/tools/shortener.ts
 import { tool } from 'ai';
-import { z } from 'zod';
+import { nullable, z } from 'zod';
 import {
     LinkCreateInput,
   linkCreateSchema,
@@ -69,7 +69,7 @@ export const getUserShortLinks = tool({
   description: 'Get all shortened links belonging to the current authenticated user. Only call this when the user explicitly asks to see their links.',
   
   // Solution recommandée : on n'utilise pas inputSchema vide
-  inputSchema: z.void({}),   // ou tout simplement omis si possible
+  inputSchema: z.object({nullable}),   // ou tout simplement omis si possible
 
   execute: async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`, {
