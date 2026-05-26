@@ -84,7 +84,7 @@ export const getUserShortLinks = tool({
       throw new Error(errorData.error || 'Failed to fetch user short links');
     }
     console.log( await response.json())
-    return (await response.json())?.data;
+    return (await response.json())
   },
 });
 // =====================================================

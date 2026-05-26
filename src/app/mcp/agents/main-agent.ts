@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/agents/main-agent.ts
-import { generateText } from 'ai';
+import { generateText,stepCountIs } from 'ai';
 import { tools } from '../tools';
 import { defaultModel } from '../core/client';
 import systemPrompt from '../prompts/system';
@@ -19,39 +19,40 @@ export async function runMCPAgent(
   }
 ) {
   try {
-    const result = await generateText({
-      model: defaultModel,
-      system: systemPrompt,
-      messages: messages,
-      tools: tools,
-      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
-      maxRetries: 1,
-    });
+  const result = await generateText({
+  model: defaultModel,
+  system: systemPrompt,
+  messages: messages,
+  tools: tools,
+  temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
+  stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5), // ✅ v6
+  maxRetries: 1,
+});
 
     let finalText = result.text?.trim() || '';
 
-    // === EXTRACTION FORCÉE DU RÉSULTAT DU TOOL ===
-    if (!finalText && result.toolCalls && result.toolCalls.length > 0) {
-      const lastToolCall = result.toolCalls[result.toolCalls.length - 1];
-      
-      // Accès au résultat du tool
-      const toolResult = (lastToolCall as any)?.result;
+    // Fix 2 — chercher dans steps, pas dans toolCalls
+    if (!finalText && result.steps && result.steps.length > 0) {
+  for (const step of result.steps.slice().reverse()) {
+    const toolResults = step.toolResults ?? [];
 
-      if (toolResult) {
-        if (typeof toolResult === 'string') {
-          finalText = toolResult;
-        } 
-        else if (toolResult.success && toolResult.data) {
-          // Cas le plus fréquent : { success: true, data: [...] }
-          finalText = JSON.stringify(toolResult.data, null, 2);
-        } 
-        else {
-          finalText = JSON.stringify(toolResult, null, 2);
+    if (toolResults.length > 0) {
+      const lastOutput = (toolResults[toolResults.length - 1] as any).output;
+
+      if (lastOutput !== undefined) {
+        if (typeof lastOutput === 'string') {
+          finalText = lastOutput;
+        } else if ((lastOutput as any)?.data) {
+          finalText = JSON.stringify((lastOutput as any).data, null, 2);
+        } else {
+          finalText = JSON.stringify(lastOutput, null, 2);
         }
+        break;
       }
     }
+  }
+}
 
-    // Fallback si toujours vide
     if (!finalText) {
       finalText = "J'ai exécuté l'action. Voici le résultat :";
     }
@@ -63,10 +64,8 @@ export async function runMCPAgent(
       toolCalls: result.toolCalls,
       usage: result.usage,
     };
-
   } catch (error: any) {
     console.error('MCP Agent Error:', error);
-
     return {
       success: false,
       error: error,
