@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/tools/shortener.ts
 import { dynamicTool, tool } from 'ai';
 import { nullable, z } from 'zod';
@@ -64,13 +65,13 @@ export const updateShortLink = tool({
 // =====================================================
 // app/mcp/tools/shortener.ts
 
-
 export const getUserShortLinks = tool({
   description: 'Get all shortened links belonging to the current authenticated user. Only call this when the user explicitly asks to see their links.',
-  
-  // Solution recommandée : on n'utilise pas inputSchema vide
-  inputSchema: z.NEVER,  // ou tout simplement omis si possible
 
+  // Obligatoire : on doit avoir inputSchema même vide
+  inputSchema: z.object({}),
+
+  // execute doit être défini
   execute: async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`, {
       method: 'GET',
@@ -82,7 +83,7 @@ export const getUserShortLinks = tool({
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.error || 'Failed to fetch user short links');
     }
-
+    console.log( await response.json())
     return response.json();
   },
 });
