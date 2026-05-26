@@ -30,25 +30,29 @@ export async function runMCPAgent(
 
     let finalText = result.text?.trim() || '';
 
-    // Si pas de texte mais des tool calls → on extrait le résultat
+    // Extraction du résultat du tool (solution la plus fiable)
     if (!finalText && result.toolCalls && result.toolCalls.length > 0) {
       const lastToolCall = result.toolCalls[result.toolCalls.length - 1];
       
-      // Accès correct au résultat du tool
       if (lastToolCall && 'result' in lastToolCall) {
         const toolResult = (lastToolCall as any).result;
-        
+
         if (toolResult) {
-          finalText = typeof toolResult === 'string' 
-            ? toolResult 
-            : JSON.stringify(toolResult, null, 2);
+          if (typeof toolResult === 'string') {
+            finalText = toolResult;
+          } else if (toolResult.data) {
+            // Cas où l'API renvoie { success: true, data: [...] }
+            finalText = JSON.stringify(toolResult.data, null, 2);
+          } else {
+            finalText = JSON.stringify(toolResult, null, 2);
+          }
         }
       }
     }
 
-    // Fallback si toujours vide
+    // Fallback ultime
     if (!finalText) {
-      finalText = "J'ai exécuté l'action demandée. Que puis-je faire d'autre ?";
+      finalText = "Voici le résultat de l'action demandée :";
     }
 
     return {
