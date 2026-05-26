@@ -65,19 +65,31 @@ export const updateShortLink = tool({
 // app/mcp/tools/shortener.ts
 
 export const getUserShortLinks = tool({
-  description: 'Get all shortened links belonging to the current authenticated user',
-  inputSchema: z.object({}), // Obligatoire même vide
+  description: 'Get all shortened links belonging to the current authenticated user. Use this only when the user explicitly asks to see their links.',
+  inputSchema: z.object({}), 
   execute: async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`
-    );
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/shortener`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store', // Important pour éviter le cache
+        }
+      );
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || 'Failed to fetch user short links');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch user short links');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('getUserShortLinks error:', error);
+      throw error;
     }
-
-    return response.json();
   },
 });
 // =====================================================
