@@ -11,12 +11,10 @@ import mcpConfig from '../core/config';
  */
 
 export async function POST(request: Request) {
-  let lang = 'fr'; // Valeur par défaut sécurisée
+  let lang = 'fr';
 
   try {
     const body = await request.json();
-    
-    // Récupération sécurisée de lang
     lang = body.lang || 'fr';
 
     if (!body.messages || !Array.isArray(body.messages)) {
@@ -42,20 +40,20 @@ export async function POST(request: Request) {
 
     const errorStr = JSON.stringify(error).toLowerCase();
 
-    // === RATE LIMIT DETECTION ===
+    // Détection améliorée du Rate Limit Groq
     if (
       errorStr.includes('rate limit') ||
       errorStr.includes('429') ||
       errorStr.includes('tokens per day') ||
-      errorStr.includes('rate_limit_exceeded')|| 
-      error.code=="rate_limit_exceeded"
+      errorStr.includes('rate_limit_exceeded') ||
+      errorStr.includes('ai_retryerror')
     ) {
       return NextResponse.json({
         success: false,
         error: 'rate_limit',
         text: lang === 'fr'
           ? "⏳ Nous avons atteint la limite quotidienne de Groq.\n\nVeuillez réessayer demain ou contacter le support pour augmenter la limite."
-          : "⏳ We have reached Groq's daily limit.\n\nPlease try again tomorrow or contact support to increase the limit."
+          : "⏳ We have reached Groq's daily limit.\n\nPlease try again tomorrow."
       }, { status: 429 });
     }
 
