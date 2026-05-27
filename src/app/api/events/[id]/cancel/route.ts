@@ -32,16 +32,18 @@ import { requireUser } from '@/lib/auth/get-user';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const {id} = await params
+
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();
     const { data, error } = await cancelEvent({
       ...body,
-      eventId: params.id,
+      eventId: id,
       organizer_id: user.id,
     });
 

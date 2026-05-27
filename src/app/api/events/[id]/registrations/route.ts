@@ -26,13 +26,15 @@ import { requireUser } from '@/lib/auth/get-user';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const {id} = await params
+
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
-    const { data, error } = await getEventRegistrations(params.id, user.id);
+    const { data, error } = await getEventRegistrations(id, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });

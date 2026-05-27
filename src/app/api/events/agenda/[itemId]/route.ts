@@ -29,14 +29,15 @@ import { requireUser } from '@/lib/auth/get-user';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
+    const { itemId }=await params;
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();
-    const { data, error } = await updateAgendaItem(params.itemId, body, user.id);
+    const { data, error } = await updateAgendaItem(itemId, body, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
@@ -69,13 +70,14 @@ export async function PATCH(
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
+    const {itemId}=await params
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
-    const { data, error } = await deleteAgendaItem(params.itemId, user.id);
+    const { data, error } = await deleteAgendaItem(itemId, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });

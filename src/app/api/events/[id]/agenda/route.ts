@@ -27,10 +27,11 @@ import { requireUser } from '@/lib/auth/get-user';
  */
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { data, error } = await getEventAgenda(params.id);
+    const {id} = await params
+    const { data, error } = await getEventAgenda(id);
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
   } catch (err: any) {
@@ -66,14 +67,15 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string } >}
 ) {
   try {
+    const {id}=await params;
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();
-    const { data, error } = await addAgendaItem(params.id, body, user.id);
+    const { data, error } = await addAgendaItem(id, body, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });

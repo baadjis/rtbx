@@ -29,14 +29,16 @@ import { requireUser } from '@/lib/auth/get-user';
  
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+        const {id} = await params
+
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();
-    const { data, error } = await updateEvent(params.id, body, user.id);
+    const { data, error } = await updateEvent(id, body, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
@@ -73,13 +75,15 @@ export async function PATCH(
  **/
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const {id} = await params
+
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
-    const { data, error } = await deleteEvent(params.id, user.id);
+    const { data, error } = await deleteEvent(id, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
