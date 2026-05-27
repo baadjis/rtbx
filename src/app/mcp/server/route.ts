@@ -2,7 +2,7 @@
 // app/mcp/server/route.ts
 import { NextResponse } from 'next/server';
 import { runMCPAgent } from '../agents/main-agent';
-import mcpConfig from '../core/config';
+import {mcpConfig} from '../core/config';
 
 export async function POST(request: Request) {
   let lang = 'fr';
