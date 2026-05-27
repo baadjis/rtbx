@@ -47,8 +47,8 @@ export async function POST(request: Request) {
         success: false,
         error: 'rate_limit',
         text: lang === 'fr'
-          ? "⏳ Nous avons atteint la limite quotidienne de Groq.\n\nVeuillez réessayer demain."
-          : "⏳ We have reached Groq's daily limit.\n\nPlease try again tomorrow."
+          ? "⏳ Nous avons atteint la limite de tokens quotidienne .\n\nVeuillez réessayer demain."
+          : "⏳ We have reached daily limit of tokens.\n\nPlease try again tomorrow."
       }, { status: 429 });
     }
 
