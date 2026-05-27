@@ -24,7 +24,7 @@ export const eventPublishSchema = z.object({
 export const registerEventSchema = z.object({
   eventId: z.string().min(1, 'eventId requis'),
   name: z.string().min(2, 'Nom requis'),
-  email: z.string().email('Email invalide'),
+  email: z.string(),
   lang: z.enum(['fr', 'en']).default('fr'),
   origin: z.string().optional(),
   company_name: z.string().max(150).optional().nullable(),
