@@ -101,3 +101,47 @@ export type SendInvitePayload = {
   eventId: string;
   lang?: LangType
 };
+
+
+export type EventUpdatePayload = {
+  title?: string;
+  description?: string | null;
+  category?: string;
+  visibility?: EventVisibility;
+  requires_registration?: boolean;
+  location?: string | null;
+  start_date?: string;
+  end_date?: string | null;
+  max_capacity?: number | null;
+};
+
+
+export type EventAgendaItem = {
+  id: number;
+  event_id: number;
+  start_time: string;
+  end_time?: string | null;
+  label: string;
+  room_name?: string | null;
+  speakers?: any[];
+  description?: string | null;
+  created_at?: string;
+};
+
+export type AgendaCreatePayload = {
+  event_id: string;
+  start_time: string;
+  end_time?: string | null;
+  label: string;
+  room_name?: string | null;
+  speakers?: any[];
+  description?: string | null;
+};
+
+export type EventCancelPayload = {
+  eventId: string;
+  reason?: string;
+  lang?: 'fr' | 'en';
+};
+export type AgendaUpdatePayload = Partial<Omit<AgendaCreatePayload, 'event_id'>>;
+

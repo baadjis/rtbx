@@ -1,47 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from 'next/server';
-import { sendBadges } from '@/lib/events/service';
-import { requireUser } from '@/lib/auth/get-user';
-
 /**
  * =========================================================
- * POST /api/events/send-badges
+ * GET /api/events/[id]/registrations
  * =========================================================
  *
- * Sends badge PDFs to all registered participants of an event.
+ * Returns all registrations for a specific event.
  *
  * Responsibilities:
  *
  * - requires authenticated user (must be the organizer)
- * - validates eventId and lang
  * - verifies organizer ownership of the event
- * - fetches all badges joined with registrations
- * - calls Python API to generate badge PDF per participant
- * - sends badge email with PDF attachment via Resend
- * - marks each badge as sent in event_badges
- * - returns sent/failed counts
+ * - returns full registration list ordered by created_at desc
  *
  * This route is safe to expose to:
  *
- * - frontend event management dashboard
- * - MCP tools (sendBadges)
- * - post-event automation flows
+ * - frontend event dashboard (participants list)
+ * - MCP tools (getEventRegistrations)
+ * - export/reporting flows
  *
  * =========================================================
  */
+import { NextResponse } from 'next/server';
+import { getEventRegistrations } from '@/lib/events/service';
+import { requireUser } from '@/lib/auth/get-user';
 
-export async function POST(request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { user, error: authError } = await requireUser();
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
-    const body = await request.json();
-    const { data, error } = await sendBadges({ ...body, organizer_id: user.id });
+    const { data, error } = await getEventRegistrations(params.id, user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
   } catch (err: any) {
-    console.error('EVENT_SEND_BADGES_ERROR:', err);
+    console.error('EVENT_REGISTRATIONS_ERROR:', err);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

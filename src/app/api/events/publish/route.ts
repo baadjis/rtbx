@@ -9,16 +9,24 @@ import { requireUser } from '@/lib/auth/get-user';
  * POST /api/events/publish
  * =========================================================
  *
- * Publishes an event and sends pending invitations if any.
+ * Publishes a draft event and sends pending invitations.
  *
- * Security model:
- * - Requires authenticated user (must be the organizer)
- * - Automatically sends invitation emails via Resend
+ * Responsibilities:
  *
- * Used by:
- * - Frontend event publishing interface
- * - MCP Agent (publishEvent tool)
- * - Automation workflows
+ * - requires authenticated user (must be the organizer)
+ * - validates eventId and lang
+ * - sets is_published to true
+ * - fetches pending invitations for this event
+ * - sends invitation emails via Resend
+ * - updates invitation statuses to 'sent'
+ * - returns event data and invitation count
+ *
+ * This route is safe to expose to:
+ *
+ * - frontend event dashboard
+ * - MCP tools (publishEvent)
+ * - automation flows
+ *
  * =========================================================
  */
 export async function POST(request: Request) {

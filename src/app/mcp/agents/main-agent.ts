@@ -4,7 +4,7 @@ import { generateText,stepCountIs } from 'ai';
 import { tools } from '../tools';
 import { defaultModel } from '../core/client';
 import systemPrompt from '../prompts/system';
-import mcpConfig from '../core/config';
+import { mcpConfig } from '../core/config';
 
 export type Message = {
   role: 'user' | 'assistant' | 'system';

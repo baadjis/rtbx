@@ -286,7 +286,7 @@ export default function Footer({
                 border border-white/10
 
                 text-white
-
+                cursor-pointer
                 transition-all duration-300
               "
             >

@@ -174,7 +174,26 @@ booking_rating:
   'Note Booking',
 
 review_rating:
-  'Note Avis'
+  'Note Avis',
+  // FR
+
+google_reviews:
+  'Avis Google',
+
+trustpilot_reviews:
+  'Avis Trustpilot',
+
+tripadvisor_reviews:
+  'Avis Tripadvisor',
+
+booking_reviews:
+  'Avis Booking',
+
+review_providers:
+  'Plateformes d’avis',
+
+no_review_provider_connected:
+  'Aucune plateforme d’avis connectée pour le moment.'
 
   
 
@@ -351,7 +370,26 @@ booking_rating:
   'Booking Rating',
 
 review_rating:
-  'Review Rating'
+  'Review Rating',
+  // EN
+
+google_reviews:
+  'Google Reviews',
+
+trustpilot_reviews:
+  'Trustpilot Reviews',
+
+tripadvisor_reviews:
+  'Tripadvisor Reviews',
+
+booking_reviews:
+  'Booking Reviews',
+
+review_providers:
+  'Review Platforms',
+
+no_review_provider_connected:
+  'No review platform connected yet.'
 
   }
 

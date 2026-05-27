@@ -9,16 +9,22 @@ import { requireUser } from '@/lib/auth/get-user';
  * POST /api/events/create
  * =========================================================
  *
- * Creates a new event for the authenticated user.
+ * Creates a new event for the authenticated organizer.
  *
- * Security model:
- * - Requires authenticated user (organizer)
- * - Automatically assigns organizer_id
+ * Responsibilities:
  *
- * Used by:
- * - Frontend event creation form
- * - MCP Agent (createEvent tool)
- * - Mobile applications
+ * - requires authenticated user (organizer)
+ * - validates event payload
+ * - assigns organizer_id automatically
+ * - inserts event as draft (is_published: false)
+ * - returns the new event id
+ *
+ * This route is safe to expose to:
+ *
+ * - frontend event creation form
+ * - MCP tools (createEvent)
+ * - automation flows
+ *
  * =========================================================
  */
 export async function POST(request: Request) {

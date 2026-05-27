@@ -112,53 +112,7 @@ contact_information_subtitle:
     business_created:
       'Business créé avec succès',
 
-      // FR
-
-settings: 'Paramètres',
-
-quick_actions: 'Actions rapides',
-
-quick_actions_subtitle:
-  'Gérez rapidement les outils et fonctionnalités de votre business.',
-
-google_review_qr:
-  'QR Code Avis Google',
-
-generate_google_review_qr:
-  'Créez un QR code pour collecter plus d’avis Google.',
-
-manage_google_review_qr:
-  'Gérez votre QR code et vos campagnes d’avis.',
-
-open_tool:
-  'Ouvrir l’outil',
-
-social_links:
-  'Liens sociaux',
-
-add_social_links:
-  'Ajoutez Instagram, TikTok, Facebook et vos réseaux sociaux.',
-
-manage_social_links:
-  'Gérez vos réseaux sociaux et liens publics.',
-
-add_links:
-  'Ajouter des liens',
-
-manage:
-  'Gérer',
-
-space_connected:
-  'Votre business est connecté à un RTBX Space.',
-
-connect_space:
-  'Connectez votre business à un RTBX Space public.',
-
-connect:
-  'Connecter',
-
-scan_customer:
-  'Scanner un client'
+      
 
   
 
@@ -272,54 +226,7 @@ contact_information_subtitle:
       'Create Business',
 
     business_created:
-      'Business created successfully',
-  
-
-settings: 'Settings',
-
-quick_actions: 'Quick Actions',
-
-quick_actions_subtitle:
-  'Quickly manage your business tools and features.',
-
-google_review_qr:
-  'Google Review QR Code',
-
-generate_google_review_qr:
-  'Create a QR code to collect more Google reviews.',
-
-manage_google_review_qr:
-  'Manage your QR code and review campaigns.',
-
-open_tool:
-  'Open Tool',
-
-social_links:
-  'Social Links',
-
-add_social_links:
-  'Add Instagram, TikTok, Facebook and your social profiles.',
-
-manage_social_links:
-  'Manage your social networks and public links.',
-
-add_links:
-  'Add Links',
-
-manage:
-  'Manage',
-
-space_connected:
-  'Your business is connected to an RTBX Space.',
-
-connect_space:
-  'Connect your business to a public RTBX Space.',
-
-connect:
-  'Connect',
-
-scan_customer:
-  'Scan Customer'
+      'Business created successfully'
 
   }
 

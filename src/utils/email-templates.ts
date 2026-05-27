@@ -487,4 +487,40 @@ export const getSpaceWelcomeEmail = (
   return EmailWrapper(content, lang)
 }
 
-
+// --- TEMPLATE : ANNULATION D'ÉVÉNEMENT ---
+export const getEventCancellationEmail = (
+  data: { eventTitle: string; reason?: string },
+  lang: 'fr' | 'en'
+) => {
+  const content = {
+    fr: `
+      <h2 style="font-size:26px; font-weight:800; margin-top:0; color:#ef4444;">Événement annulé 😔</h2>
+      <p>Bonjour,</p>
+      <p>Nous vous informons que l'événement suivant a été annulé par l'organisateur :</p>
+      <div style="margin: 30px 0; padding: 25px; background-color: #fef2f2; border-radius: 20px; border: 1px solid #fecaca; text-align: center;">
+        <span style="font-size: 20px; font-weight: 800; color: ${theme.text};">${data.eventTitle}</span>
+      </div>
+      ${data.reason ? `
+      <div style="margin: 20px 0; padding: 20px; border-left: 4px solid #ef4444; background-color: #fff5f5; border-radius: 0 12px 12px 0;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#ef4444; text-transform:uppercase; margin-bottom:6px;">Raison</p>
+        <p style="margin:0; color:${theme.text};">${data.reason}</p>
+      </div>` : ''}
+      <p>Nous sommes désolés pour la gêne occasionnée. Si vous avez des questions, n'hésitez pas à contacter l'organisateur.</p>
+    `,
+    en: `
+      <h2 style="font-size:26px; font-weight:800; margin-top:0; color:#ef4444;">Event Cancelled 😔</h2>
+      <p>Hello,</p>
+      <p>We're letting you know that the following event has been cancelled by the organizer:</p>
+      <div style="margin: 30px 0; padding: 25px; background-color: #fef2f2; border-radius: 20px; border: 1px solid #fecaca; text-align: center;">
+        <span style="font-size: 20px; font-weight: 800; color: ${theme.text};">${data.eventTitle}</span>
+      </div>
+      ${data.reason ? `
+      <div style="margin: 20px 0; padding: 20px; border-left: 4px solid #ef4444; background-color: #fff5f5; border-radius: 0 12px 12px 0;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#ef4444; text-transform:uppercase; margin-bottom:6px;">Reason</p>
+        <p style="margin:0; color:${theme.text};">${data.reason}</p>
+      </div>` : ''}
+      <p>We apologize for any inconvenience. If you have any questions, please reach out to the organizer directly.</p>
+    `
+  }[lang];
+  return EmailWrapper(content, lang);
+};

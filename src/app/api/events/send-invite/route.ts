@@ -3,7 +3,32 @@
 import { NextResponse } from 'next/server';
 import { sendInvite } from '@/lib/events/service';
 import { requireUser } from '@/lib/auth/get-user';
-
+/**
+ * =========================================================
+ * POST /api/events/send-invites
+ * =========================================================
+ *
+ * Sends a personalized invitation email to a single recipient.
+ *
+ * Responsibilities:
+ *
+ * - requires authenticated user (must be the organizer)
+ * - validates email, eventId and lang
+ * - verifies organizer ownership of the event
+ * - generates a unique invitation token
+ * - inserts invitation record with status 'pending'
+ * - builds magic invite link with origin tracking
+ * - sends invitation email via Resend
+ * - returns Resend email id on success
+ *
+ * This route is safe to expose to:
+ *
+ * - frontend guest management interface
+ * - MCP tools (sendInvite)
+ * - automation flows
+ *
+ * =========================================================
+ */
 export async function POST(request: Request) {
   try {
     const { user, error: authError } = await requireUser();

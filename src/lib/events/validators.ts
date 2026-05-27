@@ -44,6 +44,63 @@ export const sendInviteSchema = z.object({
   eventId: z.string().min(1, 'eventId requis'),
   lang: z.enum(['fr', 'en']).default('fr'),
 });
+ export const eventUpdateSchema = z.object({
+  title: z.string().min(3).max(150).optional(),
+  description: z.string().max(1000).optional().nullable(),
+  category: z.string().min(1).optional(),
+  visibility: z.enum(['public', 'private', 'invite_only']).optional(),
+  requires_registration: z.boolean().optional(),
+  location: z.string().max(255).optional().nullable(),
+  start_date: z.string().datetime().optional(),
+  end_date: z.string().datetime().optional().nullable(),
+  max_capacity: z.number().int().positive().optional().nullable(),
+});
+
+export const agendaItemSchema = z.object({
+  start_time: z.string().datetime('start_time invalide'),
+  end_time: z.string().datetime().optional().nullable(),
+  label: z.string().min(1, 'Label requis').max(200),
+  room_name: z.string().max(100).optional().nullable(),
+  speakers: z.array(z.any()).optional().default([]),
+  description: z.string().max(1000).optional().nullable(),
+});
+export const eventCancelSchema = z.object({
+  eventId: z.string().min(1, 'eventId requis'),
+  reason: z.string().max(500).optional(),
+  lang: z.enum(['fr', 'en']).default('fr'),
+});
+export const eventPublicSearchSchema = z.object({
+  q: z.string().optional(),
+  category: z.string().optional(),
+  location: z.string().optional(),
+  org_name: z.string().optional(),
+  start_date: z.string().datetime().optional(),
+  limit: z.number().int().min(1).max(100).default(20),
+  offset: z.number().int().min(0).default(0),
+});
+
+export const eventOrganizerSearchSchema = z.object({
+  q: z.string().optional(),
+  category: z.string().optional(),
+  org_name: z.string().optional(),
+  status: z.enum(['draft', 'published', 'cancelled', 'completed']).optional(),
+  start_date: z.string().datetime().optional(),
+  end_date: z.string().datetime().optional(),
+  limit: z.number().int().min(1).max(100).default(20),
+  offset: z.number().int().min(0).default(0),
+});
+
+export type EventPublicSearchInput = z.infer<typeof eventPublicSearchSchema>;
+export type EventOrganizerSearchInput = z.infer<typeof eventOrganizerSearchSchema>;
+
+export type EventCancelInput = z.infer<typeof eventCancelSchema>;
+
+export const agendaUpdateSchema = agendaItemSchema.partial();
+
+export type AgendaItemInput = z.infer<typeof agendaItemSchema>;
+export type AgendaUpdateInput = z.infer<typeof agendaUpdateSchema>;
+
+export type EventUpdateInput = z.infer<typeof eventUpdateSchema>;
 
 export type SendInviteInput = z.infer<typeof sendInviteSchema>;
 

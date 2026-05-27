@@ -1,5 +1,6 @@
 'use client'
 
+import { CountryCode } from 'libphonenumber-js/core'
 import {
   Globe
 } from 'lucide-react'
@@ -13,7 +14,7 @@ import en from 'react-phone-number-input/locale/en.json'
 
 type CountrySelectProps = {
 
-  country: string
+  country: CountryCode
 
   setCountry: (
     value: string

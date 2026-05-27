@@ -102,15 +102,21 @@ export async function incrementClicks(shortCode: string) {
 /* =========================================================
    GET USER LINKS
 ========================================================= */
-export async function getUserLinks(userId: string) {
-  const { data, error } = await supabase
+
+export async function getUserLinks(
+  userId: string,
+  limit: number = 10,
+  offset: number = 0
+) {
+  const { data, error, count } = await supabase
     .from('links')
-    .select('*')
+    .select('short_code, title, long_url, clicks, created_at', { count: 'exact' })
     .eq('user_id', userId)
     .is('deleted_at', null)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
 
-  return { data, error };
+  return { data, error, count };
 }
 
 /* =========================================================
@@ -145,23 +151,25 @@ export async function getLinkStats(shortCode: string) {
 /* =========================================================
    GET LINK LOGS
 ========================================================= */
+/* =========================================================
+   GET LINK LOGS
+========================================================= */
 export async function getLinkLogs(shortCode: string, limit: number = 50) {
+  // 1. Récupérer l'id du lien d'abord
+  const { data: link, error: linkError } = await supabase
+    .from('links')
+    .select('id')
+    .eq('short_code', shortCode)
+    .is('deleted_at', null)
+    .single();
+
+  if (linkError || !link) return { data: null, error: 'Link not found' };
+
+  // 2. Récupérer les logs avec l'id réel
   const { data, error } = await supabase
     .from('link_logs')
-    .select(`
-      id,
-      created_at,
-      country,
-      referrer,
-      device,
-      browser
-    `)
-    .eq('link_id', supabase
-        .from('links')
-        .select('id')
-        .eq('short_code', shortCode)
-        .single()
-    )
+    .select('id, created_at, country, referrer, device, browser')
+    .eq('link_id', link.id)
     .order('created_at', { ascending: false })
     .limit(limit);
 
