@@ -40,7 +40,7 @@ export const sendBadgesSchema = z.object({
 });
 
 export const sendInviteSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: z.string(),
   eventId: z.string().min(1, 'eventId requis'),
   lang: z.enum(['fr', 'en']).default('fr'),
 });
