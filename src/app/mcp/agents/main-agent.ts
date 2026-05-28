@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/agents/main-agent.ts
 import { generateText, stepCountIs } from 'ai';
-import { tools } from '../tools';
+import { getRelevantTools } from '../tools';
 import { defaultModel } from '../core/client';
 import systemPrompt from '../prompts/system';
 import { mcpConfig } from '../core/config';
@@ -11,7 +11,6 @@ export type Message = {
   content: string;
 };
 
-// Longueur max des messages historiques avant troncature
 const MAX_CONTENT_LENGTH = 800;
 
 export async function runMCPAgent(
@@ -22,8 +21,6 @@ export async function runMCPAgent(
   }
 ) {
   try {
-    // Sanitize l'historique — tronquer les anciens messages trop longs
-    // Le dernier message (question actuelle) est toujours gardé intact
     const sanitizedMessages = messages.map((msg, index) => {
       if (index === messages.length - 1) return msg;
       if (msg.role === 'assistant' && msg.content.length > MAX_CONTENT_LENGTH) {
@@ -35,20 +32,21 @@ export async function runMCPAgent(
       return msg;
     });
 
-   const result = await generateText({
-  model: defaultModel,
-  system: systemPrompt,
-  messages: sanitizedMessages,
-  tools: tools,
-  temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
-  maxOutputTokens: mcpConfig.maxTokens, // ← v6
-  stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5),
-  maxRetries: 0,
-});
+    const relevantTools = getRelevantTools(sanitizedMessages); // ← nom différent de l'import
 
-let finalText = result.text?.trim() || '';
+    const result = await generateText({
+      model: defaultModel,
+      system: systemPrompt,
+      messages: sanitizedMessages,
+      tools: relevantTools,
+      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
+      maxOutputTokens: mcpConfig.maxTokens,
+      stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5),
+      maxRetries: 0,
+    });
 
-    // Chercher le résultat dans steps si text est vide
+    let finalText = result.text?.trim() || '';
+
     if (!finalText && result.steps && result.steps.length > 0) {
       for (const step of result.steps.slice().reverse()) {
         const toolResults = step.toolResults ?? [];

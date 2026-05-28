@@ -3,13 +3,13 @@
 import * as businessTools from './businesses';
 import * as spaceTools from './spaces';
 import * as shortenerTools from './shortener';
-import * as eventTools from './events'
+import * as eventTools from './events';
 
 export const tools = {
   ...businessTools,
   ...spaceTools,
   ...shortenerTools,
-  ...eventTools
+  ...eventTools,
 };
 
 export const getRelevantTools = (messages: any[]) => {
@@ -20,13 +20,6 @@ export const getRelevantTools = (messages: any[]) => {
   if (lastMessage.match(/business|entreprise|société|compan/)) return businessTools;
   if (lastMessage.match(/event|événement|agenda|badge|invit|inscription/)) return eventTools;
 
-  // Par défaut — tools légers seulement
-  return Object.values( {
-    ...shortenerTools,
-    ...spaceTools,
-    ...businessTools,
-    ...eventTools,
-  });
+  // Par défaut — tous les tools
+  return tools;
 };
-
-export const allTools = Object.values(tools);

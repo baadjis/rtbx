@@ -9,6 +9,7 @@ export type ReviewProviderId =
   | 'trustpilot'
   | 'tripadvisor'
   | 'thefork'
+  | 'yelp'
 
 export type ReviewProvider = {
 
@@ -197,7 +198,40 @@ name: 'TheFork',
 
   publicUrlParameter: null
 
-}
+},
+yelp: {
+
+  id: 'yelp',
+
+  name: 'Yelp',
+
+  field: 'slug',
+
+  reviewBaseUrl:
+    'https://www.yelp.com/biz/',
+
+  reviewUrlParameter:
+    null,
+
+  publicBaseUrl:
+    'https://www.yelp.com/biz/',
+
+  publicUrlParameter:
+    null,
+
+  supported_business_types: [
+    'restaurant',
+    'hotel',
+    'cafe',
+    'bar',
+    'beauty',
+    'local_business'
+  ],
+
+  placeholder:
+    'pink-mamma-paris'
+
+},
 
 }
 
