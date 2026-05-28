@@ -71,7 +71,6 @@ Only title and description are editable.`,
     const response = await fetch(`${BASE}/api/shortener/${short_code}`, {
       method: 'PATCH',
       headers: authHeaders(accessToken),
-      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -125,7 +124,7 @@ Use limit to control how many links to return (default 10, max 20).`,
       `${BASE}/api/shortener?limit=${args.limit}&offset=${args.offset}`,
       {
         method: 'GET',
-         headers: authHeaders(accessToken),       // ← Ajout cookies
+        headers: authHeaders(accessToken),       // ← Ajout cookies
         cache: 'no-store',
       }
     );
