@@ -43,8 +43,11 @@ export const getDefaultModel = () => {
   }
 
   if (process.env.GROQ_API_KEY) {
-    console.log('🚀 MCP → Using Groq Llama 3.1 70B');
-    return models.groqLlama70B;
+    //console.log('🚀 MCP → Using Groq Llama 3.1 70B');
+    //return models.groqLlama70B;
+    console.log(" 🚀 MCP → Using Groqllama-3.1-8b-instant ")
+    return models.groqFast;
+
   }
 
   console.warn('⚠️ No LLM API key found. Using Groq fast fallback.');
