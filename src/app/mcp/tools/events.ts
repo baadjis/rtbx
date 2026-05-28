@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/tools/events.ts
 import { tool } from 'ai';
 import { z } from 'zod';
@@ -14,21 +15,21 @@ import {
   eventOrganizerSearchSchema,
   agendaUpdateSchema,
 } from '@/lib/events/validators';
-
 const BASE = process.env.NEXT_PUBLIC_APP_URL;
 
 // =====================================================
 // CREATE EVENT
 // =====================================================
 export const createEvent = tool({
-  description: `Create a new event for the authenticated organizer. 
-The event is created as a draft (not published). 
+  description: `Create a new event for the authenticated organizer.
+The event is created as a draft (not published).
 start_date must be a full ISO 8601 datetime string (e.g. 2026-06-15T10:00:00Z).`,
   inputSchema: eventCreateSchema,
   execute: async (args) => {
     const response = await fetch(`${BASE}/api/events/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -51,6 +52,7 @@ Provide eventId (UUID) and lang ('fr' or 'en').`,
     const response = await fetch(`${BASE}/api/events/publish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -76,6 +78,7 @@ Only the organizer of the event can update it.`,
     const response = await fetch(`${BASE}/api/events/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -90,7 +93,7 @@ Only the organizer of the event can update it.`,
 // DELETE EVENT
 // =====================================================
 export const deleteEvent = tool({
-  description: `Hard delete a draft event. 
+  description: `Hard delete a draft event.
 Only works if the event is NOT published (is_published: false).
 For published events, use cancelEvent instead.
 Only the organizer can delete their event.`,
@@ -101,6 +104,7 @@ Only the organizer can delete their event.`,
     const response = await fetch(`${BASE}/api/events/${args.id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -124,6 +128,7 @@ Only works on published events. For drafts, use deleteEvent.`,
     const response = await fetch(`${BASE}/api/events/${eventId}/cancel`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -146,6 +151,7 @@ Only the organizer of the event can send invitations.`,
     const response = await fetch(`${BASE}/api/events/send-invites`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -161,7 +167,7 @@ Only the organizer of the event can send invitations.`,
 // =====================================================
 export const sendBadges = tool({
   description: `Send badge PDFs to all registered participants of an event.
-Calls the Python badge generation API for each participant, 
+Calls the Python badge generation API for each participant,
 then sends the PDF as an email attachment via Resend.
 Only the organizer can trigger badge sending.
 Returns sent and failed counts.`,
@@ -170,6 +176,7 @@ Returns sent and failed counts.`,
     const response = await fetch(`${BASE}/api/events/send-badges`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -193,6 +200,7 @@ If the event has badge_automation_type='immediate', the badge PDF is sent right 
     const response = await fetch(`${BASE}/api/events/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -217,6 +225,7 @@ Returns three lists:
     const response = await fetch(`${BASE}/api/events/me`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       cache: 'no-store',
     });
     if (!response.ok) {
@@ -241,6 +250,7 @@ Returns registration details including name, email, company, role, and opt-in st
     const response = await fetch(`${BASE}/api/events/${args.id}/registrations`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       cache: 'no-store',
     });
     if (!response.ok) {
@@ -265,6 +275,7 @@ Returns invitation details including email, status (pending/sent/accepted) and t
     const response = await fetch(`${BASE}/api/events/${args.id}/invitations`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       cache: 'no-store',
     });
     if (!response.ok) {
@@ -289,6 +300,7 @@ Returns all agenda slots with label, room, speakers, description and times.`,
     const response = await fetch(`${BASE}/api/events/${args.id}/agenda`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       cache: 'no-store',
     });
     if (!response.ok) {
@@ -315,6 +327,7 @@ speakers is an optional JSON array.`,
     const response = await fetch(`${BASE}/api/events/${id}/agenda`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -341,6 +354,7 @@ Only the organizer of the event can update its agenda.`,
     const response = await fetch(`${BASE}/api/events/agenda/${itemId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -365,6 +379,7 @@ Only the organizer of the event can delete its agenda items.`,
     const response = await fetch(`${BASE}/api/events/agenda/${args.itemId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -397,6 +412,7 @@ Use this for public event discovery pages or when a user searches for events.`,
     const response = await fetch(`${BASE}/api/events/search?${params.toString()}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       cache: 'no-store',
     });
     if (!response.ok) {
@@ -431,6 +447,7 @@ Use this for dashboard filtering or when the user asks about their own events.`,
     const response = await fetch(`${BASE}/api/events/me/search?${params.toString()}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       cache: 'no-store',
     });
     if (!response.ok) {

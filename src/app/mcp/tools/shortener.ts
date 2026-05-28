@@ -8,7 +8,6 @@ import {
   linkUpdateSchema,
   LinkUpdateInput,
 } from '@/lib/shortener/validators';
-
 const BASE = process.env.NEXT_PUBLIC_APP_URL;
 
 // =====================================================
@@ -23,6 +22,7 @@ custom_alias must be alphanumeric with dashes or underscores only.`,
     const response = await fetch(`${BASE}/api/shortener`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -48,6 +48,7 @@ Only title and description are editable.`,
     const response = await fetch(`${BASE}/api/shortener/${short_code}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -73,6 +74,7 @@ Only call this when the user explicitly asks to delete a link.`,
     const response = await fetch(`${BASE}/api/shortener/${args.short_code}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -102,6 +104,7 @@ Use limit to control how many links to return (default 10, max 20).`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',        // ← Ajout cookies
         cache: 'no-store',
       }
     );
@@ -134,6 +137,7 @@ Requires the short_code of the link.`,
     const response = await fetch(`${BASE}/api/shortener/${args.short_code}/stats`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -162,6 +166,7 @@ Only call this when the user explicitly asks for click details or analytics.`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',        // ← Ajout cookies
         cache: 'no-store',
       }
     );

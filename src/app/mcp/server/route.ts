@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    lang = body.lang || 'fr';
+    lang = body.lang || 'en';
 
     if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
@@ -21,6 +21,7 @@ export async function POST(request: Request) {
     const result = await runMCPAgent(body.messages, {
       temperature: body.temperature || mcpConfig.temperature,
       maxSteps: body.maxSteps || mcpConfig.maxSteps,
+      cookies: request.headers.get('cookie') || ''
     });
 
     if (!result.success) {

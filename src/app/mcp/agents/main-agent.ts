@@ -18,6 +18,7 @@ export async function runMCPAgent(
   options?: {
     temperature?: number;
     maxSteps?: number;
+    cookies?: string;
   }
 ) {
   try {

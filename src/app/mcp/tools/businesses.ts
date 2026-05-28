@@ -18,14 +18,13 @@ export const createBusiness = tool({
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to create business');
     }
-
     return response.json();
   },
 });
@@ -40,18 +39,16 @@ export const updateBusiness = tool({
   }),
   execute: async (args: Partial<BusinessInput> & { id: string }) => {
     const { id, ...data } = args;
-
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to update business');
     }
-
     return response.json();
   },
 });
@@ -66,14 +63,17 @@ export const getUserBusinesses = tool({
   }),
   execute: async (args: { user_id: string }) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/businesses?user_id=${args.user_id}`
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/businesses?user_id=${args.user_id}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',        // ← Ajout cookies
+      }
     );
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to fetch businesses');
     }
-
     return response.json();
   },
 });

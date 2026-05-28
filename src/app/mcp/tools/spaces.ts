@@ -10,7 +10,6 @@ import type {
   SpaceUpdatePayload
 } from '@/lib/spaces/types';
 
-
 // =====================================================
 // CREATE SPACE TOOL
 // =====================================================
@@ -21,14 +20,13 @@ export const createSpace = tool({
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/spaces`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(args),
     });
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to create space');
     }
-
     return response.json();
   },
 });
@@ -43,21 +41,20 @@ export const updateSpace = tool({
   }),
   execute: async (args) => {
     const { token, ...data } = args;
-
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/spaces/update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify({ token, payload: data }),
     });
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to update space');
     }
-
     return response.json();
   },
 });
+
 // =====================================================
 // GET SPACE BY SLUG TOOL
 // =====================================================
@@ -68,13 +65,16 @@ export const getSpaceBySlug = tool({
   }),
   execute: async (args: { slug: string }) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/spaces?slug=${args.slug}`
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/spaces?slug=${args.slug}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',        // ← Ajout cookies
+      }
     );
-
     if (!response.ok) {
       throw new Error('Space not found or error occurred');
     }
-
     return response.json();
   },
 });
@@ -89,13 +89,16 @@ export const getSpaceByToken = tool({
   }),
   execute: async (args: { token: string }) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/spaces?token=${args.token}`
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/spaces?token=${args.token}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',        // ← Ajout cookies
+      }
     );
-
     if (!response.ok) {
       throw new Error('Invalid token or space not found');
     }
-
     return response.json();
   },
 });
