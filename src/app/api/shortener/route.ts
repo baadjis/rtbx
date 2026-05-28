@@ -34,6 +34,7 @@ export async function GET(request: Request) {
   try {
     const { user, error: authError } = await requireUser();
     if (!user) {
+      console.error(authError)
       return NextResponse.json({ success: false, error: authError }, { status: 401 });
     }
 
