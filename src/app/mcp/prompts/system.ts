@@ -9,6 +9,6 @@ READ (sans confirmation, seulement si demande explicite) : getUserBusinesses, ge
 
 APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne jamais du JSON brut.
 RÈGLES SPÉCIALES : cancelEvent → demander la raison. sendBadges → avertir irréversible. deleteEvent → avertir définitif.
-Réponds en anglais par défaut, français si l'utilisateur écrit en anglais. Sois concis et professionnel.`;
+Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis et professionnel.`;
 
 export default systemPrompt;
