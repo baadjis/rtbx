@@ -35,6 +35,10 @@ fr: {
   mcp_suggestion_create_another_link: "Créer un autre lien court",
   mcp_suggestion_view_my_links: "Voir mes liens existants",
   mcp_suggestion_view_link_stats: "Voir les statistiques d'un lien",
+
+  mcp_suggestion_create_event: "Créer un nouvel événement",
+mcp_suggestion_view_my_events: "Voir mes événements",
+mcp_suggestion_send_invites: "Envoyer des invitations",
 },
 
 en: {
@@ -72,5 +76,8 @@ en: {
   mcp_suggestion_create_another_link: "Create another short link",
   mcp_suggestion_view_my_links: "View my existing links",
   mcp_suggestion_view_link_stats: "View statistics of a link",
+  mcp_suggestion_create_event: "Create a new event",
+mcp_suggestion_view_my_events: "View my events",
+mcp_suggestion_send_invites: "Send invitations",
 },
 } as const;

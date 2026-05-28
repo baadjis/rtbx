@@ -15,11 +15,12 @@
 
 // app/mcp/core/config.ts
 
+
 export const mcpConfig = {
   temperature: 0.7,
-  maxTokens: 4000,  // ← réduit de 8000 à 4000
-  maxSteps: 5,      // ← réduit de 12 à 5
-  maxMessages: 20,  // ← réduit de 30 à 20
+  maxTokens: 1500, // gardé comme ça, c'est juste le nom de la prop generateText qui change
+  maxSteps: 5,
+  maxMessages: 20,
   rateLimit: {
     maxRequestsPerMinute: 20,
     maxRequestsPerHour: 200,

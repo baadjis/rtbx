@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/agents/main-agent.ts
-import { generateText,stepCountIs } from 'ai';
+import { generateText, stepCountIs } from 'ai';
 import { tools } from '../tools';
 import { defaultModel } from '../core/client';
 import systemPrompt from '../prompts/system';
@@ -11,6 +11,9 @@ export type Message = {
   content: string;
 };
 
+// Longueur max des messages historiques avant troncature
+const MAX_CONTENT_LENGTH = 800;
+
 export async function runMCPAgent(
   messages: Message[],
   options?: {
@@ -19,39 +22,51 @@ export async function runMCPAgent(
   }
 ) {
   try {
-  const result = await generateText({
+    // Sanitize l'historique — tronquer les anciens messages trop longs
+    // Le dernier message (question actuelle) est toujours gardé intact
+    const sanitizedMessages = messages.map((msg, index) => {
+      if (index === messages.length - 1) return msg;
+      if (msg.role === 'assistant' && msg.content.length > MAX_CONTENT_LENGTH) {
+        return {
+          ...msg,
+          content: msg.content.slice(0, MAX_CONTENT_LENGTH) + '... [tronqué]',
+        };
+      }
+      return msg;
+    });
+
+   const result = await generateText({
   model: defaultModel,
   system: systemPrompt,
-  messages: messages,
+  messages: sanitizedMessages,
   tools: tools,
   temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
-  stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5), // ✅ v6
+  maxOutputTokens: mcpConfig.maxTokens, // ← v6
+  stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5),
   maxRetries: 0,
 });
 
-    let finalText = result.text?.trim() || '';
+let finalText = result.text?.trim() || '';
 
-    // Fix 2 — chercher dans steps, pas dans toolCalls
+    // Chercher le résultat dans steps si text est vide
     if (!finalText && result.steps && result.steps.length > 0) {
-  for (const step of result.steps.slice().reverse()) {
-    const toolResults = step.toolResults ?? [];
-
-    if (toolResults.length > 0) {
-      const lastOutput = (toolResults[toolResults.length - 1] as any).output;
-
-      if (lastOutput !== undefined) {
-        if (typeof lastOutput === 'string') {
-          finalText = lastOutput;
-        } else if ((lastOutput as any)?.data) {
-          finalText = JSON.stringify((lastOutput as any).data, null, 2);
-        } else {
-          finalText = JSON.stringify(lastOutput, null, 2);
+      for (const step of result.steps.slice().reverse()) {
+        const toolResults = step.toolResults ?? [];
+        if (toolResults.length > 0) {
+          const lastOutput = (toolResults[toolResults.length - 1] as any).output;
+          if (lastOutput !== undefined) {
+            if (typeof lastOutput === 'string') {
+              finalText = lastOutput;
+            } else if ((lastOutput as any)?.data) {
+              finalText = JSON.stringify((lastOutput as any).data, null, 2);
+            } else {
+              finalText = JSON.stringify(lastOutput, null, 2);
+            }
+            break;
+          }
         }
-        break;
       }
     }
-  }
-}
 
     if (!finalText) {
       finalText = "J'ai exécuté l'action. Voici le résultat :";

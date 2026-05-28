@@ -12,6 +12,9 @@ type Message = {
   pendingAction?: any;
 };
 
+// Nombre max de messages envoyés au LLM pour le contexte
+const MAX_HISTORY = 10;
+
 export default function MCPChatClient({ lang }: { lang: LangType }) {
   const t = Data[lang];
 
@@ -22,9 +25,17 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
-  const [currentContext, setCurrentContext] = useState<'general' | 'space' | 'business' | 'shortener'>('general');
+  const [currentContext, setCurrentContext] = useState<'general' | 'space' | 'business' | 'shortener' | 'event'>('general');
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Prépare les messages à envoyer au LLM — historique limité
+  const buildContextMessages = (allMessages: Message[], extraMessage?: Message) => {
+    const full = extraMessage ? [...allMessages, extraMessage] : allMessages;
+    return full
+      .slice(-MAX_HISTORY)
+      .map(({ role, content }) => ({ role, content }));
+  };
 
   // Suggestions dynamiques selon le contexte
   const getSuggestions = () => {
@@ -35,7 +46,6 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         t.mcp_suggestion_add_social,
       ].filter(Boolean);
     }
-
     if (currentContext === 'business') {
       return [
         t.mcp_suggestion_add_contact,
@@ -43,7 +53,6 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         t.mcp_suggestion_add_logo,
       ].filter(Boolean);
     }
-
     if (currentContext === 'shortener') {
       return [
         t.mcp_suggestion_create_another_link,
@@ -51,8 +60,13 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         t.mcp_suggestion_view_link_stats,
       ].filter(Boolean);
     }
-
-    // Suggestions par défaut
+    if (currentContext === 'event') {
+      return [
+        t.mcp_suggestion_create_event,
+        t.mcp_suggestion_view_my_events,
+        t.mcp_suggestion_send_invites,
+      ].filter(Boolean);
+    }
     return [
       t.mcp_suggestion_create_space,
       t.mcp_suggestion_create_business,
@@ -67,7 +81,6 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: 'user', content: input };
-    
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -77,18 +90,31 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMessage],
-          lang
+          messages: buildContextMessages(messages, userMessage),
+          lang,
         }),
       });
 
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        // Gestion rate limit HTTP 429
+        if (response.status === 429) {
+          setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: errData.text || t.mcp_rate_limit || "⏳ Limite atteinte. Réessayez plus tard."
+          }]);
+          return;
+        }
+        throw new Error(errData.error || 'Server error');
+      }
+
       const data = await response.json();
-      console.log(data)
+
       const newMessage: Message = {
         role: 'assistant',
         content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
         isConfirmation: data.requiresConfirmation || false,
-        pendingAction: data.pendingAction || null
+        pendingAction: data.pendingAction || null,
       };
 
       setMessages(prev => [...prev, newMessage]);
@@ -102,48 +128,58 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         setCurrentContext('business');
       } else if (lowerText.includes('lien') || lowerText.includes('short')) {
         setCurrentContext('shortener');
+      } else if (lowerText.includes('event') || lowerText.includes('événement')) {
+        setCurrentContext('event');
       }
 
-     } catch (err: any) {
-  let errorText = t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard.";
-
-  if (err?.error === 'rate_limit' || err?.status === 429) {
-    errorText = err.text || t.mcp_rate_limit
-  }
-
-  setMessages(prev => [...prev, {
-    role: 'assistant',
-    content: errorText
-  }]);
-} finally {
+    } catch (err: any) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: t.mcp_error || "Erreur de connexion. Veuillez réessayer plus tard."
+      }]);
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleConfirmation = async (confirmed: boolean) => {
     if (!pendingConfirmation) return;
-
     setIsLoading(true);
 
     const userResponse = confirmed ? "Oui, confirme et procède." : "Non, annule.";
+    const confirmMessage: Message = { role: 'user', content: userResponse };
+
+    setMessages(prev => [...prev, confirmMessage]);
 
     try {
       const response = await fetch('/mcp/server', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, { role: 'user', content: userResponse }],
-          lang
+          messages: buildContextMessages(messages, confirmMessage),
+          lang,
         }),
       });
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: errData.text || t.mcp_rate_limit || "⏳ Limite atteinte. Réessayez plus tard."
+          }]);
+          return;
+        }
+        throw new Error(errData.error || 'Server error');
+      }
 
+      const data = await response.json();
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.text
+        content: data.text || "Action effectuée."
       }]);
-    } catch (err) {
+
+    } catch (err: any) {
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: "Erreur lors de la confirmation."
@@ -162,7 +198,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white pb-24">
       <div className="max-w-4xl mx-auto pt-12 px-4">
-        
+
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-3 mb-4">
@@ -174,7 +210,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
 
         {/* Chat Container */}
         <div className="bg-slate-900/70 backdrop-blur-xl border border-slate-700 rounded-3xl h-[calc(100vh-180px)] flex flex-col overflow-hidden shadow-2xl">
-          
+
           {/* Messages Area */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {messages.map((msg, i) => (
@@ -185,8 +221,8 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
                   </div>
                 )}
                 <div className={`max-w-[75%] rounded-3xl px-6 py-4 ${
-                  msg.role === 'user' 
-                    ? 'bg-indigo-600 text-white' 
+                  msg.role === 'user'
+                    ? 'bg-indigo-600 text-white'
                     : 'bg-slate-800 border border-slate-700'
                 }`}>
                   <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
@@ -212,6 +248,23 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
                 </div>
               </div>
             ))}
+
+            {/* Indicateur de chargement */}
+            {isLoading && (
+              <div className="flex gap-4 justify-start">
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                  <Bot size={20} />
+                </div>
+                <div className="bg-slate-800 border border-slate-700 rounded-3xl px-6 py-4">
+                  <div className="flex gap-1.5 items-center h-5">
+                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div ref={chatEndRef} />
           </div>
 
@@ -223,7 +276,8 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
                 <button
                   key={i}
                   onClick={() => setInput(suggestion)}
-                  className="text-sm px-5 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-all active:scale-95"
+                  disabled={isLoading}
+                  className="text-sm px-5 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-2xl transition-all active:scale-95"
                 >
                   {suggestion}
                 </button>
