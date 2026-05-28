@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/mcp/agents/main-agent.ts
 import { generateText, stepCountIs } from 'ai';
 import { getRelevantTools } from '../tools';
 import { defaultModel } from '../core/client';
@@ -18,7 +17,7 @@ export async function runMCPAgent(
   options?: {
     temperature?: number;
     maxSteps?: number;
-    cookies?: string;
+    accessToken?: string; // ← nouveau
   }
 ) {
   try {
@@ -33,7 +32,8 @@ export async function runMCPAgent(
       return msg;
     });
 
-    const relevantTools = getRelevantTools(sanitizedMessages); // ← nom différent de l'import
+    // Tools avec token injecté
+    const relevantTools = getRelevantTools(sanitizedMessages, options?.accessToken);
 
     const result = await generateText({
       model: defaultModel,

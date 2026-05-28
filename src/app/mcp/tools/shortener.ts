@@ -10,10 +10,33 @@ import {
 } from '@/lib/shortener/validators';
 const BASE = process.env.NEXT_PUBLIC_APP_URL;
 
+
+const authHeaders = (token?: string) => ({
+  'Content-Type': 'application/json',
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+});
+export const createShortenerTools = (accessToken?: string) => ({
+
+  createShortLink: tool({
+    description: 'Create a new shortened URL for the authenticated user. Provide long_url (required). title, description, and custom_alias are optional.',
+    inputSchema: linkCreateSchema.omit({ user_id: true }),
+    execute: async (args: LinkCreateInput) => {
+      const response = await fetch(`${BASE}/api/shortener`, {
+        method: 'POST',
+        headers: authHeaders(accessToken),
+        body: JSON.stringify(args),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Failed to create short link');
+      }
+      return response.json();
+    },
+  }),
 // =====================================================
 // CREATE SHORT LINK
 // =====================================================
-export const createShortLink = tool({
+/*createShortLink : tool({
   description: `Create a new shortened URL for the authenticated user.
 Provide long_url (required). title, description, and custom_alias are optional.
 custom_alias must be alphanumeric with dashes or underscores only.`,
@@ -31,12 +54,12 @@ custom_alias must be alphanumeric with dashes or underscores only.`,
     }
     return response.json();
   },
-});
+}),*/
 
 // =====================================================
 // UPDATE SHORT LINK
 // =====================================================
-export const updateShortLink = tool({
+updateShortLink :tool({
   description: `Update the title and/or description of an existing shortened link.
 Requires the short_code of the link to update.
 Only title and description are editable.`,
@@ -47,7 +70,7 @@ Only title and description are editable.`,
     const { short_code, ...data } = args;
     const response = await fetch(`${BASE}/api/shortener/${short_code}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(accessToken),
       credentials: 'include',        // ← Ajout cookies
       body: JSON.stringify(data),
     });
@@ -57,12 +80,12 @@ Only title and description are editable.`,
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // DELETE SHORT LINK
 // =====================================================
-export const deleteShortLink = tool({
+deleteShortLink : tool({
   description: `Soft delete a shortened link.
 The link becomes inaccessible after deletion but is not permanently removed.
 Requires the short_code of the link to delete.
@@ -73,8 +96,7 @@ Only call this when the user explicitly asks to delete a link.`,
   execute: async (args: { short_code: string }) => {
     const response = await fetch(`${BASE}/api/shortener/${args.short_code}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',        // ← Ajout cookies
+       headers: authHeaders(accessToken)
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -82,12 +104,12 @@ Only call this when the user explicitly asks to delete a link.`,
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // GET USER SHORT LINKS
 // =====================================================
-export const getUserShortLinks = tool({
+getUserShortLinks : tool({
   description: `Get paginated shortened links belonging to the authenticated user.
 Only call this when the user explicitly asks to see their links.
 Returns short_code, title, long_url and clicks count only.
@@ -103,8 +125,7 @@ Use limit to control how many links to return (default 10, max 20).`,
       `${BASE}/api/shortener?limit=${args.limit}&offset=${args.offset}`,
       {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',        // ← Ajout cookies
+         headers: authHeaders(accessToken),       // ← Ajout cookies
         cache: 'no-store',
       }
     );
@@ -121,12 +142,12 @@ Use limit to control how many links to return (default 10, max 20).`,
     }));
     return { count: links.length, total: json?.count ?? 0, links };
   },
-});
+}),
 
 // =====================================================
 // GET SHORT LINK STATS
 // =====================================================
-export const getShortLinkStats = tool({
+getShortLinkStats : tool({
   description: `Get statistics for a specific shortened link.
 Returns clicks count, last_clicked_at, created_at, long_url, title and description.
 Requires the short_code of the link.`,
@@ -136,8 +157,7 @@ Requires the short_code of the link.`,
   execute: async (args: { short_code: string }) => {
     const response = await fetch(`${BASE}/api/shortener/${args.short_code}/stats`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',        // ← Ajout cookies
+       headers: authHeaders(accessToken)       // ← Ajout cookies
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -145,12 +165,12 @@ Requires the short_code of the link.`,
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // GET SHORT LINK LOGS
 // =====================================================
-export const getShortLinkLogs = tool({
+getShortLinkLogs : tool({
   description: `Get detailed click logs for a specific shortened link.
 Returns country, referrer, device and browser per click, ordered by most recent.
 Requires the short_code of the link.
@@ -165,8 +185,7 @@ Only call this when the user explicitly asks for click details or analytics.`,
       `${BASE}/api/shortener/${args.short_code}/logs?limit=${args.limit}`,
       {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',        // ← Ajout cookies
+        headers: authHeaders(accessToken) ,       // ← Ajout cookies
         cache: 'no-store',
       }
     );
@@ -176,4 +195,5 @@ Only call this when the user explicitly asks for click details or analytics.`,
     }
     return response.json();
   },
-});
+})
+})

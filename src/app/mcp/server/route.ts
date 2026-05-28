@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/mcp/server/route.ts
 import { NextResponse } from 'next/server';
 import { runMCPAgent } from '../agents/main-agent';
-import {mcpConfig} from '../core/config';
+import { mcpConfig } from '../core/config';
+import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request: Request) {
   let lang = 'fr';
-
   try {
     const body = await request.json();
-    lang = body.lang || 'en';
+    lang = body.lang || 'fr';
 
     if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
@@ -18,38 +17,38 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    // Récupérer le token de session pour les tools internes
+    const supabase = await createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+
     const result = await runMCPAgent(body.messages, {
       temperature: body.temperature || mcpConfig.temperature,
       maxSteps: body.maxSteps || mcpConfig.maxSteps,
-      cookies: request.headers.get('cookie') || ''
+      accessToken, // ← injecté
     });
 
-    if (!result.success) {
-      throw result.error;
-    }
+    if (!result.success) throw result.error;
 
-    return NextResponse.json({
-      success: true,
-      text: result.text,
-    });
+    return NextResponse.json({ success: true, text: result.text });
 
   } catch (error: any) {
     console.error('MCP Server Error:', error);
-
     const errorStr = JSON.stringify(error).toLowerCase();
 
     if (
       errorStr.includes('rate limit') ||
       errorStr.includes('429') ||
       errorStr.includes('tokens per day') ||
+      errorStr.includes('tokens per minute') ||
       errorStr.includes('rate_limit_exceeded')
     ) {
       return NextResponse.json({
         success: false,
         error: 'rate_limit',
         text: lang === 'fr'
-          ? "⏳ Nous avons atteint la limite de tokens quotidienne .\n\nVeuillez réessayer demain."
-          : "⏳ We have reached daily limit of tokens.\n\nPlease try again tomorrow."
+          ? "⏳ Limite de tokens atteinte. Veuillez réessayer dans quelques secondes."
+          : "⏳ Token limit reached. Please try again in a few seconds."
       }, { status: 429 });
     }
 

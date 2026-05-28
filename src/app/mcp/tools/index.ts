@@ -1,25 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/mcp/tools/index.ts
-import * as businessTools from './businesses';
-import * as spaceTools from './spaces';
-import * as shortenerTools from './shortener';
-import * as eventTools from './events';
+import { createShortenerTools } from './shortener';
+import { createSpaceTools } from './spaces';
+import { createBusinessTools } from './businesses';
+import { createEventTools } from './events';
 
 export const tools = {
-  ...businessTools,
-  ...spaceTools,
-  ...shortenerTools,
-  ...eventTools,
+  ...createShortenerTools(),
+  ...createSpaceTools(),
+  ...createBusinessTools(),
+  ...createEventTools(),
 };
 
-export const getRelevantTools = (messages: any[]) => {
+export const getRelevantTools = (messages: any[], accessToken?: string) => {
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
 
-  if (lastMessage.match(/lien|link|short|url|raccourci/)) return shortenerTools;
-  if (lastMessage.match(/space|profil|slug|identit/)) return spaceTools;
-  if (lastMessage.match(/business|entreprise|société|compan/)) return businessTools;
-  if (lastMessage.match(/event|événement|agenda|badge|invit|inscription/)) return eventTools;
+  if (lastMessage.match(/lien|link|short|url|raccourci/))
+    return createShortenerTools(accessToken);
+  if (lastMessage.match(/space|profil|slug|identit/))
+    return createSpaceTools(accessToken);
+  if (lastMessage.match(/business|entreprise|société|compan/))
+    return createBusinessTools(accessToken);
+  if (lastMessage.match(/event|événement|agenda|badge|invit|inscription/))
+    return createEventTools(accessToken);
 
-  // Par défaut — tous les tools
-  return tools;
+  return {
+    ...createShortenerTools(accessToken),
+    ...createSpaceTools(accessToken),
+    ...createBusinessTools(accessToken),
+    ...createEventTools(accessToken),
+  };
 };

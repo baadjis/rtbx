@@ -6,7 +6,12 @@ import { businessSchema, BusinessInput } from '@/lib/businesses/validators';
 // =====================================================
 // CREATE BUSINESS TOOL
 // =====================================================
-export const createBusiness = tool({
+const authHeaders = (token?: string) => ({
+  'Content-Type': 'application/json',
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+});
+export const createBusinessTools = (accessToken?: string) => ({
+createBusiness : tool({
   description: 'Create a new business for the user',
   inputSchema: businessSchema.omit({
     id: true,
@@ -17,8 +22,8 @@ export const createBusiness = tool({
   execute: async (args: BusinessInput) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',        // ← Ajout cookies
+      headers: authHeaders(accessToken) ,       // ← Ajout cookies
+        // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -27,12 +32,12 @@ export const createBusiness = tool({
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // UPDATE BUSINESS TOOL
 // =====================================================
-export const updateBusiness = tool({
+updateBusiness : tool({
   description: 'Update an existing business',
   inputSchema: businessSchema.partial().extend({
     id: z.string().describe('The ID of the business to update'),
@@ -41,8 +46,8 @@ export const updateBusiness = tool({
     const { id, ...data } = args;
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',        // ← Ajout cookies
+      headers: authHeaders(accessToken) ,       // ← Ajout cookies
+      // ← Ajout cookies
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -51,12 +56,12 @@ export const updateBusiness = tool({
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // GET USER BUSINESSES TOOL
 // =====================================================
-export const getUserBusinesses = tool({
+getUserBusinesses : tool({
   description: 'Get all businesses belonging to a user',
   inputSchema: z.object({
     user_id: z.string().describe('The user ID'),
@@ -66,8 +71,8 @@ export const getUserBusinesses = tool({
       `${process.env.NEXT_PUBLIC_APP_URL}/api/businesses?user_id=${args.user_id}`,
       {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',        // ← Ajout cookies
+        headers: authHeaders(accessToken) ,       // ← Ajout cookies
+       // ← Ajout cookies
       }
     );
     if (!response.ok) {
@@ -76,4 +81,4 @@ export const getUserBusinesses = tool({
     }
     return response.json();
   },
-});
+})})

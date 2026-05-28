@@ -10,17 +10,22 @@ import type {
   SpaceUpdatePayload
 } from '@/lib/spaces/types';
 
+
+const authHeaders = (token?: string) => ({
+  'Content-Type': 'application/json',
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+});
 // =====================================================
 // CREATE SPACE TOOL
 // =====================================================
-export const createSpace = tool({
+export const createSpaceTools = (accessToken?: string) => ({
+createSpace : tool({
   description: 'Create a new Space (Digital ID / Profile)',
   inputSchema: SpaceAddSchema.omit({ edit_token: true }),
   execute: async (args) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/spaces`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',        // ← Ajout cookies
+      headers: authHeaders(accessToken) ,     // ← Ajout cookies
       body: JSON.stringify(args),
     });
     if (!response.ok) {
@@ -29,12 +34,12 @@ export const createSpace = tool({
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // UPDATE SPACE TOOL
 // =====================================================
-export const updateSpace = tool({
+updateSpace : tool({
   description: 'Update an existing Space using its edit token',
   inputSchema: SpaceUpdateSchema.extend({
     token: z.string().describe('Edit token of the space (required)'),
@@ -43,8 +48,7 @@ export const updateSpace = tool({
     const { token, ...data } = args;
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/spaces/update`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',        // ← Ajout cookies
+      headers: authHeaders(accessToken) ,       // ← Ajout cookies
       body: JSON.stringify({ token, payload: data }),
     });
     if (!response.ok) {
@@ -53,12 +57,12 @@ export const updateSpace = tool({
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // GET SPACE BY SLUG TOOL
 // =====================================================
-export const getSpaceBySlug = tool({
+getSpaceBySlug : tool({
   description: 'Get a space by its public slug',
   inputSchema: z.object({
     slug: z.string().describe('Public slug of the space'),
@@ -68,8 +72,7 @@ export const getSpaceBySlug = tool({
       `${process.env.NEXT_PUBLIC_APP_URL}/api/spaces?slug=${args.slug}`,
       {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',        // ← Ajout cookies
+        headers: authHeaders(accessToken) ,       // ← Ajout cookies
       }
     );
     if (!response.ok) {
@@ -77,12 +80,12 @@ export const getSpaceBySlug = tool({
     }
     return response.json();
   },
-});
+}),
 
 // =====================================================
 // GET SPACE BY TOKEN TOOL
 // =====================================================
-export const getSpaceByToken = tool({
+getSpaceByToken : tool({
   description: 'Get a space using its edit token (private access)',
   inputSchema: z.object({
     token: z.string().describe('Edit token of the space'),
@@ -92,8 +95,7 @@ export const getSpaceByToken = tool({
       `${process.env.NEXT_PUBLIC_APP_URL}/api/spaces?token=${args.token}`,
       {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',        // ← Ajout cookies
+        headers: authHeaders(accessToken) ,       // ← Ajout cookies
       }
     );
     if (!response.ok) {
@@ -101,4 +103,5 @@ export const getSpaceByToken = tool({
     }
     return response.json();
   },
-});
+})
+})
