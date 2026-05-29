@@ -6,6 +6,7 @@ export async function requireUser(request?: Request) {
   if (request) {
     const authHeader = request.headers.get('Authorization');
     console.log('Auth header:', authHeader?.slice(0, 20));
+    console.log('All headers:', Object.fromEntries(request.headers.entries()));
     if (authHeader?.startsWith('Bearer ')) {
       const token = authHeader.slice(7);
       const supabase = createSupabaseClient(

@@ -121,6 +121,8 @@ Use limit to control how many links to return (default 10, max 20).`,
   }),
   execute: async (args) => {
     console.log('Tool accessToken exists:', !!accessToken);
+    console.log('BASE URL:', BASE);
+    console.log('Full URL:', `${BASE}/api/shortener`);
     const response = await fetch(
       `${BASE}/api/shortener?limit=${args.limit}&offset=${args.offset}`,
       {
