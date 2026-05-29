@@ -62,7 +62,7 @@ export default function CommunicationTab({ form, lang }: any) {
     const emails = data.map(item => item.email).filter(Boolean)
     
     try {
-      const res = await fetch(`/api/forms/send-invite`, {
+      const res = await fetch(`/api/forms/send-invites`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emails, formId: form.id, lang })

@@ -1,55 +1,52 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createClient } from '@/utils/supabase/server';
+/**
+ * =========================================================
+ * GET /api/forms
+ * =========================================================
+ * Returns all forms for the authenticated user.
+ * - requires auth
+ * - ordered by created_at desc
+ * - MCP tools (getMyForms)
+ * =========================================================
+ */
 import { NextResponse } from 'next/server';
+import { createForm, getMyForms } from '@/lib/forms/service';
+import { requireUser } from '@/lib/auth/get-user';
 
-// GET : Lister les formulaires de l'utilisateur
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user, error: authError } = await requireUser(request);
+    if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const { data, error } = await supabase
-      .from('forms')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return NextResponse.json(data);
+    const { data, error } = await getMyForms(user.id);
+    if (error) return NextResponse.json({ success: false, error }, { status: 400 });
+    return NextResponse.json({ success: true, data });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('FORMS_GET_ERROR:', err);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// POST : Créer un nouveau formulaire (appelé par le FormBuilder)
+/** POST /api/forms
+ * =========================================================
+ * Creates a new form for the authenticated user.
+ * - requires auth
+ * - assigns user_id automatically
+ * - MCP tools (createForm)
+ * =========================================================
+ */
+
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { user, error: authError } = await requireUser(request);
+    if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();
-    const { title, description, category, fields_json, settings } = body;
-
-    const { data, error } = await supabase
-      .from('forms')
-      .insert([{
-        user_id: user.id,
-        title: title || "Formulaire sans titre",
-        description,
-        category,
-        fields_json, // Le JSON généré par ton FormBuilder
-        settings
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return NextResponse.json({ success: true, id: data.id });
+    const { data, error } = await createForm({ ...body, user_id: user.id });
+    if (error) return NextResponse.json({ success: false, error }, { status: 400 });
+    return NextResponse.json({ success: true, data });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('FORMS_CREATE_ERROR:', err);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -262,3 +262,29 @@ export async function getMySpaces(userId: string) {
   if (error) return { data: null, error };
   return { data, error: null };
 }
+
+export async function searchSpaces(payload: {
+  q?: string;
+  space_type?: string;
+  space_subtype?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const { q, space_type, space_subtype, limit = 20, offset = 0 } = payload;
+
+  let query = supabaseAdmin
+    .from('spaces')
+    .select('id, slug, entity_name, space_type, space_subtype, avatar_url, theme_color', { count: 'exact' })
+    .is('deleted_at', null);
+
+  if (q) query = query.or(`entity_name.ilike.%${q}%,slug.ilike.%${q}%`);
+  if (space_type) query = query.eq('space_type', space_type);
+  if (space_subtype) query = query.eq('space_subtype', space_subtype);
+
+  const { data, error, count } = await query
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) return { data: null, error };
+  return { data, count, error: null };
+}

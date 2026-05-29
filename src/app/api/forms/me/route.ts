@@ -1,30 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * =========================================================
- * POST /api/forms/publish
+ * GET /api/forms/me
  * =========================================================
- * Publishes a form and sends pending invitations.
- * - requires auth (must be owner)
- * - sets is_published to true
- * - sends pending invitations via Resend
- * - MCP tools (publishForm)
+ *
+ * Returns all forms created by the authenticated user.
+ *
+ * Responsibilities:
+ *
+ * - requires authenticated user
+ * - returns forms ordered by created_at desc
+ * - returns essential fields only
+ *
+ * This route is safe to expose to:
+ *
+ * - frontend user dashboard
+ * - MCP tools (getMyForms)
+ * - mobile applications
+ *
  * =========================================================
  */
 import { NextResponse } from 'next/server';
-import { publishForm } from '@/lib/forms/service';
+import { getMyForms } from '@/lib/forms/service';
 import { requireUser } from '@/lib/auth/get-user';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
     const { user, error: authError } = await requireUser(request);
-    if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ success: false, error: authError }, { status: 401 });
+    }
 
-    const body = await request.json();
-    const { data, error } = await publishForm({ ...body, user_id: user.id });
+    const { data, error } = await getMyForms(user.id);
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
   } catch (err: any) {
-    console.error('FORM_PUBLISH_ERROR:', err);
+    console.error('FORMS_ME_ERROR:', err);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
