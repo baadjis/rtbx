@@ -1,7 +1,7 @@
 // app/mcp/tools/spaces.ts
 import { tool } from 'ai';
 import { z } from 'zod';
-import { SpaceAddSchema, SpaceUpdateSchema } from '@/lib/spaces/validators';
+import { SpaceAddSchema, spaceSearchSchema, SpaceUpdateSchema } from '@/lib/spaces/validators';
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -101,6 +101,33 @@ Returns id, slug, entity_name, space_type and edit_token for each space.`,
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to fetch spaces');
+    }
+    return response.json();
+  },
+}),
+
+searchSpaces: tool({
+  description: `Search public spaces by name or slug.
+Filters: q (text search on entity_name and slug), space_type (personal/business/creator), space_subtype.
+Supports pagination via limit (default 20) and offset.
+Use when user searches for a specific space or profile.`,
+  inputSchema: spaceSearchSchema,
+  execute: async (args) => {
+    const params = new URLSearchParams();
+    if (args.q) params.set('q', args.q);
+    if (args.space_type) params.set('space_type', args.space_type);
+    if (args.space_subtype) params.set('space_subtype', args.space_subtype);
+    if (args.limit) params.set('limit', args.limit.toString());
+    if (args.offset) params.set('offset', args.offset.toString());
+
+    const response = await fetch(`${BASE}/api/spaces/search?${params.toString()}`, {
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to search spaces');
     }
     return response.json();
   },

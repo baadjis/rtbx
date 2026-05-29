@@ -150,6 +150,16 @@ export const EditTokenSchema = z.object({
 
 })
 
+export const spaceSearchSchema = z.object({
+  q: z.string().optional(),
+  space_type: z.enum(['personal', 'business', 'creator']).optional(),
+  space_subtype: z.string().optional(),
+  limit: z.number().int().min(1).max(100).default(20),
+  offset: z.number().int().min(0).default(0),
+});
+
+export type SpaceSearchInput = z.infer<typeof spaceSearchSchema>;
+
 /* =========================================================
    EXPORT TYPES
 ========================================================= */

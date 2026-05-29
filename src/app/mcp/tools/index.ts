@@ -20,7 +20,7 @@ export const getRelevantTools = (
 
   if (lastMessage.match(/lien|link|short|url|raccourci/))
     return createShortenerTools(accessToken);
-  if (lastMessage.match(/space|profil|slug|identit/))
+  if (lastMessage.match(/space|profil|slug|identit|cherche|search/))
     return createSpaceTools(accessToken, userId); // ← userId passé
   if (lastMessage.match(/business|entreprise|société|compan/))
     return createBusinessTools(accessToken);
