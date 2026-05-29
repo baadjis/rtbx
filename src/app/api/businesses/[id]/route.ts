@@ -33,7 +33,7 @@ export async function GET(
     const {
   user,
   error:err
-} = await requireUser()
+} = await requireUser(request)
 
 if (!user) {
 
@@ -120,7 +120,7 @@ export async function PATCH(
      const {
   user,
   error:err
-} = await requireUser()
+} = await requireUser(request)
 
 if (!user) {
 
@@ -213,7 +213,7 @@ export async function DELETE(
      const {
   user,
   error:err
-} = await requireUser()
+} = await requireUser(request)
 
 if (!user) {
 

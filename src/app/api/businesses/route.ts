@@ -19,14 +19,14 @@ import { requireUser } from '@/lib/auth/get-user'
  * for the authenticated user.
  * =========================================================
  */
-export async function GET() {
+export async function GET(request:Request) {
 
   try {
 
      const {
       user,
       error:err
-    } = await requireUser()
+    } = await requireUser(request)
     
     if (!user) {
     
@@ -111,7 +111,7 @@ export async function POST(
      const {
   user,
   error:err
-} = await requireUser()
+} = await requireUser(request)
 
 if (!user) {
 

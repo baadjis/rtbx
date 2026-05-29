@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const {
       user,
       error: authError
-    } = await requireUser();
+    } = await requireUser(request);
 
     if (!user) {
       return NextResponse.json({

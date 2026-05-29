@@ -20,6 +20,14 @@ export async function POST(request: Request) {
     // Récupérer le token de session pour les tools internes
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+  return NextResponse.json({
+    success: false,
+    text: lang === 'fr' 
+      ? "Veuillez vous connecter pour utiliser l'assistant."
+      : "Please log in to use the assistant.",
+  }, { status: 401 });
+}
     const { data: { session } } = await supabase.auth.getSession();
     const accessToken = session?.access_token;
     console.log('MCP user:', user?.email);
@@ -29,6 +37,7 @@ export async function POST(request: Request) {
       temperature: body.temperature || mcpConfig.temperature,
       maxSteps: body.maxSteps || mcpConfig.maxSteps,
       accessToken, // ← injecté
+      userId: user?.id,
     });
 
     if (!result.success) throw result.error;

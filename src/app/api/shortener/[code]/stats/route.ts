@@ -31,7 +31,7 @@ export async function GET(
   try {
     const { code } = await context.params;
 
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) {
       return NextResponse.json({ success: false, error: authError }, { status: 401 });
     }

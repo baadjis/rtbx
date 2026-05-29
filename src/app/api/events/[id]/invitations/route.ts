@@ -31,7 +31,7 @@ export async function GET(
   try {
         const {id} = await params
 
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const { data, error } = await getEventInvitations(id, user.id);

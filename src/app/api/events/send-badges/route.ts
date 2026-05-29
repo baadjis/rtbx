@@ -32,7 +32,7 @@ import { requireUser } from '@/lib/auth/get-user';
 
 export async function POST(request: Request) {
   try {
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();

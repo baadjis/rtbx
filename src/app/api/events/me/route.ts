@@ -26,9 +26,9 @@ import { NextResponse } from 'next/server';
 import { getMyEvents } from '@/lib/events/service';
 import { requireUser } from '@/lib/auth/get-user';
 
-export async function GET() {
+export async function GET(request:Request) {
   try {
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const { data, error } = await getMyEvents(user.id, user.email!);

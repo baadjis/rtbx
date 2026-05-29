@@ -18,6 +18,7 @@ export async function runMCPAgent(
     temperature?: number;
     maxSteps?: number;
     accessToken?: string; // ← nouveau
+    userId?: string; // ← nouveau
   }
 ) {
   try {
@@ -33,7 +34,7 @@ export async function runMCPAgent(
     });
 
     // Tools avec token injecté
-    const relevantTools = getRelevantTools(sanitizedMessages, options?.accessToken);
+    const relevantTools = getRelevantTools(sanitizedMessages, options?.accessToken,options?.userId );
 
     const result = await generateText({
       model: defaultModel,

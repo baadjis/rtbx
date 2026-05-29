@@ -249,3 +249,16 @@ export async function deleteSpace(
   return true
 
 }
+
+
+export async function getMySpaces(userId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('spaces')
+    .select('id, slug, entity_name, space_type, edit_token, avatar_url, theme_color, created_at')
+    .eq('user_id', userId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false });
+
+  if (error) return { data: null, error };
+  return { data, error: null };
+}

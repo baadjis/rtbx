@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     const authHeader = request.headers.get('Authorization');
   console.log('Auth header:', authHeader?.slice(0, 20));
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
-  const { user, error: authError } = await requireUser(token);
+  const { user, error: authError } = await requireUser(request);
     if (!user) {
       console.error(authError)
       return NextResponse.json({ success: false, error: authError }, { status: 401 });
@@ -87,7 +87,7 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) {
       return NextResponse.json({ success: false, error: authError }, { status: 401 });
     }

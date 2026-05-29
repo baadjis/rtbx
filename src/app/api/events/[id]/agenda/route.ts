@@ -71,7 +71,7 @@ export async function POST(
 ) {
   try {
     const {id}=await params;
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();

@@ -11,13 +11,17 @@ export const tools = {
   ...createEventTools(),
 };
 
-export const getRelevantTools = (messages: any[], accessToken?: string) => {
+export const getRelevantTools = (
+  messages: any[],
+  accessToken?: string,
+  userId?: string // ← nouveau
+) => {
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
 
   if (lastMessage.match(/lien|link|short|url|raccourci/))
     return createShortenerTools(accessToken);
   if (lastMessage.match(/space|profil|slug|identit/))
-    return createSpaceTools(accessToken);
+    return createSpaceTools(accessToken, userId); // ← userId passé
   if (lastMessage.match(/business|entreprise|société|compan/))
     return createBusinessTools(accessToken);
   if (lastMessage.match(/event|événement|agenda|badge|invit|inscription/))
@@ -25,7 +29,7 @@ export const getRelevantTools = (messages: any[], accessToken?: string) => {
 
   return {
     ...createShortenerTools(accessToken),
-    ...createSpaceTools(accessToken),
+    ...createSpaceTools(accessToken, userId),
     ...createBusinessTools(accessToken),
     ...createEventTools(accessToken),
   };

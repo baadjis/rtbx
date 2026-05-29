@@ -33,7 +33,7 @@ export async function PATCH(
 ) {
   try {
     const { itemId }=await params;
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const body = await request.json();
@@ -74,7 +74,7 @@ export async function DELETE(
 ) {
   try {
     const {itemId}=await params
-    const { user, error: authError } = await requireUser();
+    const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
     const { data, error } = await deleteAgendaItem(itemId, user.id);
