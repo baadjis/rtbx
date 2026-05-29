@@ -19,8 +19,11 @@ export async function POST(request: Request) {
 
     // Récupérer le token de session pour les tools internes
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     const { data: { session } } = await supabase.auth.getSession();
     const accessToken = session?.access_token;
+    console.log('MCP user:', user?.email);
+    console.log('MCP token exists:', !!accessToken);
 
     const result = await runMCPAgent(body.messages, {
       temperature: body.temperature || mcpConfig.temperature,
