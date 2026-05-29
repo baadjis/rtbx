@@ -21,7 +21,11 @@ export async function runMCPAgent(
     userId?: string; // ← nouveau
   }
 ) {
+
+console.log('accessToken exists:', !!options?.accessToken);
+console.log('accessToken preview:', options?.accessToken?.slice(0, 20));
   try {
+
     const sanitizedMessages = messages.map((msg, index) => {
       if (index === messages.length - 1) return msg;
       if (msg.role === 'assistant' && msg.content.length > MAX_CONTENT_LENGTH) {

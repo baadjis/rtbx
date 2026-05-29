@@ -120,6 +120,7 @@ Use limit to control how many links to return (default 10, max 20).`,
       .describe('Offset for pagination (default 0)'),
   }),
   execute: async (args) => {
+    console.log('Tool accessToken exists:', !!accessToken);
     const response = await fetch(
       `${BASE}/api/shortener?limit=${args.limit}&offset=${args.offset}`,
       {
