@@ -2,7 +2,7 @@
 import { generateText, stepCountIs } from 'ai';
 import { getRelevantTools } from '../tools';
 import { defaultModel } from '../core/client';
-import systemPrompt from '../prompts/system';
+import {systemPrompt} from '../prompts/system';
 import { mcpConfig } from '../core/config';
 
 export type Message = {
