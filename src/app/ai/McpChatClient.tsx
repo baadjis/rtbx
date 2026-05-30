@@ -14,39 +14,44 @@ type Message = {
 
 const MAX_HISTORY = 10;
 
-const CONTEXT_SUGGESTIONS: Record<string, string[][]> = {
+const CONTEXT_SUGGESTIONS: Record<string, string[]> = {
   general: [
-    ['mcp_suggestion_create_space', 'mcp_suggestion_create_business'],
-    ['mcp_suggestion_create_short_link', 'mcp_suggestion_ideas'],
+    'mcp_suggestion_create_space',
+    'mcp_suggestion_create_business',
+    'mcp_suggestion_create_short_link',
+    'mcp_suggestion_create_form',
   ],
   space: [
-    ['mcp_suggestion_update_space', 'mcp_suggestion_change_theme'],
-    ['mcp_suggestion_add_social'],
+    'mcp_suggestion_update_space',
+    'mcp_suggestion_change_theme',
+    'mcp_suggestion_add_social',
   ],
   business: [
-    ['mcp_suggestion_add_contact', 'mcp_suggestion_update_address'],
-    ['mcp_suggestion_add_logo'],
+    'mcp_suggestion_add_contact',
+    'mcp_suggestion_update_address',
+    'mcp_suggestion_add_logo',
   ],
   shortener: [
-    ['mcp_suggestion_create_another_link', 'mcp_suggestion_view_my_links'],
-    ['mcp_suggestion_view_link_stats'],
+    'mcp_suggestion_create_another_link',
+    'mcp_suggestion_view_my_links',
+    'mcp_suggestion_view_link_stats',
   ],
   event: [
-    ['mcp_suggestion_create_event', 'mcp_suggestion_view_my_events'],
-    ['mcp_suggestion_send_invites'],
+    'mcp_suggestion_create_event',
+    'mcp_suggestion_view_my_events',
+    'mcp_suggestion_send_invites',
   ],
   form: [
-    ['mcp_suggestion_create_form', 'mcp_suggestion_view_my_forms'],
+    'mcp_suggestion_create_form',
+    'mcp_suggestion_view_my_forms',
   ],
 };
 
 export default function MCPChatClient({ lang }: { lang: LangType }) {
   const t = Data[lang];
 
-  const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: t.mcp_welcome }
-  ]);
-
+  // messages ne contient PAS le message de bienvenue — géré séparément
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
@@ -56,6 +61,8 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const isEmptyChat = messages.length === 0;
 
   const buildContextMessages = (allMessages: Message[], extraMessage?: Message) => {
     const full = extraMessage ? [...allMessages, extraMessage] : allMessages;
@@ -72,7 +79,6 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.style.height = 'auto';
@@ -192,7 +198,6 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   };
 
   const suggestions = (CONTEXT_SUGGESTIONS[currentContext] || CONTEXT_SUGGESTIONS.general)
-    .flat()
     .map(key => (t as any)[key])
     .filter(Boolean);
 
@@ -201,6 +206,11 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
       e.preventDefault();
       sendMessage();
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    inputRef.current?.focus();
   };
 
   return (
@@ -220,133 +230,161 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
         </div>
       </div>
 
-      {/* Messages — scroll naturel */}
+      {/* Zone principale — scroll */}
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto"
         style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}
       >
-        <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-
-              {/* Avatar assistant */}
-              {msg.role === 'assistant' && (
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Bot size={14} className="text-white" />
-                </div>
-              )}
-
-              <div className={`flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
-                <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                  msg.role === 'user'
-                    ? 'bg-indigo-600 text-white rounded-tr-sm'
-                    : 'bg-white/[0.06] text-white/90 rounded-tl-sm border border-white/[0.06]'
-                }`}>
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                </div>
-
-                {/* Boutons confirmation */}
-                {msg.isConfirmation && (
-                  <div className="flex gap-2 w-full">
-                    <button
-                      onClick={() => handleConfirmation(true)}
-                      disabled={isLoading}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-medium transition-all disabled:opacity-50"
-                    >
-                      <CheckCircle size={14} />
-                      Confirmer
-                    </button>
-                    <button
-                      onClick={() => handleConfirmation(false)}
-                      disabled={isLoading}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl text-red-400 text-xs font-medium transition-all disabled:opacity-50"
-                    >
-                      <XCircle size={14} />
-                      Annuler
-                    </button>
-                  </div>
-                )}
+        {/* ÉCRAN D'ACCUEIL — chat vide */}
+        {isEmptyChat && (
+          <div className="flex flex-col items-center justify-center min-h-full px-4 py-12 gap-8">
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mx-auto mb-2">
+                <Sparkles size={24} className="text-white" />
               </div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">
+                {t.mcp_welcome}
+              </h2>
+              <p className="text-white/40 text-sm max-w-xs mx-auto leading-relaxed">
+                {t.mcp_subtitle}
+              </p>
             </div>
-          ))}
 
-          {/* Loading indicator */}
-          {isLoading && (
-            <div className="flex gap-3 justify-start">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Bot size={14} className="text-white" />
-              </div>
-              <div className="bg-white/[0.06] border border-white/[0.06] rounded-2xl rounded-tl-sm px-4 py-3">
-                <div className="flex gap-1 items-center h-4">
-                  {[0, 150, 300].map(delay => (
-                    <span
-                      key={delay}
-                      className="w-1.5 h-1.5 rounded-full bg-white/30 animate-bounce"
-                      style={{ animationDelay: `${delay}ms` }}
-                    />
-                  ))}
-                </div>
-              </div>
+            {/* Suggestions en grille 2x2 */}
+            <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+              {suggestions.slice(0, 4).map((suggestion, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="flex items-start gap-2 p-4 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] hover:border-indigo-500/30 rounded-2xl text-white/70 hover:text-white text-xs text-left transition-all active:scale-95"
+                >
+                  <Zap size={12} className="text-indigo-400 flex-shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{suggestion}</span>
+                </button>
+              ))}
             </div>
-          )}
-
-          <div ref={chatEndRef} />
-        </div>
-      </div>
-
-      {/* Suggestions + Input — fixé en bas */}
-      <div className="flex-shrink-0 border-t border-white/[0.06] bg-[#0f0f11]">
-
-        {/* Suggestions */}
-        {suggestions.length > 0 && !isLoading && (
-          <div className="px-4 pt-3 pb-2 flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            {suggestions.slice(0, 4).map((suggestion, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setInput(suggestion);
-                  inputRef.current?.focus();
-                }}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] rounded-full text-white/60 hover:text-white/90 text-xs transition-all"
-              >
-                <Zap size={10} className="text-indigo-400" />
-                {suggestion}
-              </button>
-            ))}
           </div>
         )}
 
-        {/* Input area */}
-        <div className="px-4 pb-4 pt-2">
-          <div className={`flex items-end gap-2 bg-white/[0.05] border rounded-2xl px-4 py-3 transition-all ${
-            inputFocused ? 'border-indigo-500/50 bg-white/[0.07]' : 'border-white/[0.08]'
-          }`}>
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={() => setInputFocused(true)}
-              onBlur={() => setInputFocused(false)}
-              placeholder={t.mcp_placeholder || 'Demandez quelque chose...'}
-              disabled={isLoading}
-              rows={1}
-              className="flex-1 bg-transparent text-white/90 text-sm placeholder:text-white/25 resize-none outline-none leading-relaxed disabled:opacity-50"
-              style={{ maxHeight: '120px' }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={isLoading || !input.trim()}
-              className="flex-shrink-0 w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-white/[0.06] disabled:text-white/20 text-white flex items-center justify-center transition-all active:scale-95"
-            >
-              <Send size={14} />
-            </button>
+        {/* MESSAGES — chat commencé */}
+        {!isEmptyChat && (
+          <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+
+                {msg.role === 'assistant' && (
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Bot size={14} className="text-white" />
+                  </div>
+                )}
+
+                <div className={`flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
+                  <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                    msg.role === 'user'
+                      ? 'bg-indigo-600 text-white rounded-tr-sm'
+                      : 'bg-white/[0.06] text-white/90 rounded-tl-sm border border-white/[0.06]'
+                  }`}>
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  </div>
+
+                  {msg.isConfirmation && (
+                    <div className="flex gap-2 w-full">
+                      <button
+                        onClick={() => handleConfirmation(true)}
+                        disabled={isLoading}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-medium transition-all disabled:opacity-50"
+                      >
+                        <CheckCircle size={14} />
+                        Confirmer
+                      </button>
+                      <button
+                        onClick={() => handleConfirmation(false)}
+                        disabled={isLoading}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl text-red-400 text-xs font-medium transition-all disabled:opacity-50"
+                      >
+                        <XCircle size={14} />
+                        Annuler
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Loading */}
+            {isLoading && (
+              <div className="flex gap-3 justify-start">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Bot size={14} className="text-white" />
+                </div>
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-2xl rounded-tl-sm px-4 py-3">
+                  <div className="flex gap-1 items-center h-4">
+                    {[0, 150, 300].map(delay => (
+                      <span
+                        key={delay}
+                        className="w-1.5 h-1.5 rounded-full bg-white/30 animate-bounce"
+                        style={{ animationDelay: `${delay}ms` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div ref={chatEndRef} />
           </div>
-          <p className="text-center text-[10px] text-white/20 mt-2">
-             {t.mcp_input_hint}
-          </p>
+        )}
+      </div>
+
+      {/* Suggestions compactes — seulement quand chat commencé */}
+      {!isEmptyChat && suggestions.length > 0 && !isLoading && (
+        <div
+          className="flex-shrink-0 px-4 pt-2 pb-1 flex gap-2 overflow-x-auto border-t border-white/[0.04]"
+          style={{ scrollbarWidth: 'none' }}
+        >
+          {suggestions.slice(0, 4).map((suggestion, i) => (
+            <button
+              key={i}
+              onClick={() => handleSuggestionClick(suggestion)}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] rounded-full text-white/60 hover:text-white/90 text-xs transition-all"
+            >
+              <Zap size={10} className="text-indigo-400" />
+              {suggestion}
+            </button>
+          ))}
         </div>
+      )}
+
+      {/* Input */}
+      <div className="flex-shrink-0 px-4 pb-4 pt-2 bg-[#0f0f11]">
+        <div className={`flex items-end gap-2 bg-white/[0.05] border rounded-2xl px-4 py-3 transition-all ${
+          inputFocused ? 'border-indigo-500/50 bg-white/[0.07]' : 'border-white/[0.08]'
+        }`}>
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            placeholder={t.mcp_placeholder || 'Demandez quelque chose...'}
+            disabled={isLoading}
+            rows={1}
+            className="flex-1 bg-transparent text-white/90 text-sm placeholder:text-white/25 resize-none outline-none leading-relaxed disabled:opacity-50"
+            style={{ maxHeight: '120px' }}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={isLoading || !input.trim()}
+            className="flex-shrink-0 w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-white/[0.06] disabled:text-white/20 text-white flex items-center justify-center transition-all active:scale-95"
+          >
+            <Send size={14} />
+          </button>
+        </div>
+        <p className="text-center text-[10px] text-white/20 mt-2">
+          {t.mcp_input_hint}
+        </p>
       </div>
     </div>
   );
