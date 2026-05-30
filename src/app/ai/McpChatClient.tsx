@@ -368,7 +368,7 @@ const sendMessage = async () => {
       )}
 
       {/* Input */}
-      <div className="flex-shrink-0 px-4 pb-4 pt-2 bg-[#0f0f11]">
+      <div className="flex-shrink-0 px-4 pb-20 pt-2 bg-[#0f0f11] md:pb-4">
         <div className={`flex items-end gap-2 bg-white/[0.05] border rounded-2xl px-4 py-3 transition-all ${
           inputFocused ? 'border-indigo-500/50 bg-white/[0.07]' : 'border-white/[0.08]'
         }`}>
