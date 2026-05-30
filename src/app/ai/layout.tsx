@@ -149,22 +149,16 @@ useEffect(() => {
             </div>
           ))}
 
-          {collapsed && chats.slice(0, 8).map(chat => {
-            const Icon = CONTEXT_ICONS[chat.context] || MessageSquare;
-            const color = CONTEXT_COLORS[chat.context] || 'text-white/40';
-            const isActive = pathname === `/ai/chat/${chat.id}`;
-            return (
-              <Link
-                key={chat.id}
-                href={`/ai/chat/${chat.id}`}
-                className={`flex items-center justify-center w-9 h-9 mx-auto rounded-xl transition-all ${
-                  isActive ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'
-                }`}
-              >
-                <Icon size={14} className={color} />
-              </Link>
-            );
-          })}
+          {collapsed && (
+  <Link
+    href="/ai/chat"
+    className={`flex items-center justify-center w-9 h-9 mx-auto rounded-xl transition-all ${
+      pathname === '/ai/chat' ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'
+    }`}
+  >
+    <MessageSquare size={14} className="text-white/40" />
+  </Link>
+)}
         </div>
 
         {/* Bottom — user + actions */}
