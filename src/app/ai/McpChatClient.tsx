@@ -138,7 +138,7 @@ const sendMessage = async () => {
     const data = await response.json();
 
     // Détecter le contexte depuis les tool calls — indépendant de la langue
-    const toolNames: string[] = (data.toolCalls ?? []).map((tc: any) => tc.toolName as string);
+    const toolNames: string[] = data.toolCalls ?? [];
     const ctx = detectContextFromTools(toolNames);
     if (ctx) setCurrentContext(ctx);
 
