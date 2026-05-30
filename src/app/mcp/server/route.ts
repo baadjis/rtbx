@@ -40,7 +40,8 @@ export async function POST(request: Request) {
     });
 
     if (!result.success) throw result.error;
-
+    console.log('toolCalls raw:', JSON.stringify(result.toolCalls?.slice(0, 2)));
+    console.log('steps toolCalls:', JSON.stringify(result.steps?.[0]?.toolCalls?.slice(0, 2)));
     return NextResponse.json({ success: true, 
       text: result.text ,
       toolCalls: result.toolCalls?.map(tc => tc.toolName) ?? [],
