@@ -47,10 +47,24 @@ const CONTEXT_SUGGESTIONS: Record<string, string[]> = {
   ],
 };
 
-export default function MCPChatClient({ lang }: { lang: LangType }) {
+const detectContextFromTools = (toolNames: string[]): string | null => {
+  if (toolNames.some(name => /Short|Link|Shortener/i.test(name))) return 'shortener';
+  if (toolNames.some(name => /Space/i.test(name))) return 'space';
+  if (toolNames.some(name => /Business/i.test(name))) return 'business';
+  if (toolNames.some(name => /Event|Agenda|Badge|Invite/i.test(name))) return 'event';
+  if (toolNames.some(name => /Form/i.test(name))) return 'form';
+  return null;
+};
+
+export default function MCPChatClient({
+  lang,
+  chatId,
+}: {
+  lang: LangType;
+  chatId?: string;
+}) {
   const t = Data[lang];
 
-  // messages ne contient PAS le message de bienvenue — géré séparément
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +77,49 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const isEmptyChat = messages.length === 0;
+
+  // Charger les messages et contexte depuis localStorage
+  useEffect(() => {
+    if (!chatId) return;
+
+    const savedMessages = localStorage.getItem(`rtbx_chat_messages_${chatId}`);
+    if (savedMessages) {
+      try { setMessages(JSON.parse(savedMessages)); } catch {}
+    }
+
+    const savedContext = localStorage.getItem(`rtbx_chat_context_${chatId}`);
+    if (savedContext) setCurrentContext(savedContext);
+  }, [chatId]);
+
+  // Sauvegarder les messages dans localStorage
+  const saveMessages = useCallback((msgs: Message[]) => {
+    if (!chatId) return;
+    localStorage.setItem(`rtbx_chat_messages_${chatId}`, JSON.stringify(msgs));
+  }, [chatId]);
+
+  // Mettre à jour le titre du chat dans la liste
+  const updateChatTitle = useCallback((firstUserMessage: string) => {
+  if (!chatId) return;
+  const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+  const updated = chats.map((c: any) =>
+    c.id === chatId ? { ...c, title: firstUserMessage.slice(0, 40) } : c
+  );
+  localStorage.setItem('rtbx_chats', JSON.stringify(updated));
+  
+  // Notifier le layout
+  window.dispatchEvent(new Event('rtbx_chats_updated'));
+}, [chatId]);
+
+  // Mettre à jour le contexte du chat
+  const updateChatContext = useCallback((ctx: string) => {
+    if (!chatId) return;
+    localStorage.setItem(`rtbx_chat_context_${chatId}`, ctx);
+    const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+    const updated = chats.map((c: any) =>
+      c.id === chatId ? { ...c, context: ctx } : c
+    );
+    localStorage.setItem('rtbx_chats', JSON.stringify(updated));
+  }, [chatId]);
 
   const buildContextMessages = (allMessages: Message[], extraMessage?: Message) => {
     const full = extraMessage ? [...allMessages, extraMessage] : allMessages;
@@ -86,81 +143,80 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     }
   }, [input]);
 
-  const detectContext = (text: string) => {
-    const lower = text.toLowerCase();
-    if (lower.match(/space|profil|slug|identit/)) return 'space';
-    if (lower.match(/business|entreprise|société|compan/)) return 'business';
-    if (lower.match(/lien|link|short|url|raccourci/)) return 'shortener';   
-    if (lower.match(/event|événement|agenda|badge|invit/)) return 'event';
-    if (lower.match(/form|formulaire|sondage|survey|réponse/)) return 'form';
-    return null;
-  };
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return;
 
- const detectContextFromTools = (toolNames: string[]): string | null => {
-  if (toolNames.some(name => /Short|Link|Shortener/i.test(name))) return 'shortener';
-  if (toolNames.some(name => /Space/i.test(name))) return 'space';
-  if (toolNames.some(name => /Business/i.test(name))) return 'business';
-  if (toolNames.some(name => /Event|Agenda|Badge|Invite/i.test(name))) return 'event';
-  if (toolNames.some(name => /Form/i.test(name))) return 'form';
-  return null;
-};
+    const userMessage: Message = { role: 'user', content: input };
+    const newMessages = [...messages, userMessage];
 
-const sendMessage = async () => {
-  if (!input.trim() || isLoading) return;
+    setMessages(newMessages);
+    saveMessages(newMessages);
 
-  const userMessage: Message = { role: 'user', content: input };
-  setMessages(prev => [...prev, userMessage]);
-  setInput('');
-  setIsLoading(true);
-
-  try {
-    const response = await fetch('/mcp/server', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: buildContextMessages(messages, userMessage),
-        lang,
-      }),
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      if (response.status === 429) {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte. Réessayez dans quelques secondes.',
-        }]);
-        return;
-      }
-      throw new Error(errData.error || 'Server error');
+    // Titre du chat = premier message user
+    if (messages.length === 0) {
+      updateChatTitle(input);
     }
 
-    const data = await response.json();
+    setInput('');
+    setIsLoading(true);
 
-    // Détecter le contexte depuis les tool calls — indépendant de la langue
-    const toolNames: string[] = data.toolCalls ?? [];
-    const ctx = detectContextFromTools(toolNames);
-    if (ctx) setCurrentContext(ctx);
+    try {
+      const response = await fetch('/mcp/server', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: buildContextMessages(messages, userMessage),
+          lang,
+        }),
+      });
 
-    const newMessage: Message = {
-      role: 'assistant',
-      content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
-      isConfirmation: data.requiresConfirmation || false,
-      pendingAction: data.pendingAction || null,
-    };
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          const updated = [...newMessages, {
+            role: 'assistant' as const,
+            content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte. Réessayez dans quelques secondes.',
+          }];
+          setMessages(updated);
+          saveMessages(updated);
+          return;
+        }
+        throw new Error(errData.error || 'Server error');
+      }
 
-    setMessages(prev => [...prev, newMessage]);
-    setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
+      const data = await response.json();
 
-  } catch {
-    setMessages(prev => [...prev, {
-      role: 'assistant',
-      content: t.mcp_error || 'Erreur de connexion. Veuillez réessayer.',
-    }]);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      // Détecter contexte depuis tool calls
+      const toolNames: string[] = data.toolCalls ?? [];
+      const ctx = detectContextFromTools(toolNames);
+      if (ctx) {
+        setCurrentContext(ctx);
+        updateChatContext(ctx);
+      }
+
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
+        isConfirmation: data.requiresConfirmation || false,
+        pendingAction: data.pendingAction || null,
+      };
+
+      const withAssistant = [...newMessages, assistantMessage];
+      setMessages(withAssistant);
+      saveMessages(withAssistant);
+      setPendingConfirmation(assistantMessage.isConfirmation ? assistantMessage.pendingAction : null);
+
+    } catch {
+      const withError = [...newMessages, {
+        role: 'assistant' as const,
+        content: t.mcp_error || 'Erreur de connexion. Veuillez réessayer.',
+      }];
+      setMessages(withError);
+      saveMessages(withError);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleConfirmation = async (confirmed: boolean) => {
     if (!pendingConfirmation) return;
@@ -168,7 +224,9 @@ const sendMessage = async () => {
 
     const userResponse = confirmed ? 'Oui, confirme et procède.' : 'Non, annule.';
     const confirmMessage: Message = { role: 'user', content: userResponse };
-    setMessages(prev => [...prev, confirmMessage]);
+    const newMessages = [...messages, confirmMessage];
+    setMessages(newMessages);
+    saveMessages(newMessages);
 
     try {
       const response = await fetch('/mcp/server', {
@@ -183,25 +241,32 @@ const sendMessage = async () => {
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         if (response.status === 429) {
-          setMessages(prev => [...prev, {
-            role: 'assistant',
-            content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte.',
-          }]);
+          const updated = [...newMessages, {
+            role: 'assistant' as const,
+            content: errData.text || '⏳ Limite atteinte.',
+          }];
+          setMessages(updated);
+          saveMessages(updated);
           return;
         }
         throw new Error(errData.error || 'Server error');
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, {
-        role: 'assistant',
+      const withAssistant = [...newMessages, {
+        role: 'assistant' as const,
         content: data.text || 'Action effectuée.',
-      }]);
+      }];
+      setMessages(withAssistant);
+      saveMessages(withAssistant);
+
     } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
+      const withError = [...newMessages, {
+        role: 'assistant' as const,
         content: 'Erreur lors de la confirmation.',
-      }]);
+      }];
+      setMessages(withError);
+      saveMessages(withError);
     } finally {
       setPendingConfirmation(null);
       setIsLoading(false);
@@ -227,20 +292,6 @@ const sendMessage = async () => {
   return (
     <div className="flex flex-col bg-[#0f0f11]" style={{ height: '100dvh' }}>
 
-      {/* Header */}
-      <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-white/[0.06]">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
-          <Sparkles size={15} className="text-white" />
-        </div>
-        <div>
-          <h1 className="text-sm font-semibold text-white tracking-tight">RTBX Assistant</h1>
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] text-white/40">En ligne</span>
-          </div>
-        </div>
-      </div>
-
       {/* Zone principale — scroll */}
       <div
         ref={messagesContainerRef}
@@ -262,7 +313,6 @@ const sendMessage = async () => {
               </p>
             </div>
 
-            {/* Suggestions en grille 2x2 */}
             <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
               {suggestions.slice(0, 4).map((suggestion, i) => (
                 <button
@@ -278,18 +328,16 @@ const sendMessage = async () => {
           </div>
         )}
 
-        {/* MESSAGES — chat commencé */}
+        {/* MESSAGES */}
         {!isEmptyChat && (
           <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-
                 {msg.role === 'assistant' && (
                   <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Bot size={14} className="text-white" />
                   </div>
                 )}
-
                 <div className={`flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
                   <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === 'user'
@@ -323,7 +371,6 @@ const sendMessage = async () => {
               </div>
             ))}
 
-            {/* Loading */}
             {isLoading && (
               <div className="flex gap-3 justify-start">
                 <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -348,7 +395,7 @@ const sendMessage = async () => {
         )}
       </div>
 
-      {/* Suggestions compactes — seulement quand chat commencé */}
+      {/* Suggestions compactes */}
       {!isEmptyChat && suggestions.length > 0 && !isLoading && (
         <div
           className="flex-shrink-0 px-4 pt-2 pb-1 flex gap-2 overflow-x-auto border-t border-white/[0.04]"
