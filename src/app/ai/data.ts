@@ -39,6 +39,10 @@ fr: {
   mcp_suggestion_create_event: "Créer un nouvel événement",
 mcp_suggestion_view_my_events: "Voir mes événements",
 mcp_suggestion_send_invites: "Envoyer des invitations",
+mcp_suggestion_create_form: "Créer un formulaire",
+mcp_suggestion_view_my_forms: "Voir mes formulaires",
+mcp_input_hint: "Entrée pour envoyer · Maj+Entrée pour nouvelle ligne",
+
 },
 
 en: {
@@ -79,5 +83,8 @@ en: {
   mcp_suggestion_create_event: "Create a new event",
 mcp_suggestion_view_my_events: "View my events",
 mcp_suggestion_send_invites: "Send invitations",
+mcp_suggestion_create_form: "Create a form",
+mcp_suggestion_view_my_forms: "View my forms",
+mcp_input_hint: "Enter to send · Shift+Enter for new line",
 },
 } as const;
