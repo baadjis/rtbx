@@ -90,7 +90,7 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     const lower = text.toLowerCase();
     if (lower.match(/space|profil|slug|identit/)) return 'space';
     if (lower.match(/business|entreprise|société|compan/)) return 'business';
-    if (lower.match(/lien|link|short|url|raccourci/)) return 'shortener';
+    if (lower.match(/lien|link|short|url|raccourci/)) return 'shortener';   
     if (lower.match(/event|événement|agenda|badge|invit/)) return 'event';
     if (lower.match(/form|formulaire|sondage|survey|réponse/)) return 'form';
     return null;
@@ -99,10 +99,15 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
+  const userMessage: Message = { role: 'user', content: input };
+  
+  // Détecter le contexte depuis le message user AVANT d'envoyer
+  const ctx = detectContext(input);
+  if (ctx) setCurrentContext(ctx);
+
+  setMessages(prev => [...prev, userMessage]);
+  setInput('');
+  setIsLoading(true);
 
     try {
       const response = await fetch('/mcp/server', {
@@ -138,8 +143,8 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
       setMessages(prev => [...prev, newMessage]);
       setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
 
-      const ctx = detectContext(data.text || '');
-      if (ctx) setCurrentContext(ctx);
+      //const ctx = detectContext(data.text || '');
+      //if (ctx) setCurrentContext(ctx);
 
     } catch {
       setMessages(prev => [...prev, {
