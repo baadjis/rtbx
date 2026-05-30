@@ -40,13 +40,16 @@ export async function POST(request: Request) {
     });
 
     if (!result.success) throw result.error;
-    console.log('toolCalls raw:', JSON.stringify(result.toolCalls?.slice(0, 2)));
-    console.log('steps toolCalls:', JSON.stringify(result.steps?.[0]?.toolCalls?.slice(0, 2)));
-    return NextResponse.json({ success: true, 
-      text: result.text ,
-      toolCalls: result.toolCalls?.map(tc => tc.toolName) ?? [],
+   // Extraire tous les toolNames depuis les steps
+const toolNames = result.steps
+  ?.flatMap(step => step.toolCalls ?? [])
+  .map(tc => tc.toolName) ?? [];
 
-    });
+return NextResponse.json({
+  success: true,
+  text: result.text,
+  toolCalls: toolNames, // ← ["getUserShortLinks"]
+});
 
   } catch (error: any) {
     console.error('MCP Server Error:', error);
