@@ -623,13 +623,14 @@ export async function getMyEvents(user_id: string, email: string) {
       .eq('email', email)
       .order('created_at', { ascending: false }),
   ]);
-
-  return {
-    data: {
+  const data={
       organized: organized.data ?? [],
       registered: registered.data ?? [],
       invited: invited.data ?? [],
-    },
+  }
+  console.log(data)
+  return {
+    data,
     error: organized.error || registered.error || invited.error || null,
   };
 }
