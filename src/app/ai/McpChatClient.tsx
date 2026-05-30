@@ -96,65 +96,71 @@ export default function MCPChatClient({ lang }: { lang: LangType }) {
     return null;
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+ const detectContextFromTools = (toolNames: string[]): string | null => {
+  if (toolNames.some(name => /Short|Link|Shortener/i.test(name))) return 'shortener';
+  if (toolNames.some(name => /Space/i.test(name))) return 'space';
+  if (toolNames.some(name => /Business/i.test(name))) return 'business';
+  if (toolNames.some(name => /Event|Agenda|Badge|Invite/i.test(name))) return 'event';
+  if (toolNames.some(name => /Form/i.test(name))) return 'form';
+  return null;
+};
+
+const sendMessage = async () => {
+  if (!input.trim() || isLoading) return;
 
   const userMessage: Message = { role: 'user', content: input };
-  
-  // Détecter le contexte depuis le message user AVANT d'envoyer
-  const ctx = detectContext(input);
-  if (ctx) setCurrentContext(ctx);
-
   setMessages(prev => [...prev, userMessage]);
   setInput('');
   setIsLoading(true);
 
-    try {
-      const response = await fetch('/mcp/server', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: buildContextMessages(messages, userMessage),
-          lang,
-        }),
-      });
+  try {
+    const response = await fetch('/mcp/server', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: buildContextMessages(messages, userMessage),
+        lang,
+      }),
+    });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        if (response.status === 429) {
-          setMessages(prev => [...prev, {
-            role: 'assistant',
-            content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte. Réessayez dans quelques secondes.',
-          }]);
-          return;
-        }
-        throw new Error(errData.error || 'Server error');
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      if (response.status === 429) {
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte. Réessayez dans quelques secondes.',
+        }]);
+        return;
       }
-
-      const data = await response.json();
-
-      const newMessage: Message = {
-        role: 'assistant',
-        content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
-        isConfirmation: data.requiresConfirmation || false,
-        pendingAction: data.pendingAction || null,
-      };
-
-      setMessages(prev => [...prev, newMessage]);
-      setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
-
-      //const ctx = detectContext(data.text || '');
-      //if (ctx) setCurrentContext(ctx);
-
-    } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: t.mcp_error || 'Erreur de connexion. Veuillez réessayer.',
-      }]);
-    } finally {
-      setIsLoading(false);
+      throw new Error(errData.error || 'Server error');
     }
-  };
+
+    const data = await response.json();
+
+    // Détecter le contexte depuis les tool calls — indépendant de la langue
+    const toolNames: string[] = (data.toolCalls ?? []).map((tc: any) => tc.toolName as string);
+    const ctx = detectContextFromTools(toolNames);
+    if (ctx) setCurrentContext(ctx);
+
+    const newMessage: Message = {
+      role: 'assistant',
+      content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
+      isConfirmation: data.requiresConfirmation || false,
+      pendingAction: data.pendingAction || null,
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+    setPendingConfirmation(newMessage.isConfirmation ? newMessage.pendingAction : null);
+
+  } catch {
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: t.mcp_error || 'Erreur de connexion. Veuillez réessayer.',
+    }]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleConfirmation = async (confirmed: boolean) => {
     if (!pendingConfirmation) return;

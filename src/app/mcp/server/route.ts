@@ -30,8 +30,7 @@ export async function POST(request: Request) {
 }
     const { data: { session } } = await supabase.auth.getSession();
     const accessToken = session?.access_token;
-    console.log('MCP user:', user?.email);
-    console.log('MCP token exists:', !!accessToken);
+    
 
     const result = await runMCPAgent(body.messages, {
       temperature: body.temperature || mcpConfig.temperature,
@@ -42,7 +41,11 @@ export async function POST(request: Request) {
 
     if (!result.success) throw result.error;
 
-    return NextResponse.json({ success: true, text: result.text });
+    return NextResponse.json({ success: true, 
+      text: result.text ,
+      toolCalls: result.toolCalls?.map(tc => tc.toolName) ?? [],
+
+    });
 
   } catch (error: any) {
     console.error('MCP Server Error:', error);
