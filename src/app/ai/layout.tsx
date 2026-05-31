@@ -82,12 +82,12 @@ useEffect(() => {
   }, {} as Record<string, ChatEntry[]>);
 
   return (
-    <div className="flex h-screen bg-[#0f0f11] overflow-hidden">
+     <div className="flex h-screen bg-[#0f0f11] overflow-hidden">
 
       {/* Sidebar */}
-      <aside className={`flex flex-col flex-shrink-0 bg-[#161618] border-r border-white/[0.06] transition-all duration-300 ${
-        collapsed ? 'w-14' : 'w-60'
-      }`}>
+       <aside className={`hidden md:flex flex-col flex-shrink-0 bg-[#161618] border-r border-white/[0.06] transition-all duration-300 ${
+      collapsed ? 'w-14' : 'w-60'
+    }`}>
 
         {/* Top — logo + collapse */}
         <div className={`flex items-center h-14 border-b border-white/[0.06] px-3 ${collapsed ? 'justify-center' : 'justify-between'}`}>
@@ -198,8 +198,8 @@ useEffect(() => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-hidden">
-        {children}
+       <main className="flex-1 overflow-hidden min-w-0">
+          {children}
       </main>
     </div>
   );
