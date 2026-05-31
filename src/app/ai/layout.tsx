@@ -185,7 +185,7 @@ href={`/ai/chat/${chat.id}`}
 onClick={() => setMobileMenuOpen(false)}
 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all group ${isActive ? 'bg-white/[0.08] text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'}`}
 >
-<Icon size={16} className={`flex-shrink-0 ${color}`} />
+<Icon size={20} className={`flex-shrink-0 ${color}`} />
 <span className="truncate">{chat.title}</span>
 </Link>
                     );
@@ -201,14 +201,14 @@ className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-al
 href="/"
 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/[0.04] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
 >
-<Home size={16} />
+<Home size={20} />
             {!collapsed && t.ai_home}
 </Link>
 <Link
 href="/logout"
 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/[0.06] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
 >
-<LogOut size={16} />
+<LogOut size={20} />
             {!collapsed && t.ai_logout}
 </Link>
 <div className={`flex items-center gap-2.5 px-3 py-2 ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}>
