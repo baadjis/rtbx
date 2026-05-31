@@ -63,7 +63,7 @@ const Data={
     }
 }
 
-export default function AILayout({ children ,lang}: { children: React.ReactNode ,lang:LangType}) {
+export default function AILayout({ children ,lang}: { children: React.ReactNode , lang:LangType}) {
 const [collapsed, setCollapsed] = useState(false);
 const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 const router = useRouter();

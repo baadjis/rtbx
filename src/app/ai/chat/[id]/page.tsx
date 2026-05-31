@@ -10,7 +10,7 @@ export default async function ChatPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const lang = await getLang() as LangType;
+  const lang = (await getLang()) as LangType;
 
   return ( <Layout lang={lang}>
          <MCPChatClient lang={lang} chatId={id} />
