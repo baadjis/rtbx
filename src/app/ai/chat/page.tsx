@@ -7,8 +7,8 @@ export default  async function ChatPage(){
      const lang =(await getLang()) as LangType
     return(
 
-        <Layout lang={lang}>
+        
             <ChatListPage  lang ={lang}/>
-        </Layout>
+       
     )
 }

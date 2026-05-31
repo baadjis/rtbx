@@ -12,9 +12,9 @@ export default async function ChatPage({
   const { id } = await params;
   const lang = (await getLang()) as LangType;
 
-  return ( <Layout lang={lang}>
+  return ( 
          <MCPChatClient lang={lang} chatId={id} />
-  </Layout>) 
+ ) 
 
  
 }
