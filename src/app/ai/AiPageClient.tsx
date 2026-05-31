@@ -91,17 +91,20 @@ export default function AIPageClient({ lang }: { lang: LangType }) {
       <div className="w-full max-w-lg space-y-8">
         
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mx-auto mb-4">
-            <Sparkles size={22} className="text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            {t.ai_new_chat || "Nouveau chat"}
-          </h1>
-          <p className="text-white/40 text-sm">
-            {t.ai_choose_context || "Choisissez un contexte pour commencer"}
-          </p>
-        </div>
+<div className="text-center space-y-3">
+  <div className="flex items-center justify-center gap-3 mx-auto">
+    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+      <Sparkles size={24} className="text-white" />
+    </div>
+    <h1 className="text-4xl font-black tracking-tighter text-white">
+      RTBX AI
+    </h1>
+  </div>
+  
+  <p className="text-white/40 text-sm max-w-xs mx-auto">
+    {t.ai_choose_context || "Choisissez un contexte pour commencer"}
+  </p>
+</div>
 
         {/* Context grid */}
         <div className="grid grid-cols-2 gap-3">
