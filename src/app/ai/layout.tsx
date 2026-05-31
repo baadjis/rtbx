@@ -89,7 +89,7 @@ export default function AILayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen bg-[#0f0f11] overflow-hidden">
       
       {/* Sidebar */}
-      <aside className={`fixed md:relative inset-x-0 top-0 z-50 bg-[#161618] border-b md:border-r md:border-b-0 border-white/[0.06] 
+      <aside className={`fixed md:relative inset-x-0 top-0 z-50 bg-[#161618] border-b md:border-r md:border-b-0 border-white/[0.06]
         transition-all duration-300 flex flex-col
         ${mobileMenuOpen ? 'translate-y-0 h-[88vh]' : '-translate-y-full md:translate-y-0'}
         ${collapsed && !mobileMenuOpen ? 'md:w-14' : 'md:w-60'}`}>
@@ -133,33 +133,46 @@ export default function AILayout({ children }: { children: React.ReactNode }) {
 
         {/* Chat History */}
         <div className="flex-1 overflow-y-auto px-2 space-y-4">
-          {!collapsed && Object.entries(groupedChats).map(([group, groupChats]) => (
-            <div key={group}>
-              <p className="text-[10px] text-white/25 font-medium uppercase tracking-wider px-2 mb-1">{group}</p>
-              <div className="space-y-0.5">
-                {groupChats.map(chat => {
-                  const Icon = CONTEXT_ICONS[chat.context] || MessageSquare;
-                  const color = CONTEXT_COLORS[chat.context] || 'text-white/40';
-                  const isActive = pathname === `/ai/chat/${chat.id}`;
+          {collapsed ? (
+            // Mode collapsed : seulement l'icône centrale
+            <Link
+              href="/ai/chat"
+              className={`flex items-center justify-center w-10 h-10 mx-auto mt-6 rounded-2xl transition-all ${
+                pathname.startsWith('/ai/chat') ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'
+              }`}
+            >
+              <MessageSquare size={20} className="text-white/40" />
+            </Link>
+          ) : (
+            // Mode normal
+            Object.entries(groupedChats).map(([group, groupChats]) => (
+              <div key={group}>
+                <p className="text-[10px] text-white/25 font-medium uppercase tracking-wider px-2 mb-1">{group}</p>
+                <div className="space-y-0.5">
+                  {groupChats.map(chat => {
+                    const Icon = CONTEXT_ICONS[chat.context] || MessageSquare;
+                    const color = CONTEXT_COLORS[chat.context] || 'text-white/40';
+                    const isActive = pathname === `/ai/chat/${chat.id}`;
 
-                  return (
-                    <Link
-                      key={chat.id}
-                      href={`/ai/chat/${chat.id}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all group ${isActive ? 'bg-white/[0.08] text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'}`}
-                    >
-                      <Icon size={16} className={`flex-shrink-0 ${color}`} />
-                      <span className="truncate">{chat.title}</span>
-                    </Link>
-                  );
-                })}
+                    return (
+                      <Link
+                        key={chat.id}
+                        href={`/ai/chat/${chat.id}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all group ${isActive ? 'bg-white/[0.08] text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'}`}
+                      >
+                        <Icon size={16} className={`flex-shrink-0 ${color}`} />
+                        <span className="truncate">{chat.title}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
-        {/* Bottom Section - Logout + User */}
+        {/* Bottom Section */}
         <div className="border-t border-white/[0.06] p-3 space-y-1">
           <Link
             href="/"
