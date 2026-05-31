@@ -3,6 +3,7 @@
 export const Data = {
   // === MCP TRANSLATIONS ===
 fr: {
+  mcp_my_accout:"Mon compte",
   mcp_title: "RTBX AI",
   mcp_subtitle: "Ton assistant intelligent",
   mcp_welcome: "Bonjour ! Je suis  ton assistant.\nComment puis-je t'aider aujourd'hui ?",
@@ -62,6 +63,7 @@ ai_new_chat: "Nouveau chat",
 },
 
 en: {
+   mcp_my_accout:"Account",
   mcp_title: "RTBX AI",
   mcp_subtitle: "Your intelligent assistant",
   mcp_welcome: "Hello! I'm your assistant.\nHow can I help you today?",
