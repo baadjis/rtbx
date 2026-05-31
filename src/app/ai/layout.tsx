@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/ai/layout.tsx
-
+'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -14,7 +14,6 @@ import {
   Globe
 } from 'lucide-react';
 import { useUser } from '@/hooks/useUser';
-import { getLang } from '@/lib/lang/lang-getter';
 import { LangType } from '@/lib/lang/types';
 
 const CONTEXT_ICONS: Record<string, any> = {
@@ -63,24 +62,16 @@ const Data={
     }
 }
 
-export default function AILayout({ children }: { children: React.ReactNode }) {
+export default function AILayout({ children ,lang}: { children: React.ReactNode ,lang:LangType}) {
 const [collapsed, setCollapsed] = useState(false);
 const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 const router = useRouter();
 const pathname = usePathname();
 const { initials } = useUser();
-const [lang, setLang] = useState<LangType>('fr');
-const [t, setT] = useState<any>(Data.fr); // traduction par défaut
+const t = Data[lang||'en' ]// traduction par défaut
 
 // Récupérer la langue au chargement
-useEffect(() => {
-const loadLang = async () => {
-const currentLang = await getLang() as LangType;
-setLang(currentLang);
-setT(Data[currentLang]);
-    };
-loadLang();
-  }, []);
+
 
 const [chats, setChats] = useState<ChatEntry[]>(() => {
 if (typeof window === 'undefined') return [];
@@ -220,7 +211,7 @@ className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:t
 </div>
 </aside>
       {/* Main Content */}
-<main className="flex-1 overflow-hidden min-w-0">
+<main className="flex-1 overflow-hidden min-w-0" lang={lang}>
         {children}
 </main>
       {/* Mobile Burger Button */}
