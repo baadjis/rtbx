@@ -2,6 +2,7 @@
 import { getLang } from '@/lib/lang/lang-getter';
 import { LangType } from '@/lib/lang/types';
 import MCPChatClient from '@/app/ai/McpChatClient';
+import Layout from '../../layout';
 
 export default async function ChatPage({
   params,
@@ -11,5 +12,9 @@ export default async function ChatPage({
   const { id } = await params;
   const lang = await getLang() as LangType;
 
-  return <MCPChatClient lang={lang} chatId={id} />;
+  return ( <Layout lang={lang}>
+         <MCPChatClient lang={lang} chatId={id} />
+  </Layout>) 
+
+ 
 }
