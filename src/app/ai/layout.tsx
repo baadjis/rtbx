@@ -88,52 +88,54 @@ export default function AILayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-[#0f0f11] overflow-hidden">
       
-      {/* Sidebar - Desktop + Mobile Top Drawer */}
+      {/* Sidebar */}
       <aside className={`fixed md:relative inset-x-0 top-0 z-50 bg-[#161618] border-b md:border-r md:border-b-0 border-white/[0.06] 
         transition-all duration-300 flex flex-col
-        ${mobileMenuOpen ? 'translate-y-0 h-[85vh]' : '-translate-y-full md:translate-y-0'}
+        ${mobileMenuOpen ? 'translate-y-0 h-[88vh]' : '-translate-y-full md:translate-y-0'}
         ${collapsed && !mobileMenuOpen ? 'md:w-14' : 'md:w-60'}`}>
 
         {/* Header */}
-        <div className="flex items-center justify-between h-14 border-b border-white/[0.06] px-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <Sparkles size={12} className="text-white" />
+        <div className="flex items-center h-14 border-b border-white/[0.06] px-3">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+                <Sparkles size={12} className="text-white" />
+              </div>
+              <span className="text-sm font-semibold text-white tracking-tight">RTBX AI</span>
             </div>
-            <span className="text-sm font-semibold text-white tracking-tight">RTBX AI</span>
-          </div>
-
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            className="md:hidden w-8 h-8 flex items-center justify-center text-white/60"
-          >
-            <X size={22} />
-          </button>
+          )}
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden md:flex w-8 h-8 items-center justify-center text-white/40 hover:text-white"
+            className="hidden md:block ml-auto w-8 h-8 flex items-center justify-center text-white/40 hover:text-white"
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="md:hidden ml-auto w-8 h-8 flex items-center justify-center text-white/60"
+          >
+            <X size={22} />
           </button>
         </div>
 
         {/* New Chat */}
-        <div className="p-3">
+        <div className="px-3 py-3">
           <button
             onClick={handleNewChat}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 text-sm font-medium"
+            className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/20 text-indigo-300 hover:text-indigo-200 text-sm font-medium transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
           >
-            <Plus size={18} />
-            Nouveau chat
+            <Plus size={16} />
+            {!collapsed && 'Nouveau chat'}
           </button>
         </div>
 
         {/* Chat History */}
-        <div className="flex-1 overflow-y-auto px-3 space-y-4 pb-20">
-          {Object.entries(groupedChats).map(([group, groupChats]) => (
+        <div className="flex-1 overflow-y-auto px-2 space-y-4">
+          {!collapsed && Object.entries(groupedChats).map(([group, groupChats]) => (
             <div key={group}>
-              <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider px-2 mb-2">{group}</p>
+              <p className="text-[10px] text-white/25 font-medium uppercase tracking-wider px-2 mb-1">{group}</p>
               <div className="space-y-0.5">
                 {groupChats.map(chat => {
                   const Icon = CONTEXT_ICONS[chat.context] || MessageSquare;
@@ -145,9 +147,9 @@ export default function AILayout({ children }: { children: React.ReactNode }) {
                       key={chat.id}
                       href={`/ai/chat/${chat.id}`}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${isActive ? 'bg-white/[0.08] text-white' : 'text-white/60 hover:bg-white/[0.05]'}`}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all group ${isActive ? 'bg-white/[0.08] text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'}`}
                     >
-                      <Icon size={17} className={color} />
+                      <Icon size={16} className={`flex-shrink-0 ${color}`} />
                       <span className="truncate">{chat.title}</span>
                     </Link>
                   );
@@ -156,17 +158,43 @@ export default function AILayout({ children }: { children: React.ReactNode }) {
             </div>
           ))}
         </div>
+
+        {/* Bottom Section - Logout + User */}
+        <div className="border-t border-white/[0.06] p-3 space-y-1">
+          <Link
+            href="/"
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/[0.04] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
+          >
+            <Home size={16} />
+            {!collapsed && 'Accueil'}
+          </Link>
+
+          <Link
+            href="/logout"
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/[0.06] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
+          >
+            <LogOut size={16} />
+            {!collapsed && 'Déconnexion'}
+          </Link>
+
+          <div className={`flex items-center gap-2.5 px-3 py-2 ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}>
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-bold text-white">{initials}</span>
+            </div>
+            {!collapsed && <span className="text-xs text-white/30">Mon compte</span>}
+          </div>
+        </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden min-w-0 relative">
+      <main className="flex-1 overflow-hidden min-w-0">
         {children}
       </main>
 
-      {/* Mobile Top Menu Button */}
+      {/* Mobile Burger Button */}
       <button
         onClick={() => setMobileMenuOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 w-11 h-11 bg-[#161618] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white shadow-lg"
+        className="md:hidden fixed top-4 left-4 z-50 w-11 h-11 bg-[#161618] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white shadow-xl"
       >
         <Menu size={24} />
       </button>
