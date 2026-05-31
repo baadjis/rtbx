@@ -14,6 +14,7 @@ import {
   Globe
 } from 'lucide-react';
 import { useUser } from '@/hooks/useUser';
+import { getLang } from '@/lib/lang/lang-getter';
 import { LangType } from '@/lib/lang/types';
 
 const CONTEXT_ICONS: Record<string, any> = {
@@ -211,7 +212,7 @@ className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:t
 </div>
 </aside>
       {/* Main Content */}
-<main className="flex-1 overflow-hidden min-w-0" lang={lang}>
+<main className="flex-1 overflow-hidden min-w-0">
         {children}
 </main>
       {/* Mobile Burger Button */}

@@ -5,7 +5,7 @@ import {
   Link2, Building2, Calendar, FileText, Globe, Sparkles
 } from 'lucide-react';
 import { LangType } from '@/lib/lang/types';
-import { Data } from './data';
+import { Data } from '../../data';
 
 const CONTEXTS = [
   {

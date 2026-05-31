@@ -58,6 +58,8 @@ ai_new_chat: "Nouveau chat",
   ai_context_form_desc: "Créer des sondages et formulaires",
   ai_context_space: "Spaces",
   ai_context_space_desc: "Gérer vos profils publics",
+  ai_start_new_chat:"Commencez une nouvelle conversation",
+  ai_no_chat_yet:"Aucun chat pour le moment"
 
 },
 
@@ -117,5 +119,7 @@ ai_new_chat: "New Chat",
   ai_context_form_desc: "Create surveys and forms",
   ai_context_space: "Spaces",
   ai_context_space_desc: "Manage your public profiles",
+  ai_start_new_chat:"Start a new conversation",
+  ai_no_chat_yet:"No conversation yet"
 },
 } as const;
