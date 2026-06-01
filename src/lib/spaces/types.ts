@@ -95,3 +95,21 @@ export type SpaceEntity = {
 
   is_authorized_representative?: boolean
 }
+
+
+export type SpaceSocialLink = {
+  id: string;
+  network: string;
+  handle: string;
+};
+
+export type AddSocialLinkPayload = {
+  network: string;
+  handle: string;
+};
+
+export type UpdateSocialLinkPayload = {
+  id: string;
+  network?: string;
+  handle?: string;
+};

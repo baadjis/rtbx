@@ -3,12 +3,26 @@ import { NextResponse } from 'next/server';
 import { runMCPAgent } from '../agents/main-agent';
 import { mcpConfig } from '../core/config';
 import { createClient } from '@/utils/supabase/server';
+import { LangType } from '@/lib/lang/types';
+const Data={
+  fr:{
+    connect_hint:"Veuillez vous connecter pour utiliser l'assistant.",
+    error_try_later:"Désolé, une erreur interne est survenue. Réessaie plus tard.",
+  },
+  en:{
+    connect_hint:"Please log in to use the assistant.",
+    error_try_later:"Sorry, an internal error occurred. Please try again later.",
+
+  }
+}
 
 export async function POST(request: Request) {
   let lang = 'fr';
+  let t= Data[lang as LangType]
   try {
     const body = await request.json();
     lang = body.lang || 'fr';
+    t= Data[lang as LangType]
 
     if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
@@ -23,9 +37,7 @@ export async function POST(request: Request) {
     if (!user) {
   return NextResponse.json({
     success: false,
-    text: lang === 'fr' 
-      ? "Veuillez vous connecter pour utiliser l'assistant."
-      : "Please log in to use the assistant.",
+    text: t.connect_hint
   }, { status: 401 });
 }
     const { data: { session } } = await supabase.auth.getSession();
@@ -37,6 +49,7 @@ export async function POST(request: Request) {
       maxSteps: body.maxSteps || mcpConfig.maxSteps,
       accessToken, // ← injecté
       userId: user?.id,
+      userEmail:user.email
     });
 
     if (!result.success) throw result.error;
@@ -65,18 +78,14 @@ return NextResponse.json({
       return NextResponse.json({
         success: false,
         error: 'rate_limit',
-        text: lang === 'fr'
-          ? "⏳ Limite de tokens atteinte. Veuillez réessayer dans quelques secondes."
-          : "⏳ Token limit reached. Please try again in a few seconds."
+        text: t.connect_hint
       }, { status: 429 });
     }
 
     return NextResponse.json({
       success: false,
       error: 'Internal server error',
-      text: lang === 'fr'
-        ? "Désolé, une erreur interne est survenue. Réessaie plus tard."
-        : "Sorry, an internal error occurred. Please try again later."
+      text: t.error_try_later
     }, { status: 500 });
   }
 }

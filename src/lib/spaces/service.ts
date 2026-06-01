@@ -5,14 +5,19 @@ import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 
 import {
+  AddSocialLinkInput,
+  addSocialLinkSchema,
   SpaceAddSchema,
-  SpaceUpdateSchema
+  SpaceUpdateSchema,
+  UpdateSocialLinkInput,
+  updateSocialLinkSchema
 } from './validators'
 
 import type {
   SpaceAddPayload,
   SpaceUpdatePayload,
-  SpaceEntity
+  SpaceEntity,
+  SpaceSocialLink
 } from './types'
 
 /* =========================================================
@@ -287,4 +292,140 @@ export async function searchSpaces(payload: {
 
   if (error) return { data: null, error };
   return { data, count, error: null };
+}
+
+/* =========================================================
+   GET SPACE SOCIAL LINKS
+========================================================= */
+export async function getSpaceSocialLinks(spaceId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('spaces')
+    .select('social_data')
+    .eq('id', spaceId)
+    .is('deleted_at', null)
+    .single();
+
+  if (error || !data) return { data: null, error: 'Space not found' };
+  return { data: data.social_data || [], error: null };
+}
+
+/* =========================================================
+   ADD SOCIAL LINK
+========================================================= */
+export async function addSpaceSocialLink(
+  spaceId: string,
+  payload: AddSocialLinkInput,
+  organizer_id: string
+) {
+  const parsed = addSocialLinkSchema.safeParse(payload);
+  if (!parsed.success) return { data: null, error: parsed.error.flatten() };
+
+  // Vérifier ownership
+  const { data: space } = await supabaseAdmin
+    .from('spaces')
+    .select('social_data')
+    .eq('id', spaceId)
+    .eq('user_id', organizer_id)
+    .is('deleted_at', null)
+    .single();
+
+  if (!space) return { data: null, error: 'Space not found or unauthorized' };
+
+  const currentLinks: SpaceSocialLink[] = space.social_data || [];
+
+  // Vérifier que le network n'existe pas déjà
+  if (currentLinks.some(l => l.network === parsed.data.network)) {
+    return { data: null, error: `${parsed.data.network} already exists` };
+  }
+
+  const newLink: SpaceSocialLink = {
+    id: crypto.randomUUID(),
+    network: parsed.data.network,
+    handle: parsed.data.handle,
+  };
+
+  const updated = [...currentLinks, newLink];
+
+  const { error } = await supabaseAdmin
+    .from('spaces')
+    .update({ social_data: updated, updated_at: new Date().toISOString() })
+    .eq('id', spaceId);
+
+  if (error) return { data: null, error };
+  return { data: newLink, error: null };
+}
+
+/* =========================================================
+   UPDATE SOCIAL LINK
+========================================================= */
+export async function updateSpaceSocialLink(
+  spaceId: string,
+  payload: UpdateSocialLinkInput,
+  organizer_id: string
+) {
+  const parsed = updateSocialLinkSchema.safeParse(payload);
+  if (!parsed.success) return { data: null, error: parsed.error.flatten() };
+
+  const { data: space } = await supabaseAdmin
+    .from('spaces')
+    .select('social_data')
+    .eq('id', spaceId)
+    .eq('user_id', organizer_id)
+    .is('deleted_at', null)
+    .single();
+
+  if (!space) return { data: null, error: 'Space not found or unauthorized' };
+
+  const currentLinks: SpaceSocialLink[] = space.social_data || [];
+  const linkIndex = currentLinks.findIndex(l => l.id === parsed.data.id);
+
+  if (linkIndex === -1) return { data: null, error: 'Social link not found' };
+
+  currentLinks[linkIndex] = {
+    ...currentLinks[linkIndex],
+    ...(parsed.data.network && { network: parsed.data.network }),
+    ...(parsed.data.handle && { handle: parsed.data.handle }),
+  };
+
+  const { error } = await supabaseAdmin
+    .from('spaces')
+    .update({ social_data: currentLinks, updated_at: new Date().toISOString() })
+    .eq('id', spaceId);
+
+  if (error) return { data: null, error };
+  return { data: currentLinks[linkIndex], error: null };
+}
+
+/* =========================================================
+   DELETE SOCIAL LINK
+========================================================= */
+export async function deleteSpaceSocialLink(
+  spaceId: string,
+  linkId: string,
+  organizer_id: string
+) {
+  const { data: space } = await supabaseAdmin
+    .from('spaces')
+    .select('social_data')
+    .eq('id', spaceId)
+    .eq('user_id', organizer_id)
+    .is('deleted_at', null)
+    .single();
+
+  if (!space) return { data: null, error: 'Space not found or unauthorized' };
+
+  const currentLinks: SpaceSocialLink[] = space.social_data || [];
+  const filtered = currentLinks.filter(l => l.id !== linkId);
+
+  if (filtered.length === currentLinks.length) {
+    return { data: null, error: 'Social link not found' };
+  }
+
+  const { error } = await supabaseAdmin
+    .from('spaces')
+    .update({ social_data: filtered, updated_at: new Date().toISOString() })
+    .eq('id', spaceId);
+
+  if (error) return { data: null, error };
+  return { data: { deleted: true }, error: null };
 }

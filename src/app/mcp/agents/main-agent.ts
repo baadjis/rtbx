@@ -17,8 +17,9 @@ export async function runMCPAgent(
   options?: {
     temperature?: number;
     maxSteps?: number;
-    accessToken?: string; // ← nouveau
-    userId?: string; // ← nouveau
+    accessToken?: string;
+    userId?: string;
+    userEmail?: string; // ← nouveau
   }
 ) {
 
@@ -38,8 +39,12 @@ console.log('accessToken preview:', options?.accessToken?.slice(0, 20));
     });
 
     // Tools avec token injecté
-    const relevantTools = getRelevantTools(sanitizedMessages, options?.accessToken,options?.userId );
-
+    const relevantTools = getRelevantTools(
+    sanitizedMessages,
+    options?.accessToken,
+    options?.userId,
+    options?.userEmail,
+     );
     const result = await generateText({
       model: defaultModel,
       system: systemPrompt,

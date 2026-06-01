@@ -10,21 +10,32 @@ const authHeaders = (token?: string) => ({
   ...(token ? { Authorization: `Bearer ${token}` } : {}),
 });
 
-export const createSpaceTools = (accessToken?: string, userId?: string) => ({
+export const createSpaceTools = (
+  accessToken?: string,
+  userId?: string,
+  userEmail?: string // ← nouveau
+) => ({
 
   createSpace: tool({
-    description: `Create a new Space (Digital ID / Profile) for the authenticated user.
-email is required — ask the user if not provided.
-slug is required — must be unique, lowercase, alphanumeric with dashes only.
-space_type is required: 'personal', 'business', or 'creator'.`,
-    inputSchema: SpaceAddSchema.omit({ edit_token: true, user_id: true }),
+    description: `Create a new Space. Required: slug, space_type (personal/business/creator).
+Email and user_id are injected automatically from the session.
+Social links must be added separately using addSpaceSocialLink after creation.
+Available networks: Instagram, TikTok, WhatsApp, YouTube, LinkedIn, X (Twitter), Facebook, Threads, Pinterest, Twitch, Spotify, Website.`,
+    inputSchema: SpaceAddSchema.omit({
+      edit_token: true,
+      user_id: true,
+      email: true,
+      social_data: true,
+    }),
     execute: async (args) => {
       const response = await fetch(`${BASE}/api/spaces/activate`, {
         method: 'POST',
         headers: authHeaders(accessToken),
         body: JSON.stringify({
           ...args,
-          user_id: userId || null, // ← injecté automatiquement
+          user_id: userId || null,
+          email: userEmail || null, // ← injecté automatiquement
+          social_data: [],
         }),
       });
       if (!response.ok) {
@@ -132,5 +143,94 @@ Use when user searches for a specific space or profile.`,
     return response.json();
   },
 }),
+getSpaceSocialLinks: tool({
+    description: `Get all social links for a specific space.
+Requires the space ID (UUID).`,
+    inputSchema: z.object({
+      id: z.string().uuid().describe('Space ID'),
+    }),
+    execute: async (args) => {
+      const response = await fetch(`${BASE}/api/spaces/${args.id}/socials`, {
+        method: 'GET',
+        headers: authHeaders(accessToken),
+        cache: 'no-store',
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Failed to fetch social links');
+      }
+      return response.json();
+    },
+  }),
+
+  addSpaceSocialLink: tool({
+    description: `Add a social link to a space.
+Requires space ID, network name and handle (username or full URL).
+Available networks: Instagram, TikTok, WhatsApp, YouTube, LinkedIn, X (Twitter), Facebook, Threads, Pinterest, Twitch, Spotify, Website.
+handle can be just the username (e.g. "johndoe") or a full URL.`,
+    inputSchema: z.object({
+      id: z.string().uuid().describe('Space ID'),
+      network: z.string().describe('Network name e.g. Instagram, TikTok'),
+      handle: z.string().describe('Username or full URL'),
+    }),
+    execute: async (args) => {
+      const { id, ...data } = args;
+      const response = await fetch(`${BASE}/api/spaces/${id}/socials`, {
+        method: 'POST',
+        headers: authHeaders(accessToken),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Failed to add social link');
+      }
+      return response.json();
+    },
+  }),
+
+  updateSpaceSocialLink: tool({
+    description: `Update an existing social link on a space.
+Requires space ID and link ID. network and handle are optional.`,
+    inputSchema: z.object({
+      id: z.string().uuid().describe('Space ID'),
+      linkId: z.string().uuid().describe('Social link ID'),
+      network: z.string().optional(),
+      handle: z.string().optional(),
+    }),
+    execute: async (args) => {
+      const { id, linkId, ...data } = args;
+      const response = await fetch(`${BASE}/api/spaces/${id}/socials/${linkId}`, {
+        method: 'PATCH',
+        headers: authHeaders(accessToken),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Failed to update social link');
+      }
+      return response.json();
+    },
+  }),
+
+  deleteSpaceSocialLink: tool({
+    description: `Delete a social link from a space.
+Requires space ID and link ID.`,
+    inputSchema: z.object({
+      id: z.string().uuid().describe('Space ID'),
+      linkId: z.string().uuid().describe('Social link ID to delete'),
+    }),
+    execute: async (args) => {
+      const response = await fetch(`${BASE}/api/spaces/${args.id}/socials/${args.linkId}`, {
+        method: 'DELETE',
+        headers: authHeaders(accessToken),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Failed to delete social link');
+      }
+      return response.json();
+    },
+  }),
+
 
 });

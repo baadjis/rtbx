@@ -158,6 +158,25 @@ export const spaceSearchSchema = z.object({
   offset: z.number().int().min(0).default(0),
 });
 
+export const addSocialLinkSchema = z.object({
+  network: z.string().min(1, 'Network requis'),
+  handle: z.string().min(1, 'Handle requis'),
+});
+
+export const updateSocialLinkSchema = z.object({
+  id: z.string().uuid('ID invalide'),
+  network: z.string().optional(),
+  handle: z.string().optional(),
+});
+
+export const deleteSocialLinkSchema = z.object({
+  id: z.string().uuid('ID invalide'),
+});
+
+export type AddSocialLinkInput = z.infer<typeof addSocialLinkSchema>;
+export type UpdateSocialLinkInput = z.infer<typeof updateSocialLinkSchema>;
+export type DeleteSocialLinkInput = z.infer<typeof deleteSocialLinkSchema>;
+
 export type SpaceSearchInput = z.infer<typeof spaceSearchSchema>;
 
 /* =========================================================
