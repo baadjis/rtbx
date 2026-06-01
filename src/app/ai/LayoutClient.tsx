@@ -116,7 +116,7 @@ return (
 <aside className={`fixed md:relative inset-x-0 top-0 z-50 bg-[#161618] border-b md:border-r md:border-b-0 border-white/[0.06]
         transition-all duration-300 flex flex-col
 ${mobileMenuOpen ? 'translate-y-0 h-[88vh]' : '-translate-y-full md:translate-y-0'}
-${collapsed && !mobileMenuOpen ? 'md:w-14' : 'md:w-60'}`}>
+${collapsed && !mobileMenuOpen ? 'md:w-20' : 'md:w-80'}`}>
         {/* Header */}
 <div className="flex items-center h-14 border-b border-white/[0.06] px-3">
           {!collapsed && (
@@ -146,7 +146,7 @@ className="md:hidden ml-auto w-8 h-8 flex items-center justify-center text-white
 onClick={handleNewChat}
 className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/20 text-indigo-300 hover:text-indigo-200 text-sm font-medium transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
 >
-<Plus size={24} />
+<Plus size={20} />
             {!collapsed && t.ai_new_chat}
 </button>
 </div>
