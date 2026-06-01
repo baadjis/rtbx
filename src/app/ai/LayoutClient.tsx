@@ -146,7 +146,7 @@ className="md:hidden ml-auto w-8 h-8 flex items-center justify-center text-white
 onClick={handleNewChat}
 className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/20 text-indigo-300 hover:text-indigo-200 text-sm font-medium transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
 >
-<Plus size={20} />
+<Plus size={24} />
             {!collapsed && t.ai_new_chat}
 </button>
 </div>
