@@ -43,7 +43,7 @@ export default async function MyBusinessesPage() {
           </p>
         </div>
         
-        <Link href="/dasshboard/businesses/create" className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all active:scale-95 no-underline">
+        <Link href="/dashboard/businesses/create" className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all active:scale-95 no-underline">
           <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" /> 
           {t.add_business}
         </Link>
