@@ -195,13 +195,17 @@ className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:t
 <Home size={20} />
             {!collapsed && t.ai_home}
 </Link>
-<Link
-href="/logout"
+
+<form action="/auth/signout" method="post">
+<button type='submit'
 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/[0.06] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
 >
 <LogOut size={20} />
             {!collapsed && t.ai_logout}
-</Link>
+</button>
+          
+</form>
+
 <div className={`flex items-center gap-2.5 px-3 py-2 ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}>
 <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
 <span className="text-[10px] font-bold text-white">{initials}</span>
