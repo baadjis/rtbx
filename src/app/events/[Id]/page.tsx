@@ -1,5 +1,4 @@
 // app/events/[id]/page.tsx
-import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,6 +7,8 @@ import EventAIWidget from './EventAIWidget';
 import { Calendar, MapPin, Users, Clock, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Data } from '../data';
 import Link from 'next/link';
+import { getLang } from '@/lib/lang/lang-getter';
+import { LangType } from '@/lib/lang/types';
 
 export default async function PublicEventPage({
   params,
@@ -42,8 +43,7 @@ export default async function PublicEventPage({
     );
   }
 
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as 'en' | 'fr';
+  const lang = await getLang() as LangType
   const t = Data[lang];
 
   // Vérifier si user connecté pour le widget AI
