@@ -5,6 +5,8 @@ import { Data } from '../data';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import EventAdminTabs from './EventAdminTabs'; // On va créer ce composant
+import { getLang } from '@/lib/lang/lang-getter';
+import { LangType } from '@/lib/lang/types';
 
 export default async function EventAdminPage({ params }: { params: Promise<{ Id: string }> }) {
   const { Id } = await params;
@@ -22,8 +24,7 @@ export default async function EventAdminPage({ params }: { params: Promise<{ Id:
 
   if (!eventRes.data) redirect('/dashboard/events');
 
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get('lang')?.value || 'fr') as 'en' | 'fr';
+  const lang = await getLang() as LangType
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
