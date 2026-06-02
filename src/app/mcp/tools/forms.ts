@@ -117,23 +117,26 @@ Only call when user explicitly asks to send invitations.`,
   }),
 
   getMyForms: tool({
-    description: `Get all forms belonging to the authenticated user.
-Only call when user explicitly asks to see their forms.
-Returns id, title, category, is_published, visibility, org_name.`,
-    inputSchema: z.object({}),
-    execute: async () => {
-      const response = await fetch(`${BASE}/api/forms`, {
-        method: 'GET',
-        headers: authHeaders(accessToken),
-        cache: 'no-store',
-      });
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.error || 'Failed to fetch forms');
-      }
-      return response.json();
-    },
-  }),
+  description: `Get all form activity for the authenticated user.
+Returns three lists:
+- created: forms the user created
+- responded: forms the user submitted a response to
+- invited: forms the user was invited to fill
+Only call when user explicitly asks about their forms.`,
+  inputSchema: z.object({}),
+  execute: async () => {
+    const response = await fetch(`${BASE}/api/forms/me`, {
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to fetch forms');
+    }
+    return response.json();
+  },
+}),
 
   getFormResponses: tool({
     description: `Get all responses for a specific form.

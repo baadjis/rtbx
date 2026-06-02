@@ -5,7 +5,7 @@ import {
   Link2, Building2, Calendar, FileText, Globe, Sparkles
 } from 'lucide-react';
 import { LangType } from '@/lib/lang/types';
-import { Data } from '../../data';
+import { Data } from './data';
 
 const CONTEXTS = [
   {
@@ -69,22 +69,19 @@ export default function AIPageClient({ lang }: { lang: LangType }) {
   const router = useRouter();
 
   const handleContextSelect = (contextId: string) => {
-    const id = crypto.randomUUID();
-    const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
-    
-    chats.unshift({
-      id,
-      title: t.ai_new_chat|| 'Nouveau chat',
-      context: contextId,
-      createdAt: new Date().toISOString(),
-    });
-
-    localStorage.setItem('rtbx_chats', JSON.stringify(chats.slice(0, 50)));
-    localStorage.setItem(`rtbx_chat_context_${id}`, contextId);
-
-    window.dispatchEvent(new Event('rtbx_chats_updated'));
-    router.push(`/ai/chat/${id}`);
-  };
+  const id = crypto.randomUUID();
+  const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+  chats.unshift({
+    id,
+    title: t.ai_new_chat,
+    context: contextId,
+    createdAt: new Date().toISOString(),
+  });
+  localStorage.setItem('rtbx_chats', JSON.stringify(chats.slice(0, 50)));
+  localStorage.setItem(`rtbx_chat_context_${id}`, contextId);
+  window.dispatchEvent(new Event('rtbx_chats_updated'));
+  router.push(`/ai/chat/${id}`);
+};
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[#0f0f11] px-4">

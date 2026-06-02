@@ -1,5 +1,5 @@
 import { getLang } from "@/lib/lang/lang-getter"
-import AIPageClient from "./chat/[id]/AiPageClient"
+import AIPageClient from "./AiPageClient"
 import { LangType } from "@/lib/lang/types"
 
 export default async function AiPage(){

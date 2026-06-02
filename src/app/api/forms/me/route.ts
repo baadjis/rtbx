@@ -21,19 +21,27 @@
  * =========================================================
  */
 import { NextResponse } from 'next/server';
-import { getMyForms } from '@/lib/forms/service';
+import { getMyFormActivity, getMyForms } from '@/lib/forms/service';
 import { requireUser } from '@/lib/auth/get-user';
 
 export async function GET(request: Request) {
   try {
     const { user, error: authError } = await requireUser(request);
-    if (!user) {
-      return NextResponse.json({ success: false, error: authError }, { status: 401 });
-    }
+    if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
 
-    const { data, error } = await getMyForms(user.id);
-    if (error) return NextResponse.json({ success: false, error }, { status: 400 });
-    return NextResponse.json({ success: true, data });
+    const [created, activity] = await Promise.all([
+      getMyForms(user.id),
+      getMyFormActivity(user.id, user.email!),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        created: created.data ?? [],
+        responded: activity.data?.responded ?? [],
+        invited: activity.data?.invited ?? [],
+      }
+    });
   } catch (err: any) {
     console.error('FORMS_ME_ERROR:', err);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });

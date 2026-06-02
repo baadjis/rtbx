@@ -14,7 +14,6 @@ import {
   Globe
 } from 'lucide-react';
 import { useUser } from '@/hooks/useUser';
-import { getLang } from '@/lib/lang/lang-getter';
 import { LangType } from '@/lib/lang/types';
 
 const CONTEXT_ICONS: Record<string, any> = {

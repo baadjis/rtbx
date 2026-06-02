@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { NextResponse } from 'next/server';
+import { submitFormResponse } from '@/lib/forms/service';
+import { requireUser } from '@/lib/auth/get-user';
 /**
  * =========================================================
  * POST /api/forms/[id]/submit
@@ -10,9 +14,6 @@
  * - MCP tools (submitForm)
  * =========================================================
  */
-import { NextResponse } from 'next/server';
-import { submitFormResponse } from '@/lib/forms/service';
-
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -20,7 +21,11 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { data, error } = await submitFormResponse(id, body);
+
+    // User optionnel — pas de 401 si non connecté
+    const { user } = await requireUser(request);
+
+    const { data, error } = await submitFormResponse(id, body, user?.id);
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
   } catch (err: any) {

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Sparkles, Bot, CheckCircle, XCircle, Zap } from 'lucide-react';
 import type { LangType } from '@/lib/lang/types';
-import { Data } from './data';
+import { Data } from '../../data';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -59,6 +59,7 @@ const detectContextFromTools = (toolNames: string[]): string | null => {
 export default function MCPChatClient({
   lang,
   chatId,
+  
 }: {
   lang: LangType;
   chatId?: string;
@@ -66,228 +67,225 @@ export default function MCPChatClient({
   const t = Data[lang];
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
-  const [currentContext, setCurrentContext] = useState<string>('general');
-  const [inputFocused, setInputFocused] = useState(false);
+const [input, setInput] = useState('');
+const [isLoading, setIsLoading] = useState(false);
+const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
+const [currentContext, setCurrentContext] = useState<string>('general');
+const [inputFocused, setInputFocused] = useState(false);
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
+const chatEndRef = useRef<HTMLDivElement>(null);
+const inputRef = useRef<HTMLTextAreaElement>(null);
+const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const isEmptyChat = messages.length === 0;
+const isEmptyChat = messages.length === 0;
 
-  // Charger les messages et contexte depuis localStorage
-  useEffect(() => {
-    if (!chatId) return;
+useEffect(() => {
+  if (!chatId) return;
+  const savedMessages = localStorage.getItem(`rtbx_chat_messages_${chatId}`);
+  if (savedMessages) {
+    try { setMessages(JSON.parse(savedMessages)); } catch {}
+  }
+  const savedContext = localStorage.getItem(`rtbx_chat_context_${chatId}`);
+  if (savedContext) setCurrentContext(savedContext);
+}, [chatId]);
 
-    const savedMessages = localStorage.getItem(`rtbx_chat_messages_${chatId}`);
-    if (savedMessages) {
-      try { setMessages(JSON.parse(savedMessages)); } catch {}
-    }
+const saveMessages = useCallback((msgs: Message[]) => {
+  if (!chatId) return;
+  localStorage.setItem(`rtbx_chat_messages_${chatId}`, JSON.stringify(msgs));
+}, [chatId]);
 
-    const savedContext = localStorage.getItem(`rtbx_chat_context_${chatId}`);
-    if (savedContext) setCurrentContext(savedContext);
-  }, [chatId]);
-
-  // Sauvegarder les messages dans localStorage
-  const saveMessages = useCallback((msgs: Message[]) => {
-    if (!chatId) return;
-    localStorage.setItem(`rtbx_chat_messages_${chatId}`, JSON.stringify(msgs));
-  }, [chatId]);
-
-  // Mettre à jour le titre du chat dans la liste
-  const updateChatTitle = useCallback((firstUserMessage: string) => {
+const updateChatTitle = useCallback((firstUserMessage: string) => {
   if (!chatId) return;
   const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
   const updated = chats.map((c: any) =>
     c.id === chatId ? { ...c, title: firstUserMessage.slice(0, 40) } : c
   );
   localStorage.setItem('rtbx_chats', JSON.stringify(updated));
-  
-  // Notifier le layout
   window.dispatchEvent(new Event('rtbx_chats_updated'));
 }, [chatId]);
 
-  // Mettre à jour le contexte du chat
-  const updateChatContext = useCallback((ctx: string) => {
-    if (!chatId) return;
-    localStorage.setItem(`rtbx_chat_context_${chatId}`, ctx);
-    const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
-    const updated = chats.map((c: any) =>
-      c.id === chatId ? { ...c, context: ctx } : c
-    );
-    localStorage.setItem('rtbx_chats', JSON.stringify(updated));
-  }, [chatId]);
+const updateChatContext = useCallback((ctx: string) => {
+  if (!chatId) return;
+  localStorage.setItem(`rtbx_chat_context_${chatId}`, ctx);
+  const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+  const updated = chats.map((c: any) =>
+    c.id === chatId ? { ...c, context: ctx } : c
+  );
+  localStorage.setItem('rtbx_chats', JSON.stringify(updated));
+}, [chatId]);
 
-  const buildContextMessages = (allMessages: Message[], extraMessage?: Message) => {
-    const full = extraMessage ? [...allMessages, extraMessage] : allMessages;
-    return full
-      .slice(-MAX_HISTORY)
-      .map(({ role, content }) => ({ role, content }));
-  };
+const buildContextMessages = (allMessages: Message[], extraMessage?: Message) => {
+  const full = extraMessage ? [...allMessages, extraMessage] : allMessages;
+  return full
+    .slice(-MAX_HISTORY)
+    .map(({ role, content }) => ({ role, content }));
+};
 
-  const scrollToBottom = useCallback(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
+const scrollToBottom = useCallback(() => {
+  chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+}, []);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading, scrollToBottom]);
+useEffect(() => {
+  scrollToBottom();
+}, [messages, isLoading, scrollToBottom]);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.style.height = 'auto';
-      inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + 'px';
-    }
-  }, [input]);
+useEffect(() => {
+  if (inputRef.current) {
+    inputRef.current.style.height = 'auto';
+    inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + 'px';
+  }
+}, [input]);
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+const getAgentEndpoint = (context: string): string => {
+  switch (context) {
+    case 'event': return '/api/agents/event';
+    default: return '/mcp/server';
+  }
+};
 
-    const userMessage: Message = { role: 'user', content: input };
-    const newMessages = [...messages, userMessage];
+const sendMessage = async () => {
+  if (!input.trim() || isLoading) return;
 
-    setMessages(newMessages);
-    saveMessages(newMessages);
+  const userMessage: Message = { role: 'user', content: input };
+  const newMessages = [...messages, userMessage];
 
-    // Titre du chat = premier message user
-    if (messages.length === 0) {
-      updateChatTitle(input);
-    }
+  setMessages(newMessages);
+  saveMessages(newMessages);
 
-    setInput('');
-    setIsLoading(true);
+  if (messages.length === 0) {
+    updateChatTitle(input);
+  }
 
-    try {
-      const response = await fetch('/mcp/server', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: buildContextMessages(messages, userMessage),
-          lang,
-        }),
-      });
+  setInput('');
+  setIsLoading(true);
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        if (response.status === 429) {
-          const updated = [...newMessages, {
-            role: 'assistant' as const,
-            content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte. Réessayez dans quelques secondes.',
-          }];
-          setMessages(updated);
-          saveMessages(updated);
-          return;
-        }
-        throw new Error(errData.error || 'Server error');
+  try {
+    const response = await fetch(getAgentEndpoint(currentContext), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: buildContextMessages(messages, userMessage),
+        lang,
+      }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      if (response.status === 429) {
+        const updated = [...newMessages, {
+          role: 'assistant' as const,
+          content: errData.text || t.mcp_rate_limit || '⏳ Limite atteinte. Réessayez dans quelques secondes.',
+        }];
+        setMessages(updated);
+        saveMessages(updated);
+        return;
       }
+      throw new Error(errData.error || 'Server error');
+    }
 
-      const data = await response.json();
+    const data = await response.json();
 
-      // Détecter contexte depuis tool calls
-      const toolNames: string[] = data.toolCalls ?? [];
-      const ctx = detectContextFromTools(toolNames);
-      if (ctx) {
-        setCurrentContext(ctx);
-        updateChatContext(ctx);
+    const toolNames: string[] = data.toolCalls ?? [];
+    const ctx = detectContextFromTools(toolNames);
+    if (ctx) {
+      setCurrentContext(ctx);
+      updateChatContext(ctx);
+    }
+
+    const assistantMessage: Message = {
+      role: 'assistant',
+      content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
+      isConfirmation: data.requiresConfirmation || false,
+      pendingAction: data.pendingAction || null,
+    };
+
+    const withAssistant = [...newMessages, assistantMessage];
+    setMessages(withAssistant);
+    saveMessages(withAssistant);
+    setPendingConfirmation(assistantMessage.isConfirmation ? assistantMessage.pendingAction : null);
+
+  } catch {
+    const withError = [...newMessages, {
+      role: 'assistant' as const,
+      content: t.mcp_error || 'Erreur de connexion. Veuillez réessayer.',
+    }];
+    setMessages(withError);
+    saveMessages(withError);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+const handleConfirmation = async (confirmed: boolean) => {
+  if (!pendingConfirmation) return;
+  setIsLoading(true);
+
+  const userResponse = confirmed ? 'Oui, confirme et procède.' : 'Non, annule.';
+  const confirmMessage: Message = { role: 'user', content: userResponse };
+  const newMessages = [...messages, confirmMessage];
+  setMessages(newMessages);
+  saveMessages(newMessages);
+
+  try {
+    const response = await fetch(getAgentEndpoint(currentContext), { // ← fix
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: buildContextMessages(messages, confirmMessage),
+        lang,
+      }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      if (response.status === 429) {
+        const updated = [...newMessages, {
+          role: 'assistant' as const,
+          content: errData.text || '⏳ Limite atteinte.',
+        }];
+        setMessages(updated);
+        saveMessages(updated);
+        return;
       }
-
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
-        isConfirmation: data.requiresConfirmation || false,
-        pendingAction: data.pendingAction || null,
-      };
-
-      const withAssistant = [...newMessages, assistantMessage];
-      setMessages(withAssistant);
-      saveMessages(withAssistant);
-      setPendingConfirmation(assistantMessage.isConfirmation ? assistantMessage.pendingAction : null);
-
-    } catch {
-      const withError = [...newMessages, {
-        role: 'assistant' as const,
-        content: t.mcp_error || 'Erreur de connexion. Veuillez réessayer.',
-      }];
-      setMessages(withError);
-      saveMessages(withError);
-    } finally {
-      setIsLoading(false);
+      throw new Error(errData.error || 'Server error');
     }
-  };
 
-  const handleConfirmation = async (confirmed: boolean) => {
-    if (!pendingConfirmation) return;
-    setIsLoading(true);
+    const data = await response.json();
+    const withAssistant = [...newMessages, {
+      role: 'assistant' as const,
+      content: data.text || 'Action effectuée.',
+    }];
+    setMessages(withAssistant);
+    saveMessages(withAssistant);
 
-    const userResponse = confirmed ? 'Oui, confirme et procède.' : 'Non, annule.';
-    const confirmMessage: Message = { role: 'user', content: userResponse };
-    const newMessages = [...messages, confirmMessage];
-    setMessages(newMessages);
-    saveMessages(newMessages);
+  } catch {
+    const withError = [...newMessages, {
+      role: 'assistant' as const,
+      content: 'Erreur lors de la confirmation.',
+    }];
+    setMessages(withError);
+    saveMessages(withError);
+  } finally {
+    setPendingConfirmation(null);
+    setIsLoading(false);
+  }
+};
 
-    try {
-      const response = await fetch('/mcp/server', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: buildContextMessages(messages, confirmMessage),
-          lang,
-        }),
-      });
+const suggestions = (CONTEXT_SUGGESTIONS[currentContext] || CONTEXT_SUGGESTIONS.general)
+  .map(key => (t as any)[key])
+  .filter(Boolean);
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        if (response.status === 429) {
-          const updated = [...newMessages, {
-            role: 'assistant' as const,
-            content: errData.text || '⏳ Limite atteinte.',
-          }];
-          setMessages(updated);
-          saveMessages(updated);
-          return;
-        }
-        throw new Error(errData.error || 'Server error');
-      }
+const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+};
 
-      const data = await response.json();
-      const withAssistant = [...newMessages, {
-        role: 'assistant' as const,
-        content: data.text || 'Action effectuée.',
-      }];
-      setMessages(withAssistant);
-      saveMessages(withAssistant);
-
-    } catch {
-      const withError = [...newMessages, {
-        role: 'assistant' as const,
-        content: 'Erreur lors de la confirmation.',
-      }];
-      setMessages(withError);
-      saveMessages(withError);
-    } finally {
-      setPendingConfirmation(null);
-      setIsLoading(false);
-    }
-  };
-
-  const suggestions = (CONTEXT_SUGGESTIONS[currentContext] || CONTEXT_SUGGESTIONS.general)
-    .map(key => (t as any)[key])
-    .filter(Boolean);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion);
-    inputRef.current?.focus();
-  };
+const handleSuggestionClick = (suggestion: string) => {
+  setInput(suggestion);
+  inputRef.current?.focus();
+};
 
   return (
     <div className="flex flex-col bg-[#0f0f11]" style={{ height: '100dvh' }}>

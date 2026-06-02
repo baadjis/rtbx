@@ -179,22 +179,45 @@ export async function sendFormInvites(
 ========================================================= */
 export async function submitFormResponse(
   formId: string,
-  payload: FormSubmitInput
+  payload: FormSubmitInput,
+  userId?: string
 ) {
   const supabase = await createClient();
   const parsed = formSubmitSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
-  // Vérifier que le form existe et est actif
   const { data: form } = await supabase
     .from('forms')
-    .select('settings, is_published')
+    .select('settings, is_published, fields_json')
     .eq('id', formId)
     .single();
 
   if (!form) return { data: null, error: 'Form not found' };
   if (!form.is_published || form.settings?.active === false) {
     return { data: null, error: 'Form is not accepting responses' };
+  }
+
+  // Extraire email et name depuis les réponses
+  const fields: any[] = form.fields_json || [];
+  const answers = parsed.data.answers;
+
+  let respondentEmail: string | null = null;
+  let respondentName: string | null = null;
+
+  for (const field of fields) {
+    const value = answers[field.id];
+    if (!value) continue;
+
+    if (field.type === 'email') {
+      respondentEmail = value;
+    }
+
+    if (
+      field.type === 'text' &&
+      /nom|name|prénom|firstname|prenom/i.test(field.label || '')
+    ) {
+      respondentName = value;
+    }
   }
 
   const { error } = await supabase
@@ -204,12 +227,14 @@ export async function submitFormResponse(
       answers_json: parsed.data.answers,
       origin: parsed.data.origin,
       metadata: parsed.data.metadata,
+      user_id: userId || null,
+      respondent_email: respondentEmail,
+      respondent_name: respondentName,
     }]);
 
   if (error) return { data: null, error };
   return { data: { submitted: true }, error: null };
 }
-
 /* =========================================================
    GET MY FORMS
 ========================================================= */
@@ -224,6 +249,37 @@ export async function getMyForms(user_id: string) {
 
   if (error) return { data: null, error };
   return { data, error: null };
+}
+
+/* =========================================================
+   GET MY FORM ACTIVITY
+========================================================= */
+export async function getMyFormActivity(user_id: string, email: string) {
+  const supabase = await createClient();
+
+  const [responded, invited] = await Promise.all([
+    // Forms auxquels le user a répondu (via user_id ou email)
+    supabase
+      .from('form_responses')
+      .select('form_id, created_at, origin, forms(id, title, category, org_name)')
+      .or(`user_id.eq.${user_id},respondent_email.eq.${email}`)
+      .order('created_at', { ascending: false }),
+
+    // Invitations reçues
+    supabase
+      .from('form_invitations')
+      .select('*, forms(id, title, category, org_name)')
+      .eq('email', email)
+      .order('created_at', { ascending: false }),
+  ]);
+
+  return {
+    data: {
+      responded: responded.data ?? [],
+      invited: invited.data ?? [],
+    },
+    error: responded.error || invited.error || null,
+  };
 }
 
 /* =========================================================
@@ -301,3 +357,5 @@ export async function getFormById(formId: string, user_id?: string) {
 
   return { data, error: null };
 }
+
+
