@@ -73,7 +73,7 @@ export default function AIPageClient({ lang }: { lang: LangType }) {
   const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
   chats.unshift({
     id,
-    title: t.ai_new_chat,
+    title: 'Nouveau chat',
     context: contextId,
     createdAt: new Date().toISOString(),
   });
