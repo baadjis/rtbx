@@ -66,11 +66,12 @@ export default function MCPChatClient({
 }) {
   const t = Data[lang];
 
-  const [messages, setMessages] = useState<Message[]>([]);
+const [messages, setMessages] = useState<Message[]>([]);
 const [input, setInput] = useState('');
 const [isLoading, setIsLoading] = useState(false);
 const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
 const [currentContext, setCurrentContext] = useState<string>('general');
+const [entityId, setEntityId] = useState<string | null>(null); // ← nouveau
 const [inputFocused, setInputFocused] = useState(false);
 
 const chatEndRef = useRef<HTMLDivElement>(null);
@@ -87,6 +88,8 @@ useEffect(() => {
   }
   const savedContext = localStorage.getItem(`rtbx_chat_context_${chatId}`);
   if (savedContext) setCurrentContext(savedContext);
+  const savedEntityId = localStorage.getItem(`rtbx_chat_entity_${chatId}`); // ← nouveau
+  if (savedEntityId) setEntityId(savedEntityId); // ← nouveau
 }, [chatId]);
 
 const saveMessages = useCallback((msgs: Message[]) => {
@@ -143,6 +146,13 @@ const getAgentEndpoint = (context: string): string => {
   }
 };
 
+// Body commun pour tous les fetches
+const buildRequestBody = (msgs: Message[]) => ({
+  messages: msgs,
+  lang,
+  ...(currentContext === 'event' && entityId ? { eventId: entityId } : {}), // ← nouveau
+});
+
 const sendMessage = async () => {
   if (!input.trim() || isLoading) return;
 
@@ -152,9 +162,7 @@ const sendMessage = async () => {
   setMessages(newMessages);
   saveMessages(newMessages);
 
-  if (messages.length === 0) {
-    updateChatTitle(input);
-  }
+  if (messages.length === 0) updateChatTitle(input);
 
   setInput('');
   setIsLoading(true);
@@ -163,10 +171,7 @@ const sendMessage = async () => {
     const response = await fetch(getAgentEndpoint(currentContext), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: buildContextMessages(messages, userMessage),
-        lang,
-      }),
+      body: JSON.stringify(buildRequestBody(buildContextMessages(messages, userMessage))),
     });
 
     if (!response.ok) {
@@ -227,13 +232,10 @@ const handleConfirmation = async (confirmed: boolean) => {
   saveMessages(newMessages);
 
   try {
-    const response = await fetch(getAgentEndpoint(currentContext), { // ← fix
+    const response = await fetch(getAgentEndpoint(currentContext), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: buildContextMessages(messages, confirmMessage),
-        lang,
-      }),
+      body: JSON.stringify(buildRequestBody(buildContextMessages(messages, confirmMessage))),
     });
 
     if (!response.ok) {

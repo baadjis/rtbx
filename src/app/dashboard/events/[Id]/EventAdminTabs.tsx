@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation'
 import { 
   LayoutDashboard, CalendarRange, FileText, 
   ImageIcon, Send, UserPlus, Globe, Lock, Loader2, 
-  Settings2
+  Settings2,
+  Sparkles
 } from 'lucide-react'
 
 // Import des sous-composants
@@ -128,42 +129,66 @@ export default function EventAdminTabs({ lang, event, agenda, participants, invi
       {/* HEADER DE PUBLICATION */}
       {/* --- HEADER : PUBLICATION & ÉDITION --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-colors">
-        <div className="flex items-center gap-4">
-          <div className={`p-3 rounded-2xl ${event.is_published ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
-            {event.is_published ? <Globe size={24} /> : <Lock size={24} />}
-          </div>
-          <div>
-            <h2 className="text-xl font-black dark:text-white leading-none">{event.title}</h2>
-            <p className="text-[10px] font-bold text-gray-400 uppercase mt-2 tracking-widest">
-                {event.is_published ? t.status_live : t.status_draft}
-            </p>
-          </div>
-        </div>
+  <div className="flex items-center gap-4">
+    <div className={`p-3 rounded-2xl ${event.is_published ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+      {event.is_published ? <Globe size={24} /> : <Lock size={24} />}
+    </div>
+    <div>
+      <h2 className="text-xl font-black dark:text-white leading-none">{event.title}</h2>
+      <p className="text-[10px] font-bold text-gray-400 uppercase mt-2 tracking-widest">
+        {event.is_published ? t.status_live : t.status_draft}
+      </p>
+    </div>
+  </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          {/* BOUTON MODIFIER (Lien vers la page edit) */}
-          <Link 
-            href={`/dashboard/events/${event.id}/edit`}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 no-underline border-none"
-          >
-            <Settings2 size={14} />
-            {lang === 'fr' ? 'Modifier' : 'Edit'}
-          </Link>
+  <div className="flex items-center gap-3 w-full md:w-auto">
+    {/* BOUTON ASK AI */}
+    <button
+      onClick={() => {
+        const id = crypto.randomUUID();
+        const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+        chats.unshift({
+          id,
+          title: event.title,
+          context: 'event',
+          entityId: event.id,
+          createdAt: new Date().toISOString(),
+        });
+        localStorage.setItem('rtbx_chats', JSON.stringify(chats.slice(0, 50)));
+        localStorage.setItem(`rtbx_chat_context_${id}`, 'event');
+        localStorage.setItem(`rtbx_chat_entity_${id}`, event.id);
+        window.dispatchEvent(new Event('rtbx_chats_updated'));
+        window.location.href = `/ai/chat/${id}`;
+      }}
+      className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-indigo-600 text-white hover:bg-indigo-700 border-none"
+    >
+      <Sparkles size={14} />
+      {lang === 'fr' ? 'Ask AI' : 'Ask AI'}
+    </button>
 
-          {/* BOUTON PUBLIER / BROUILLON */}
-          <button 
-            onClick={togglePublish} 
-            disabled={loading} 
-            className={`flex-1 md:flex-none px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${
-              event.is_published 
-              ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' 
-              : 'bg-green-600 text-white hover:bg-green-700'
-            }`}
-          >
-            {loading ? <Loader2 className="animate-spin" /> : (event.is_published ? t.btn_unpublish : t.btn_publish)}
-          </button>
-        </div>
-      </div>
+    {/* BOUTON MODIFIER */}
+    <Link
+      href={`/dashboard/events/${event.id}/edit`}
+      className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 no-underline border-none"
+    >
+      <Settings2 size={14} />
+      {lang === 'fr' ? 'Modifier' : 'Edit'}
+    </Link>
+
+    {/* BOUTON PUBLIER / BROUILLON */}
+    <button
+      onClick={togglePublish}
+      disabled={loading}
+      className={`flex-1 md:flex-none px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${
+        event.is_published
+          ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'
+          : 'bg-green-600 text-white hover:bg-green-700'
+      }`}
+    >
+      {loading ? <Loader2 className="animate-spin" /> : (event.is_published ? t.btn_unpublish : t.btn_publish)}
+    </button>
+  </div>
+</div>
 
       {/* TABS SWITCHER (6 ONGLET) */}
       <div className="w-full bg-gray-100 dark:bg-slate-900 p-1.5 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-inner flex overflow-x-auto no-scrollbar items-center">
