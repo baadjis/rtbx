@@ -33,6 +33,8 @@ export default async function PublicEventPage({
 
   if (!event) {
     return (
+       <div className="min-h-screen bg-[#fafaf8]">
+            <Header />
       <div className="min-h-screen flex items-center justify-center bg-[#fafaf8]">
         <div className="text-center space-y-4">
           <p className="text-2xl font-black text-gray-900">{t.no_events}</p>
@@ -40,6 +42,7 @@ export default async function PublicEventPage({
             ← {t.back_home}
           </Link>
         </div>
+      </div>
       </div>
     );
   }

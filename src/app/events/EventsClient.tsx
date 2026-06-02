@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Search, ArrowRight, Ticket, SlidersHorizontal, X } from 'lucide-react';
 import Link from 'next/link';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+
 
 type Event = {
   id: string;
@@ -56,8 +55,8 @@ export default function EventsPageClient({ lang = 'fr' }: { lang?: 'fr' | 'en' }
   }, [search]);
 
   return (
-    <div className="min-h-screen bg-[#fafaf8]">
-      <Header />
+    <>
+  
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#0f0c29] pt-20 pb-32">
@@ -228,7 +227,6 @@ export default function EventsPageClient({ lang = 'fr' }: { lang?: 'fr' | 'en' }
         )}
       </section>
 
-      <Footer />
-    </div>
+    </>
   );
 }
