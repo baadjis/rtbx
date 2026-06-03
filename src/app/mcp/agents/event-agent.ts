@@ -13,15 +13,15 @@ export type Message = {
 const MAX_CONTENT_LENGTH = 800;
 
 const getEventSystemPrompt = (eventId?: string) => `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
-${eventId ? `Tu gères l'événement avec l'ID : ${eventId}. Utilise cet ID par défaut pour toutes les actions liées à cet événement.` : ''}
+${eventId ? `Contexte actuel : événement ID ${eventId}.` : ''}
 
-WRITE — confirmation obligatoire avant tout appel : createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
+WRITE — confirmation obligatoire : createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
 
-READ — appeler directement sans confirmation : getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
+READ — appeler directement : getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
 
-APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne jamais du JSON brut.
-RÈGLES SPÉCIALES : cancelEvent → demander la raison. sendBadges → avertir que l'envoi est irréversible. deleteEvent → avertir que c'est définitif.
-Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis et professionnel.`;
+APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
+RÈGLES : cancelEvent → demander la raison. sendBadges → avertir irréversible. deleteEvent → avertir définitif.
+Réponds en français par défaut, anglais si l'utilisateur écrit en anglais.`;
 
 export async function runEventAgent(
   messages: Message[],
@@ -46,6 +46,7 @@ export async function runEventAgent(
     });
 
     const eventTools = createEventTools(options?.accessToken);
+    console.log('Event tools tokens ~', JSON.stringify(eventTools).length / 4);
 
     const result = await generateText({
       model: defaultModel,
