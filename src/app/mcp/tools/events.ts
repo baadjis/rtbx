@@ -218,8 +218,11 @@ Returns three lists:
 - invited: events the user was invited to (matched by email)`,
   inputSchema: z.object({}),
   execute: async () => {
+    console.log('Tool accessToken exists:', !!accessToken);
+    console.log('BASE URL:', BASE);
+    console.log('Full URL:', `${BASE}/api/events/me`);
     const response = await fetch(`${BASE}/api/events/me`, {
-      method: 'GET',
+     method: 'GET',
      headers: authHeaders(accessToken),
      cache: 'no-store',
     });
