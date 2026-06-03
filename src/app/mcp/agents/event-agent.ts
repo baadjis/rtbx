@@ -44,6 +44,7 @@ export async function runEventAgent(
     accessToken?: string;
     userId?: string;
     eventId?: string;
+    userEmail?:string
   }
 ) {
   try {
