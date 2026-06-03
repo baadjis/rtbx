@@ -629,7 +629,7 @@ export async function getMyEvents(user_id: string, email: string) {
       invited: invited.data ?? [],
   }
   console.log(data)
-  console.log('organized error:', organized.error);
+  console.log('organized error:', organized);
 console.log('registered error:', registered.error);
 console.log('invited error:', invited.error);
   return {
