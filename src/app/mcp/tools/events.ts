@@ -238,11 +238,13 @@ Returns three lists:
       is_published: e.is_published,
       status: e.status,
     }));
-    return {
+    const data= {
       organized: slim(json.data?.organized ?? []),
       registered: slim(json.data?.registered?.map((r: any) => r.events) ?? []),
       invited: slim(json.data?.invited?.map((i: any) => i.events) ?? []),
     };
+    console.log(data)
+    return (data)
   },
 }),
 
