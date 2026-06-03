@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/events/services.ts
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { agendaItemSchema, agendaUpdateSchema, eventCancelSchema, eventCreateSchema, eventOrganizerSearchSchema, eventPublicSearchSchema, eventPublishSchema, eventUpdateSchema, sendInviteSchema } from './validators';
 import type { AgendaItemInput, AgendaUpdateInput, EventCancelInput, EventCreateInput, EventOrganizerSearchInput, EventPublicSearchInput, EventPublishInput, EventUpdateInput, SendInviteInput } from './validators';
 import { Resend } from 'resend';
@@ -16,7 +16,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
    CREATE EVENT
 ========================================================= */
 export async function createEvent(payload: EventCreateInput & { organizer_id: string }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const parsed = eventCreateSchema.safeParse(payload);
   if (!parsed.success) {
@@ -49,7 +49,7 @@ export async function createEvent(payload: EventCreateInput & { organizer_id: st
    PUBLISH EVENT + SEND INVITES
 ========================================================= */
 export async function publishEvent(payload: EventPublishInput & { organizer_id: string }) {
-  const supabase = createClient();
+  const supabase =  await createClient();
 
   const parsed = eventPublishSchema.safeParse(payload);
   if (!parsed.success) {
@@ -338,7 +338,7 @@ export async function sendBadges(payload: SendBadgesInput & { organizer_id: stri
    SEND INVITE
 ========================================================= */
 export async function sendInvite(payload: SendInviteInput & { organizer_id: string }) {
-  const supabase =  createClient();
+  const supabase =  await createClient();
   const parsed = sendInviteSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
@@ -391,7 +391,7 @@ export async function updateEvent(
   payload: EventUpdateInput,
   organizer_id: string
 ) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const parsed = eventUpdateSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
@@ -411,7 +411,7 @@ export async function updateEvent(
    DELETE EVENT
 ========================================================= */
 export async function deleteEvent(eventId: string, organizer_id: string) {
-  const supabase =  createClient();
+  const supabase = await  createClient();
 
   // Vérifier ownership + statut non publié
   const { data: event } = await supabase
@@ -437,7 +437,7 @@ export async function deleteEvent(eventId: string, organizer_id: string) {
    GET EVENT REGISTRATIONS
 ========================================================= */
 export async function getEventRegistrations(eventId: string, organizer_id: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Vérifier ownership
   const { data: event } = await supabase
@@ -463,7 +463,7 @@ export async function getEventRegistrations(eventId: string, organizer_id: strin
    GET EVENT INVITATIONS
 ========================================================= */
 export async function getEventInvitations(eventId: string, organizer_id: string) {
-  const supabase =  createClient();
+  const supabase =  await createClient();
 
   // Vérifier ownership
   const { data: event } = await supabase
@@ -489,7 +489,7 @@ export async function getEventInvitations(eventId: string, organizer_id: string)
    GET EVENT AGENDA
 ========================================================= */
 export async function getEventAgenda(eventId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('event_agenda')
@@ -509,7 +509,7 @@ export async function addAgendaItem(
   payload: AgendaItemInput,
   organizer_id: string
 ) {
-  const supabase =  createClient();
+  const supabase =  await createClient();
   const parsed = agendaItemSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
@@ -541,7 +541,7 @@ export async function updateAgendaItem(
   payload: AgendaUpdateInput,
   organizer_id: string
 ) {
-  const supabase =  createClient();
+  const supabase =  await createClient();
   const parsed = agendaUpdateSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
@@ -645,7 +645,7 @@ console.log('invited error:', invited.error);
 export async function cancelEvent(
   payload: EventCancelInput & { organizer_id: string }
 ) {
-  const supabase =  createClient();
+  const supabase = await  createClient();
   const parsed = eventCancelSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
@@ -719,7 +719,7 @@ export async function cancelEvent(
    SEARCH PUBLIC EVENTS
 ========================================================= */
 export async function searchPublicEvents(payload: EventPublicSearchInput) {
-  const supabase = createClient();
+  const supabase = await  createClient();
   const parsed = eventPublicSearchSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
@@ -752,7 +752,7 @@ export async function searchOrganizerEvents(
   payload: EventOrganizerSearchInput,
   organizer_id: string
 ) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const parsed = eventOrganizerSearchSchema.safeParse(payload);
   if (!parsed.success) return { data: null, error: parsed.error.flatten() };
 
