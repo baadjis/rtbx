@@ -599,7 +599,7 @@ export async function deleteAgendaItem(agendaItemId: string, organizer_id: strin
    GET MY EVENTS
 ========================================================= */
 export async function getMyEvents(user_id: string, email: string) {
-  const supabase = createClient();
+  const supabase =  await createClient();
 
   const [organized, registered, invited] = await Promise.all([
     // Events organisés
@@ -629,6 +629,9 @@ export async function getMyEvents(user_id: string, email: string) {
       invited: invited.data ?? [],
   }
   console.log(data)
+  console.log('organized error:', organized.error);
+console.log('registered error:', registered.error);
+console.log('invited error:', invited.error);
   return {
     data,
     error: organized.error || registered.error || invited.error || null,
