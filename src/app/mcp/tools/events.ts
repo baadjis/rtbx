@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/tools/events.ts
 import { tool } from 'ai';
 import { z } from 'zod';
@@ -218,19 +219,30 @@ Returns three lists:
 - invited: events the user was invited to (matched by email)`,
   inputSchema: z.object({}),
   execute: async () => {
-    console.log('Tool accessToken exists:', !!accessToken);
-    console.log('BASE URL:', BASE);
-    console.log('Full URL:', `${BASE}/api/events/me`);
     const response = await fetch(`${BASE}/api/events/me`, {
-     method: 'GET',
-     headers: authHeaders(accessToken),
-     cache: 'no-store',
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || 'Failed to fetch user events');
+      throw new Error(error.error || 'Failed to fetch events');
     }
-    return response.json();
+    const json = await response.json();
+    const slim = (arr: any[]) => arr.map(e => ({
+      id: e.id,
+      title: e.title,
+      start_date: e.start_date,
+      location: e.location,
+      category: e.category,
+      is_published: e.is_published,
+      status: e.status,
+    }));
+    return {
+      organized: slim(json.data?.organized ?? []),
+      registered: slim(json.data?.registered?.map((r: any) => r.events) ?? []),
+      invited: slim(json.data?.invited?.map((i: any) => i.events) ?? []),
+    };
   },
 }),
 
