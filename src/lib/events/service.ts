@@ -623,6 +623,7 @@ export async function getMyEvents(user_id: string, email: string) {
       .eq('email', email)
       .order('created_at', { ascending: false }),
   ]);
+  console.log(organized,registered,invited)
   const data={
       organized: organized.data ?? [],
       registered: registered.data ?? [],
