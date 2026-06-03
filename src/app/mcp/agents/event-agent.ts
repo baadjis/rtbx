@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/mcp/agents/event-agent.ts
 import { generateText, stepCountIs } from 'ai';
 import { createEventTools } from '../tools/events';
 import { defaultModel } from '../core/client';
@@ -23,6 +22,20 @@ APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
 RÈGLES : cancelEvent → demander la raison. sendBadges → avertir irréversible. deleteEvent → avertir définitif.
 Réponds en français par défaut, anglais si l'utilisateur écrit en anglais.`;
 
+const READ_TOOLS = ['getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents'];
+
+const getRelevantEventTools = (allTools: any, lastMessage: string) => {
+  const isReadOnly = lastMessage.match(/voir|liste|agenda|participants|invitations|cherche|search|show|get|mes events|mes événements/i);
+
+  if (isReadOnly) {
+    return Object.fromEntries(
+      Object.entries(allTools).filter(([key]) => READ_TOOLS.includes(key))
+    );
+  }
+
+  return allTools;
+};
+
 export async function runEventAgent(
   messages: Message[],
   options?: {
@@ -45,7 +58,13 @@ export async function runEventAgent(
       return msg;
     });
 
-    const eventTools = createEventTools(options?.accessToken);
+    // Créer les tools une seule fois
+    const allEventTools = createEventTools(options?.accessToken);
+
+    // Filtrer selon le message
+    const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
+    const eventTools = getRelevantEventTools(allEventTools, lastMessage);
+
     console.log('Event tools tokens ~', JSON.stringify(eventTools).length / 4);
 
     const result = await generateText({
