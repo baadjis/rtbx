@@ -213,8 +213,8 @@ If the event has badge_automation_type='immediate', the badge PDF is sent right 
 // =====================================================
 getMyEvents: tool({
   description: `Get all events of the authenticated user. 
-Call this when user says: "mes événements", "mes events", "liste mes events", "voir mes events", "quels sont mes événements", "show my events", "list my events".
-Returns: organized (events created by user), registered (events user signed up for), invited (events user was invited to).`,
+Only call this when the user explicitly asks to see their events.
+Returns: organized (events created by user), registered (events user registered for), invited (events user was invited to).`,
   inputSchema: z.object({}),
   execute: async () => {
     const response = await fetch(`${BASE}/api/events/me`, {
