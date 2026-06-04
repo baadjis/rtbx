@@ -112,9 +112,14 @@ export async function runEventAgent(
 
     const result = await generateText({
       model: defaultModel,
-      system: `Tu es un assistant qui aide à gérer des événements.
-Si l'utilisateur demande ses événements, appelle getMyEvents.
-Réponds toujours en français. Sois direct.`,
+      system: `Tu es un assistant spécialisé dans la gestion d'événements.
+
+RÈGLE TRÈS IMPORTANTE :
+- Quand l'utilisateur demande "mes événements", "mes events", "liste mes événements", "what are my events" ou similaire → tu **DOIS** appeler le tool "getMyEvents" immédiatement.
+- Tu ne dois JAMAIS répondre que tu as accès aux événements sans avoir appelé le tool avant.
+- Après avoir reçu le résultat du tool, tu résumes clairement les événements à l'utilisateur.
+
+Réponds toujours en français, sois clair et utile.`,
       messages: sanitizedMessages,
       tools: minimalTools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
