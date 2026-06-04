@@ -74,6 +74,7 @@ const getRelevantEventTools = (allTools: any, lastMessage: string) => {
     );
 };
 
+
 export async function runEventAgent(
   messages: Message[],
   options?: {
@@ -104,14 +105,16 @@ export async function runEventAgent(
     const allEventTools = createEventTools(options?.accessToken);
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
     const eventTools = getRelevantEventTools(allEventTools, lastMessage);
-
+    const minimalTools = {
+    getMyEvents: allEventTools.getMyEvents,
+  };
     console.log('Event tools tokens ~', JSON.stringify(eventTools).length / 4);
 
     const result = await generateText({
       model: defaultModel,
       system: getEventSystemPrompt(options?.eventId),
       messages: sanitizedMessages,
-      tools: eventTools,
+      tools: minimalTools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
       maxOutputTokens: mcpConfig.maxTokens,
       stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
