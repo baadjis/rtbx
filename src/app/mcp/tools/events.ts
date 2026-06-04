@@ -274,7 +274,7 @@ Returns: organized (events created by user), registered (events user registered 
 getMyEvents: tool({
   description: `Retourne les événements de l'utilisateur connecté.
 Retourne uniquement les informations essentielles : titre, dates, statut, et type (organized / registered / invited).`,
-  inputSchema: z.object({}),
+  inputSchema: z.object({}).strict(),
   execute: async () => {
     if (!accessToken) {
       throw new Error("AUTH_REQUIRED: Vous devez être connecté.");
