@@ -227,6 +227,7 @@ Returns: organized (events created by user), registered (events user signed up f
       throw new Error(error.error || 'Failed to fetch user events');
     }
     const json = await response.json();
+    console.log(json)
     // Retourner seulement les champs essentiels pour ne pas surcharger le LLM
     const slim = (arr: any[]) => (arr || []).map((e: any) => ({
       id: e.id,

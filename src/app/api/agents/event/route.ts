@@ -59,6 +59,7 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const { data: { session } } = await supabase.auth.getSession();
+    console.log("user",user?.email,user?.id)
 
     if (!user) {
       return NextResponse.json({
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
       accessToken: session?.access_token,
       userId: user.id,
       eventId: body.eventId, // ← optionnel, injecté dans le system prompt
+      userEmail:user.email
     });
 
     if (!result.success) throw result.error;
