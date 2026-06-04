@@ -17,9 +17,9 @@
 
 
 export const mcpConfig = {
-  temperature: 0.7,
+  temperature: 0.3,
   maxTokens: 1500, // gardé comme ça, c'est juste le nom de la prop generateText qui change
-  maxSteps: 5,
+  maxSteps: 3,
   maxMessages: 20,
   rateLimit: {
     maxRequestsPerMinute: 20,

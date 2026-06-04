@@ -50,9 +50,9 @@ console.log('accessToken preview:', options?.accessToken?.slice(0, 20));
       system: systemPrompt,
       messages: sanitizedMessages,
       tools: relevantTools,
-      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
+      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
       maxOutputTokens: mcpConfig.maxTokens,
-      stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5),
+      stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
       maxRetries: 0,
     });
 

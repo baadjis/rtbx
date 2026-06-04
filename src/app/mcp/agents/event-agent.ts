@@ -35,16 +35,16 @@ const READ_ONLY_TOOLS = [
 const WRITE_KEYWORDS = /crée|créer|create|publish|publier|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add/i;
 
 const getRelevantEventTools = (allTools: any, lastMessage: string) => {
-  let ReleventTools={};
-  // Si le message contient un mot d'action → envoyer tous les tools
-  
-  if (WRITE_KEYWORDS.test(lastMessage)) ReleventTools = allTools;
-  // Sinon → seulement les tools READ
-  ReleventTools = Object.fromEntries(
-    Object.entries(allTools).filter(([key]) => READ_ONLY_TOOLS.includes(key))
-  );
-  //console.log(ReleventTools)
-  return ReleventTools
+  if (lastMessage.length < 30 || !WRITE_KEYWORDS.test(lastMessage)) {
+    return Object.fromEntries(
+      Object.entries(allTools).filter(([key]) => 
+        READ_ONLY_TOOLS.includes(key)
+      )
+    );
+  }
+
+  // Sinon on donne tous les tools mais on limite le nombre
+  return allTools;
 };
 
 export async function runEventAgent(
@@ -85,9 +85,9 @@ export async function runEventAgent(
       system: getEventSystemPrompt(options?.eventId),
       messages: sanitizedMessages,
       tools: eventTools,
-      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.7,
+      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
       maxOutputTokens: mcpConfig.maxTokens,
-      stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 5),
+      stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
       maxRetries: 0,
     });
 
