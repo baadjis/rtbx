@@ -57,7 +57,7 @@ const getRelevantEventTools = (allTools: any, lastMessage: string) => {
   if (WRITE_KEYWORDS.test(lowerMessage)) {
     console.log("🔧 WRITE mode → Tous les tools (READ + WRITE)");
     return Object.fromEntries(
-      Object.entries(WRITE_TOOLS).filter(([key]) => READ_ONLY_TOOLS.includes(key))
+      Object.entries(WRITE_TOOLS).filter(([key]) => WRITE_TOOLS.includes(key))
     );
   }
 
