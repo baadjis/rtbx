@@ -35,12 +35,16 @@ const READ_ONLY_TOOLS = [
 const WRITE_KEYWORDS = /crée|créer|create|publish|publier|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add/i;
 
 const getRelevantEventTools = (allTools: any, lastMessage: string) => {
+  let ReleventTools={};
   // Si le message contient un mot d'action → envoyer tous les tools
-  if (WRITE_KEYWORDS.test(lastMessage)) return allTools;
+  
+  if (WRITE_KEYWORDS.test(lastMessage)) ReleventTools = allTools;
   // Sinon → seulement les tools READ
-  return Object.fromEntries(
+  ReleventTools = Object.fromEntries(
     Object.entries(allTools).filter(([key]) => READ_ONLY_TOOLS.includes(key))
   );
+  console.log(ReleventTools)
+  return ReleventTools
 };
 
 export async function runEventAgent(
@@ -54,6 +58,8 @@ export async function runEventAgent(
     userEmail?: string;
   }
 ) {
+  console.log('accessToken exists:', !!options?.accessToken);
+  console.log('accessToken preview:', options?.accessToken?.slice(0, 20));
   try {
     const sanitizedMessages = messages.map((msg, index) => {
       if (index === messages.length - 1) return msg;
