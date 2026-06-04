@@ -14,26 +14,33 @@ const MAX_CONTENT_LENGTH = 800;
 const getEventSystemPrompt = (eventId?: string) => `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
 ${eventId ? `Contexte actuel : événement ID ${eventId}.` : ''}
 
-WRITE — confirmation obligatoire : createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
+WRITE (confirmation obligatoire avant d'appeler) : createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
 
-READ — appeler directement : getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
+READ (appeler directement sans confirmation) : getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
 
-APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
-RÈGLES : cancelEvent → demander la raison. sendBadges → avertir irréversible. deleteEvent → avertir définitif.
-Réponds en français par défaut, anglais si l'utilisateur écrit en anglais.`;
+APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
+RÈGLES : cancelEvent → demander la raison d'abord. sendBadges → avertir que c'est irréversible. deleteEvent → avertir que c'est définitif.
+Réponds en français par défaut, anglais si l'utilisateur écrit en anglais. Sois concis.`;
 
-const READ_TOOLS = ['getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents'];
+// Séparer en 2 groupes — READ léger, WRITE complet
+const READ_ONLY_TOOLS = [
+  'getMyEvents',
+  'getEventRegistrations', 
+  'getEventInvitations',
+  'getEventAgenda',
+  'searchPublicEvents',
+  'searchOrganizerEvents',
+];
+
+const WRITE_KEYWORDS = /crée|créer|create|publish|publier|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add/i;
 
 const getRelevantEventTools = (allTools: any, lastMessage: string) => {
-  const isReadOnly = lastMessage.match(/voir|liste|agenda|participants|invitations|cherche|search|show|get|mes events|mes événements/i);
-
-  if (isReadOnly) {
-    return Object.fromEntries(
-      Object.entries(allTools).filter(([key]) => READ_TOOLS.includes(key))
-    );
-  }
-
-  return allTools;
+  // Si le message contient un mot d'action → envoyer tous les tools
+  if (WRITE_KEYWORDS.test(lastMessage)) return allTools;
+  // Sinon → seulement les tools READ
+  return Object.fromEntries(
+    Object.entries(allTools).filter(([key]) => READ_ONLY_TOOLS.includes(key))
+  );
 };
 
 export async function runEventAgent(
@@ -44,7 +51,7 @@ export async function runEventAgent(
     accessToken?: string;
     userId?: string;
     eventId?: string;
-    userEmail?:string
+    userEmail?: string;
   }
 ) {
   try {
@@ -59,10 +66,7 @@ export async function runEventAgent(
       return msg;
     });
 
-    // Créer les tools une seule fois
     const allEventTools = createEventTools(options?.accessToken);
-
-    // Filtrer selon le message
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
     const eventTools = getRelevantEventTools(allEventTools, lastMessage);
 

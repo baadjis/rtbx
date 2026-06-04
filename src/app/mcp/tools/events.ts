@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/mcp/tools/events.ts
 import { tool } from 'ai';
 import { z } from 'zod';
@@ -210,27 +211,36 @@ If the event has badge_automation_type='immediate', the badge PDF is sent right 
 // =====================================================
 // GET MY EVENTS
 // =====================================================
-getMyEvents : tool({
-  description: `Get all events related to the authenticated user in one call.
-Returns three lists:
-- organized: events the user created as organizer
-- registered: events the user registered to (matched by email)
-- invited: events the user was invited to (matched by email)`,
+getMyEvents: tool({
+  description: `Get all events of the authenticated user. 
+Call this when user says: "mes événements", "mes events", "liste mes events", "voir mes events", "quels sont mes événements", "show my events", "list my events".
+Returns: organized (events created by user), registered (events user signed up for), invited (events user was invited to).`,
   inputSchema: z.object({}),
   execute: async () => {
-    console.log('Tool accessToken exists:', !!accessToken);
-    console.log('BASE URL:', BASE);
-    console.log('Full URL:', `${BASE}/api/events/me`);
     const response = await fetch(`${BASE}/api/events/me`, {
-     method: 'GET',
-     headers: authHeaders(accessToken),
-     cache: 'no-store',
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to fetch user events');
     }
-    return response.json();
+    const json = await response.json();
+    // Retourner seulement les champs essentiels pour ne pas surcharger le LLM
+    const slim = (arr: any[]) => (arr || []).map((e: any) => ({
+      id: e.id,
+      title: e.title,
+      start_date: e.start_date,
+      location: e.location,
+      category: e.category,
+      is_published: e.is_published,
+    }));
+    return {
+      organized: slim(json.data?.organized),
+      registered: slim(json.data?.registered?.map((r: any) => r.events)),
+      invited: slim(json.data?.invited?.map((i: any) => i.events)),
+    };
   },
 }),
 
