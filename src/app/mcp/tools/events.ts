@@ -216,7 +216,7 @@ If the event has badge_automation_type='immediate', the badge PDF is sent right 
 getMyEvents: tool({
 description: `Get all events of the authenticated user. 
 Only call this when the user explicitly asks to see their events.
-for every event return just title,start_date,end_date.
+for every event return just: title,start_date,end_date.
 Returns: organized (events created by user), registered (events user registered for), invited (events user was invited to).`,
   inputSchema: z.object({}),
   /*execute: async () => {
