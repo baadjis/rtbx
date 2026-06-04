@@ -217,6 +217,7 @@ Only call this when the user explicitly asks to see their events.
 Returns: organized (events created by user), registered (events user registered for), invited (events user was invited to).`,
   inputSchema: z.object({}),
   execute: async () => {
+    console.log(accessToken)
     const response = await fetch(`${BASE}/api/events/me`, {
       method: 'GET',
       headers: authHeaders(accessToken),
