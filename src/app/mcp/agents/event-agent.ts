@@ -22,29 +22,56 @@ APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS
 RÈGLES : cancelEvent → demander la raison d'abord. sendBadges → avertir que c'est irréversible. deleteEvent → avertir que c'est définitif.
 Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`;
 
-// Séparer en 2 groupes — READ léger, WRITE complet
+
+// =============================================
+// TOOLS CATEGORIES
+// =============================================
 const READ_ONLY_TOOLS = [
   'getMyEvents',
-  'getEventRegistrations', 
+  'getEventRegistrations',
   'getEventInvitations',
   'getEventAgenda',
   'searchPublicEvents',
   'searchOrganizerEvents',
 ];
 
-const WRITE_KEYWORDS = /crée|créer|create|publish|publier|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add/i;
+const WRITE_TOOLS = [
+  'createEvent',
+  'publishEvent',
+  'updateEvent',
+  'deleteEvent',
+  'cancelEvent',
+  'sendInvite',
+  'sendBadges',
+  'registerEvent',
+  'addAgendaItem',
+  'updateAgendaItem',
+  'deleteAgendaItem',
+];
 
+const WRITE_KEYWORDS = /crée|créer|create|publish|publier|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add/i;
+const READ_KEYWORDS = /voir|montre|liste|mes événements|my events|get my|afficher|chercher|search|quel est|what is|combien/i;
 const getRelevantEventTools = (allTools: any, lastMessage: string) => {
-  if (lastMessage.length < 30 || !WRITE_KEYWORDS.test(lastMessage)) {
+  const lowerMessage = lastMessage.toLowerCase().trim();
+  // Si le message contient un mot d'action → envoyer tous les tools
+  if (WRITE_KEYWORDS.test(lowerMessage)) {
+    console.log("🔧 WRITE mode → Tous les tools (READ + WRITE)");
     return Object.fromEntries(
-      Object.entries(allTools).filter(([key]) => 
-        READ_ONLY_TOOLS.includes(key)
-      )
+      Object.entries(WRITE_TOOLS).filter(([key]) => READ_ONLY_TOOLS.includes(key))
     );
   }
 
-  // Sinon on donne tous les tools mais on limite le nombre
-  return allTools;
+  // 2. READ détecté → on renvoie seulement les READ tools
+  else if (READ_KEYWORDS.test(lowerMessage)) {
+    console.log("🔧 READ mode → Seulement READ tools");
+    return Object.fromEntries(
+      Object.entries(allTools).filter(([key]) => READ_ONLY_TOOLS.includes(key))
+    );
+  }
+  //console.log(ReleventTools)
+  return Object.fromEntries(
+      allTools
+    );
 };
 
 export async function runEventAgent(
