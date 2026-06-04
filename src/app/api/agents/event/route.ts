@@ -1,52 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * =========================================================
- * POST /api/agents/event
- * =========================================================
- *
- * Event Manager Agent endpoint.
- *
- * Responsibilities:
- *
- * - requires authenticated user
- * - accepts optional eventId for context injection
- * - routes to event-specific agent with filtered tools
- * - handles rate limit and errors
- *
- * This route is safe to expose to:
- *
- * - frontend AI chat with event context
- * - embedded event widgets
- * - WhatsApp/Telegram webhooks (future)
- *
- * =========================================================
- */
 import { NextResponse } from 'next/server';
 import { runEventAgent } from '@/app/mcp/agents/event-agent';
 import { mcpConfig } from '@/app/mcp/core/config';
 import { createClient } from '@/utils/supabase/server';
 import { LangType } from '@/lib/lang/types';
 
-const Data={
-    fr:{rate_limit:"⏳ Limite de tokens atteinte. Veuillez réessayer dans quelques secondes.",
-    connect_hint:"Veuillez vous connecter pour utiliser l'assistant.",
-    internal_error:"Désolé, une erreur interne est survenue.",
-    },
-
-    en:{rate_limit:"⏳ Token limit reached. Please try again in a few seconds.",
-    connect_hint:"Please log in to use the assistant.",
-    internal_error:"Sorry, an internal error occurred.",
-    }
-
-}
+const Data = {
+  fr: {
+    rate_limit: "⏳ Limite de tokens atteinte. Veuillez réessayer dans quelques secondes.",
+    connect_hint: "Veuillez vous connecter pour utiliser l'assistant.",
+    internal_error: "Désolé, une erreur interne est survenue.",
+  },
+  en: {
+    rate_limit: "⏳ Token limit reached. Please try again in a few seconds.",
+    connect_hint: "Please log in to use the assistant.",
+    internal_error: "Sorry, an internal error occurred.",
+  }
+};
 
 export async function POST(request: Request) {
-  let lang:LangType = 'en';
-  let t=Data[lang]
+  let lang: LangType = 'fr';
+  let t = Data[lang];
+
   try {
     const body = await request.json();
     lang = body.lang || 'fr';
-    t=Data[lang]
+    t = Data[lang];
 
     if (!body.messages || !Array.isArray(body.messages)) {
       return NextResponse.json({
@@ -55,26 +34,53 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    // Auth
+    // ==================== AUTHENTIFICATION ====================
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: { session } } = await supabase.auth.getSession();
-    console.log("user",user?.email,user?.id)
 
-    if (!user) {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (sessionError || userError || !session?.access_token || !user) {
+      console.log("❌ Auth failed - No session or user");
       return NextResponse.json({
         success: false,
-        text: t.connect_hint
+        text: t.connect_hint,
+        needsAuth: true
       }, { status: 401 });
     }
 
+    // Refresh automatique si le token expire bientôt (moins de 1 minute)
+    let accessToken = session.access_token;
+
+    if (session.expires_at && session.expires_at * 1000 < Date.now() + 60000) {
+      console.log("🔄 Token presque expiré → Refresh en cours...");
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+
+      if (refreshError) {
+        console.log("❌ Refresh failed:", refreshError.message);
+        return NextResponse.json({
+          success: false,
+          text: "Votre session a expiré. Veuillez vous reconnecter.",
+          needsAuth: true
+        }, { status: 401 });
+      }
+
+      if (refreshData.session?.access_token) {
+        accessToken = refreshData.session.access_token;
+        console.log("✅ Token rafraîchi avec succès");
+      }
+    }
+
+    console.log("✅ Auth OK - User:", user.email, "| Token length:", accessToken.length);
+
+    // ==================== APPEL DE L'AGENT ====================
     const result = await runEventAgent(body.messages, {
       temperature: body.temperature || mcpConfig.temperature,
       maxSteps: body.maxSteps || mcpConfig.maxSteps,
-      accessToken: session?.access_token,
+      accessToken: accessToken,           // Token frais
       userId: user.id,
-      eventId: body.eventId, // ← optionnel, injecté dans le system prompt
-      userEmail:user.email
+      userEmail: user.email,
+      eventId: body.eventId,
     });
 
     if (!result.success) throw result.error;
@@ -87,13 +93,9 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Event Agent Server Error:', error);
-    const errorStr = JSON.stringify(error).toLowerCase();
 
-    if (
-      errorStr.includes('rate limit') ||
-      errorStr.includes('429') ||
-      errorStr.includes('rate_limit_exceeded')
-    ) {
+    const errorStr = JSON.stringify(error).toLowerCase();
+    if (errorStr.includes('rate limit') || errorStr.includes('429')) {
       return NextResponse.json({
         success: false,
         error: 'rate_limit',
