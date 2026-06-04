@@ -213,7 +213,7 @@ If the event has badge_automation_type='immediate', the badge PDF is sent right 
 // =====================================================
 // GET MY EVENTS
 // =====================================================
-getMyEvents: tool({
+/*getMyEvents: tool({
 description: `Get all events of the authenticated user. 
 for evry events return just : title, start_date end_date, location.
 Returns: organized (events created by user), registered (events user registered for), invited (events user was invited to).`,
@@ -246,7 +246,7 @@ Returns: organized (events created by user), registered (events user registered 
       invited: slim(json.data?.invited?.map((i: any) => i.events)),
     };
     return json
-  },*/
+  },
   execute: async () => {
     if (!accessToken) {
       throw new Error("AUTH_REQUIRED: Vous devez être connecté pour voir vos événements.");
@@ -268,6 +268,58 @@ Returns: organized (events created by user), registered (events user registered 
     }
 
     return await response.json();
+  },
+}),*/
+
+getMyEvents: tool({
+  description: `Retourne les événements de l'utilisateur connecté.
+Retourne uniquement les informations essentielles : titre, dates, statut, et type (organized / registered / invited).`,
+  inputSchema: z.object({}),
+  execute: async () => {
+    if (!accessToken) {
+      throw new Error("AUTH_REQUIRED: Vous devez être connecté.");
+    }
+
+    const response = await fetch(`${BASE}/api/events/me`, {
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("AUTH_REQUIRED: Session expirée. Veuillez vous reconnecter.");
+      }
+      throw new Error("Impossible de récupérer vos événements.");
+    }
+
+    const json = await response.json();
+
+    // === SIMPLIFICATION TRÈS IMPORTANTE ===
+    const slimData = {
+      organized: (json.data?.organized || []).map((e: any) => ({
+        id: e.id,
+        title: e.title,
+        start_date: e.start_date,
+        end_date: e.end_date,
+        is_published: e.is_published,
+        location: e.location,
+      })),
+      registered: (json.data?.registered || []).map((r: any) => ({
+        id: r.events?.id,
+        title: r.events?.title,
+        start_date: r.events?.start_date,
+      })),
+      invited: (json.data?.invited || []).map((i: any) => ({
+        id: i.events?.id,
+        title: i.events?.title,
+        start_date: i.events?.start_date,
+      })),
+    };
+
+    console.log("Events returned to LLM:", JSON.stringify(slimData, null, 2));
+
+    return slimData;
   },
 }),
 
