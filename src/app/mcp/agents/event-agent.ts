@@ -112,7 +112,9 @@ export async function runEventAgent(
 
     const result = await generateText({
       model: defaultModel,
-      system: getEventSystemPrompt(options?.eventId),
+      system: `Tu es un assistant qui aide à gérer des événements.
+Si l'utilisateur demande ses événements, appelle getMyEvents.
+Réponds toujours en français. Sois direct.`,
       messages: sanitizedMessages,
       tools: minimalTools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
