@@ -270,11 +270,16 @@ Returns: organized (events created by user), registered (events user registered 
     return await response.json();
   },
 }),*/
-
 getMyEvents: tool({
-  description: `Retourne les événements de l'utilisateur connecté.
-Retourne uniquement les informations essentielles : titre, dates, statut, et type (organized / registered / invited).`,
-  inputSchema: z.object({}).strict(),
+  description: `Récupère la liste des événements de l'utilisateur connecté.
+  
+  IMPORTANT : Cet outil ne prend **AUCUN** paramètre. 
+  Tu dois l'appeler comme ça : getMyEvents avec rien à l'intérieur.
+  N'ajoute jamais name, email, id ou quoi que ce soit.`,
+  
+  // Solution pour forcer Groq à ne pas envoyer de params
+  inputSchema: z.object({}).passthrough().transform(() => ({})),
+  
   execute: async () => {
     if (!accessToken) {
       throw new Error("AUTH_REQUIRED: Vous devez être connecté.");
@@ -288,38 +293,23 @@ Retourne uniquement les informations essentielles : titre, dates, statut, et typ
 
     if (!response.ok) {
       if (response.status === 401 || response.status === 403) {
-        throw new Error("AUTH_REQUIRED: Session expirée. Veuillez vous reconnecter.");
+        throw new Error("AUTH_REQUIRED: Votre session a expiré.");
       }
       throw new Error("Impossible de récupérer vos événements.");
     }
 
     const json = await response.json();
-
-    // === SIMPLIFICATION TRÈS IMPORTANTE ===
-    const slimData = {
-      organized: (json.data?.organized || []).map((e: any) => ({
-        id: e.id,
+    
+    // Version simplifiée et propre pour le LLM
+    return {
+      message: "Voici vos événements :",
+      organized: (json?.data?.organized || []).map((e: any) => ({
         title: e.title,
-        start_date: e.start_date,
-        end_date: e.end_date,
-        is_published: e.is_published,
+        start_date: e.start_date?.slice(0,10),
         location: e.location,
-      })),
-      registered: (json.data?.registered || []).map((r: any) => ({
-        id: r.events?.id,
-        title: r.events?.title,
-        start_date: r.events?.start_date,
-      })),
-      invited: (json.data?.invited || []).map((i: any) => ({
-        id: i.events?.id,
-        title: i.events?.title,
-        start_date: i.events?.start_date,
-      })),
+        status: e.is_published ? "Publié" : "Brouillon"
+      })).slice(0, 8),
     };
-
-    console.log("Events returned to LLM:", JSON.stringify(slimData, null, 2));
-
-    return slimData;
   },
 }),
 
