@@ -1,4 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * =========================================================
+ * POST /api/agents/event
+ * =========================================================
+ *
+ * Event Manager Agent endpoint.
+ *
+ * Responsibilities:
+ *
+ * - requires authenticated user
+ * - accepts optional eventId for context injection
+ * - routes to event-specific agent with filtered tools
+ * - handles rate limit and errors
+ *
+ * This route is safe to expose to:
+ *
+ * - frontend AI chat with event context
+ * - embedded event widgets
+ * - WhatsApp/Telegram webhooks (future)
+ *
+ * =========================================================
+ */
+
 import { NextResponse } from 'next/server';
 import { runEventAgent } from '@/app/mcp/agents/event-agent';
 import { mcpConfig } from '@/app/mcp/core/config';

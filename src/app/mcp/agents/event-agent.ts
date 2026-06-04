@@ -20,7 +20,7 @@ READ (appeler directement sans confirmation) : getMyEvents, getEventRegistration
 
 APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
 RÈGLES : cancelEvent → demander la raison d'abord. sendBadges → avertir que c'est irréversible. deleteEvent → avertir que c'est définitif.
-Réponds en français par défaut, anglais si l'utilisateur écrit en anglais. Sois concis.`;
+Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`;
 
 // Séparer en 2 groupes — READ léger, WRITE complet
 const READ_ONLY_TOOLS = [
@@ -43,7 +43,7 @@ const getRelevantEventTools = (allTools: any, lastMessage: string) => {
   ReleventTools = Object.fromEntries(
     Object.entries(allTools).filter(([key]) => READ_ONLY_TOOLS.includes(key))
   );
-  console.log(ReleventTools)
+  //console.log(ReleventTools)
   return ReleventTools
 };
 
