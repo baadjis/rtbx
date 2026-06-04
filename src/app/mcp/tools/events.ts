@@ -22,6 +22,8 @@ const authHeaders = (token?: string) => ({
   ...(token ? { Authorization: `Bearer ${token}` } : {}),
 });
 export const createEventTools = (accessToken?: string) => ({
+
+  
 // =====================================================
 // CREATE EVENT
 // =====================================================
@@ -212,12 +214,12 @@ If the event has badge_automation_type='immediate', the badge PDF is sent right 
 // GET MY EVENTS
 // =====================================================
 getMyEvents: tool({
-  description: `Get all events of the authenticated user. 
+description: `Get all events of the authenticated user. 
 Only call this when the user explicitly asks to see their events.
-for every event return just title,start_date,end_date,
+for every event return just title,start_date,end_date.
 Returns: organized (events created by user), registered (events user registered for), invited (events user was invited to).`,
   inputSchema: z.object({}),
-  execute: async () => {
+  /*execute: async () => {
     console.log(accessToken)
     const response = await fetch(`${BASE}/api/events/me`, {
       method: 'GET',
@@ -244,6 +246,29 @@ Returns: organized (events created by user), registered (events user registered 
       registered: slim(json.data?.registered?.map((r: any) => r.events)),
       invited: slim(json.data?.invited?.map((i: any) => i.events)),
     };
+    return json
+  },*/
+  execute: async () => {
+    if (!accessToken) {
+      throw new Error("AUTH_REQUIRED: Vous devez être connecté pour voir vos événements.");
+    }
+
+    const response = await fetch(`${BASE}/api/events/me`, {
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("AUTH_REQUIRED: Votre session a expiré. Veuillez vous reconnecter.");
+    }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Impossible de récupérer vos événements');
+    }
+
+    return await response.json();
   },
 }),
 

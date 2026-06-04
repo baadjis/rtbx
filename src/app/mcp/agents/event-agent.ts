@@ -53,9 +53,11 @@ export async function runEventAgent(
     temperature?: number;
     maxSteps?: number;
     accessToken?: string;
+    refreshToken?:string
     userId?: string;
     eventId?: string;
     userEmail?: string;
+    
   }
 ) {
   console.log('accessToken exists:', !!options?.accessToken);
