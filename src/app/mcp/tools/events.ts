@@ -271,8 +271,11 @@ Returns: organized (events created by user), registered (events user registered 
   },
 }),*/
 getMyEvents: tool({
-  description: `Récupère les événements de l'utilisateur. 
-  Cet outil ne prend AUCUN paramètre. Appelle-le toujours sans aucun argument.`,
+  description: `Outil CRITIQUE : Récupère tous les événements de l'utilisateur connecté.
+  
+  À appeler OBLIGATOIREMENT dès que l'utilisateur parle de "mes événements", "ma liste", "what are my events", etc.
+  N'invente jamais rien. Ne jamais répondre sans appeler cet outil.
+  Cet outil ne prend AUCUN paramètre.`,
   
   inputSchema: z.object({}).strict(), // très strict
 
