@@ -297,21 +297,9 @@ getMyEvents: tool({
       throw new Error(`Erreur serveur: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log("✅ getMyEvents raw data:", JSON.stringify(data).slice(0, 500));
-
-    // Retour très clair et structuré pour le LLM
-    return {
-      success: true,
-      organized: (data?.data?.organized || []).map((e: any) => ({
-        title: e.title,
-        start_date: e.start_date,
-        location: e.location,
-        published: e.is_published
-      })),
-      registered: [],
-      invited: []
-    };
+    console.log("Status:", response.status);
+  const json = await response.json();
+  console.log("FULL RESPONSE:", JSON.stringify(json, null, 2));
   },
 }),
 
