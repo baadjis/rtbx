@@ -33,8 +33,8 @@ import { requireUser } from '@/lib/auth/get-user';
 export async function GET(request: Request) {
   try {
     const authHeader = request.headers.get('Authorization');
-  console.log('Auth header:', authHeader?.slice(0, 20));
-  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
+  //console.log('Auth header:', authHeader?.slice(0, 20));
+  //const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
   const { user, error: authError } = await requireUser(request);
     if (!user) {
       console.error(authError)

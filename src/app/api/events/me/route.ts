@@ -25,8 +25,9 @@
 import { NextResponse } from 'next/server';
 import { getMyEvents } from '@/lib/events/service';
 import { requireUser } from '@/lib/auth/get-user';
+import { createClient } from '@/utils/supabase/server';
 
-export async function GET(request:Request) {
+/*export async function GET(request:Request) {
   try {
     const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
@@ -41,5 +42,43 @@ export async function GET(request:Request) {
   } catch (err: any) {
     console.error('EVENT_ME_ERROR:', err);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+  }
+}*/
+
+
+export async function GET(request: Request) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    console.log("=== API /events/me BRUTE ===");
+    console.log("User from getUser():", user?.id, user?.email);
+
+    if (!user) {
+      return NextResponse.json({ success: false, error: "No user" }, { status: 401 });
+    }
+
+    // Requête la plus simple possible
+    const { data: organized, error: orgError } = await supabase
+      .from('events')
+      .select('*')
+      .eq('organizer_id', user.id);
+
+    console.log("Organized events found:", organized?.length);
+    if (organized && organized.length > 0) {
+      console.log("Sample event:", organized[0]);
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        organized: organized || [],
+        registered: [],
+        invited: []
+      }
+    });
+  } catch (err) {
+    console.error("ERROR in /api/events/me:", err);
+    return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
   }
 }
