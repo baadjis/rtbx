@@ -8,10 +8,11 @@ export async function requireUser(request?: Request) {
     
     if (authHeader?.startsWith('Bearer ')) {
       const token = authHeader.slice(7);
-      const supabase = createSupabaseClient(
+      /*const supabase = createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      );*/
+      const supabase= await createClient()
       const { data: { user }, error } = await supabase.auth.getUser(token);
       if (!user || error) return { user: null, error: 'Unauthorized' };
       return { user, error: null };
