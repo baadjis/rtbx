@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/events/services.ts
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { agendaItemSchema, agendaUpdateSchema, eventCancelSchema, eventCreateSchema, eventOrganizerSearchSchema, eventPublicSearchSchema, eventPublishSchema, eventUpdateSchema, sendInviteSchema } from './validators';
 import type { AgendaItemInput, AgendaUpdateInput, EventCancelInput, EventCreateInput, EventOrganizerSearchInput, EventPublicSearchInput, EventPublishInput, EventUpdateInput, SendInviteInput } from './validators';
 import { Resend } from 'resend';
@@ -598,7 +598,8 @@ export async function deleteAgendaItem(agendaItemId: string, organizer_id: strin
 /* =========================================================
    GET MY EVENTS
 ========================================================= */
-export async function getMyEvents(user_id: string, email: string) {
+export async function getMyEvents(user_id: string, email: string, limit: number = 10,
+  offset: number = 0) {
   const supabase =  await createClient();
 
   const [organized, registered, invited] = await Promise.all([
@@ -607,21 +608,24 @@ export async function getMyEvents(user_id: string, email: string) {
       .from('events')
       .select('*')
       .eq('organizer_id', user_id)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false }) 
+      .range(offset, offset + limit - 1),
 
     // Events où l'user est inscrit (via email)
     supabase
       .from('event_registrations')
       .select('*, events(*)')
       .eq('email', email)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false }) .range(offset, offset + limit - 1)
+      ,
 
     // Events où l'user est invité (via email)
     supabase
       .from('event_invitations')
       .select('*, events(*)')
       .eq('email', email)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1),
   ]);
   console.log(organized,registered,invited)
   const data={

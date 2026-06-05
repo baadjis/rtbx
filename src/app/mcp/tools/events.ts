@@ -274,8 +274,15 @@ Returns: organized (events created by user), registered (events user registered 
   },
 }),*/
 getMyEvents: tool({
-  description: `Récupère les événements de l'utilisateur connecté.`,
-  inputSchema: z.object({}).strict(),
+  description: `Récupère les événements de l'utilisateur connecté.
+  Utilise limit pour controler le nombre événements à retourner (default 10, max 20).
+  `,
+  inputSchema: z.object({
+    limit: z.number().int().min(1).max(20).default(10)
+      .describe('Number of links to return (default 10, max 20)'),
+    offset: z.number().int().min(0).default(0)
+      .describe('Offset for pagination (default 0)'),
+  }),
 
   execute: async () => {
     console.log("=== getMyEvents EXECUTED ===");

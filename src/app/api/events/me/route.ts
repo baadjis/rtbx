@@ -34,7 +34,10 @@ export async function GET(request:Request) {
   console.log("=== API /events/me called ===");
   console.log("User from Supabase:", user?.id, user?.email);
   console.log("Authorization header received:", request.headers.get('Authorization')?.slice(0, 50) + "...");
-    const { data, error } = await getMyEvents(user.id, user.email!);
+      const { searchParams } = new URL(request.url);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 20);
+    const offset = parseInt(searchParams.get('offset') ?? '0');
+  const { data, error } = await getMyEvents(user.id, user.email!,limit,offset);
     console.log(data)
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
