@@ -284,18 +284,15 @@ getMyEvents: tool({
       .describe('Offset for pagination (default 0)'),
   }),
 
-  execute: async () => {
+  execute: async (args) => {
     console.log("=== getMyEvents EXECUTED ===");
     console.log("Token length:", accessToken?.length);
     console.log("token from create event toools", accessToken)
 
 
-    const response = await fetch(`${BASE}/api/events/me`, {
+    const response = await fetch(`${BASE}/api/events/me?limit=${args.limit}&offset=${args.offset}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-      },
+      headers:authHeaders(accessToken),
       cache: 'no-store',
     });
 
