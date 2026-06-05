@@ -25,7 +25,7 @@
 import { NextResponse } from 'next/server';
 import { runEventAgent } from '@/app/mcp/agents/event-agent';
 import { mcpConfig } from '@/app/mcp/core/config';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { LangType } from '@/lib/lang/types';
 
 const Data = {
