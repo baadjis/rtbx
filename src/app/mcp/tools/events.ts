@@ -271,18 +271,16 @@ Returns: organized (events created by user), registered (events user registered 
   },
 }),*/
 getMyEvents: tool({
-  description: `Récupère la liste des événements de l'utilisateur connecté.
+  description: `Récupère les événements de l'utilisateur. 
+  Cet outil ne prend AUCUN paramètre. Appelle-le toujours sans aucun argument.`,
   
-  IMPORTANT : Cet outil ne prend **AUCUN** paramètre. 
-  Tu dois l'appeler comme ça : getMyEvents avec rien à l'intérieur.
-  N'ajoute jamais name, email, id ou quoi que ce soit.`,
-  
-  // Solution pour forcer Groq à ne pas envoyer de params
-  inputSchema: z.object({}).passthrough().transform(() => ({})),
-  
+  inputSchema: z.object({}).strict(), // très strict
+
   execute: async () => {
+    console.log("🔍 getMyEvents appelé avec token:", !!accessToken);
+
     if (!accessToken) {
-      throw new Error("AUTH_REQUIRED: Vous devez être connecté.");
+      throw new Error("AUTH_REQUIRED: Vous devez être connecté pour voir vos événements.");
     }
 
     const response = await fetch(`${BASE}/api/events/me`, {
@@ -292,23 +290,27 @@ getMyEvents: tool({
     });
 
     if (!response.ok) {
+      console.error("getMyEvents failed with status:", response.status);
       if (response.status === 401 || response.status === 403) {
-        throw new Error("AUTH_REQUIRED: Votre session a expiré.");
+        throw new Error("AUTH_REQUIRED: Session expirée. Veuillez vous reconnecter.");
       }
-      throw new Error("Impossible de récupérer vos événements.");
+      throw new Error(`Erreur serveur: ${response.status}`);
     }
 
-    const json = await response.json();
-    
-    // Version simplifiée et propre pour le LLM
+    const data = await response.json();
+    console.log("✅ getMyEvents raw data:", JSON.stringify(data).slice(0, 500));
+
+    // Retour très clair et structuré pour le LLM
     return {
-      message: "Voici vos événements :",
-      organized: (json?.data?.organized || []).map((e: any) => ({
+      success: true,
+      organized: (data?.data?.organized || []).map((e: any) => ({
         title: e.title,
-        start_date: e.start_date?.slice(0,10),
+        start_date: e.start_date,
         location: e.location,
-        status: e.is_published ? "Publié" : "Brouillon"
-      })).slice(0, 8),
+        published: e.is_published
+      })),
+      registered: [],
+      invited: []
     };
   },
 }),
