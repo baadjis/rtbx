@@ -2,7 +2,6 @@
 import { getLang } from '@/lib/lang/lang-getter';
 import { LangType } from '@/lib/lang/types';
 import MCPChatClient from '@/app/ai/chat/[id]/McpChatClient';
-import Layout from '../../layout';
 
 export default async function ChatPage({
   params,

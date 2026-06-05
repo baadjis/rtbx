@@ -35,7 +35,7 @@ export async function GET(request:Request) {
   console.log("User from Supabase:", user?.id, user?.email);
   console.log("Authorization header received:", request.headers.get('Authorization')?.slice(0, 50) + "...");
     const { data, error } = await getMyEvents(user.id, user.email!);
-
+    console.log(data)
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true, data });
   } catch (err: any) {
