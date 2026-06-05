@@ -1,4 +1,4 @@
-/*import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 export async function requireUser(request?: Request) {
@@ -26,12 +26,12 @@ export async function requireUser(request?: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { user: null, error: 'Unauthorized' };
   return { user, error: null };
-}*/
+}
 
 
 
 
-import { createClient } from '@/utils/supabase/server';
+/*import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 export async function requireUser(request?: Request) {
@@ -72,4 +72,4 @@ export async function requireUser(request?: Request) {
     console.error("requireUser error:", err);
     return { user: null, error: 'Unauthorized' };
   }
-}
+}*/
