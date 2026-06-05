@@ -271,38 +271,28 @@ Returns: organized (events created by user), registered (events user registered 
   },
 }),*/
 getMyEvents: tool({
-  description: `Outil CRITIQUE : Récupère tous les événements de l'utilisateur connecté.
-  
-  À appeler OBLIGATOIREMENT dès que l'utilisateur parle de "mes événements", "ma liste", "what are my events", etc.
-  N'invente jamais rien. Ne jamais répondre sans appeler cet outil.
-  Cet outil ne prend AUCUN paramètre.`,
-  
-  inputSchema: z.object({}).strict(), // très strict
+  description: `Récupère les événements de l'utilisateur connecté.`,
+  inputSchema: z.object({}).strict(),
 
   execute: async () => {
-    console.log("🔍 getMyEvents appelé avec token:", !!accessToken);
-
-    if (!accessToken) {
-      throw new Error("AUTH_REQUIRED: Vous devez être connecté pour voir vos événements.");
-    }
+    console.log("=== getMyEvents EXECUTED ===");
+    console.log("Token length:", accessToken?.length);
 
     const response = await fetch(`${BASE}/api/events/me`, {
       method: 'GET',
-      headers: authHeaders(accessToken),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
       cache: 'no-store',
     });
 
-    if (!response.ok) {
-      console.error("getMyEvents failed with status:", response.status);
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("AUTH_REQUIRED: Session expirée. Veuillez vous reconnecter.");
-      }
-      throw new Error(`Erreur serveur: ${response.status}`);
-    }
-
     console.log("Status:", response.status);
-  const json = await response.json();
-  console.log("FULL RESPONSE:", JSON.stringify(json, null, 2));
+    
+    const json = await response.json();
+    console.log("Réponse complète:", JSON.stringify(json, null, 2));
+
+    return json;
   },
 }),
 
