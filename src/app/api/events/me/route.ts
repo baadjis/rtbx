@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from 'next/server';
+import { getMyEvents } from '@/lib/events/service';
+import { requireUser } from '@/lib/auth/get-user';
+import { createClient } from '@/utils/supabase/server';
 /**
  * =========================================================
  * GET /api/events/me
@@ -22,12 +26,7 @@
  *
  * =========================================================
  */
-import { NextResponse } from 'next/server';
-import { getMyEvents } from '@/lib/events/service';
-import { requireUser } from '@/lib/auth/get-user';
-import { createClient } from '@/utils/supabase/server';
-
-/*export async function GET(request:Request) {
+export async function GET(request:Request) {
   try {
     const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
@@ -43,7 +42,7 @@ import { createClient } from '@/utils/supabase/server';
     console.error('EVENT_ME_ERROR:', err);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
-}*/
+}
 
 
 /*export async function GET(request: Request) {
@@ -84,7 +83,7 @@ import { createClient } from '@/utils/supabase/server';
 }*/
 
 
-export async function GET(request: Request) {
+/*export async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -106,7 +105,7 @@ export async function GET(request: Request) {
     console.log("Organized events found:", organized?.length || 0);
     /*if (organized?.length > 0) {
       console.log("Event title:", organized[0].title);
-    }*/
+    }
 
     return NextResponse.json({
       success: true,
@@ -120,4 +119,4 @@ export async function GET(request: Request) {
     console.error("CRITICAL ERROR in /events/me:", err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
-}
+}*/
