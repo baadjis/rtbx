@@ -21,9 +21,12 @@ const authHeaders = (token?: string) => ({
   'Content-Type': 'application/json',
   ...(token ? { Authorization: `Bearer ${token}` } : {}),
 });
-export const createEventTools = (accessToken?: string) => ({
-
+export const createEventTools = (accessToken?: string) => (
   
+  
+  {
+
+ 
 // =====================================================
 // CREATE EVENT
 // =====================================================
@@ -277,6 +280,8 @@ getMyEvents: tool({
   execute: async () => {
     console.log("=== getMyEvents EXECUTED ===");
     console.log("Token length:", accessToken?.length);
+    console.log("token from create event toools", accessToken)
+
 
     const response = await fetch(`${BASE}/api/events/me`, {
       method: 'GET',
