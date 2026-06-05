@@ -616,8 +616,8 @@ export async function getMyEvents(user_id: string, email: string, limit: number 
       .from('event_registrations')
       .select('*, events(*)')
       .eq('email', email)
-      .order('created_at', { ascending: false }) .range(offset, offset + limit - 1)
-      ,
+      .order('created_at', { ascending: false }) 
+      .range(offset, offset + limit - 1),
 
     // Events où l'user est invité (via email)
     supabase
