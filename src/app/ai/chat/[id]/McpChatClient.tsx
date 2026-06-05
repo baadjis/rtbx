@@ -142,6 +142,8 @@ useEffect(() => {
 const getAgentEndpoint = (context: string): string => {
   switch (context) {
     case 'event': return '/api/agents/event';
+    case 'shortener': return '/api/agents/shortener';
+    case 'space': return '/api/agents/space';
     default: return '/mcp/server';
   }
 };
