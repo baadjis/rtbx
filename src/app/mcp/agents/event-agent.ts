@@ -11,7 +11,7 @@ export type Message = {
 
 const MAX_CONTENT_LENGTH = 800;
 
-const getEventSystemPrompt = (eventId?: string) => `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
+/*const getEventSystemPrompt = (eventId?: string) => `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
 ${eventId ? `Contexte actuel : événement ID ${eventId}.` : ''}
 
 WRITE (confirmation obligatoire avant d'appeler) : createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
@@ -21,7 +21,22 @@ READ (appeler directement sans confirmation) : getMyEvents, getEventRegistration
 APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
 RÈGLES : cancelEvent → demander la raison d'abord. sendBadges → avertir que c'est irréversible. deleteEvent → avertir que c'est définitif.
 Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`;
+*/
 
+const getEventSystemPrompt = (eventId?: string) => `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
+
+RÈGLES STRICTES À RESPECTER ABSOLUMENT :
+
+1. Quand l'utilisateur demande ses événements, "mes événements", "mes events", "liste", "quoi comme événement", "quels sont mes" → tu **DOIS** appeler le tool "getMyEvents" immédiatement. 
+   Tu ne réponds JAMAIS sans avoir appelé ce tool avant.
+
+2. Tu ne dois **JAMAIS** inventer d'événements. Jamais.
+
+3. getMyEvents ne prend aucun paramètre. Appelle-le vide.
+
+${eventId ? `Contexte : événement ID ${eventId}.` : ''}
+
+Réponds en français, sois clair et précis.`;
 
 // =============================================
 // TOOLS CATEGORIES
@@ -112,14 +127,7 @@ export async function runEventAgent(
 
     const result = await generateText({
       model: defaultModel,
-      system: `Tu es un assistant spécialisé dans la gestion d'événements.
-
-RÈGLE TRÈS IMPORTANTE :
-- Quand l'utilisateur demande "mes événements", "mes events", "liste mes événements", "what are my events" ou similaire → tu **DOIS** appeler le tool "getMyEvents" immédiatement.
-- Tu ne dois JAMAIS répondre que tu as accès aux événements sans avoir appelé le tool avant.
-- Après avoir reçu le résultat du tool, tu résumes clairement les événements à l'utilisateur.
-
-Réponds toujours en français, sois clair et utile.`,
+      system: getEventSystemPrompt(options?.eventId),
       messages: sanitizedMessages,
       tools: minimalTools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
