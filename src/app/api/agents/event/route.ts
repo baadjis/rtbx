@@ -25,9 +25,8 @@
 import { NextResponse } from 'next/server';
 import { runEventAgent } from '@/app/mcp/agents/event-agent';
 import { mcpConfig } from '@/app/mcp/core/config';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 import { LangType } from '@/lib/lang/types';
-import { requireUser } from '@/lib/auth/get-user';
 
 const Data = {
   fr: {
@@ -61,10 +60,9 @@ export async function POST(request: Request) {
     // ==================== AUTHENTIFICATION ====================
     const supabase = await createClient();
 
-    //const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    const {  user , error: userError } = await requireUser(request);
-
+    
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     
