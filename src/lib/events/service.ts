@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/events/services.ts
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 import { agendaItemSchema, agendaUpdateSchema, eventCancelSchema, eventCreateSchema, eventOrganizerSearchSchema, eventPublicSearchSchema, eventPublishSchema, eventUpdateSchema, sendInviteSchema } from './validators';
 import type { AgendaItemInput, AgendaUpdateInput, EventCancelInput, EventCreateInput, EventOrganizerSearchInput, EventPublicSearchInput, EventPublishInput, EventUpdateInput, SendInviteInput } from './validators';
 import { Resend } from 'resend';
