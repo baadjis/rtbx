@@ -53,6 +53,8 @@ export async function createBusiness(
     .select()
 
     .single()
+  console.error(error)
+  console.log(error)
 
   return {
     data,
