@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
+import { LangType } from '@/lib/lang/types'
+import { getBusinessTypeOptions } from '@/utils/busines-types'
+
+
 
 type BusinessIdentityProps = {
 
@@ -9,6 +13,7 @@ type BusinessIdentityProps = {
   setName: any
   businessType: string
   setBusinessType: any
+  lang:LangType
 
 }
 
@@ -20,9 +25,12 @@ export default function BusinessIdentity({
   setName,
   businessType,
   setBusinessType,
+  lang,
   
 
 }: BusinessIdentityProps) {
+  const businessTypeOptions =
+  getBusinessTypeOptions(lang)
 
   return (
 
@@ -70,39 +78,61 @@ export default function BusinessIdentity({
 
       {/* TYPE */}
 
-      <div className="space-y-2">
+      {/* TYPE */}
 
-        <label className="
-          text-[10px]
-          font-black
-          text-gray-400
-          uppercase
-          tracking-widest
-          ml-2
-        ">
+<div className="space-y-2">
 
-          {t.business_type}
+  <label
+    className="
+      text-[10px]
+      font-black
+      text-gray-400
+      uppercase
+      tracking-widest
+      ml-2
+    "
+  >
 
-        </label>
+    {t.business_type}
 
-        <input
-          value={businessType}
-          onChange={(e) =>
-            setBusinessType(
-              e.target.value
-            )
-          }
-          placeholder="restaurant"
-          className="
-            w-full p-4
-            bg-gray-50 dark:bg-slate-800
-            border-none rounded-2xl
-            font-bold dark:text-white
-            focus:ring-2 focus:ring-indigo-500
-          "
-        />
+  </label>
 
-      </div>
+  <select
+    value={businessType}
+    onChange={(e) =>
+      setBusinessType(
+        e.target.value
+      )
+    }
+    className="
+      w-full p-4
+      bg-gray-50 dark:bg-slate-800
+      border-none rounded-2xl
+      font-bold dark:text-white
+      focus:ring-2 focus:ring-indigo-500
+    "
+  >
+
+    <option value="">
+      {t.select_business_type}
+    </option>
+
+    {businessTypeOptions.map(
+      (type:any) => (
+
+        <option
+          key={type.value}
+          value={type.value}
+        >
+          {type.label}
+        </option>
+
+      )
+    )}
+
+  </select>
+
+</div>
 
     </div>
 
