@@ -32,7 +32,7 @@ import { Data } from './data'
 import BusinessIdentity from './BusinessIdentity'
 import ContactSection from './ContactSection'
 import BusinessLocation from './BusinessLocation'
-import { getCountryCode } from '@/lib/countries/GetCountryCode'
+//import { getCountryCode } from '@/lib/countries/GetCountryCode'
 import { CountryCode } from 'libphonenumber-js/core'
 
 export default function BusinessCreateForm({
@@ -124,6 +124,8 @@ export default function BusinessCreateForm({
 
   const [createdBusiness, setCreatedBusiness] =
     useState<any>(null)
+
+ 
 
   // =====================================================
   // USER CHECK
@@ -577,6 +579,7 @@ export default function BusinessCreateForm({
     setBusinessType={setBusinessType}
     setName={setName}
     t={t}
+    lang={lang}
   />
 
 </BuilderSection>

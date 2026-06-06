@@ -111,6 +111,8 @@ contact_information_subtitle:
 
     business_created:
       'Business créé avec succès',
+    select_business_type:
+  'Choisir un type de business'
 
       
 
@@ -226,7 +228,9 @@ contact_information_subtitle:
       'Create Business',
 
     business_created:
-      'Business created successfully'
+      'Business created successfully',
+  select_business_type:
+  'Select business type'
 
   }
 
