@@ -28,10 +28,13 @@ export async function GET(request: Request) {
   try {
     const { user, error: authError } = await requireUser(request);
     if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
-
+     
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 20);
+    const offset = parseInt(searchParams.get('offset') ?? '0');
     const [created, activity] = await Promise.all([
-      getMyForms(user.id),
-      getMyFormActivity(user.id, user.email!),
+      getMyForms(user.id,limit,offset),
+      getMyFormActivity(user.id, user.email!,limit,offset),
     ]);
 
     return NextResponse.json({

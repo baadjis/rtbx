@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/forms/service.ts
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/admin';
 import { Resend } from 'resend';
 import { getFormInvitationEmail } from '@/utils/email-templates';
 import {
@@ -238,14 +238,15 @@ export async function submitFormResponse(
 /* =========================================================
    GET MY FORMS
 ========================================================= */
-export async function getMyForms(user_id: string) {
+export async function getMyForms(user_id: string,limit:number=10,offset:number=0) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('forms')
     .select('id, title, description, category, is_published, visibility, org_name, created_at')
     .eq('user_id', user_id)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false }) 
+    .range(offset, offset + limit - 1);
 
   if (error) return { data: null, error };
   return { data, error: null };
@@ -254,7 +255,7 @@ export async function getMyForms(user_id: string) {
 /* =========================================================
    GET MY FORM ACTIVITY
 ========================================================= */
-export async function getMyFormActivity(user_id: string, email: string) {
+export async function getMyFormActivity(user_id: string, email: string,limit:number=10,offset:number=0) {
   const supabase = await createClient();
 
   const [responded, invited] = await Promise.all([
@@ -263,14 +264,16 @@ export async function getMyFormActivity(user_id: string, email: string) {
       .from('form_responses')
       .select('form_id, created_at, origin, forms(id, title, category, org_name)')
       .or(`user_id.eq.${user_id},respondent_email.eq.${email}`)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1),
 
     // Invitations reçues
     supabase
       .from('form_invitations')
       .select('*, forms(id, title, category, org_name)')
       .eq('email', email)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false }) 
+      .range(offset, offset + limit - 1),
   ]);
 
   return {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { useState } from 'react'
-import { LayoutDashboard, Palette, Send, Globe, Lock, Loader2, Settings2, Sparkles } from 'lucide-react'
+import { LayoutDashboard, Palette, Send , Loader2, Settings2, Sparkles } from 'lucide-react'
 import OverviewTab from './tabs/OverviewTab'
 import DesignTab from './tabs/DesignTab'
 import CommunicationTab from './tabs/CommunicationTab'
@@ -44,67 +44,53 @@ export default function FormAdminTabs({ form, t,lang }: any) {
     <div className="space-y-10">
       {/* HEADER : TITRE + PUBLICATION */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center gap-4">
-            <div className={`p-4 rounded-2xl ${form.is_published ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
-                {form.is_published ? <Globe size={28} /> : <Lock size={28} />}
-            </div>
-            <div>
-                <h1 className="text-3xl font-black dark:text-white leading-tight">{form.title}</h1>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                    {form.is_published ? t.status_live : t.status_draft} • {form.category}
-                </p>
-            </div>
-        </div>
-
         <div className="flex items-center gap-3 w-full md:w-auto">
-    {/* BOUTON ASK AI */}
-    <button
-      onClick={() => {
-        const id = crypto.randomUUID();
-        const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
-        chats.unshift({
-          id,
-          title: form.title,
-          context: 'form',
-          entityId: form.id,
-          createdAt: new Date().toISOString(),
-        });
-        localStorage.setItem('rtbx_chats', JSON.stringify(chats.slice(0, 50)));
-        localStorage.setItem(`rtbx_chat_context_${id}`, 'form');
-        localStorage.setItem(`rtbx_chat_entity_${id}`, form.id);
-        window.dispatchEvent(new Event('rtbx_chats_updated'));
-        window.location.href = `/ai/chat/${id}`;
-      }}
-      className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-indigo-600 text-white hover:bg-indigo-700 border-none"
-    >
-      <Sparkles size={14} />
-      {lang === 'fr' ? 'Ask AI' : 'Ask AI'}
-    </button>
-    </div>
-        
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          {/* BOUTON MODIFIER (Lien vers la page edit) */}
-          <Link 
-            href={`/dashboard/forms/${form.id}/edit`}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 no-underline border-none"
-          >
-            <Settings2 size={14} />
-            {lang === 'fr' ? 'Modifier' : 'Edit'}
-          </Link>
+  {/* BOUTON ASK AI */}
+  <button
+    onClick={() => {
+      const id = crypto.randomUUID();
+      const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+      chats.unshift({
+        id,
+        title: form.title,
+        context: 'form',
+        entityId: form.id,
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem('rtbx_chats', JSON.stringify(chats.slice(0, 50)));
+      localStorage.setItem(`rtbx_chat_context_${id}`, 'form');
+      localStorage.setItem(`rtbx_chat_entity_${id}`, form.id);
+      window.dispatchEvent(new Event('rtbx_chats_updated'));
+      window.location.href = `/ai/chat/${id}`;
+    }}
+    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-indigo-600 text-white hover:bg-indigo-700 border-none"
+  >
+    <Sparkles size={14} />
+    Ask AI
+  </button>
 
-          {/* BOUTON PUBLIER / BROUILLON */}
-          <button 
-            onClick={togglePublish} 
-            disabled={loading} 
-            className={`flex-1 md:flex-none px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${
-              form.is_published 
-              ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' 
-              : 'bg-green-600 text-white hover:bg-green-700'
-            }`}
-          >
-            {loading ? <Loader2 className="animate-spin" /> : (form.is_published ? t.btn_unpublish : t.btn_publish)}
-          </button>
-        </div>
+  {/* BOUTON MODIFIER */}
+  <Link
+    href={`/dashboard/forms/${form.id}/edit`}
+    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 no-underline border-none"
+  >
+    <Settings2 size={14} />
+    {lang === 'fr' ? 'Modifier' : 'Edit'}
+  </Link>
+
+  {/* BOUTON PUBLIER */}
+  <button
+    onClick={togglePublish}
+    disabled={loading}
+    className={`flex-1 md:flex-none px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer border-none shadow-lg ${
+      form.is_published
+        ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'
+        : 'bg-green-600 text-white hover:bg-green-700'
+    }`}
+  >
+    {loading ? <Loader2 className="animate-spin" /> : (form.is_published ? t.btn_unpublish : t.btn_publish)}
+  </button>
+</div>
       </div>
 
       {/* NAVIGATION TABS */}
