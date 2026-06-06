@@ -393,7 +393,7 @@ export default function BusinessCreateForm({
         )
 
         window.location.href =
-          `/dashboard/business/${result.data.id}`
+          `/dashboard/businesses/${result.data.id}`
 
       } catch (err) {
 
