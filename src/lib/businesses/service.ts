@@ -1,7 +1,9 @@
 // lib/businesses/service.ts
 
+//import { createClient } from '@/utils/supabase/client'
+
 import { createClient }
-from '@/utils/supabase/client'
+from '@/utils/supabase/admin'
 
 import {
   businessSchema,
