@@ -122,10 +122,16 @@ Returns three lists:
 - created: forms the user created
 - responded: forms the user submitted a response to
 - invited: forms the user was invited to fill
-Only call when user explicitly asks about their forms.`,
-  inputSchema: z.object({}),
-  execute: async () => {
-    const response = await fetch(`${BASE}/api/forms/me`, {
+Only call when user explicitly asks about their forms.
+Use limit to control how many links to return (default 10, max 20).`,
+  inputSchema: z.object({
+    limit: z.number().int().min(1).max(20).default(10)
+          .describe('Number of links to return (default 10, max 20)'),
+        offset: z.number().int().min(0).default(0)
+          .describe('Offset for pagination (default 0)'),
+  }),
+  execute: async (args) => {
+    const response = await fetch(`${BASE}/api/forms/me?${args.limit}&offset=${args.offset}`, {
       method: 'GET',
       headers: authHeaders(accessToken),
       cache: 'no-store',

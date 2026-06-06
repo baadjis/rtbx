@@ -11,7 +11,10 @@
  * - requires authenticated user
  * - returns forms ordered by created_at desc
  * - returns essential fields only
- *
+ * 
+ * Query params:
+ * - limit: number (optional, default 10, max 20)
+ * - offset: number (optional, default 0)
  * This route is safe to expose to:
  *
  * - frontend user dashboard

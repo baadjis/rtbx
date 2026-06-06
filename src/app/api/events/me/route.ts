@@ -2,7 +2,6 @@
 import { NextResponse } from 'next/server';
 import { getMyEvents } from '@/lib/events/service';
 import { requireUser } from '@/lib/auth/get-user';
-import { createClient } from '@/utils/supabase/server';
 /**
  * =========================================================
  * GET /api/events/me
@@ -17,6 +16,10 @@ import { createClient } from '@/utils/supabase/server';
  * - returns events the user registered to (matched by email)
  * - returns events the user was invited to (matched by email)
  * - all fetched in parallel for performance
+ * 
+ * Query params:
+ * - limit: number (optional, default 10, max 20)
+ * - offset: number (optional, default 0)
  *
  * This route is safe to expose to:
  *
