@@ -144,7 +144,7 @@ if (!user) {
     })
 
     if (error) {
-
+      console.error(error)
       return NextResponse.json(
         {
           success: false,
