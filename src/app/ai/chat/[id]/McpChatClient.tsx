@@ -4,11 +4,14 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Sparkles, Bot, CheckCircle, XCircle, Zap } from 'lucide-react';
 import type { LangType } from '@/lib/lang/types';
 import { Data } from '../../data';
+import MCPUIRenderer from '../../components/MCPUIRenderer';
+//import MCPUIRenderer from '../components/MCPUIRenderer';
 
 type Message = {
   role: 'user' | 'assistant';
   content: string;
   isConfirmation?: boolean;
+  ui?: { type: string; data: any } | null;
   pendingAction?: any;
 };
 
@@ -203,6 +206,7 @@ const sendMessage = async () => {
     const assistantMessage: Message = {
       role: 'assistant',
       content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
+      ui: data.ui || null, // ← nouveau
       isConfirmation: data.requiresConfirmation || false,
       pendingAction: data.pendingAction || null,
     };
@@ -347,7 +351,12 @@ const handleSuggestionClick = (suggestion: string) => {
                       ? 'bg-indigo-600 text-white rounded-tr-sm'
                       : 'bg-white/[0.06] text-white/90 rounded-tl-sm border border-white/[0.06]'
                   }`}>
+                    
+                    
                     <p className="whitespace-pre-wrap">{msg.content}</p>
+                    {msg.role === 'assistant' && msg.ui && (
+  <MCPUIRenderer ui={msg.ui} />
+)}
                   </div>
 
                   {msg.isConfirmation && (
