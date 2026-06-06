@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { useState } from 'react'
-import { LayoutDashboard, Palette, Send, Globe, Lock, Loader2, Settings2 } from 'lucide-react'
+import { LayoutDashboard, Palette, Send, Globe, Lock, Loader2, Settings2, Sparkles } from 'lucide-react'
 import OverviewTab from './tabs/OverviewTab'
 import DesignTab from './tabs/DesignTab'
 import CommunicationTab from './tabs/CommunicationTab'
@@ -55,6 +55,32 @@ export default function FormAdminTabs({ form, t,lang }: any) {
                 </p>
             </div>
         </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+    {/* BOUTON ASK AI */}
+    <button
+      onClick={() => {
+        const id = crypto.randomUUID();
+        const chats = JSON.parse(localStorage.getItem('rtbx_chats') || '[]');
+        chats.unshift({
+          id,
+          title: form.title,
+          context: 'form',
+          entityId: form.id,
+          createdAt: new Date().toISOString(),
+        });
+        localStorage.setItem('rtbx_chats', JSON.stringify(chats.slice(0, 50)));
+        localStorage.setItem(`rtbx_chat_context_${id}`, 'form');
+        localStorage.setItem(`rtbx_chat_entity_${id}`, form.id);
+        window.dispatchEvent(new Event('rtbx_chats_updated'));
+        window.location.href = `/ai/chat/${id}`;
+      }}
+      className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg bg-indigo-600 text-white hover:bg-indigo-700 border-none"
+    >
+      <Sparkles size={14} />
+      {lang === 'fr' ? 'Ask AI' : 'Ask AI'}
+    </button>
+    </div>
         
         <div className="flex items-center gap-3 w-full md:w-auto">
           {/* BOUTON MODIFIER (Lien vers la page edit) */}

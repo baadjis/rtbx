@@ -144,6 +144,7 @@ const getAgentEndpoint = (context: string): string => {
     case 'event': return '/api/agents/event';
     case 'shortener': return '/api/agents/shortener';
     case 'space': return '/api/agents/space';
+    case 'business': return '/api/agents/business'; 
     default: return '/mcp/server';
   }
 };
