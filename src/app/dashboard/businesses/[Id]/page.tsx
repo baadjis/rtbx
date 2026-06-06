@@ -45,7 +45,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ Id: s
     <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-300"
          style={{backgroundImage: 'radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%)'}}>
       
-      <Header />
+      
 
       <main className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10">
         
