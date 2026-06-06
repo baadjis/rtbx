@@ -353,10 +353,10 @@ const handleSuggestionClick = (suggestion: string) => {
                   }`}>
                     
                     
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
-                    {msg.role === 'assistant' && msg.ui && (
+                    
+                    {msg.role === 'assistant' && msg.ui ? (
   <MCPUIRenderer ui={msg.ui} />
-)}
+):(<p className="whitespace-pre-wrap">{msg.content}</p>)}
                   </div>
 
                   {msg.isConfirmation && (
