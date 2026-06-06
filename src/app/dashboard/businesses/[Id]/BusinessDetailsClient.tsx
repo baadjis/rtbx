@@ -236,7 +236,7 @@ export default function BusinessDetailsClient({
 
         {/* GOOGLE REVIEWS */}
 
-        <LatestGoogleReviews
+       {business.google_place_id &&(<LatestGoogleReviews
 
           t={t}
 
@@ -244,7 +244,7 @@ export default function BusinessDetailsClient({
 
           loading={loading}
 
-        />
+        />)}
 
         {/* LOYALTY HISTORY */}
 
