@@ -157,6 +157,7 @@ import { createShortenerTools } from '../tools/shortener';
 import { defaultModel } from '../core/client';
 import { mcpConfig } from '../core/config';
 import { extractUIFromSteps } from '../ui/extract-ui';
+import { getAgentRelevantTools } from './releventTools';
 
 export type Message = {
   role: 'user' | 'assistant' | 'system';
@@ -220,7 +221,7 @@ export async function runShortenerAgent(
 
     const allShortenerTools = createShortenerTools(options?.accessToken);
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
-    const shortenerTools = getRelevantShortenerTools(allShortenerTools, lastMessage);
+    const shortenerTools = getAgentRelevantTools(allShortenerTools,WRITE_KEYWORDS,READ_KEYWORDS,WRITE_TOOLS,READ_ONLY_TOOLS, lastMessage);
 
     const result = await generateText({
       model: defaultModel,

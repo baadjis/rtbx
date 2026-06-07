@@ -4,6 +4,7 @@ import { createEventTools } from '../tools/events';
 import { defaultModel } from '../core/client';
 import { mcpConfig } from '../core/config';
 import { extractUIFromSteps } from '../ui/extract-ui';
+import { getAgentRelevantTools } from './releventTools';
 
 
 export type Message = {
@@ -69,7 +70,7 @@ const WRITE_TOOLS = [
 
 const WRITE_KEYWORDS = /crée|créer|create|publish|publier|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add/i;
 const READ_KEYWORDS = /voir|montre|liste|mes événements|my events|get my|afficher|chercher|search|quel est|what is|combien/i;
-const getRelevantEventTools = (allTools: any, lastMessage: string) => {
+/*const getRelevantEventTools = (allTools: any, lastMessage: string) => {
   const lowerMessage = lastMessage.toLowerCase().trim();
   // Si le message contient un mot d'action → envoyer tous les tools
   if (WRITE_KEYWORDS.test(lowerMessage)) {
@@ -90,7 +91,7 @@ const getRelevantEventTools = (allTools: any, lastMessage: string) => {
   return Object.fromEntries(
       allTools
     );
-};
+};*/
 
 
 export async function runEventAgent(
@@ -124,7 +125,7 @@ export async function runEventAgent(
 
     const allEventTools = createEventTools(options?.accessToken);
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
-    const eventTools = getRelevantEventTools(allEventTools, lastMessage);
+    const eventTools = getAgentRelevantTools(allEventTools,WRITE_KEYWORDS,READ_KEYWORDS,WRITE_TOOLS,READ_ONLY_TOOLS, lastMessage);
     const minimalTools = {
     getMyEvents: allEventTools.getMyEvents,
   };
@@ -134,7 +135,7 @@ export async function runEventAgent(
       model: defaultModel,
       system: getEventSystemPrompt(options?.eventId),
       messages: sanitizedMessages,
-      tools: minimalTools,
+      tools: eventTools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
       maxOutputTokens: mcpConfig.maxTokens,
       stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
