@@ -3,10 +3,13 @@ import { generateText, stepCountIs } from 'ai';
 import { createEventTools } from '../tools/events';
 import { defaultModel } from '../core/client';
 import { mcpConfig } from '../core/config';
+import { extractUIFromSteps } from '../ui/extract-ui';
+
 
 export type Message = {
   role: 'user' | 'assistant' | 'system';
   content: string;
+
 };
 
 const MAX_CONTENT_LENGTH = 800;
@@ -100,6 +103,8 @@ export async function runEventAgent(
     userId?: string;
     eventId?: string;
     userEmail?: string;
+    mode?: 'ui' | 'text'; // ← nouveau
+
     
   }
 ) {
@@ -162,12 +167,17 @@ export async function runEventAgent(
     const toolNames = result.steps
       ?.flatMap(step => step.toolCalls ?? [])
       .map(tc => tc.toolName) ?? [];
+    // Extraire le payload UI si mode = 'ui'
+    const uiPayload = options?.mode !== 'text'
+      ? extractUIFromSteps(result.steps ?? [])
+      : null;
 
     return {
       success: true,
       text: finalText,
       toolCalls: toolNames,
       usage: result.usage,
+      ui: uiPayload,
     };
   } catch (error: any) {
     console.error('Event Agent Error:', error);
