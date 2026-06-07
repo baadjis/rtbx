@@ -64,7 +64,7 @@ export async function runAgent(
       config.readOnlyTools,
       lastMessage
     );
-
+    console.log(tools)
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
 
     const result = await generateText({
