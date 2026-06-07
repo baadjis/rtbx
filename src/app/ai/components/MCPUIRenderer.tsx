@@ -2,6 +2,7 @@
 // app/ai/components/MCPUIRenderer.tsx
 'use client';
 import { ShortLinkCard, ShortLinkList, ShortLinkStats } from './ui/ShortLinkUI';
+import { EventList, ParticipantsTable, InvitationsTable, AgendaList } from './ui/EventUI';
 
 type UIPayload = {
   type: string;
@@ -20,11 +21,20 @@ export default function MCPUIRenderer({ ui }: { ui: UIPayload }) {
     case 'short_link_stats':
       return <ShortLinkStats data={ui.data} />;
 
+    // ── Events ──
+    case 'event_list':
+      return <EventList data={ui.data} />;
+    case 'participants_table':
+      return <ParticipantsTable data={ui.data} />;
+    case 'invitations_table':
+      return <InvitationsTable data={ui.data} />;
+    case 'agenda_list':
+      return <AgendaList data={ui.data} />;
+
     // ── À venir ──
-    // case 'event_list':       return <EventList data={ui.data} />;
-    // case 'participants_table': return <ParticipantsTable data={ui.data} />;
-    // case 'agenda_list':      return <AgendaList data={ui.data} />;
-    // case 'form_list':        return <FormList data={ui.data} />;
+    // case 'space_list':           return <SpaceList data={ui.data} />;
+    // case 'form_list':            return <FormList data={ui.data} />;
+    // case 'form_responses_table': return <FormResponsesTable data={ui.data} />;
 
     default:
       return null;
