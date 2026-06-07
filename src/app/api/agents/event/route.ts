@@ -108,6 +108,8 @@ export async function POST(request: Request) {
       userId: user.id,
       userEmail: user.email,
       eventId: body.eventId,
+      mode: body.mode || 'ui', // ← 'ui' par défaut, 'text' pour clients API externes
+
     });
 
     if (!result.success) throw result.error;
@@ -115,6 +117,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       text: result.text,
+      ui: result.ui,
       toolCalls: result.toolCalls,
     });
 
