@@ -98,7 +98,7 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log("✅ Auth OK - User:", user.email, "| Token length:", accessToken.length);
+    //console.log("✅ Auth OK - User:", user.email, "| Token length:", accessToken.length);
 
     // ==================== APPEL DE L'AGENT ====================
     const result = await runEventAgent(body.messages, {

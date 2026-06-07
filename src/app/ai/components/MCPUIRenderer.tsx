@@ -3,6 +3,7 @@
 'use client';
 import { ShortLinkCard, ShortLinkList, ShortLinkStats } from './ui/ShortLinkUI';
 import { EventList, ParticipantsTable, InvitationsTable, AgendaList } from './ui/EventUI';
+import { SpaceList, SpaceSocialLinks } from './ui/SpaceUI';
 
 type UIPayload = {
   type: string;
@@ -31,7 +32,13 @@ export default function MCPUIRenderer({ ui }: { ui: UIPayload }) {
     case 'agenda_list':
       return <AgendaList data={ui.data} />;
 
-    // ── À venir ──
+    // ── Spaces ──
+case 'space_list':
+  return <SpaceList data={ui.data} />;
+case 'space_social_links':
+  return <SpaceSocialLinks data={ui.data} />;
+
+    // ── À ──
     // case 'space_list':           return <SpaceList data={ui.data} />;
     // case 'form_list':            return <FormList data={ui.data} />;
     // case 'form_responses_table': return <FormResponsesTable data={ui.data} />;

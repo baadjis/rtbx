@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       accessToken: session?.access_token,
       userId: user.id,
       businessId: body.businessId, // ← optionnel depuis le dashboard business
+      mode: body.mode || 'ui'
     });
 
     if (!result.success) throw result.error;
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       text: result.text,
+      ui: result.ui,
       toolCalls: result.toolCalls,
     });
 

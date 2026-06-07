@@ -1,42 +1,42 @@
-import defaultModel from "../core/client";
-import { mcpConfig } from "../core/config";
-import { extractUIFromSteps } from "../ui/extract-ui";
-import { getAgentRelevantTools } from "./releventTools";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import defaultModel from '../core/client';
+import { mcpConfig } from '../core/config';
+import { extractUIFromSteps } from '../ui/extract-ui';
+import { getAgentRelevantTools } from './releventTools';
 import { generateText, stepCountIs } from 'ai';
 
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Message = {
   role: 'user' | 'assistant' | 'system';
   content: string;
+};
 
+export type AgentConfig = {
+  name: string;
+  writeKeywords: RegExp;
+  readKeywords: RegExp;
+  writeTools: string[];
+  readOnlyTools: string[];
+  createTools: (accessToken?: string, userId?: string, userEmail?: string) => any;
+  getSystemPrompt: (contextId?: string) => string;
+};
+
+export type AgentOptions = {
+  temperature?: number;
+  maxSteps?: number;
+  accessToken?: string;
+  userId?: string;
+  userEmail?: string;
+  contextId?: string; // eventId, spaceId, formId, businessId...
+  mode?: 'ui' | 'text';
 };
 
 const MAX_CONTENT_LENGTH = 800;
 
-
-
 export async function runAgent(
   messages: Message[],
-  agent: string, 
-  WRITE_KEYWORDS:any,READ_KEYWORDS:any,WRITE_TOOLS:string[],READ_ONLY_TOOLS:string[],
-  createTools:any,
-  getEventSystemPrompt:any,
-  options?: {
-    temperature?: number;
-    maxSteps?: number;
-    accessToken?: string;
-    refreshToken?:string
-    userId?: string;
-    eventId?: string;
-    userEmail?: string;
-    mode?: 'ui' | 'text'; // ← nouveau
-
-    
-  }
+  config: AgentConfig,
+  options?: AgentOptions
 ) {
-  console.log('accessToken exists:', !!options?.accessToken);
-  console.log('accessToken preview:', options?.accessToken?.slice(0, 20));
   try {
     const sanitizedMessages = messages.map((msg, index) => {
       if (index === messages.length - 1) return msg;
@@ -49,17 +49,29 @@ export async function runAgent(
       return msg;
     });
 
-    const allTools = createTools(options?.accessToken);
+    const allTools = config.createTools(
+      options?.accessToken,
+      options?.userId,
+      options?.userEmail
+    );
+
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
-    const tools = getAgentRelevantTools(allTools,WRITE_KEYWORDS,READ_KEYWORDS,WRITE_TOOLS,READ_ONLY_TOOLS, lastMessage);
-    
-    //console.log('Event tools tokens ~', JSON.stringify(allTools).length / 4);
+    const tools = getAgentRelevantTools(
+      allTools,
+      config.writeKeywords,
+      config.readKeywords,
+      config.writeTools,
+      config.readOnlyTools,
+      lastMessage
+    );
+
+    console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
 
     const result = await generateText({
       model: defaultModel,
-      system: getEventSystemPrompt(options?.eventId),
+      system: config.getSystemPrompt(options?.contextId),
       messages: sanitizedMessages,
-      tools: tools,
+      tools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
       maxOutputTokens: mcpConfig.maxTokens,
       stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
@@ -92,7 +104,7 @@ export async function runAgent(
     const toolNames = result.steps
       ?.flatMap(step => step.toolCalls ?? [])
       .map(tc => tc.toolName) ?? [];
-    // Extraire le payload UI si mode = 'ui'
+
     const uiPayload = options?.mode !== 'text'
       ? extractUIFromSteps(result.steps ?? [])
       : null;
@@ -105,11 +117,12 @@ export async function runAgent(
       ui: uiPayload,
     };
   } catch (error: any) {
-    console.error(`${agent} Agent Error:`, error);
+    console.error(`${config.name} Agent Error:`, error);
     return {
       success: false,
       error,
       text: "Désolé, une erreur est survenue. Veuillez réessayer.",
+      ui: null,
     };
   }
 }

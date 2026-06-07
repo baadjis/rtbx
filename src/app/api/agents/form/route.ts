@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       maxSteps: body.maxSteps || mcpConfig.maxSteps,
       accessToken: session?.access_token,
       userId: user.id,
+      mode: body.mode || 'ui', // ← 'ui' par défaut, 'text' pour clients API externes
       formId: body.formId, // ← optionnel depuis le dashboard form
     });
 
@@ -50,6 +51,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       text: result.text,
+      ui: result.ui,
+
       toolCalls: result.toolCalls,
     });
 
