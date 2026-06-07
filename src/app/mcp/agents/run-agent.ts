@@ -64,7 +64,7 @@ export async function runAgent(
       config.readOnlyTools,
       lastMessage
     );
-    console.log(tools)
+    //console.log(tools)
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
 
     const result = await generateText({
@@ -77,7 +77,7 @@ export async function runAgent(
       stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
       maxRetries: 0,
     });
-
+    console.log(result)
     let finalText = result.text?.trim() || '';
 
     if (!finalText && result.steps && result.steps.length > 0) {
