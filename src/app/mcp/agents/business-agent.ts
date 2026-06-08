@@ -1,9 +1,10 @@
 import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { createBusinessTools } from '../tools/businesses';
+ // writeKeywords: /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change|entreprise|business|société/i,
 
 const businessAgentConfig: AgentConfig = {
   name: 'Business',
-  writeKeywords: /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change|entreprise|business|société/i,
+  writeKeywords: /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change/i,
   readKeywords: /voir|montre|liste|mes business|my business|get my|afficher|chercher|search|quel est|what is|mon entreprise|my company/i,
   writeTools: ['createBusiness', 'updateBusiness'],
   readOnlyTools: ['getUserBusinesses'],
