@@ -22,6 +22,7 @@ fr: {
   mcp_suggestion_add_social: "Ajouter mes réseaux sociaux",
   mcp_suggestion_change_theme: "Changer le thème de mon Space",
   mcp_suggestion_update_business: "Mettre à jour mon Business",
+   mcp_suggestion_view_my_businesses: "Voir mes Business",
   mcp_suggestion_add_contact: "Ajouter mes informations de contact",
   mcp_suggestion_view_links: "Voir mes liens courts",
   mcp_suggestion_view_stats: "Voir les statistiques d'un lien",
@@ -85,6 +86,8 @@ en: {
   mcp_suggestion_add_social: "Add my social networks",
   mcp_suggestion_change_theme: "Change my Space theme",
   mcp_suggestion_update_business: "Update my Business",
+  mcp_suggestion_view_my_businesses: "View my Businesses",
+
   mcp_suggestion_add_contact: "Add my contact information",
   mcp_suggestion_view_links: "View my short links",
   mcp_suggestion_view_stats: "View link statistics",

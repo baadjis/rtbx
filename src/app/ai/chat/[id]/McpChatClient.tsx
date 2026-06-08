@@ -33,6 +33,7 @@ const CONTEXT_SUGGESTIONS: Record<string, string[]> = {
     'mcp_suggestion_add_contact',
     'mcp_suggestion_update_address',
     'mcp_suggestion_add_logo',
+    'mcp_suggestion_view_my_businesses'
   ],
   shortener: [
     'mcp_suggestion_create_another_link',

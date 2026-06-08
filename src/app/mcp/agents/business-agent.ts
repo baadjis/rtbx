@@ -10,11 +10,14 @@ const businessAgentConfig: AgentConfig = {
   createTools: (accessToken) => createBusinessTools(accessToken),
   getSystemPrompt: (businessId?) => `Tu es un assistant spécialisé dans la gestion des businesses sur rtbx.space.
 ${businessId ? `Contexte actuel : Business ID ${businessId}.` : ''}
+
 WRITE (confirmation obligatoire) : createBusiness , updateBusiness .
+
 READ (appeler directement sans confirmation) : getUserBusinesses .
+
 RÈGLES : createBusiness → user_id injecté automatiquement.
 APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
-Réponds en anglais par défaut.`,
+Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`,
 };
 
 export async function runBusinessAgent(messages: Message[], options?: AgentOptions & { businessId?: string }) {
