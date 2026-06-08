@@ -28,9 +28,13 @@ const TOOL_UI_MAP: Record<string, string> = {
   getMySpaces: 'space_list',
   searchSpaces: 'space_list',
 
+  
   // Forms
-  getMyForms: 'form_list',
-  getFormResponses: 'form_responses_table',
+getMyForms: 'form_list',
+searchForms: 'form_list',
+getFormById: 'form_card',
+getFormResponses: 'form_responses_table',
+createForm: 'form_card',
 };
 
 export function extractUIFromSteps(steps: any[]): UIPayload {
