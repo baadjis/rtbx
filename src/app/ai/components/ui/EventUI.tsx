@@ -2,74 +2,73 @@
 // app/ai/components/ui/EventUI.tsx
 'use client';
 import { useState } from 'react';
-import { Calendar, MapPin, Clock, Users, Mail, CheckCircle, XCircle, Clock3, ChevronLeft, ChevronRight, ExternalLink, Tag } from 'lucide-react';
+import { Calendar, MapPin, Users, Mail, CheckCircle, Clock3, ExternalLink, Tag } from 'lucide-react';
+import Pagination from '../shared/Pagination';
+import { formatDate, formatTime } from '../shared/DateFormatter';
+import { LangType } from '@/lib/lang/types';
 
 const PAGE_SIZE = 5;
 
-function Pagination({ page, total, pageSize, onChange }: {
-  page: number; total: number; pageSize: number; onChange: (p: number) => void;
-}) {
-  const totalPages = Math.ceil(total / pageSize);
-  if (totalPages <= 1) return null;
-  return (
-    <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
-      <span className="text-white/30 text-xs">{total} résultats</span>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => onChange(page - 1)}
-          disabled={page === 0}
-          className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] disabled:opacity-30 flex items-center justify-center text-white/50 transition-all"
-        >
-          <ChevronLeft size={13} />
-        </button>
-        <span className="text-white/40 text-xs">{page + 1} / {totalPages}</span>
-        <button
-          onClick={() => onChange(page + 1)}
-          disabled={page >= totalPages - 1}
-          className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] disabled:opacity-30 flex items-center justify-center text-white/50 transition-all"
-        >
-          <ChevronRight size={13} />
-        </button>
-      </div>
-    </div>
-  );
-}
+const DATA={
 
-function formatDate(date: string) {
-  if (!date) return '—';
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
+  fr:{
+    published:"Publié",
+    canceled:"Annulé",
+    draft:"Brouillon",
+    no_participant:"Aucun participant",
+    no_event_found:"Acun événement trouvé",
+    accepted:"Accepté",
+    sent:"Envoyé",
+    pending:"En attente",
+    name:"Nom",
+    email:"Email",
+    statatut:"Statut",
+    company:"Entreprise",
+    no_invitation:"Aucune invitation",
+    empty_agenda:"Agenda vide"
 
-function formatTime(date: string) {
-  if (!date) return '';
-  return new Date(date).toLocaleTimeString('fr-FR', {
-    hour: '2-digit', minute: '2-digit',
-  });
-}
+  },
+  en:{
+    published:"Published",
+    canceled:"Canceled",
+    draft:"Draft",
+    no_participant:"No participant ",
+    no_event_found:"No  event found",
+     accepted:"Accepted",
+    sent:"Sent",
+    pending:"Pending",
+    name:"Name",
+    email:"Email",
+    company:"Company",
+    no_invitation:"No invitation",
+    empty_agenda:"Empty agenda"
 
+
+
+  }
+}
 // =====================================================
 // STATUS BADGE
 // =====================================================
-function StatusBadge({ published, status }: { published?: boolean; status?: string }) {
+function StatusBadge({ published, status ,lang="en"}: { published?: boolean; status?: string ,lang?:LangType}) {
+  const t=DATA[lang]
   if (status === 'cancelled') return (
-    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">Annulé</span>
+    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">{t.canceled}</span>
   );
   if (published) return (
-    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Publié</span>
+    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{t.published}</span>
   );
   return (
-    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Brouillon</span>
+    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">{t.draft}</span>
   );
 }
 
 // =====================================================
 // EVENT LIST — getMyEvents, searchPublicEvents, searchOrganizerEvents
 // =====================================================
-export function EventList({ data }: { data: any }) {
+export function EventList({ data ,lang='en'}: { data: any,lang:LangType }) {
   const [page, setPage] = useState(0);
-
+  const t=DATA[lang]
   // Gérer les deux formats : { organized, registered, invited } ou array direct
   let events: any[] = [];
   let hasGroups = false;
@@ -92,7 +91,7 @@ export function EventList({ data }: { data: any }) {
   if (!events.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center text-white/30 text-sm">
-        Aucun événement trouvé
+        {t.no_event_found}
       </div>
     );
   }
@@ -141,7 +140,7 @@ export function EventList({ data }: { data: any }) {
           </div>
         </div>
       ))}
-      <Pagination page={page} total={events.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={events.length} pageSize={PAGE_SIZE} onChange={setPage} lang={lang} />
     </div>
   );
 }
@@ -149,16 +148,16 @@ export function EventList({ data }: { data: any }) {
 // =====================================================
 // PARTICIPANTS TABLE — getEventRegistrations
 // =====================================================
-export function ParticipantsTable({ data }: { data: any }) {
+export function ParticipantsTable({ data ,lang="en"}: { data: any ,lang:LangType}) {
   const [page, setPage] = useState(0);
   const participants: any[] = Array.isArray(data) ? data : data?.data ?? [];
   const paginated = participants.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-
+  const t= DATA[lang]
   if (!participants.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <Users size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Aucun participant</p>
+        <p className="text-white/30 text-sm">{t.no_participant}</p>
       </div>
     );
   }
@@ -167,9 +166,9 @@ export function ParticipantsTable({ data }: { data: any }) {
     <div className="space-y-2">
       {/* Header */}
       <div className="grid grid-cols-3 gap-2 px-3 pb-1">
-        <span className="text-[10px] text-white/25 uppercase tracking-wider">Nom</span>
-        <span className="text-[10px] text-white/25 uppercase tracking-wider">Email</span>
-        <span className="text-[10px] text-white/25 uppercase tracking-wider">Entreprise</span>
+        <span className="text-[10px] text-white/25 uppercase tracking-wider">{t.name}</span>
+        <span className="text-[10px] text-white/25 uppercase tracking-wider">{t.email}</span>
+        <span className="text-[10px] text-white/25 uppercase tracking-wider">{t.company}</span>
       </div>
 
       {/* Rows */}
@@ -186,7 +185,7 @@ export function ParticipantsTable({ data }: { data: any }) {
         ))}
       </div>
 
-      <Pagination page={page} total={participants.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={participants.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
     </div>
   );
 }
@@ -194,36 +193,38 @@ export function ParticipantsTable({ data }: { data: any }) {
 // =====================================================
 // INVITATIONS TABLE — getEventInvitations
 // =====================================================
-function InviteStatusBadge({ status }: { status: string }) {
+function InviteStatusBadge({ status ,lang}: { status: string,lang:LangType }) {
+  const t=DATA[lang];
   switch (status) {
     case 'accepted': return (
       <span className="flex items-center gap-1 text-[10px] text-emerald-400">
-        <CheckCircle size={10} /> Accepté
+        <CheckCircle size={10} /> {t.accepted}
       </span>
     );
     case 'sent': return (
       <span className="flex items-center gap-1 text-[10px] text-blue-400">
-        <Mail size={10} /> Envoyé
+        <Mail size={10} /> {t.sent}
       </span>
     );
     default: return (
       <span className="flex items-center gap-1 text-[10px] text-white/30">
-        <Clock3 size={10} /> En attente
+        <Clock3 size={10} /> {t.pending}
       </span>
     );
   }
 }
 
-export function InvitationsTable({ data }: { data: any }) {
+export function InvitationsTable({ data,lang='en' }: { data: any,lang:LangType }) {
   const [page, setPage] = useState(0);
   const invitations: any[] = Array.isArray(data) ? data : data?.data ?? [];
   const paginated = invitations.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const t= DATA[lang]
 
   if (!invitations.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <Mail size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Aucune invitation</p>
+        <p className="text-white/30 text-sm">{t.no_invitation}</p>
       </div>
     );
   }
@@ -243,13 +244,13 @@ export function InvitationsTable({ data }: { data: any }) {
               i < paginated.length - 1 ? 'border-b border-white/[0.04]' : ''
             }`}>
             <span className="text-white/70 truncate">{inv.email}</span>
-            <InviteStatusBadge status={inv.status} />
+            <InviteStatusBadge status={inv.status} lang={lang} />
             <span className="text-white/30">{formatDate(inv.created_at)}</span>
           </div>
         ))}
       </div>
 
-      <Pagination page={page} total={invitations.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={invitations.length} pageSize={PAGE_SIZE} onChange={setPage} lang={lang}/>
     </div>
   );
 }
@@ -257,16 +258,16 @@ export function InvitationsTable({ data }: { data: any }) {
 // =====================================================
 // AGENDA LIST — getEventAgenda
 // =====================================================
-export function AgendaList({ data }: { data: any }) {
+export function AgendaList({ data ,lang='en'}: { data: any,lang?:LangType }) {
   const [page, setPage] = useState(0);
   const items: any[] = Array.isArray(data) ? data : data?.data ?? [];
   const paginated = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-
+  const t= DATA[lang]
   if (!items.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <Calendar size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Agenda vide</p>
+        <p className="text-white/30 text-sm">{t.empty_agenda}</p>
       </div>
     );
   }
@@ -320,7 +321,7 @@ export function AgendaList({ data }: { data: any }) {
         </div>
       ))}
 
-      <Pagination page={page} total={items.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={items.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
     </div>
   );
 }

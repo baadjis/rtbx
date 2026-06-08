@@ -2,46 +2,34 @@
 // app/ai/components/ui/SpaceUI.tsx
 'use client';
 import { useState } from 'react';
-import { Globe, ExternalLink, ChevronLeft, ChevronRight, Link2, Instagram, Youtube } from 'lucide-react';
+import { Globe, ExternalLink, Link2} from 'lucide-react';
+import Pagination from '../shared/Pagination';
+import { LangType } from '@/lib/lang/types';
 
 const PAGE_SIZE = 5;
-
-function Pagination({ page, total, pageSize, onChange }: {
-  page: number; total: number; pageSize: number; onChange: (p: number) => void;
-}) {
-  const totalPages = Math.ceil(total / pageSize);
-  if (totalPages <= 1) return null;
-  return (
-    <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
-      <span className="text-white/30 text-xs">{total} résultats</span>
-      <div className="flex items-center gap-2">
-        <button onClick={() => onChange(page - 1)} disabled={page === 0}
-          className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] disabled:opacity-30 flex items-center justify-center text-white/50 transition-all">
-          <ChevronLeft size={13} />
-        </button>
-        <span className="text-white/40 text-xs">{page + 1} / {totalPages}</span>
-        <button onClick={() => onChange(page + 1)} disabled={page >= totalPages - 1}
-          className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] disabled:opacity-30 flex items-center justify-center text-white/50 transition-all">
-          <ChevronRight size={13} />
-        </button>
-      </div>
-    </div>
-  );
+const DATA={
+  fr:{no_space_found:"Aucun space trouvé",
+    no_link_found:"Aucun lien social"
+  },
+  en:{no_space_found:"No space found",
+    no_link_found: "No social link found"
+  }
 }
 
 // =====================================================
 // SPACE LIST — getMySpaces, searchSpaces
 // =====================================================
-export function SpaceList({ data }: { data: any }) {
+export function SpaceList({ data ,lang}: { data: any,lang:LangType }) {
   const [page, setPage] = useState(0);
   const spaces: any[] = Array.isArray(data) ? data : data?.data ?? [];
   const paginated = spaces.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const t=DATA[lang]
 
   if (!spaces.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <Globe size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Aucun space trouvé</p>
+        <p className="text-white/30 text-sm">{t.no_space_found}</p>
       </div>
     );
   }
@@ -85,7 +73,7 @@ export function SpaceList({ data }: { data: any }) {
           </div>
         </div>
       ))}
-      <Pagination page={page} total={spaces.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={spaces.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
     </div>
   );
 }
@@ -103,14 +91,14 @@ const NETWORK_COLORS: Record<string, string> = {
   Website: 'from-indigo-500 to-violet-600',
 };
 
-export function SpaceSocialLinks({ data }: { data: any }) {
+export function SpaceSocialLinks({ data,lang }: { data: any,lang:LangType }) {
   const links: any[] = Array.isArray(data) ? data : data?.data ?? [];
-
+  const t=DATA[lang]
   if (!links.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <Link2 size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Aucun lien social</p>
+        <p className="text-white/30 text-sm">{t.no_link_found}</p>
       </div>
     );
   }

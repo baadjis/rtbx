@@ -3,51 +3,76 @@
 'use client';
 import { useState } from 'react';
 import {
-  FileText, ExternalLink, Globe, Lock, ChevronLeft,
-  ChevronRight, BarChart2, Mail, CheckCircle, Clock3, Eye
+  FileText, ExternalLink, Globe, Lock,
+  BarChart2, Eye
 } from 'lucide-react';
+import Pagination from '../shared/Pagination';
+import { formatDate } from '../shared/DateFormatter';
+import { LangType } from '@/lib/lang/types';
 
 const PAGE_SIZE = 5;
 
-function Pagination({ page, total, pageSize, onChange }: {
-  page: number; total: number; pageSize: number; onChange: (p: number) => void;
-}) {
-  const totalPages = Math.ceil(total / pageSize);
-  if (totalPages <= 1) return null;
-  return (
-    <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
-      <span className="text-white/30 text-xs">{total} résultats</span>
-      <div className="flex items-center gap-2">
-        <button onClick={() => onChange(page - 1)} disabled={page === 0}
-          className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] disabled:opacity-30 flex items-center justify-center text-white/50 transition-all">
-          <ChevronLeft size={13} />
-        </button>
-        <span className="text-white/40 text-xs">{page + 1} / {totalPages}</span>
-        <button onClick={() => onChange(page + 1)} disabled={page >= totalPages - 1}
-          className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] disabled:opacity-30 flex items-center justify-center text-white/50 transition-all">
-          <ChevronRight size={13} />
-        </button>
-      </div>
-    </div>
-  );
+const DATA={
+
+  fr:{
+    published:"Publié",
+    canceled:"Annulé",
+    draft:"Brouillon",
+    no_response:"Aucune réponse pour le moment",
+    no_form_found:"Aucun formulaire trouvé",
+    accepted:"Accepté",
+    sent:"Envoyé",
+    pending:"En attente",
+    name:"Nom",
+    email:"Email",
+    statatut:"Statut",
+    company:"Entreprise",
+    no_invitation_found:"Aucune invitation",
+    empty_agenda:"Agenda vide",
+    open:"Ouvrir",
+    by:"par",
+    public_view:"Voir Public",
+    anonymous:"Anonyme"
+
+  },
+  en:{
+    published:"Published",
+    canceled:"Canceled",
+    draft:"Draft",
+    no_response:"No response yet",
+    no_form_found:"No  form found",
+     accepted:"Accepted",
+    sent:"Sent",
+    pending:"Pending",
+    name:"Name",
+    email:"Email",
+    company:"Company",
+    no_invitation_found:"No invitation",
+    empty_agenda:"Empty agenda",
+    open:"Open",
+    by:"by",
+    public_view:"View Public",
+    anonymous:"Anonymous"
+
+
+
+
+  }
 }
 
-function formatDate(date: string) {
-  if (!date) return '—';
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
 
-function StatusBadge({ published, visibility }: { published?: boolean; visibility?: string }) {
+
+function StatusBadge({ published, visibility,lang ='en'}: { published?: boolean; visibility?: string ,lang?:LangType}) {
+  const t=DATA[lang]
+  
   if (published) return (
     <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-      <Globe size={9} /> Publié
+      <Globe size={9} /> {t.published}
     </span>
   );
   return (
     <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-      <Lock size={9} /> Brouillon
+      <Lock size={9} /> {t.draft}
     </span>
   );
 }
@@ -55,8 +80,9 @@ function StatusBadge({ published, visibility }: { published?: boolean; visibilit
 // =====================================================
 // FORM LIST — getMyForms, searchForms
 // =====================================================
-export function FormList({ data }: { data: any }) {
+export function FormList({ data,lang ='en'}: { data: any ,lang:LangType}) {
   const [page, setPage] = useState(0);
+  const t=DATA[lang]
 
   // Gérer les deux formats : { created, responded, invited } ou array direct
   let forms: any[] = [];
@@ -81,7 +107,7 @@ export function FormList({ data }: { data: any }) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <FileText size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Aucun formulaire trouvé</p>
+        <p className="text-white/30 text-sm">{t.no_form_found}</p>
       </div>
     );
   }
@@ -122,12 +148,12 @@ export function FormList({ data }: { data: any }) {
           <div className="flex items-center justify-between">
             <span className="text-white/25 text-xs">{formatDate(form.created_at)}</span>
             {form.org_name && (
-              <span className="text-white/25 text-xs">par {form.org_name}</span>
+              <span className="text-white/25 text-xs">{t.by} {form.org_name}</span>
             )}
           </div>
         </div>
       ))}
-      <Pagination page={page} total={forms.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={forms.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
     </div>
   );
 }
@@ -135,9 +161,10 @@ export function FormList({ data }: { data: any }) {
 // =====================================================
 // FORM RESPONSES TABLE — getFormResponses
 // =====================================================
-export function FormResponsesTable({ data }: { data: any }) {
+export function FormResponsesTable({ data,lang }: { data: any ,lang:LangType}) {
   const [page, setPage] = useState(0);
   const [expanded, setExpanded] = useState<number | null>(null);
+  const t= DATA[lang]
 
   const responses: any[] = Array.isArray(data) ? data : data?.data ?? [];
   const paginated = responses.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -146,7 +173,7 @@ export function FormResponsesTable({ data }: { data: any }) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
         <BarChart2 size={24} className="text-white/20 mx-auto mb-2" />
-        <p className="text-white/30 text-sm">Aucune réponse pour le moment</p>
+        <p className="text-white/30 text-sm">{t.no_response}</p>
       </div>
     );
   }
@@ -202,7 +229,7 @@ export function FormResponsesTable({ data }: { data: any }) {
         ))}
       </div>
 
-      <Pagination page={page} total={responses.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={page} total={responses.length} pageSize={PAGE_SIZE} onChange={setPage} lang={lang} />
     </div>
   );
 }
@@ -210,8 +237,9 @@ export function FormResponsesTable({ data }: { data: any }) {
 // =====================================================
 // FORM CARD — createForm, getFormById
 // =====================================================
-export function FormCard({ data }: { data: any }) {
+export function FormCard({ data ,lang='en'}: { data: any ,lang:LangType}) {
   const form = data?.data ?? data;
+  const  t=DATA[lang]
   if (!form?.id) return null;
 
   return (
@@ -240,7 +268,7 @@ export function FormCard({ data }: { data: any }) {
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 px-3 py-1.5 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/20 rounded-xl text-pink-400 text-xs font-medium transition-all"
         >
-          <ExternalLink size={12} /> Ouvrir
+          <ExternalLink size={12} /> {t.open}
         </a>
         {form.is_published && (
           <a
@@ -249,7 +277,7 @@ export function FormCard({ data }: { data: any }) {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] rounded-xl text-white/50 hover:text-white text-xs transition-all"
           >
-            <Globe size={12} /> Voir public
+            <Globe size={12} />  {t.public_view}
           </a>
         )}
       </div>

@@ -355,7 +355,7 @@ const handleSuggestionClick = (suggestion: string) => {
                     
                     
                     {msg.role === 'assistant' && msg.ui ? (
-  <MCPUIRenderer ui={msg.ui} />
+  <MCPUIRenderer ui={msg.ui}  lang={lang}/>
 ):(<p className="whitespace-pre-wrap">{msg.content}</p>)}
                   </div>
 

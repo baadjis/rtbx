@@ -4,14 +4,40 @@
 import { useState } from 'react';
 import { Copy, Check, ExternalLink, BarChart2, QrCode, Download } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
+import { LangType } from '@/lib/lang/types';
 
 const BASE_URL = 'https://www.rtbx.space/s/';
+const DATA={
+  fr:{copied_it:"copié",
+    copy_it:"copier",
+    download:"Téléchaarger",
+    open:"Ouvrir",
+    close:"Fermer",
+    no_link_found:"Aucun lien trouvé",
+    last_clic:"Dernier clic",
+    total_clics:"total clics",
+    short_link:"lien court"
+  },
+  en:{
+    copied_it:"copied",
+    copy_it:"copy",
+    download:"Download",
+    open:"Open",
+    close:"Close",
+    no_link_found:"No link found",
+    last_clic:"last clic",
+    total_clics:"total clic",
+    short_link:"short link"
+
+  }
+}
 
 // =====================================================
 // COPY BUTTON
 // =====================================================
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text,lang }: { text: string ,lang:LangType}) {
   const [copied, setCopied] = useState(false);
+  const t=DATA[lang]
   const copy = () => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -21,7 +47,7 @@ function CopyButton({ text }: { text: string }) {
     <button onClick={copy}
       className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-white/60 hover:text-white text-xs transition-all">
       {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-      {copied ? 'Copié' : 'Copier'}
+      {copied ? t.copied_it : t.copy_it}
     </button>
   );
 }
@@ -29,7 +55,8 @@ function CopyButton({ text }: { text: string }) {
 // =====================================================
 // QR MODAL
 // =====================================================
-function QRModal({ url, code, onClose }: { url: string; code: string; onClose: () => void }) {
+function QRModal({ url, code, onClose,lang }: { url: string; code: string; onClose: () => void ;lang:LangType}) {
+  const t=DATA[lang]
   const download = () => {
     const canvas = document.getElementById(`qr-${code}`) as HTMLCanvasElement;
     if (!canvas) return;
@@ -51,11 +78,11 @@ function QRModal({ url, code, onClose }: { url: string; code: string; onClose: (
         <div className="flex gap-3">
           <button onClick={download}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-white text-xs font-medium transition-all">
-            <Download size={13} /> Télécharger
+            <Download size={13} /> {t.download}
           </button>
           <button onClick={onClose}
             className="flex items-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl text-white/60 text-xs transition-all">
-            Fermer
+          {t.close}
           </button>
         </div>
       </div>
@@ -67,9 +94,10 @@ function QRModal({ url, code, onClose }: { url: string; code: string; onClose: (
 // SHORT LINK CARD — création ou update
 // =====================================================
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function ShortLinkCard({ data }: { data: any }) {
+export function ShortLinkCard({ data ,lang='en'}: { data: any,lang:LangType }) {
   const [showQR, setShowQR] = useState(false);
   const shortUrl = `${BASE_URL}${data.short_code}`;
+  const t= DATA[lang]
 
   return (
     <>
@@ -88,7 +116,7 @@ export function ShortLinkCard({ data }: { data: any }) {
 
         <div className="flex items-center gap-2 p-2.5 bg-white/[0.03] rounded-xl border border-white/[0.06]">
           <span className="flex-1 text-indigo-300 text-xs font-mono truncate">{shortUrl}</span>
-          <CopyButton text={shortUrl} />
+          <CopyButton text={shortUrl}  lang={lang}/>
           <a href={shortUrl} target="_blank" rel="noopener noreferrer"
             className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-white/40 hover:text-white transition-all">
             <ExternalLink size={12} />
@@ -107,7 +135,7 @@ export function ShortLinkCard({ data }: { data: any }) {
         </div>
       </div>
 
-      {showQR && <QRModal url={shortUrl} code={data.short_code} onClose={() => setShowQR(false)} />}
+      {showQR && <QRModal url={shortUrl} code={data.short_code} onClose={() => setShowQR(false)}  lang={lang}/>}
     </>
   );
 }
@@ -115,14 +143,14 @@ export function ShortLinkCard({ data }: { data: any }) {
 // =====================================================
 // SHORT LINK LIST — liste des liens
 // =====================================================
-export function ShortLinkList({ data }: { data: any }) {
+export function ShortLinkList({ data,lang='en' }: { data: any ,lang:LangType}) {
   const [showQR, setShowQR] = useState<string | null>(null);
   const links = data?.links ?? (Array.isArray(data) ? data : []);
-
+  const t=DATA[lang]
   if (!links.length) {
     return (
       <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center text-white/30 text-sm">
-        Aucun lien trouvé
+        {t.no_link_found}
       </div>
     );
   }
@@ -152,7 +180,7 @@ export function ShortLinkList({ data }: { data: any }) {
 
               {/* Actions */}
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                <CopyButton text={shortUrl} />
+                <CopyButton text={shortUrl}  lang={lang}/>
                 <button onClick={() => setShowQR(link.short_code)}
                   className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-white/40 hover:text-white transition-all">
                   <QrCode size={12} />
@@ -172,6 +200,7 @@ export function ShortLinkList({ data }: { data: any }) {
           url={`${BASE_URL}${showQR}`}
           code={showQR}
           onClose={() => setShowQR(null)}
+          lang={lang}
         />
       )}
     </>
@@ -181,16 +210,17 @@ export function ShortLinkList({ data }: { data: any }) {
 // =====================================================
 // SHORT LINK STATS
 // =====================================================
-export function ShortLinkStats({ data }: { data: any }) {
+export function ShortLinkStats({ data ,lang}: { data: any ,lang:LangType}) {
   const [showQR, setShowQR] = useState(false);
   const shortUrl = `${BASE_URL}${data.short_code || ''}`;
+  const t=DATA[lang]
 
   return (
     <>
       <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-white font-semibold text-sm">{data.title || 'Lien court'}</p>
+            <p className="text-white font-semibold text-sm">{data.title || t.short_link}</p>
             <p className="text-white/40 text-xs mt-0.5 truncate max-w-[200px]">{data.long_url}</p>
           </div>
           <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-mono">
@@ -201,11 +231,11 @@ export function ShortLinkStats({ data }: { data: any }) {
         {/* Stats grid */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
-            <p className="text-white/30 text-[10px] uppercase tracking-wider mb-1">Clics total</p>
+            <p className="text-white/30 text-[10px] uppercase tracking-wider mb-1">{t.total_clics}</p>
             <p className="text-white text-2xl font-bold">{data.clicks ?? 0}</p>
           </div>
           <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
-            <p className="text-white/30 text-[10px] uppercase tracking-wider mb-1">Dernier clic</p>
+            <p className="text-white/30 text-[10px] uppercase tracking-wider mb-1">{t.last_clic}</p>
             <p className="text-white text-xs font-medium">
               {data.last_clicked_at
                 ? new Date(data.last_clicked_at).toLocaleDateString('fr-FR')
@@ -216,20 +246,20 @@ export function ShortLinkStats({ data }: { data: any }) {
 
         {/* Actions */}
         <div className="flex gap-2">
-          <CopyButton text={shortUrl} />
+          <CopyButton text={shortUrl} lang={lang}/>
           <button onClick={() => setShowQR(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] rounded-xl text-white/60 hover:text-white text-xs transition-all">
             <QrCode size={12} /> QR Code
           </button>
           <a href={shortUrl} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] rounded-xl text-white/60 hover:text-white text-xs transition-all">
-            <ExternalLink size={12} /> Ouvrir
+            <ExternalLink size={12} /> {t.open}
           </a>
         </div>
       </div>
 
       {showQR && (
-        <QRModal url={shortUrl} code={data.short_code} onClose={() => setShowQR(false)} />
+        <QRModal url={shortUrl} code={data.short_code} onClose={() => setShowQR(false)} lang={lang}/>
       )}
     </>
   );

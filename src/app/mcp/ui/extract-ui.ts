@@ -35,6 +35,11 @@ searchForms: 'form_list',
 getFormById: 'form_card',
 getFormResponses: 'form_responses_table',
 createForm: 'form_card',
+
+// Business
+getUserBusinesses: 'business_list',
+createBusiness: 'business_card',
+updateBusiness: 'business_card',
 };
 
 export function extractUIFromSteps(steps: any[]): UIPayload {
