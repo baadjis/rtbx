@@ -55,6 +55,8 @@ export async function runAgent(
       options?.userEmail
     );
 
+    
+
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
     const tools = getAgentRelevantTools(
       allTools,
@@ -64,7 +66,8 @@ export async function runAgent(
       config.readOnlyTools,
       lastMessage
     );
-    //console.log(tools)
+    
+    console.log(tools)
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
 
     const result = await generateText({
