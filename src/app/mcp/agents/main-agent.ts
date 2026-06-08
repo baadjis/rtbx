@@ -12,7 +12,7 @@ export type Message = {
 
 const MAX_CONTENT_LENGTH = 800;
 
-export async function runMCPAgent(
+export async function runMainAgent(
   messages: Message[],
   options?: {
     temperature?: number;
