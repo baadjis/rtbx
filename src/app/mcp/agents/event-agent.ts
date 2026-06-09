@@ -20,6 +20,8 @@ Réponds en français par défaut.`,
 // app/mcp/agents/event-agent.ts
 import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { createEventTools } from '../tools/events';
+import { EVENT_EXAMPLES } from '../core/Examples/events';
+import { getGenericContext } from '../core/context-manager';
 
 const eventAgentConfig: AgentConfig = {
   name: 'Event',
@@ -39,7 +41,16 @@ READ (appeler directement sans confirmation) : getMyEvents, getEventRegistration
 APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
 RÈGLES : cancelEvent → demander la raison d'abord. sendBadges → avertir que c'est irréversible. deleteEvent → avertir que c'est définitif.
 Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`}
+const EVENT_CONFIG = {
+  agentName: "EventAgent",
+  baseSystemPrompt: eventAgentConfig.getSystemPrompt(),
+  examples: EVENT_EXAMPLES,
+  fallbackTools: ["getMyEvents", "searchPublicEvents", "searchOrganizerEvents"]
+};
+
 export async function runEventAgent(messages: Message[], options?: AgentOptions & { eventId?: string }) {
+  const context = await getGenericContext(messages, eventAgentConfig.createTools(options?.accessToken), EVENT_CONFIG);
+  console.log(context.tools,context.detectedIntent)
   return runAgent(messages, eventAgentConfig, {
     ...options,
     contextId: options?.eventId,
