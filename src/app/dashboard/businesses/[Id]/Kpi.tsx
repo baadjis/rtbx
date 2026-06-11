@@ -98,7 +98,7 @@ export default function Kpi({
           group-hover:scale-110
           transition-transform
         ">
-
+          
           <Users size={24} />
 
         </div>

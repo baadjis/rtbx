@@ -193,7 +193,10 @@ review_providers:
   'Plateformes d’avis',
 
 no_review_provider_connected:
-  'Aucune plateforme d’avis connectée pour le moment.'
+  'Aucune plateforme d’avis connectée pour le moment.',
+  total_customers: "Clients Fidèles" ,
+  total_points: "Points Distribués",
+
 
   
 
@@ -389,7 +392,9 @@ review_providers:
   'Review Platforms',
 
 no_review_provider_connected:
-  'No review platform connected yet.'
+  'No review platform connected yet.',
+  total_customers: "Loyal Customers" ,
+  total_points: "Total Points",
 
   }
 
