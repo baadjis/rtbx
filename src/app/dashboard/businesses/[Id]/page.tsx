@@ -1,12 +1,12 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { DICT } from '@/lib/locales';
 import BusinessDetailsClient from './BusinessDetailsClient';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Data} from './data';
 
 export default async function BusinessPage({ params }: { params: Promise<{ Id: string }> }) {
   const { Id } = await params;
@@ -18,7 +18,7 @@ export default async function BusinessPage({ params }: { params: Promise<{ Id: s
 
   const cookieStore = await cookies();
   const lang = (cookieStore.get('lang')?.value === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
-  const t = DICT[lang];
+  const t = Data[lang];
 
   // 2. Récupération des données en parallèle (Optimisation Performance)
   const [businessRes, pointsRes, historyRes] = await Promise.all([
