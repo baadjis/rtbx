@@ -195,7 +195,7 @@ review_providers:
 no_review_provider_connected:
   'Aucune plateforme d’avis connectée pour le moment.',
   total_customers: "Clients Fidèles" ,
-  total_points: "Points Distribués",
+  total_points: "Points Distribués ",
 
 
   
