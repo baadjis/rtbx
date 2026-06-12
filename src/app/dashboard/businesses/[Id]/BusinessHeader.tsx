@@ -1,15 +1,59 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import Image from 'next/image'
 import Link from 'next/link'
 
 import {
-  Star,
-  MapPin,
-  ScanLine,
-  Settings,
   ExternalLink,
-  CheckCircle2
+  MapPin,
+  QrCode,
+  ShieldCheck,
+  Settings,
+  Star,
+  UtensilsCrossed,
+  Hotel,
+  Stethoscope,
+  Scissors,
+  Dumbbell,
+  ShoppingBag
 } from 'lucide-react'
+
+function BusinessIcon({type,size=24}:
+  {type?: string;
+  size?:number}
+
+) {
+
+  switch (type) {
+
+    case 'restaurant':
+    case 'cafe':
+      return <UtensilsCrossed size={size}/>
+
+    case 'hotel':
+    case 'hospitality':
+      return <Hotel size={size}/>
+
+    case 'medical':
+    case 'healthcare':
+      return <Stethoscope size={size}/>
+
+    case 'beauty':
+      return <Scissors size={size}/>
+
+    case 'fitness':
+      return <Dumbbell size={size}/>
+
+    case 'retail':
+      return <ShoppingBag size={size}/>
+
+    default:
+      return <Star size={size}/>
+
+  }
+
+}
+
 
 export default function BusinessHeader({
   business,
@@ -19,19 +63,17 @@ export default function BusinessHeader({
   t: any
 }) {
 
-  const mapsUrl =
-    business.google_place_id
-      ? `https://www.google.com/maps/search/?api=1&query_place_id=${business.google_place_id}`
-      : null
+  
 
   return (
 
     <div
       className="
         bg-white dark:bg-slate-900
-        border border-gray-100 dark:border-slate-800
+        p-8 md:p-10
         rounded-[3rem]
-        p-8 md:p-12
+        border border-gray-100
+        dark:border-slate-800
         shadow-sm
         flex flex-col xl:flex-row
         justify-between
@@ -39,140 +81,112 @@ export default function BusinessHeader({
       "
     >
 
-      {/* ================================================= */}
+      {/* ===================================================== */}
       {/* LEFT */}
-      {/* ================================================= */}
+      {/* ===================================================== */}
 
-      <div className="space-y-4">
+      <div className="flex items-start gap-5">
 
-        <div className="flex items-center gap-4">
+        {business.avatar_url ? (
+
+          <Image
+            src={business.avatar_url}
+            alt={business.name}
+            width={80}
+            height={80}
+            className="
+              w-20 h-20
+              rounded-[1.5rem]
+              object-cover
+              border border-gray-200
+              dark:border-slate-700
+            "
+          />
+
+        ) : (
 
           <div
             className="
-              w-14 h-14
-              rounded-2xl
+              w-20 h-20
+              rounded-[1.5rem]
               bg-indigo-600
-              flex items-center justify-center
+              text-white
+              flex items-center
+              justify-center
               shadow-lg
             "
           >
 
-            <Star
-              className="
-                text-white
-                w-7 h-7
-                fill-current
-              "
-            />
-
-          </div>
-
-          <div>
-
-            <h1
-              className="
-                text-3xl md:text-5xl
-                font-black
-                tracking-tight
-                text-gray-900 dark:text-white
-              "
-            >
-
-              {business.name}
-
-            </h1>
-
-            {business.business_type && (
-
-              <p
-                className="
-                  text-sm
-                  font-bold
-                  text-indigo-600
-                  uppercase
-                  tracking-wider
-                  mt-1
-                "
-              >
-
-                {business.business_type}
-
-              </p>
-
-            )}
-
-          </div>
-
-        </div>
-
-        {business.address && (
-
-          <div
-            className="
-              flex items-center gap-2
-              text-gray-500 dark:text-slate-400
-              font-medium
-            "
-          >
-
-            <MapPin
-              size={18}
-              className="text-indigo-600"
-            />
-
-            <span>
-
-              {business.address}
-
-            </span>
+            <BusinessIcon size={34} />
 
           </div>
 
         )}
 
-        <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
 
-          {business.verified && (
+          <h1
+            className="
+              text-3xl md:text-5xl
+              font-black
+              tracking-tight
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {business.name}
+          </h1>
+
+          {business.address && (
 
             <div
               className="
-                inline-flex items-center gap-2
-                px-3 py-2
-                rounded-xl
-                bg-green-50
-                dark:bg-green-500/10
-                text-green-600
-                dark:text-green-400
-                text-xs
-                font-black
+                flex items-start gap-2
+                text-gray-500
+                dark:text-slate-400
               "
             >
 
-              <CheckCircle2 size={14} />
+              <MapPin
+                size={18}
+                className="
+                  text-indigo-600
+                  mt-0.5
+                  shrink-0
+                "
+              />
 
-              {t.verified}
+              <span className="font-medium">
+                {business.address}
+              </span>
 
             </div>
 
           )}
 
-          {business.google_place_id && (
+          {business.verified && (
 
             <div
               className="
-                inline-flex items-center gap-2
+                inline-flex
+                items-center
+                gap-2
                 px-3 py-2
-                rounded-xl
-                bg-blue-50
-                dark:bg-blue-500/10
-                text-blue-600
-                dark:text-blue-400
+                rounded-full
+                bg-emerald-50
+                dark:bg-emerald-500/10
+                text-emerald-600
+                dark:text-emerald-400
                 text-xs
                 font-black
+                uppercase
+                tracking-wider
               "
             >
 
-              Google Connected
+              <ShieldCheck size={14} />
+
+              {t.verified_business}
 
             </div>
 
@@ -182,43 +196,62 @@ export default function BusinessHeader({
 
       </div>
 
-      {/* ================================================= */}
-      {/* RIGHT */}
-      {/* ================================================= */}
+      {/* ===================================================== */}
+      {/* ACTIONS */}
+      {/* ===================================================== */}
 
-      <div className="flex flex-wrap gap-3">
+      <div
+        className="
+          flex flex-wrap
+          items-center
+          gap-3
+        "
+      >
+
+        {/* REVIEW QR */}
 
         <Link
-          href="/scan"
+          href={`/tools/google-review?id=${business.id}`}
           className="
-            flex items-center gap-2
-            px-6 py-3
+            h-11
+            px-4
             rounded-2xl
             bg-indigo-600
             text-white
-            font-black
+            font-bold
+            text-sm
+            flex items-center
+            gap-2
             hover:bg-indigo-700
             transition-all
             no-underline
           "
         >
 
-          <ScanLine size={18} />
+          <QrCode size={16} />
 
-          {t.scan_customer}
+          {t.review_qr}
 
         </Link>
+
+        {/* SETTINGS */}
 
         <Link
           href={`/dashboard/business/${business.id}/settings`}
           className="
-            flex items-center gap-2
-            px-6 py-3
+            h-11
+            px-4
             rounded-2xl
-            bg-gray-50 dark:bg-slate-800
-            text-gray-700 dark:text-slate-300
+            bg-gray-50
+            dark:bg-slate-800
+            border border-gray-100
+            dark:border-slate-700
+            text-gray-700
+            dark:text-slate-300
             font-bold
-            border border-gray-100 dark:border-slate-700
+            text-sm
+            flex items-center
+            gap-2
             hover:bg-indigo-50
             dark:hover:bg-indigo-900/30
             hover:text-indigo-600
@@ -227,26 +260,34 @@ export default function BusinessHeader({
           "
         >
 
-          <Settings size={18} />
+          <Settings size={16} />
 
           {t.settings}
 
         </Link>
 
-        {mapsUrl && (
+        {/* GOOGLE MAPS */}
+
+        {business.google_place_id && (
 
           <a
-            href={mapsUrl}
+            href={`https://www.google.com/maps/search/?api=1&query=Google&query_place_id=${business.google_place_id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="
-              flex items-center gap-2
-              px-6 py-3
+              h-11
+              px-4
               rounded-2xl
-              bg-gray-50 dark:bg-slate-800
-              text-gray-700 dark:text-slate-300
+              bg-gray-50
+              dark:bg-slate-800
+              border border-gray-100
+              dark:border-slate-700
+              text-gray-700
+              dark:text-slate-300
               font-bold
-              border border-gray-100 dark:border-slate-700
+              text-sm
+              flex items-center
+              gap-2
               hover:bg-indigo-50
               dark:hover:bg-indigo-900/30
               hover:text-indigo-600
@@ -255,13 +296,38 @@ export default function BusinessHeader({
             "
           >
 
-            <ExternalLink size={18} />
+            <ExternalLink size={16} />
 
             {t.view_on_maps}
 
           </a>
 
         )}
+
+        {/* MOBILE ONLY */}
+
+        <Link
+          href="/scan"
+          className="
+            flex md:hidden
+            h-11
+            px-4
+            rounded-2xl
+            bg-emerald-600
+            text-white
+            font-bold
+            text-sm
+            items-center
+            gap-2
+            no-underline
+          "
+        >
+
+          <QrCode size={16} />
+
+          {t.scan_customer}
+
+        </Link>
 
       </div>
 

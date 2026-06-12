@@ -196,6 +196,8 @@ no_review_provider_connected:
   'Aucune plateforme d’avis connectée pour le moment.',
   total_customers: "Clients Fidèles" ,
   total_points: "Points Distribués ",
+  review_qr: 'QR Avis',
+verified_business: 'Commerce vérifié',
 
 
   
@@ -395,6 +397,8 @@ no_review_provider_connected:
   'No review platform connected yet.',
   total_customers: "Loyal Customers" ,
   total_points: "Total Points",
+  review_qr: 'Review QR',
+verified_business: 'Verified Business',
 
   }
 

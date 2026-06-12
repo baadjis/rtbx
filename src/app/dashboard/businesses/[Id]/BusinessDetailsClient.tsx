@@ -8,8 +8,6 @@ import Script from 'next/script'
 import BusinessHeader from './BusinessHeader'
 import Kpi from './Kpi'
 
-
-import BusinessQuickActions from './BusinessQuickActions'
 import BusinessContent from './BusinessContent'
 
 interface Props {
@@ -208,10 +206,6 @@ export default function BusinessDetailsClient({
         business={business}
       />
 
-      <BusinessQuickActions
-  t={t}
-  business={business}
-/>
 
       {/* =====================================================
           KPI
