@@ -7,8 +7,10 @@ import Script from 'next/script'
 
 import BusinessHeader from './BusinessHeader'
 import Kpi from './Kpi'
-import { LatestGoogleReviews } from './LatestGoogleReviews'
-import LoyaltyHistory from './LoyaltyHistory'
+
+
+import BusinessQuickActions from './BusinessQuickActions'
+import BusinessContent from './BusinessContent'
 
 interface Props {
 
@@ -206,6 +208,11 @@ export default function BusinessDetailsClient({
         business={business}
       />
 
+      <BusinessQuickActions
+  t={t}
+  business={business}
+/>
+
       {/* =====================================================
           KPI
       ===================================================== */}
@@ -228,35 +235,14 @@ export default function BusinessDetailsClient({
           CONTENT
       ===================================================== */}
 
-      <div className="
-        grid grid-cols-1
-        lg:grid-cols-3
-        gap-8
-      ">
-
-        {/* GOOGLE REVIEWS */}
-
-       {business.google_place_id &&(<LatestGoogleReviews
-
-          t={t}
-
-          reviews={reviews}
-
-          loading={loading}
-
-        />)}
-
-        {/* LOYALTY HISTORY */}
-
-        <LoyaltyHistory
-
-          t={t}
-
-          history={history}
-
-        />
-
-      </div>
+      <BusinessContent
+  business={business}
+  reviews={reviews}
+  loading={loading}
+  history={history}
+  t={t}
+/>
+      
 
     </div>
 
