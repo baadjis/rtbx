@@ -7,7 +7,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 const ENCRYPTION_KEY = Buffer.from(process.env.TELEGRAM_TOKEN_ENCRYPTION_KEY!, 'hex'); // 32 bytes hex
-const ALGORITHM = 'aes-256-gcm';
+const ALGORITHM =  'aes-256-gcm';
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
 /* =========================================================
