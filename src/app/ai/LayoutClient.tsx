@@ -202,7 +202,7 @@ className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:t
             {!collapsed && t.ai_home}
 </Link>
 
-<Link href="/settings" 
+<Link href="/ai/settings" 
 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/[0.04] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
 
 >
