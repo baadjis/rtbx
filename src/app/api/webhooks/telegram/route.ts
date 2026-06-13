@@ -22,6 +22,7 @@ import {
   getTelegramConfig,
   getTelegramHistory,
   saveTelegramHistory,
+  getAccessTokenFromConfig,
 } from '@/lib/telegram/service';
 import { runEventAgent } from '@/app/mcp/agents/event-agent';
 import { runShortenerAgent } from '@/app/mcp/agents/shortener-agent';
@@ -30,6 +31,7 @@ import { runBusinessAgent } from '@/app/mcp/agents/business-agent';
 import { runFormAgent } from '@/app/mcp/agents/form-agent';
 import { runMainAgent } from '@/app/mcp/agents/main-agent';
 import { LangType } from '@/lib/lang/types';
+import { getAccessTokenFromRefreshToken } from '@/lib/telegram/service';
 
 // Router vers le bon agent
 const AGENT_MAP: Record<string, any> = {
@@ -103,8 +105,11 @@ export async function POST(request: Request) {
     }
 
     const config = await getTelegramConfig(chatId);
-    const agentType = config?.agent_type || 'general';
-    const agentRunner = AGENT_MAP[agentType] || runMainAgent;
+const agentType = config?.agent_type || 'general';
+const agentRunner = AGENT_MAP[agentType] || runMainAgent;
+
+const { accessToken, userId, userEmail } = await getAccessTokenFromConfig(config);
+
 
     const history = await getTelegramHistory(chatId);
     const newHistory = [...history, { role: 'user', content: userText }];
@@ -116,10 +121,13 @@ export async function POST(request: Request) {
     });
 
     const result = await agentRunner(newHistory, {
-      mode: 'text',
-      contextId: config?.context_id || undefined,
-      lang: userLang, // ← passé à l'agent
-    });
+  mode: 'text',
+  contextId: config?.context_id || undefined,
+  lang: userLang,
+  accessToken, // ← nouveau
+  userId,      // ← nouveau
+   userEmail,
+});
 
     const responseText = result.success ? result.text : t.error;
 
