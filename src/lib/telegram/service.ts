@@ -59,8 +59,14 @@ export async function sendTelegramMessage(chatId: string, text: string) {
    ENCRYPT / DECRYPT via pgcrypto (pgp_sym_encrypt / decrypt)
 ========================================================= */
 
+function getEncryptionKey(): Buffer {
+  const key = process.env.TELEGRAM_TOKEN_ENCRYPTION_KEY;
+  if (!key) throw new Error('TELEGRAM_TOKEN_ENCRYPTION_KEY is not set');
+  return Buffer.from(key, 'hex');
+}
 
 function encryptToken(token: string): string {
+  const ENCRYPTION_KEY = getEncryptionKey(); // ← ici
   const iv = randomBytes(12);
   const cipher = createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
   const encrypted = Buffer.concat([cipher.update(token, 'utf8'), cipher.final()]);
@@ -70,6 +76,7 @@ function encryptToken(token: string): string {
 
 function decryptToken(encryptedBase64: string): string | null {
   try {
+    const ENCRYPTION_KEY = getEncryptionKey(); // ← ici
     const buffer = Buffer.from(encryptedBase64, 'base64');
     const iv = buffer.subarray(0, 12);
     const authTag = buffer.subarray(12, 28);

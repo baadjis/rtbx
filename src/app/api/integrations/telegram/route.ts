@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (!body.chat_id) {
       return NextResponse.json({ success: false, error: 'chat_id required' }, { status: 400 });
     }
-
+   console.log(body.chat_id)
     const { data, error } = await createTelegramConfig({
       user_id: user.id,
       chat_id: body.chat_id,
