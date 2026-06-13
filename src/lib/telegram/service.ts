@@ -130,7 +130,7 @@ export async function createTelegramConfig(payload: {
 }) {
   let encryptedToken: string | null = null;
   if (payload.refresh_token) {
-    encryptedToken = await encryptToken(payload.refresh_token);
+    encryptedToken = await encryptToken(payload.refresh_token as string);
   }
 
   const { data, error } = await supabaseAdmin
@@ -151,9 +151,7 @@ export async function createTelegramConfig(payload: {
   return { data, error: null };
 }
 
-/* =========================================================
-   GET FRESH ACCESS TOKEN — déchiffre puis refresh la session
-========================================================= */
+
 /* =========================================================
    GET FRESH ACCESS TOKEN — déchiffre, refresh, RE-SAUVEGARDE
 ========================================================= */
@@ -185,7 +183,7 @@ export async function getAccessTokenFromConfig(config: any): Promise<{
   }
 
   // Re-chiffrer et sauvegarder le NOUVEAU refresh_token
-  const newRefreshToken = data.session.refresh_token;
+  const newRefreshToken = data.session.refresh_token as string;
   if (newRefreshToken) {
     const newEncrypted = await encryptToken(newRefreshToken);
     if (newEncrypted) {
