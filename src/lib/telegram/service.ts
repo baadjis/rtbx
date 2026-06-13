@@ -4,6 +4,11 @@
 // lib/telegram/service.ts
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+
+const ENCRYPTION_KEY = Buffer.from(process.env.TELEGRAM_TOKEN_ENCRYPTION_KEY!, 'hex'); // 32 bytes hex
+const ALGORITHM = 'aes-256-gcm';
+const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
 /* =========================================================
    GET FRESH ACCESS TOKEN FROM REFRESH TOKEN
@@ -37,8 +42,7 @@ const supabaseAdmin = createAdminClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const ENCRYPTION_KEY = process.env.TELEGRAM_TOKEN_ENCRYPTION_KEY!;
-const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
+
 
 /* =========================================================
    SEND MESSAGE
@@ -54,22 +58,28 @@ export async function sendTelegramMessage(chatId: string, text: string) {
 /* =========================================================
    ENCRYPT / DECRYPT via pgcrypto (pgp_sym_encrypt / decrypt)
 ========================================================= */
-async function encryptToken(token: string): Promise<string | null> {
-  const { data, error } = await supabaseAdmin.rpc('encrypt_token', {
-    encryption_key: ENCRYPTION_KEY, // ← en premier
-    token_text: token,              // ← en second
-  });
-  if (error) { console.error('Encrypt error:', error); return null; }
-  return data;
+
+
+function encryptToken(token: string): string {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+  const encrypted = Buffer.concat([cipher.update(token, 'utf8'), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+  return Buffer.concat([iv, authTag, encrypted]).toString('base64');
 }
 
-async function decryptToken(encrypted: string): Promise<string | null> {
-  const { data, error } = await supabaseAdmin.rpc('decrypt_token', {
-    encryption_key: ENCRYPTION_KEY, // ← en premier
-    encrypted_text: encrypted,       // ← en second
-  });
-  if (error) { console.error('Decrypt error:', error); return null; }
-  return data;
+function decryptToken(encryptedBase64: string): string | null {
+  try {
+    const buffer = Buffer.from(encryptedBase64, 'base64');
+    const iv = buffer.subarray(0, 12);
+    const authTag = buffer.subarray(12, 28);
+    const encrypted = buffer.subarray(28);
+    const decipher = createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+    decipher.setAuthTag(authTag);
+    return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');
+  } catch {
+    return null;
+  }
 }
 
 /* =========================================================
