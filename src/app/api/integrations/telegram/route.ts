@@ -11,6 +11,8 @@ export async function POST(request: Request) {
 
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
+   console.log('session refresh_token:', session?.refresh_token?.slice(0, 20));
+   console.log('session access_token:', session?.access_token?.slice(0, 20));
 
     const body = await request.json();
     if (!body.chat_id) {
