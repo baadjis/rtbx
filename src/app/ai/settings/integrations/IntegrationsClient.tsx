@@ -172,6 +172,7 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
         setSelectedEntityId('');
         loadConfigs();
       }
+      console.log(data)
     } finally {
       setConnecting(false);
     }
