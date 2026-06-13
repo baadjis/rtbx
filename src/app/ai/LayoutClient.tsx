@@ -11,7 +11,8 @@ import {
   Building2,
   Calendar,
   FileText,
-  Globe
+  Globe,
+  Settings
 } from 'lucide-react';
 import { useUser } from '@/hooks/useUser';
 import { LangType } from '@/lib/lang/types';
@@ -50,6 +51,10 @@ const Data={
       ai_new_chat:"Nouveau chat",
       ai_home:"Accueil",
       ai_logout:"Déconnexion",
+      ai_settings:"Paramètres"
+
+    
+
     },
     en:{ 
       mcp_my_account:"Account",
@@ -59,6 +64,7 @@ const Data={
       ai_new_chat:"New Chat",
       ai_home:"Home",
       ai_logout:"Logout",
+      ai_settings:"Settings"
     }
 }
 
@@ -194,6 +200,14 @@ className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:t
 >
 <Home size={20} />
             {!collapsed && t.ai_home}
+</Link>
+
+<Link href="/settings" 
+className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/[0.04] text-sm transition-all ${collapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
+
+>
+  <Settings size={14} />
+  {!collapsed && t.ai_settings}
 </Link>
 
 <form action="/auth/signout" method="post">
