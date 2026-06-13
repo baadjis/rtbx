@@ -95,7 +95,7 @@ const T = {
   },
 };
 
-const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'rtbx_bot';
+const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'rtbx_assistant_bot';
 
 export default function IntegrationsClient({ lang }: { lang: LangType }) {
   const t = T[lang];
