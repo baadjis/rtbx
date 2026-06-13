@@ -1,99 +1,72 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { generateText, stepCountIs } from 'ai';
-import { getRelevantTools } from '../tools';
-import { defaultModel } from '../core/client';
-import {systemPrompt} from '../prompts/system';
-import { mcpConfig } from '../core/config';
+import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
+import { getAllTools } from '../tools';
 
-export type Message = {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
+// =============================================
+// TOOLS CATEGORIES — main agent (tous domaines)
+// =============================================
+const WRITE_TOOLS = [
+  'createSpace', 'updateSpace', 'addSpaceSocialLink', 'updateSpaceSocialLink', 'deleteSpaceSocialLink',
+  'createBusiness', 'updateBusiness',
+  'createShortLink', 'updateShortLink', 'deleteShortLink',
+  'createEvent', 'publishEvent', 'updateEvent', 'deleteEvent', 'cancelEvent',
+  'sendInvite', 'sendBadges', 'registerEvent', 'addAgendaItem', 'updateAgendaItem', 'deleteAgendaItem',
+  'createForm', 'updateForm', 'deleteForm', 'publishForm', 'sendFormInvites',
+];
+
+const READ_ONLY_TOOLS = [
+  'getMySpaces', 'getSpaceBySlug', 'getSpaceByToken', 'getSpaceSocialLinks', 'searchSpaces',
+  'getUserBusinesses',
+  'getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs',
+  'getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents',
+  'getMyForms', 'getFormById', 'getFormResponses', 'searchForms',
+];
+
+const WRITE_KEYWORDS = /crée|créer|create|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add|publish|publier|nouveau|new|change|social/i;
+const READ_KEYWORDS = /voir|montre|liste|mes|my|get my|afficher|chercher|search|quel est|what is|combien|stats|statistiques/i;
+
+// =============================================
+// SYSTEM PROMPT
+// =============================================
+const mainAgentConfig: AgentConfig = {
+  name: 'Main',
+  writeKeywords: WRITE_KEYWORDS,
+  readKeywords: READ_KEYWORDS,
+  writeTools: WRITE_TOOLS,
+  readOnlyTools: READ_ONLY_TOOLS,
+  createTools: (accessToken, userId, userEmail) => getAllTools(accessToken, userId, userEmail),
+  getSystemPrompt: (_contextId?, lang: 'fr' | 'en' = 'en') => {
+    if (lang === 'fr') {
+      return `Tu es RTBX MCP, assistant IA pour rtbx.space. Tu as accès à des tools pour gérer les liens courts, espaces, businesses, événements et formulaires de l'utilisateur.
+
+RÈGLE ABSOLUE : Pour tout tool WRITE, tu dois TOUJOURS d'abord résumer ce que tu vas faire et demander "Dois-je procéder ? (oui/non)". Tu n'appelles JAMAIS un tool WRITE directement sans cette confirmation. Si l'utilisateur n'a pas encore dit "oui" ou "confirme", tu NE DOIS PAS appeler le tool.
+
+WRITE (confirmation obligatoire AVANT tout appel) : createSpace, updateSpace, addSpaceSocialLink, updateSpaceSocialLink, deleteSpaceSocialLink, createBusiness, updateBusiness, createShortLink, updateShortLink, deleteShortLink, createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem, createForm, updateForm, deleteForm, publishForm, sendFormInvites.
+
+READ (appeler directement sans confirmation) : getMySpaces, getSpaceBySlug, getSpaceByToken, getSpaceSocialLinks, searchSpaces, getUserBusinesses, getUserShortLinks, getShortLinkStats, getShortLinkLogs, getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents, getMyForms, getFormById, getFormResponses, searchForms.
+
+APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne jamais du JSON brut.
+RÈGLES SPÉCIALES : cancelEvent → demander la raison. sendBadges → avertir irréversible. deleteForm/deleteEvent → avertir définitif.
+Réponds en français, sois concis et professionnel.`;
+    }
+
+    return `You are RTBX MCP, an AI assistant for rtbx.space. You have access to tools to manage the user's short links, spaces, businesses, events and forms.
+
+ABSOLUTE RULE: For any WRITE tool, you must ALWAYS first summarize what you're about to do and ask "Should I proceed? (yes/no)". You NEVER call a WRITE tool directly without this confirmation. If the user hasn't said "yes" or "confirm" yet, you MUST NOT call the tool.
+
+WRITE (confirmation required BEFORE any call): createSpace, updateSpace, addSpaceSocialLink, updateSpaceSocialLink, deleteSpaceSocialLink, createBusiness, updateBusiness, createShortLink, updateShortLink, deleteShortLink, createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem, createForm, updateForm, deleteForm, publishForm, sendFormInvites.
+
+READ (call directly without confirmation): getMySpaces, getSpaceBySlug, getSpaceByToken, getSpaceSocialLinks, searchSpaces, getUserBusinesses, getUserShortLinks, getShortLinkStats, getShortLinkLogs, getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents, getMyForms, getFormById, getFormResponses, searchForms.
+
+AFTER each tool: summarize the result in natural language. Never return raw JSON.
+SPECIAL RULES: cancelEvent → ask for the reason. sendBadges → warn it's irreversible. deleteForm/deleteEvent → warn it's permanent.
+Reply in English, be concise and professional.`;
+  },
 };
 
-const MAX_CONTENT_LENGTH = 800;
-
-export async function runMainAgent(
-  messages: Message[],
-  options?: {
-    temperature?: number;
-    maxSteps?: number;
-    accessToken?: string;
-    userId?: string;
-    userEmail?: string; // ← nouveau
-  }
-) {
-
-console.log('accessToken exists:', !!options?.accessToken);
-console.log('accessToken preview:', options?.accessToken?.slice(0, 20));
-  try {
-
-    const sanitizedMessages = messages.map((msg, index) => {
-      if (index === messages.length - 1) return msg;
-      if (msg.role === 'assistant' && msg.content.length > MAX_CONTENT_LENGTH) {
-        return {
-          ...msg,
-          content: msg.content.slice(0, MAX_CONTENT_LENGTH) + '... [tronqué]',
-        };
-      }
-      return msg;
-    });
-
-    // Tools avec token injecté
-    const relevantTools = getRelevantTools(
-    sanitizedMessages,
-    options?.accessToken,
-    options?.userId,
-    options?.userEmail,
-     );
-    const result = await generateText({
-      model: defaultModel,
-      system: systemPrompt,
-      messages: sanitizedMessages,
-      tools: relevantTools,
-      temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
-      maxOutputTokens: mcpConfig.maxTokens,
-      stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
-      maxRetries: 0,
-    });
-
-    let finalText = result.text?.trim() || '';
-
-    if (!finalText && result.steps && result.steps.length > 0) {
-      for (const step of result.steps.slice().reverse()) {
-        const toolResults = step.toolResults ?? [];
-        if (toolResults.length > 0) {
-          const lastOutput = (toolResults[toolResults.length - 1] as any).output;
-          if (lastOutput !== undefined) {
-            if (typeof lastOutput === 'string') {
-              finalText = lastOutput;
-            } else if ((lastOutput as any)?.data) {
-              finalText = JSON.stringify((lastOutput as any).data, null, 2);
-            } else {
-              finalText = JSON.stringify(lastOutput, null, 2);
-            }
-            break;
-          }
-        }
-      }
-    }
-
-    if (!finalText) {
-      finalText = "J'ai exécuté l'action. Voici le résultat :";
-    }
-
-    return {
-      success: true,
-      text: finalText,
-      steps: result.steps,
-      toolCalls: result.toolCalls,
-      usage: result.usage,
-    };
-  } catch (error: any) {
-    console.error('MCP Agent Error:', error);
-    return {
-      success: false,
-      error: error,
-      text: "Sorry, I encountered an error. Could you please try again?",
-    };
-  }
+export async function runMainAgent(messages: Message[], options?: AgentOptions) {
+  return runAgent(messages, mainAgentConfig, {
+    lang: 'en', // ← default main agent
+    ...options,
+  });
 }

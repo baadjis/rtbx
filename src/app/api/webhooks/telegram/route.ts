@@ -29,6 +29,7 @@ import { runSpaceAgent } from '@/app/mcp/agents/space-agent';
 import { runBusinessAgent } from '@/app/mcp/agents/business-agent';
 import { runFormAgent } from '@/app/mcp/agents/form-agent';
 import { runMainAgent } from '@/app/mcp/agents/main-agent';
+import { LangType } from '@/lib/lang/types';
 
 // Router vers le bon agent
 const AGENT_MAP: Record<string, any> = {
@@ -40,9 +41,10 @@ const AGENT_MAP: Record<string, any> = {
   general: runMainAgent,
 };
 
+// app/api/webhooks/telegram/route.ts — extrait modifié
+
 export async function POST(request: Request) {
   try {
-    // Vérifier le secret Telegram
     const secretToken = request.headers.get('X-Telegram-Bot-Api-Secret-Token');
     if (secretToken !== process.env.TELEGRAM_WEBHOOK_SECRET) {
       return NextResponse.json({ ok: false }, { status: 401 });
@@ -51,88 +53,83 @@ export async function POST(request: Request) {
     const body = await request.json();
     const message = body?.message;
 
-    // Ignorer si pas de message texte
     if (!message?.text) return NextResponse.json({ ok: true });
 
     const chatId = String(message.chat.id);
     const userText = message.text;
 
-    // Commandes spéciales
+    // Détection de la langue depuis Telegram
+    const userLang: LangType = message.from?.language_code === 'fr' ? 'fr' : 'en';
+
+    const MESSAGES = {
+      fr: {
+        start: '👋 Bonjour ! Je suis RTBX AI.\n\nCe chat n\'est pas encore configuré. Connectez-vous sur rtbx.space pour configurer votre assistant.',
+        help: '📚 *Commandes disponibles*\n\n/start — Démarrer\n/help — Aide\n/status — Statut de la configuration\n\nPosez vos questions directement !',
+        status_ok: (agentType: string, contextId?: string) =>
+          `✅ *Configuré*\nAgent: ${agentType}\n${contextId ? `Contexte: ${contextId}` : ''}`,
+        status_none: '❌ Ce chat n\'est pas configuré. Rendez-vous sur rtbx.space/ai/settings/integrations',
+        error: '❌ Une erreur est survenue. Veuillez réessayer.',
+      },
+      en: {
+        start: '👋 Hello! I\'m RTBX AI.\n\nThis chat is not configured yet. Log in to rtbx.space to configure your assistant.',
+        help: '📚 *Available commands*\n\n/start — Start\n/help — Help\n/status — Configuration status\n\nAsk your questions directly!',
+        status_ok: (agentType: string, contextId?: string) =>
+          `✅ *Configured*\nAgent: ${agentType}\n${contextId ? `Context: ${contextId}` : ''}`,
+        status_none: '❌ This chat is not configured. Go to rtbx.space/ai/settings/integrations',
+        error: '❌ An error occurred. Please try again.',
+      },
+    };
+
+    const t = MESSAGES[userLang];
+
     if (userText === '/start') {
-      await sendTelegramMessage(chatId,
-        '👋 Bonjour ! Je suis RTBX AI.\n\nCe chat n\'est pas encore configuré. Connectez-vous sur rtbx.space pour configurer votre assistant.'
-      );
+      await sendTelegramMessage(chatId, t.start);
       return NextResponse.json({ ok: true });
     }
 
     if (userText === '/help') {
-      await sendTelegramMessage(chatId,
-        '📚 *Commandes disponibles*\n\n/start — Démarrer\n/help — Aide\n/status — Statut de la configuration\n\nPosez vos questions directement !'
-      );
+      await sendTelegramMessage(chatId, t.help);
       return NextResponse.json({ ok: true });
     }
 
     if (userText === '/status') {
       const config = await getTelegramConfig(chatId);
       if (config) {
-        await sendTelegramMessage(chatId,
-          `✅ *Configuré*\nAgent: ${config.agent_type}\n${config.context_id ? `Contexte: ${config.context_id}` : ''}`
-        );
+        await sendTelegramMessage(chatId, t.status_ok(config.agent_type, config.context_id));
       } else {
-        await sendTelegramMessage(chatId,
-          '❌ Ce chat n\'est pas configuré. Rendez-vous sur rtbx.space/dashboard/integrations'
-        );
+        await sendTelegramMessage(chatId, t.status_none);
       }
       return NextResponse.json({ ok: true });
     }
 
-    // Charger la config du chat
     const config = await getTelegramConfig(chatId);
-
-    // Si pas de config → agent général sans auth
     const agentType = config?.agent_type || 'general';
     const agentRunner = AGENT_MAP[agentType] || runMainAgent;
 
-    // Charger l'historique
     const history = await getTelegramHistory(chatId);
+    const newHistory = [...history, { role: 'user', content: userText }];
 
-    // Ajouter le message user à l'historique
-    const newHistory = [
-      ...history,
-      { role: 'user', content: userText },
-    ];
-
-    // Indiquer que le bot écrit
     await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendChatAction`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, action: 'typing' }),
     });
 
-    // Appeler l'agent
     const result = await agentRunner(newHistory, {
       mode: 'text',
       contextId: config?.context_id || undefined,
-      // Pas d'accessToken — Telegram utilise les API keys publiques
+      lang: userLang, // ← passé à l'agent
     });
 
-    const responseText = result.success
-      ? result.text
-      : '❌ Une erreur est survenue. Veuillez réessayer.';
+    const responseText = result.success ? result.text : t.error;
 
-    // Envoyer la réponse
     await sendTelegramMessage(chatId, responseText);
-
-    // Sauvegarder l'historique avec la réponse
-    await saveTelegramHistory(chatId, [
-      ...newHistory,
-      { role: 'assistant', content: responseText },
-    ]);
+    await saveTelegramHistory(chatId, [...newHistory, { role: 'assistant', content: responseText }]);
 
     return NextResponse.json({ ok: true });
 
   } catch (err: any) {
     console.error('Telegram Webhook Error:', err);
-    return NextResponse.json({ ok: true }); // Toujours 200 pour Telegram
+    return NextResponse.json({ ok: true });
   }
 }

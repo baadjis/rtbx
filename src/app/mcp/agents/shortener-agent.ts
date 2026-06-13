@@ -9,14 +9,33 @@ const shortenerAgentConfig: AgentConfig = {
   writeTools: ['createShortLink', 'updateShortLink', 'deleteShortLink'],
   readOnlyTools: ['getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs'],
   createTools: (accessToken) => createShortenerTools(accessToken),
-  getSystemPrompt: () => `Tu es un assistant spécialisé dans la gestion de liens courts sur rtbx.space.
-WRITE (confirmation obligatoire) : createShortLink, updateShortLink, deleteShortLink.
-READ (appeler directement) : getUserShortLinks, getShortLinkStats, getShortLinkLogs.
+getSystemPrompt: (_contextId?, lang: 'fr' | 'en' = 'en') => {
+  if (lang === 'fr') {
+    return `Tu es un assistant spécialisé dans la gestion de liens courts sur rtbx.space.
+
+WRITE (confirmation obligatoire avant d'appeler) : createShortLink, updateShortLink, deleteShortLink.
+READ (appeler directement sans confirmation) : getUserShortLinks, getShortLinkStats, getShortLinkLogs.
+
 RÈGLES : deleteShortLink → avertir que c'est définitif.
-APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
-Réponds en anglais par défaut.`,
+APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
+Réponds en français, sois concis.`;
+  }
+
+  return `You are an assistant specialized in managing short links on rtbx.space.
+
+WRITE (confirmation required before calling): createShortLink, updateShortLink, deleteShortLink.
+READ (call directly without confirmation): getUserShortLinks, getShortLinkStats, getShortLinkLogs.
+
+RULES: deleteShortLink → warn it's permanent.
+AFTER each tool: summarize the result in natural language. NEVER return raw JSON.
+Reply in English, be concise.`;
+},
 };
 
+
 export async function runShortenerAgent(messages: Message[], options?: AgentOptions) {
-  return runAgent(messages, shortenerAgentConfig, options);
+  return runAgent(messages, shortenerAgentConfig, {
+    lang: 'en', // ← default shortener
+    ...options,
+  });
 }

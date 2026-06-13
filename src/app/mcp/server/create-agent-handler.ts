@@ -48,6 +48,7 @@ export function createAgentHandler(runAgent: AgentRunner) {
         userEmail: user.email ?? undefined,
         contextId: body.contextId || body.eventId || body.spaceId || body.formId || body.businessId,
         mode: body.mode || 'ui',
+        lang:body.lang ||'en'
       });
 
       if (!result.success) throw result.error;

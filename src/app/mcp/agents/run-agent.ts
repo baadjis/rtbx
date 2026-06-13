@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { LangType } from '@/lib/lang/types';
 import defaultModel from '../core/client';
 import { mcpConfig } from '../core/config';
 import { extractUIFromSteps } from '../ui/extract-ui';
@@ -17,7 +18,7 @@ export type AgentConfig = {
   writeTools: string[];
   readOnlyTools: string[];
   createTools: (accessToken?: string, userId?: string, userEmail?: string) => any;
-  getSystemPrompt: (contextId?: string) => string;
+  getSystemPrompt: (contextId?: string, lang?: 'fr' | 'en') => string;
 };
 
 export type AgentOptions = {
@@ -26,17 +27,30 @@ export type AgentOptions = {
   accessToken?: string;
   userId?: string;
   userEmail?: string;
-  contextId?: string; // eventId, spaceId, formId, businessId...
+  contextId?: string;
   mode?: 'ui' | 'text';
+  lang?: LangType; // ← nouveau
 };
 
 const MAX_CONTENT_LENGTH = 800;
+
+const FALLBACK_TEXT = {
+  fr: "Désolé, une erreur est survenue. Veuillez réessayer.",
+  en: "Sorry, an error occurred. Please try again.",
+};
+
+const EXECUTED_TEXT = {
+  fr: "J'ai exécuté l'action. Voici le résultat :",
+  en: "I executed the action. Here's the result:",
+};
 
 export async function runAgent(
   messages: Message[],
   config: AgentConfig,
   options?: AgentOptions
 ) {
+  const lang = options?.lang ?? 'fr';
+
   try {
     const sanitizedMessages = messages.map((msg, index) => {
       if (index === messages.length - 1) return msg;
@@ -55,8 +69,6 @@ export async function runAgent(
       options?.userEmail
     );
 
-    
-
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
     const tools = getAgentRelevantTools(
       allTools,
@@ -66,13 +78,12 @@ export async function runAgent(
       config.readOnlyTools,
       lastMessage
     );
-    
-    console.log(tools)
+
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
 
     const result = await generateText({
       model: defaultModel,
-      system: config.getSystemPrompt(options?.contextId),
+      system: config.getSystemPrompt(options?.contextId, lang),
       messages: sanitizedMessages,
       tools,
       temperature: options?.temperature ?? mcpConfig.temperature ?? 0.3,
@@ -80,7 +91,7 @@ export async function runAgent(
       stopWhen: stepCountIs(options?.maxSteps ?? mcpConfig.maxSteps ?? 3),
       maxRetries: 0,
     });
-    console.log(result)
+
     let finalText = result.text?.trim() || '';
 
     if (!finalText && result.steps && result.steps.length > 0) {
@@ -102,7 +113,7 @@ export async function runAgent(
       }
     }
 
-    if (!finalText) finalText = "J'ai exécuté l'action. Voici le résultat :";
+    if (!finalText) finalText = EXECUTED_TEXT[lang];
 
     const toolNames = result.steps
       ?.flatMap(step => step.toolCalls ?? [])
@@ -124,7 +135,7 @@ export async function runAgent(
     return {
       success: false,
       error,
-      text: "Désolé, une erreur est survenue. Veuillez réessayer.",
+      text: FALLBACK_TEXT[lang],
       ui: null,
     };
   }

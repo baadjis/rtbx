@@ -28,6 +28,7 @@ export function createPublicAgentHandler(runAgent: AgentRunner) {
       const result = await runAgent(body.messages, {
         mode: 'text', // ← toujours text pour les clients externes
         contextId: body.contextId || body.eventId,
+        lang:body.lang||'en'
         // Pas d'accessToken — les clients externes n'ont pas de session Supabase
       });
 

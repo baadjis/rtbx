@@ -1,5 +1,6 @@
 import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { createBusinessTools } from '../tools/businesses';
+import { LangType } from '@/lib/lang/types';
  // writeKeywords: /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change|entreprise|business|société/i,
 
 const businessAgentConfig: AgentConfig = {
@@ -9,20 +10,34 @@ const businessAgentConfig: AgentConfig = {
   writeTools: ['createBusiness', 'updateBusiness'],
   readOnlyTools: ['getUserBusinesses'],
   createTools: (accessToken) => createBusinessTools(accessToken),
-  getSystemPrompt: (businessId?) => `Tu es un assistant spécialisé dans la gestion des businesses sur rtbx.space.
+  getSystemPrompt: (businessId?, lang: LangType = 'en') => {
+  if (lang === 'fr') {
+    return `Tu es un assistant spécialisé dans la gestion des businesses sur rtbx.space.
 ${businessId ? `Contexte actuel : Business ID ${businessId}.` : ''}
 
-WRITE (confirmation obligatoire) : createBusiness , updateBusiness .
+WRITE (confirmation obligatoire avant d'appeler) : createBusiness, updateBusiness.
+READ (appeler directement sans confirmation) : getUserBusinesses.
 
-READ (appeler directement sans confirmation) : getUserBusinesses .
+RÈGLES : createBusiness → user_id injecté automatiquement, ne pas le demander à l'utilisateur.
+APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
+Réponds en français, sois concis.`;
+  }
 
-RÈGLES : createBusiness → user_id injecté automatiquement.
-APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
-Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`,
+  return `You are an assistant specialized in business management on rtbx.space.
+${businessId ? `Current context: Business ID ${businessId}.` : ''}
+
+WRITE (confirmation required before calling): createBusiness, updateBusiness.
+READ (call directly without confirmation): getUserBusinesses.
+
+RULES: createBusiness → user_id is injected automatically, don't ask the user for it.
+AFTER each tool: summarize the result in natural language. NEVER return raw JSON.
+Reply in English, be concise.`;
+},
 };
 
 export async function runBusinessAgent(messages: Message[], options?: AgentOptions & { businessId?: string }) {
   return runAgent(messages, businessAgentConfig, {
+    lang:'en',
     ...options,
     contextId: options?.businessId,
   });

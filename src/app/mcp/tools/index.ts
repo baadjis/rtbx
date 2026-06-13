@@ -42,3 +42,13 @@ export const getRelevantTools = (
     ...createFormTools(accessToken),
   };
 };
+
+
+export const getAllTools = (accessToken?: string, userId?: string, userEmail?: string) => ({
+  ...createSpaceTools(accessToken, userId, userEmail),
+  ...createBusinessTools(accessToken),
+  ...createShortenerTools(accessToken),
+  ...createEventTools(accessToken),
+  ...createFormTools(accessToken),
+});
+

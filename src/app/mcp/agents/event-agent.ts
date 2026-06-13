@@ -20,6 +20,7 @@ Réponds en français par défaut.`,
 // app/mcp/agents/event-agent.ts
 import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { createEventTools } from '../tools/events';
+import { LangType } from '@/lib/lang/types';
 //import { EVENT_EXAMPLES } from '../core/Examples/events';
 //import { getGenericContext } from '../core/context-manager';
 
@@ -30,17 +31,34 @@ const eventAgentConfig: AgentConfig = {
   writeTools: ['createEvent', 'publishEvent', 'updateEvent', 'deleteEvent', 'cancelEvent', 'sendInvite', 'sendBadges', 'registerEvent', 'addAgendaItem', 'updateAgendaItem', 'deleteAgendaItem'],
   readOnlyTools: ['getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents'],
   createTools: (accessToken) => createEventTools(accessToken),
-  
-  getSystemPrompt :(eventId?: string) => `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
+  getSystemPrompt: (eventId?, lang: LangType = 'en') => {
+  if (lang === 'fr'){
+    return `Tu es un assistant spécialisé dans la gestion d'événements sur rtbx.space.
 ${eventId ? `Contexte actuel : événement ID ${eventId}.` : ''}
 
 WRITE (confirmation obligatoire avant d'appeler) : createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
+READ (appeler directement) : getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
 
-READ (appeler directement sans confirmation) : getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
+APRÈS chaque tool : résume en langage naturel. Jamais de JSON brut.
+RÈGLES : cancelEvent → demander la raison. sendBadges → avertir irréversible. deleteEvent → avertir définitif.
+Réponds en français, sois concis.`;
 
-APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
-RÈGLES : cancelEvent → demander la raison d'abord. sendBadges → avertir que c'est irréversible. deleteEvent → avertir que c'est définitif.
-Réponds en anglais par défaut, français si l'utilisateur écrit en français. Sois concis.`}
+  } 
+    return `You are an assistant specialized in event management on rtbx.space.
+${eventId ? `Current context: event ID ${eventId}.` : ''}
+
+WRITE (confirmation required before calling): createEvent, publishEvent, updateEvent, deleteEvent, cancelEvent, sendInvite, sendBadges, registerEvent, addAgendaItem, updateAgendaItem, deleteAgendaItem.
+READ (call directly): getMyEvents, getEventRegistrations, getEventInvitations, getEventAgenda, searchPublicEvents, searchOrganizerEvents.
+
+AFTER each tool: summarize the result in natural language. Never return raw JSON.
+RULES: cancelEvent → ask for the reason first. sendBadges → warn it's irreversible. deleteEvent → warn it's permanent.
+Reply in English, be concise.`;
+  
+
+  
+},
+  
+  }
 /*const EVENT_CONFIG = {
   agentName: "EventAgent",
   baseSystemPrompt: eventAgentConfig.getSystemPrompt(),
@@ -52,6 +70,7 @@ export async function runEventAgent(messages: Message[], options?: AgentOptions 
   //const context = await getGenericContext(messages, eventAgentConfig.createTools(options?.accessToken), EVENT_CONFIG);
   
   return runAgent(messages, eventAgentConfig, {
+    lang:'en',
     ...options,
     contextId: options?.eventId,
   });
