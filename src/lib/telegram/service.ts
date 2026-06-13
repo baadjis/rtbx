@@ -56,25 +56,19 @@ export async function sendTelegramMessage(chatId: string, text: string) {
 ========================================================= */
 async function encryptToken(token: string): Promise<string | null> {
   const { data, error } = await supabaseAdmin.rpc('encrypt_token', {
-    token_text: token,
-    encryption_key: ENCRYPTION_KEY,
+    encryption_key: ENCRYPTION_KEY, // ← en premier
+    token_text: token,              // ← en second
   });
-  if (error) {
-    console.error('Encrypt error:', error);
-    return null;
-  }
+  if (error) { console.error('Encrypt error:', error); return null; }
   return data;
 }
 
 async function decryptToken(encrypted: string): Promise<string | null> {
   const { data, error } = await supabaseAdmin.rpc('decrypt_token', {
-    encrypted_text: encrypted,
-    encryption_key: ENCRYPTION_KEY,
+    encryption_key: ENCRYPTION_KEY, // ← en premier
+    encrypted_text: encrypted,       // ← en second
   });
-  if (error) {
-    console.error('Decrypt error:', error);
-    return null;
-  }
+  if (error) { console.error('Decrypt error:', error); return null; }
   return data;
 }
 
