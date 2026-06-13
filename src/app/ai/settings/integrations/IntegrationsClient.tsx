@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 // app/ai/settings/integrations/IntegrationsClient.tsx
 'use client';
 import { useState, useEffect, useCallback } from 'react';
