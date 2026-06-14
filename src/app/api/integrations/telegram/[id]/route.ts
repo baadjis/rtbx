@@ -1,31 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
-import { requireUser } from '@/lib/auth/get-user';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+//import { requireUser } from '@/lib/auth/get-user';
+import { createClient as createAdminClient } from  '@/utils/supabase/admin';
+import { createClient } from '@/utils/supabase/server';
 
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
+const supabaseAdmin = createAdminClient()
+// api/integrations/telegram/[id]/route.ts
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const { user, error: authError } = await requireUser(request);
-    if (!user) return NextResponse.json({ success: false, error: authError }, { status: 401 });
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
     const { error } = await supabaseAdmin
       .from('telegram_configs')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id); // ← sécurité : seulement ses propres configs
+      .eq('user_id', user.id);
 
     if (error) return NextResponse.json({ success: false, error }, { status: 400 });
     return NextResponse.json({ success: true });
   } catch (err: any) {
+    console.error(err)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
