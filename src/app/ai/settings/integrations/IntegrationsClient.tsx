@@ -95,7 +95,6 @@ const T = {
   },
 };
 
-const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'rtbx_assistant_bot';
 
 export default function IntegrationsClient({ lang }: { lang: LangType }) {
   const t = T[lang];
@@ -103,6 +102,9 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [botUsername, setBotUsername] = useState('rtbx_assistant_bot');
+
+
 
   // Form state
   const [chatId, setChatId] = useState('');
@@ -111,6 +113,10 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [loadingEntities, setLoadingEntities] = useState(false);
   const [selectedEntityId, setSelectedEntityId] = useState('');
+
+  useEffect(() => {
+  setBotUsername(process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'rtbx_assistant_bot');
+}, []);
 
  const loadConfigs = useCallback(async () => {
   try {
@@ -273,7 +279,7 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
         )}
 
         <a
-          href={`https://t.me/${BOT_USERNAME}`}
+          href={`https://t.me/${botUsername}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 text-indigo-400 hover:text-indigo-300 text-xs font-medium transition-colors"
