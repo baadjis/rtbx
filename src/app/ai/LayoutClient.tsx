@@ -102,6 +102,8 @@ setMobileMenuOpen(false);
     router.push('/ai');
   };
 
+
+
 const groupedChats = chats.reduce((acc, chat) => {
 const date = new Date(chat.createdAt);
 const today = new Date();
@@ -114,6 +116,17 @@ if (!acc[group]) acc[group] = [];
     acc[group].push(chat);
 return acc;
   }, {} as Record<string, ChatEntry[]>);
+useEffect(() => {
+  const originalFetch = window.fetch;
+  window.fetch = async (...args) => {
+    const res = await originalFetch(...args);
+    if (res.status === 401) {
+      window.location.href = '/login';
+    }
+    return res;
+  };
+  return () => { window.fetch = originalFetch; };
+}, []);
 
 return (
 <div className="flex h-screen bg-[#0f0f11] overflow-hidden">
