@@ -61,24 +61,19 @@ updateBusiness : tool({
 // =====================================================
 // GET USER BUSINESSES TOOL
 // =====================================================
-getUserBusinesses : tool({
-  description: 'Get all businesses belonging to a user',
-  inputSchema: z.object({
-    user_id: z.string().describe('The user ID'),
-  }),
-  execute: async (args: { user_id: string }) => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/businesses?user_id=${args.user_id}`,
-      {
-        method: 'GET',
-        headers: authHeaders(accessToken) ,       // ← Ajout cookies
-       // ← Ajout cookies
-      }
-    );
+getUserBusinesses: tool({
+  description: `Get all businesses of the authenticated user. Call when user says: "mes business", "mes entreprises", "my businesses", "liste mes business", "voir mes business".`,
+  inputSchema: z.object({}), // ← vide, pas de paramètres
+  execute: async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses/me`, {
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
+    });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'Failed to fetch businesses');
     }
     return response.json();
   },
-})})
+}),})

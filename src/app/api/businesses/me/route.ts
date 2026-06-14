@@ -3,69 +3,61 @@
 import { NextResponse } from 'next/server'
 
 import {
-  createBusiness,
+  
+  getUserBusinesses
 } from '@/lib/businesses/service'
 
 
 import { requireUser } from '@/lib/auth/get-user'
 
-
 /**
  * =========================================================
- * POST /api/businesses
+ * GET /api/businesses
  * =========================================================
  *
- * Creates a new business
+ * Retrieves all businesses
  * for the authenticated user.
  * =========================================================
  */
-export async function POST(
-  request: Request
-) {
+export async function GET(request:Request) {
 
   try {
 
      const {
-  user,
-  error:err
-} = await requireUser(request)
-
-if (!user) {
-
-  return NextResponse.json(
-    {
-      success: false,
-      err
-    },
-    {
-      status: 401
+      user,
+      error:err
+    } = await requireUser(request)
+    
+    if (!user) {
+    
+      return NextResponse.json(
+        {
+          success: false,
+          err
+        },
+        {
+          status: 401
+        }
+      )
+    
     }
-  )
-
-}
-
-
-    const body =
-      await request.json()
+    
 
     const {
       data,
       error
-    } = await createBusiness({
-
-      ...body,
-
-      user_id:
-        user.id
-
-    })
+    } = await getUserBusinesses(
+      user.id
+    )
 
     if (error) {
-      console.error(error)
+
       return NextResponse.json(
         {
           success: false,
-          error
+          error:
+            error ||
+            'Failed to fetch businesses'
         },
         {
           status: 400
@@ -82,7 +74,7 @@ if (!user) {
   } catch (err: any) {
 
     console.error(
-      'BUSINESS_CREATE_ERROR:',
+      'BUSINESSES_GET_ERROR:',
       err
     )
 
