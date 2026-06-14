@@ -5,14 +5,14 @@ import { createClient } from '@/utils/supabase/server';
 import { createClient as createAdminClient } from '@/utils/supabase/admin';
 import { createTelegramConfig } from '@/lib/telegram/service';
 
-const supabaseAdmin = createAdminClient();
+
 
 export async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-
+    const supabaseAdmin = createAdminClient();
     const { data, error } = await supabaseAdmin
       .from('telegram_configs')
       .select('id, chat_id, agent_type, context_id, role, is_active, created_at')

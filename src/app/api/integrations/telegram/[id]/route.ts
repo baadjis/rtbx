@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 import { createClient as createAdminClient } from  '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 
-const supabaseAdmin = createAdminClient()
 // api/integrations/telegram/[id]/route.ts
 export async function DELETE(
   request: Request,
@@ -15,6 +14,7 @@ export async function DELETE(
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    const supabaseAdmin = createAdminClient()
 
     const { error } = await supabaseAdmin
       .from('telegram_configs')
