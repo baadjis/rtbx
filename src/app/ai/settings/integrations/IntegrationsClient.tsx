@@ -127,7 +127,7 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
   }
 }, []);
 
-  useEffect(() => { loadConfigs(); }, [loadConfigs]);
+  useEffect(() => { loadConfigs(); }, []);
 
   // Charger les entités quand on choisit public + type
   useEffect(() => {
