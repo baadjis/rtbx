@@ -6,10 +6,14 @@ import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
-const ENCRYPTION_KEY = Buffer.from(process.env.TELEGRAM_TOKEN_ENCRYPTION_KEY!, 'hex'); // 32 bytes hex
+//const ENCRYPTION_KEY = Buffer.from(process.env.TELEGRAM_TOKEN_ENCRYPTION_KEY!, 'hex'); // 32 bytes hex
 const ALGORITHM =  'aes-256-gcm';
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
+const supabaseAdmin = createAdminClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 /* =========================================================
    GET FRESH ACCESS TOKEN FROM REFRESH TOKEN
 ========================================================= */
@@ -29,18 +33,6 @@ export async function getAccessTokenFromRefreshToken(refreshToken: string): Prom
 
   return data.session.access_token;
 }
-
-
-
-
-
-
-
-
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 
 
@@ -162,6 +154,9 @@ export async function createTelegramConfig(payload: {
 /* =========================================================
    GET FRESH ACCESS TOKEN — déchiffre, refresh, RE-SAUVEGARDE
 ========================================================= */
+// Mutex simple par chat_id
+const refreshLocks = new Map<string, Promise<any>>();
+
 export async function getAccessTokenFromConfig(config: any): Promise<{
   accessToken?: string;
   userId?: string;
@@ -169,41 +164,59 @@ export async function getAccessTokenFromConfig(config: any): Promise<{
 }> {
   if (!config?.refresh_token_encrypted) return {};
 
-  const refreshToken = await decryptToken(config.refresh_token_encrypted);
-  if (!refreshToken) return {};
-
-  const supabase = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
-
-  if (error || !data.session) {
-    console.error('Failed to refresh Telegram session:', error);
-    // Marquer la config comme nécessitant une reconnexion
-    await supabaseAdmin
-      .from('telegram_configs')
-      .update({ is_active: false })
-      .eq('chat_id', config.chat_id);
-    return {};
+  // Si un refresh est déjà en cours pour ce chat_id, attendre
+  const existingLock = refreshLocks.get(config.chat_id);
+  if (existingLock) {
+    await existingLock;
+    // Recharger la config depuis DB après le refresh
+    const freshConfig = await getTelegramConfig(config.chat_id);
+    if (!freshConfig?.refresh_token_encrypted) return {};
+    config = freshConfig;
   }
 
-  // Re-chiffrer et sauvegarder le NOUVEAU refresh_token
-  const newRefreshToken = data.session.refresh_token as string;
-  if (newRefreshToken) {
-    const newEncrypted = await encryptToken(newRefreshToken);
-    if (newEncrypted) {
+  // Créer un nouveau lock
+  const refreshPromise = (async () => {
+    const refreshToken = await decryptToken(config.refresh_token_encrypted);
+    if (!refreshToken) return {};
+
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
+
+    if (error || !data.session) {
+      console.error('Failed to refresh Telegram session:', error);
       await supabaseAdmin
         .from('telegram_configs')
-        .update({ refresh_token_encrypted: newEncrypted })
+        .update({ is_active: false })
         .eq('chat_id', config.chat_id);
+      return {};
     }
-  }
 
-  return {
-    accessToken: data.session.access_token,
-    userId: data.session.user.id,
-    userEmail: data.session.user.email ?? undefined,
-  };
+    // Sauvegarder le nouveau refresh_token
+    const newEncrypted = encryptToken(data.session.refresh_token);
+    await supabaseAdmin
+      .from('telegram_configs')
+      .update({ refresh_token_encrypted: newEncrypted })
+      .eq('chat_id', config.chat_id);
+
+    return {
+      accessToken: data.session.access_token,
+      userId: data.session.user.id,
+      userEmail: data.session.user.email ?? undefined,
+    };
+  })();
+
+  refreshLocks.set(config.chat_id, refreshPromise);
+
+  try {
+    const result = await refreshPromise;
+    return result;
+  } finally {
+    refreshLocks.delete(config.chat_id);
+  }
 }
