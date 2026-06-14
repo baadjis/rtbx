@@ -176,7 +176,8 @@ export async function getAccessTokenFromConfig(config: any): Promise<{
 
   // Créer un nouveau lock
   const refreshPromise = (async () => {
-    const refreshToken = await decryptToken(config.refresh_token_encrypted);
+    const refreshToken =  decryptToken(config.refresh_token_encrypted);
+    console.log('decrypted token:', refreshToken?.slice(0, 10) ?? 'NULL');
     if (!refreshToken) return {};
 
     const supabase = createSupabaseClient(
