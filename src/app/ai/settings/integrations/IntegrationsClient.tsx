@@ -116,8 +116,11 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
     try {
       const res = await fetch('/api/integrations/telegram');
       const data = await res.json();
+      console.log(data)
       setConfigs(data.data ?? []);
-    } catch {
+    } catch(error) {
+      console.error(error)
+
       setConfigs([]);
     } finally {
       setLoading(false);
