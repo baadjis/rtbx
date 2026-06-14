@@ -112,20 +112,20 @@ export default function IntegrationsClient({ lang }: { lang: LangType }) {
   const [loadingEntities, setLoadingEntities] = useState(false);
   const [selectedEntityId, setSelectedEntityId] = useState('');
 
-  const loadConfigs = useCallback(async () => {
-    try {
-      const res = await fetch('/api/integrations/telegram');
-      const data = await res.json();
-      console.log(data)
-      setConfigs(data.data ?? []);
-    } catch(error) {
-      console.error(error)
-
-      setConfigs([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+ const loadConfigs = useCallback(async () => {
+  try {
+    const res = await fetch('/api/integrations/telegram');
+    console.log('status:', res.status);
+    const data = await res.json();
+    console.log('data:', data);
+    setConfigs(data.data ?? []);
+  } catch (err) {
+    console.error('loadConfigs error:', err);
+    setConfigs([]);
+  } finally {
+    setLoading(false); // ← ce finally s'exécute-t-il ?
+  }
+}, []);
 
   useEffect(() => { loadConfigs(); }, [loadConfigs]);
 
