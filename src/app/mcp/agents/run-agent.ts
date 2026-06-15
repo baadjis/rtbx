@@ -18,6 +18,7 @@ export type AgentConfig = {
   writeTools: string[];
   readOnlyTools: string[];
   defaultTools?: string[];
+  getDefaultTools?: (lastMessage: string) => string[];
   createTools: (accessToken?: string, userId?: string, userEmail?: string) => any;
   getSystemPrompt: (contextId?: string, lang?: 'fr' | 'en') => string;
 };

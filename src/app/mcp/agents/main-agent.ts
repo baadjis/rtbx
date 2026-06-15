@@ -29,6 +29,36 @@ const READ_KEYWORDS = /voir|montre|liste|mes|my|get my|afficher|chercher|search|
 // Dans main-agent — DEFAULT retourne READ only au lieu de ALL
 
 
+// Dans main-agent.ts — détection de domaine
+const DOMAIN_KEYWORDS = {
+  shortener: /lien|link|url|raccourcir|shorten|short|clics|stats/i,
+  event: /événement|event|agenda|participant|invitation|badge|inscrire|register/i,
+  space: /space|profil|slug|social|instagram|tiktok/i,
+  business: /business|entreprise|société|company/i,
+  form: /formulaire|form|réponse|response|sondage/i,
+};
+
+const DOMAIN_READ_TOOLS: Record<string, string[]> = {
+  shortener: ['getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs'],
+  event: ['getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents'],
+  space: ['getMySpaces', 'getSpaceBySlug', 'getSpaceSocialLinks', 'searchSpaces'],
+  business: ['getUserBusinesses'],
+  form: ['getMyForms', 'getFormById', 'getFormResponses', 'searchForms'],
+};
+
+export function getMainAgentDefaultTools(lastMessage: string, allReadTools: string[]): string[] {
+  const lower = lastMessage.toLowerCase();
+  
+  for (const [domain, regex] of Object.entries(DOMAIN_KEYWORDS)) {
+    if (regex.test(lower)) {
+      console.log(`🎯 Domain detected: ${domain}`);
+      return DOMAIN_READ_TOOLS[domain];
+    }
+  }
+  
+  // Aucun domaine détecté → outils les plus basiques seulement
+  return ['getMyEvents', 'getUserBusinesses', 'getUserShortLinks', 'getMyForms', 'getMySpaces'];
+}
 
 // =============================================
 // SYSTEM PROMPT
@@ -39,7 +69,9 @@ const mainAgentConfig: AgentConfig = {
   readKeywords: READ_KEYWORDS,
   writeTools: WRITE_TOOLS,
   readOnlyTools: READ_ONLY_TOOLS,
+
   defaultTools: READ_ONLY_TOOLS, // ← par défaut READ only, économise ~50% tokens
+    getDefaultTools: (lastMessage) => getMainAgentDefaultTools(lastMessage, READ_ONLY_TOOLS),
   createTools: (accessToken, userId, userEmail) => getAllTools(accessToken, userId, userEmail),
   getSystemPrompt: (_contextId?, lang: LangType = 'en') => {
     if (lang === 'fr') {
