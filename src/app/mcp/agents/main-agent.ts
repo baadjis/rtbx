@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { getAllTools } from '../tools';
+import { LangType } from '@/lib/lang/types';
 
 // =============================================
 // TOOLS CATEGORIES — main agent (tous domaines)
@@ -25,6 +26,10 @@ const READ_ONLY_TOOLS = [
 const WRITE_KEYWORDS = /crée|créer|create|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add|publish|publier|nouveau|new|change|social/i;
 const READ_KEYWORDS = /voir|montre|liste|mes|my|get my|afficher|chercher|search|quel est|what is|combien|stats|statistiques/i;
 
+// Dans main-agent — DEFAULT retourne READ only au lieu de ALL
+
+
+
 // =============================================
 // SYSTEM PROMPT
 // =============================================
@@ -34,8 +39,9 @@ const mainAgentConfig: AgentConfig = {
   readKeywords: READ_KEYWORDS,
   writeTools: WRITE_TOOLS,
   readOnlyTools: READ_ONLY_TOOLS,
+  defaultTools: READ_ONLY_TOOLS, // ← par défaut READ only, économise ~50% tokens
   createTools: (accessToken, userId, userEmail) => getAllTools(accessToken, userId, userEmail),
-  getSystemPrompt: (_contextId?, lang: 'fr' | 'en' = 'en') => {
+  getSystemPrompt: (_contextId?, lang: LangType = 'en') => {
     if (lang === 'fr') {
       return `Tu es RTBX MCP, assistant IA pour rtbx.space. Tu as accès à des tools pour gérer les liens courts, espaces, businesses, événements et formulaires de l'utilisateur.
 

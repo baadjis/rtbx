@@ -17,6 +17,7 @@ export type AgentConfig = {
   readKeywords: RegExp;
   writeTools: string[];
   readOnlyTools: string[];
+  defaultTools?: string[];
   createTools: (accessToken?: string, userId?: string, userEmail?: string) => any;
   getSystemPrompt: (contextId?: string, lang?: 'fr' | 'en') => string;
 };
@@ -30,6 +31,7 @@ export type AgentOptions = {
   contextId?: string;
   mode?: 'ui' | 'text';
   lang?: LangType; // ← nouveau
+    
 };
 
 const MAX_CONTENT_LENGTH = 800;
@@ -76,7 +78,8 @@ export async function runAgent(
       config.readKeywords,
       config.writeTools,
       config.readOnlyTools,
-      lastMessage
+      lastMessage,
+      config.defaultTools
     );
 
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
