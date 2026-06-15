@@ -25,6 +25,7 @@ export const getAgentRelevantTools = (
 
   // DEFAULT — si defaultTools défini, filtrer, sinon tous
   if (defaultTools?.length) {
+    console.log(defaultTools)
     console.log('🔧 DEFAULT mode → defaultTools');
     return Object.fromEntries(
       Object.entries(allTools).filter(([key]) => defaultTools.includes(key))
