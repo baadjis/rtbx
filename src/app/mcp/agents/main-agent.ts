@@ -52,6 +52,7 @@ export function getMainAgentDefaultTools(lastMessage: string, allReadTools: stri
   for (const [domain, regex] of Object.entries(DOMAIN_KEYWORDS)) {
     if (regex.test(lower)) {
       console.log(`🎯 Domain detected: ${domain}`);
+      console.log(DOMAIN_READ_TOOLS[domain])
       return DOMAIN_READ_TOOLS[domain];
     }
   }
