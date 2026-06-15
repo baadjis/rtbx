@@ -6,35 +6,31 @@ export const getAgentRelevantTools = (
   writeTools: string[],
   readOnlyTools: string[],
   lastMessage: string,
-  defaultTools?: string[],
-  getDefaultTools?: (lastMessage: string) => string[],
+  defaultTools?: string[] // ← nouveau, optionnel
+  
 ) => {
   const lowerMessage = lastMessage.toLowerCase().trim();
 
-  // WRITE détecté → tous les tools
+  if (readKeywords.test(lowerMessage)) {
+    console.log('🔧 READ mode → READ tools');
+    return Object.fromEntries(
+      Object.entries(defaultTools|| allTools).filter(([key]) => readOnlyTools.includes(key))
+    );
+  }
+
   if (writeKeywords.test(lowerMessage)) {
     console.log('🔧 WRITE mode → ALL tools');
     return allTools;
   }
 
-  // Calculer les tools READ à utiliser
-  // getDefaultTools a priorité sur readOnlyTools (détection de domaine)
-  const relevantReadTools = getDefaultTools
-    ? getDefaultTools(lowerMessage)
-    : readOnlyTools;
-
-  // READ détecté → READ tools filtrés par domaine
-  if (readKeywords.test(lowerMessage)) {
-    console.log('🔧 READ mode → domain READ tools');
+  // DEFAULT — si defaultTools défini, filtrer, sinon tous
+  if (defaultTools?.length) {
+    console.log('🔧 DEFAULT mode → defaultTools');
     return Object.fromEntries(
-      Object.entries(allTools).filter(([key]) => relevantReadTools.includes(key))
+      Object.entries(allTools).filter(([key]) => defaultTools.includes(key))
     );
   }
 
-  // DEFAULT → domain tools ou defaultTools
-  const fallback = defaultTools ?? relevantReadTools;
-  console.log('🔧 DEFAULT mode → fallback tools');
-  return Object.fromEntries(
-    Object.entries(allTools).filter(([key]) => fallback.includes(key))
-  );
+  console.log('🔧 DEFAULT mode → Tous les tools');
+  return allTools;
 };
