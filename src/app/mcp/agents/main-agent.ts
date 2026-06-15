@@ -71,7 +71,7 @@ const mainAgentConfig: AgentConfig = {
   readOnlyTools: READ_ONLY_TOOLS,
 
   defaultTools: READ_ONLY_TOOLS, // ← par défaut READ only, économise ~50% tokens
-    getDefaultTools: (lastMessage) => getMainAgentDefaultTools(lastMessage, READ_ONLY_TOOLS),
+  getDefaultTools: (lastMessage) => getMainAgentDefaultTools(lastMessage, READ_ONLY_TOOLS),
   createTools: (accessToken, userId, userEmail) => getAllTools(accessToken, userId, userEmail),
   getSystemPrompt: (_contextId?, lang: LangType = 'en') => {
     if (lang === 'fr') {

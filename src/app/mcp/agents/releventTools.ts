@@ -7,6 +7,7 @@ export const getAgentRelevantTools = (
   readOnlyTools: string[],
   lastMessage: string,
   defaultTools?: string[] // ← nouveau, optionnel
+  
 ) => {
   const lowerMessage = lastMessage.toLowerCase().trim();
 
