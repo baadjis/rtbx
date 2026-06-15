@@ -82,7 +82,7 @@ export async function runAgent(
       lastMessage,
       config.getDefaultTools ? config.getDefaultTools(lastMessage) : config.defaultTools,
     );
-
+    console.log(tools)
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
 
     const result = await generateText({
