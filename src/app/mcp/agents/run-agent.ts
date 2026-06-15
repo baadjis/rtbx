@@ -80,7 +80,7 @@ export async function runAgent(
       config.writeTools,
       config.readOnlyTools,
       lastMessage,
-      config.defaultTools
+      config.getDefaultTools ? config.getDefaultTools(lastMessage) : config.defaultTools,
     );
 
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
