@@ -3,7 +3,7 @@
 
 // lib/telegram/service.ts
 import { createClient } from '@/utils/supabase/client';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { createClient as createAdminClient } from '@/utils/supabase/admin';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
@@ -11,10 +11,11 @@ import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 const ALGORITHM =  'aes-256-gcm';
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
-const supabaseAdmin = createAdminClient(
+/*const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+)*/;
+ const supabaseAdmin=createAdminClient()
 /* =========================================================
    GET FRESH ACCESS TOKEN FROM REFRESH TOKEN
 ========================================================= */
@@ -85,7 +86,7 @@ function decryptToken(encryptedBase64: string): string | null {
 export async function getTelegramConfig(chatId: string) {
   console.log("getTelegramConfig",chatId==chatId.trim())
    const cleanId = chatId.trim();
-   
+ 
   const { data, error } = await supabaseAdmin
     .from('telegram_configs')
     .select('*')
@@ -174,7 +175,7 @@ export async function getAccessTokenFromConfig(config: any): Promise<{
   // Si un refresh est déjà en cours pour ce chat_id, attendre
   const existingLock = await refreshLocks.get(config.chat_id);
   if (existingLock) {
-    await existingLock;
+    //await existingLock;
     // Recharger la config depuis DB après le refresh
     const freshConfig = await getTelegramConfig(config.chat_id);
     if (!freshConfig?.refresh_token_encrypted) return {};
