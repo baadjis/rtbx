@@ -71,6 +71,8 @@ export async function runAgent(
       options?.userId,
       options?.userEmail
     );
+    console.log('accessToken in runAgent:', options?.accessToken?.slice(0, 20) ?? 'UNDEFINED');
+    console.log('allTools keys:', Object.keys(allTools));
 
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
     const tools = getAgentRelevantTools(
