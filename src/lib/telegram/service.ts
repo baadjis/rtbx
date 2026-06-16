@@ -92,6 +92,7 @@ export async function getTelegramConfig(chatId: string) {
     .eq('chat_id', chatId.trim())
     .eq('is_active', true)
     .single();
+  console.error(error)
   console.log("data",data)
   if (error || !data) return null;
   
