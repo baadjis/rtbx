@@ -85,6 +85,7 @@ function decryptToken(encryptedBase64: string): string | null {
    GET TELEGRAM CONFIG BY CHAT ID
 ========================================================= */
 export async function getTelegramConfig(chatId: string) {
+  console.log("getTelegramConfig",chatId)
   const { data, error } = await supabaseAdmin
     .from('telegram_configs')
     .select('*')
@@ -93,6 +94,7 @@ export async function getTelegramConfig(chatId: string) {
     .single();
 
   if (error || !data) return null;
+  console.log("data",data)
   return data;
 }
 
@@ -129,7 +131,7 @@ export async function createTelegramConfig(payload: {
 }) {
   let encryptedToken: string | null = null;
   if (payload.refresh_token) {
-    encryptedToken = await encryptToken(payload.refresh_token as string);
+    encryptedToken = encryptToken(payload.refresh_token as string);
   }
 
   const { data, error } = await supabaseAdmin
