@@ -88,6 +88,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const message = body?.message;
+    console.log(message)
 
     if (!message?.text) return NextResponse.json({ ok: true });
 
