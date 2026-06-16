@@ -121,7 +121,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const config = await getTelegramConfig(chatId);
+//const chatId = String(message.chat.id);
+console.log('webhook chatId:', chatId);
+console.log('webhook chatId type:', typeof chatId);
+const config = await getTelegramConfig(chatId);
 const agentType = config?.agent_type || 'general';
 const agentRunner = AGENT_MAP[agentType] || runMainAgent;
 
