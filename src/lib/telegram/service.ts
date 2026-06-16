@@ -162,6 +162,10 @@ export async function getAccessTokenFromConfig(config: any): Promise<{
   userId?: string;
   userEmail?: string;
 }> {
+
+  console.log('=== getAccessTokenFromConfig ===');
+  console.log('chat_id:', config?.chat_id);
+  console.log('has encrypted token:', !!config?.refresh_token_encrypted);
   if (!config?.refresh_token_encrypted) return {};
 
   // Si un refresh est déjà en cours pour ce chat_id, attendre
@@ -188,6 +192,8 @@ export async function getAccessTokenFromConfig(config: any): Promise<{
     const { data, error } = await supabase.auth.refreshSession({
       refresh_token: refreshToken,
     });
+    console.log('refresh error:', error?.message ?? 'none');
+    console.log('new session:', !!data?.session);
 
     if (error || !data.session) {
       console.error('Failed to refresh Telegram session:', error);
