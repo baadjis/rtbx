@@ -85,11 +85,11 @@ function decryptToken(encryptedBase64: string): string | null {
    GET TELEGRAM CONFIG BY CHAT ID
 ========================================================= */
 export async function getTelegramConfig(chatId: string) {
-  console.log("getTelegramConfig",chatId)
+  console.log("getTelegramConfig",chatId==chatId.trim())
   const { data, error } = await supabaseAdmin
     .from('telegram_configs')
     .select('*')
-    .eq('chat_id', chatId)
+    .eq('chat_id', chatId.trim())
     .eq('is_active', true)
     .single();
   console.log("data",data)
