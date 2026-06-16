@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
     if (!message?.text) return NextResponse.json({ ok: true });
 
-    const chatId = String(message.chat.id).trim();
+    const chatId = String(message.chat.id).trim().replace(/\s/g, '');
     const userText = message.text;
 
     // Détection de la langue depuis Telegram
