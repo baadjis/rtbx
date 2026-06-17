@@ -62,7 +62,7 @@ updateBusiness : tool({
 // GET USER BUSINESSES TOOL
 // =====================================================
 getUserBusinesses: tool({
-  description: `Get all businesses of authenticated user.
+  description: `Get all businesses of the  user.
   Only call this when the user explicitly asks to see their businesses.
 Returns name, category,adress 
   `,
