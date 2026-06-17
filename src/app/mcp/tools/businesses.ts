@@ -62,7 +62,10 @@ updateBusiness : tool({
 // GET USER BUSINESSES TOOL
 // =====================================================
 getUserBusinesses: tool({
-  description: `Get all businesses of the authenticated user. Call when user says: "mes business", "mes entreprises", "my businesses", "liste mes business", "voir mes business".`,
+  description: `Get all businesses of authenticated user.
+  Only call this when the user explicitly asks to see their businesses.
+Returns name, category,adress 
+  `,
   inputSchema: z.object({}), // ← vide, pas de paramètres
   execute: async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses/me`, {
