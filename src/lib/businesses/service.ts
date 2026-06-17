@@ -254,7 +254,8 @@ export async function getBusiness(
 // =====================================================
 
 export async function getUserBusinesses(
-  user_id: string
+  user_id: string, limit: number = 10,
+  offset: number = 0
 ) {
 
   const supabase =
@@ -272,7 +273,7 @@ export async function getUserBusinesses(
     .eq(
       'user_id',
       user_id
-    )
+    ).range(offset, offset + limit - 1)
 
     .order(
       'created_at',

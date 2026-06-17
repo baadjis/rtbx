@@ -63,10 +63,15 @@ updateBusiness : tool({
 // =====================================================
 getUserBusinesses: tool({
   description: `Get all businesses of the  user.
-  Only call this when the user explicitly asks to see their businesses.
-Returns name, category,adress 
+  Use limit to control number of businesses to return (default 10, max 20).
+  Returns name, category,adress  only ,other field of user explicitly asked for.
   `,
-  inputSchema: z.object({}), // ← vide, pas de paramètres
+  inputSchema: z.object({
+     limit: z.number().int().min(1).max(20).default(10)
+          .describe('Number of businesses to return (default 10, max 20)'),
+        offset: z.number().int().min(0).default(0)
+          .describe('Offset for pagination (default 0)'),
+  }), // ← vide, pas de paramètres
   execute: async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/businesses/me`, {
       method: 'GET',

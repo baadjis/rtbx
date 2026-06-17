@@ -41,13 +41,15 @@ export async function GET(request:Request) {
       )
     
     }
-    
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 20);
+    const offset = parseInt(searchParams.get('offset') ?? '0');
 
     const {
       data,
       error
     } = await getUserBusinesses(
-      user.id
+      user.id,limit,offset
     )
 
     if (error) {
