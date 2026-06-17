@@ -14,7 +14,7 @@ export const getAgentRelevantTools = (
   if (readKeywords.test(lowerMessage)) {
     console.log('🔧 READ mode → READ tools');
     return Object.fromEntries(
-      Object.entries(defaultTools|| allTools).filter(([key]) => readOnlyTools.includes(key))
+      Object.entries(allTools).filter(([key]) => (defaultTools||readOnlyTools).includes(key))
     );
   }
 
