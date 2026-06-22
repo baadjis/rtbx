@@ -18,7 +18,7 @@ export default  async function BusinessSettingPage({ params }: { params: Promise
     const businesResponse =  await supabase.from('businesses').select('*').eq('id', Number(Id))
     console.log(businesResponse)
     const business =  businesResponse.data
-
+    console.log(business)
     const t= DATA[lang]
 
 
