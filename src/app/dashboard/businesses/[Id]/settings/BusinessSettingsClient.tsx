@@ -22,6 +22,9 @@ from './sections/ProvidersSection'
 import { LangType } from '@/lib/lang/types'
 import OpeningHoursSection from './sections/OpeningHoursSection'
 import { DEFAULT_OPENING_HOURS } from '@/lib/business-opening-hours/days'
+import RewardModal from './RewardModal'
+import LoyaltySettingsSection from './sections/LoyaltySettingsSection'
+import RewardsSection from './sections/RewardsSection'
 
 type Props = {
 
@@ -33,7 +36,7 @@ type Props = {
 
   loyaltySettings: any
 
-  rewards: any[]
+  businessRewards: any[]
 
   t: any
 
@@ -47,7 +50,9 @@ export default function BusinessSettingsClient({
   providerLinks,
   openingHours,
   t,
-  lang
+  lang,
+  loyaltySettings,
+  businessRewards
 
 }: Props) {
 
@@ -83,7 +88,7 @@ const [selectedReward,setSelectedReward] =
 useState<any>(null)
 
 const [rewards,setRewards] =
-useState(rewardsProp)
+useState(businessRewards)
  
   const [form, setForm] =
     useState({
@@ -565,6 +570,53 @@ async (reward:any) => {
 
       <OpeningHoursSection lang={lang} hours={hours} setHours={setHours}/>
 
+      <LoyaltySettingsSection
+
+  form={loyaltyForm}
+
+ 
+  onEdit={handleSaveLoyaltySettings}
+
+  t={t}
+
+/>
+
+<RewardsSection
+
+  rewards={rewards}
+
+  t={t}
+
+  onCreate={() => {
+
+    setSelectedReward(
+      null
+    )
+
+    setRewardModalOpen(
+      true
+    )
+
+  }}
+
+  onEdit={(reward:any) => {
+
+    setSelectedReward(
+      reward
+    )
+
+    setRewardModalOpen(
+      true
+    )
+
+  }}
+
+  onDelete={
+    handleDeleteReward
+  }
+
+/>
+
       {/* =====================================================
           SAVE
       ===================================================== */}
@@ -613,6 +665,37 @@ async (reward:any) => {
         }
 
       </button>
+
+
+      <RewardModal
+
+  open={
+    rewardModalOpen
+  }
+
+  reward={
+    selectedReward
+  }
+
+  t={t}
+
+  onClose={() => {
+
+    setRewardModalOpen(
+      false
+    )
+
+    setSelectedReward(
+      null
+    )
+
+  }}
+
+  onSave={
+    handleSaveReward
+  }
+
+/>
 
     </div>
 

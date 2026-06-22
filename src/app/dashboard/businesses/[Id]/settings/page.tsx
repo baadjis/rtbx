@@ -47,8 +47,8 @@ return (
     providerLinks={
       providerLinks?.data || []
     }
-    loyaltySettings={loyaltySettings || []}
-    businessRewards={rewards || []}
+    loyaltySettings={loyaltySettings?.data || []}
+    businessRewards={rewards?.data || []}
     openingHours={openingHours?.data || []}
     t={t}
     lang={lang}

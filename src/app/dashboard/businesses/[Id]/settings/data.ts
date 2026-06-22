@@ -153,7 +153,10 @@ reward_deleted:
   'Récompense supprimée',
 
 points:
-  'points'
+  'points',
+  
+
+disabled: 'Désactivé'
   
 
 
@@ -309,6 +312,9 @@ reward_deleted:
   'Reward deleted',
 
 points:
-  'points'
+  'points',
+
+
+disabled: 'Disabled'
     }
 }
