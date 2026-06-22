@@ -6,6 +6,7 @@ import { LangType } from "@/lib/lang/types";
 import { DATA } from "./data";
 import { createClient } from "@/utils/supabase/server";
 import { getBusinessLoyaltyRewards, getBusinessLoyaltySettings } from "@/lib/business-loyalty/service";
+import { getBusiness } from "@/lib/businesses/service";
 
 
 export default  async function BusinessSettingPage({ params }: { params: Promise<{ Id: string }> }){
@@ -13,17 +14,16 @@ export default  async function BusinessSettingPage({ params }: { params: Promise
 
     const lang =await getLang() as LangType;
     const supabase = await createClient();
+    const userResponse= await supabase.auth.getUser()
+    const user=userResponse.data.user
 
-    console.log(Id)
-    const businesResponse =  await supabase.from('businesses').select('*').eq('id', Number(Id)).single()
-    console.log(businesResponse)
-    const business =  businesResponse.data
-    console.log(business)
+   
+    
     const t= DATA[lang]
 
 
     const [
- 
+  business,
   providerLinks,
   openingHours,
   loyaltySettings,
@@ -31,7 +31,7 @@ export default  async function BusinessSettingPage({ params }: { params: Promise
 ] = await Promise.all([
 
  
-
+  getBusiness(Id,user?.id as string),
   getBusinessProviderLinks(Number(Id)),
 
   getBusinessOpeningHours(Number(Id)),
@@ -45,7 +45,7 @@ return (
 
   <BusinessSettingsClient
 
-    business={business}
+    business={business?.data}
 
     providerLinks={
       providerLinks?.data || []

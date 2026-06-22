@@ -220,7 +220,7 @@ export async function getBusiness(
 
     .select('*')
 
-    .eq('id', id)
+    .eq('id', Number(id))
 
     .eq(
       'user_id',
