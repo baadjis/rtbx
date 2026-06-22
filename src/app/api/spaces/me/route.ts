@@ -32,8 +32,11 @@ export async function GET(request: Request) {
     if (!user) {
       return NextResponse.json({ success: false, error: authError }, { status: 401 });
     }
-
-    const { data, error } = await getMySpaces(user.id);
+    
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 20);
+    const offset = parseInt(searchParams.get('offset') ?? '0');
+    const { data, error } = await getMySpaces(user.id,limit,offset);
     if (error) {
       return NextResponse.json({ success: false, error }, { status: 400 });
     }

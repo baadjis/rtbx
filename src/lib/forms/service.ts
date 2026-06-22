@@ -197,7 +197,6 @@ export async function submitFormResponse(
     return { data: null, error: 'Form is not accepting responses' };
   }
 
-  // Extraire email et name depuis les réponses
   const fields: any[] = form.fields_json || [];
   const answers = parsed.data.answers;
 
@@ -205,18 +204,24 @@ export async function submitFormResponse(
   let respondentName: string | null = null;
 
   for (const field of fields) {
-    const value = answers[field.id];
-    if (!value) continue;
+    // Fix : chercher par label (clé réelle), pas par id
+    const value = answers[field.label];
+    if (value === undefined || value === null || value === '') continue;
 
     if (field.type === 'email') {
-      respondentEmail = value;
+      respondentEmail = String(value);
     }
 
     if (
       field.type === 'text' &&
       /nom|name|prénom|firstname|prenom/i.test(field.label || '')
     ) {
-      respondentName = value;
+      respondentName = String(value);
+    }
+
+    // Bonus : capter aussi phone si présent, utile pour identifier le répondant
+    if (field.type === 'phone' && !respondentName) {
+      // optionnel, pas obligatoire
     }
   }
 
@@ -224,7 +229,7 @@ export async function submitFormResponse(
     .from('form_responses')
     .insert([{
       form_id: formId,
-      answers_json: parsed.data.answers,
+      answers_json: answers,
       origin: parsed.data.origin,
       metadata: parsed.data.metadata,
       user_id: userId || null,

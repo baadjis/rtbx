@@ -273,14 +273,12 @@ export async function getUserBusinesses(
     .eq(
       'user_id',
       user_id
-    ).range(offset, offset + limit - 1)
-
-    .order(
+    ).order(
       'created_at',
       {
         ascending: false
       }
-    )
+    ).range(offset, offset + limit - 1)
 
   return {
     data,

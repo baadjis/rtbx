@@ -7,25 +7,24 @@ import FormBuilder from '@/components/FormBuilder/FormBuilder';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-
-export default function EditFormClient({ t,lang, form }: any) {
-  
+export default function EditFormClient({ t, lang, form }: any) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState(form.title);
-
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  const handleUpdate = async (fields: any) => {
+  // ← changement : accepte (fields, settings)
+  const handleUpdate = async (fields: any, settings: any) => {
     setLoading(true);
     const { error } = await supabase
       .from('forms')
       .update({
         title: title,
         fields_json: fields,
+        settings: settings, // ← sauvegarde mode/theme/active
         updated_at: new Date().toISOString()
       })
       .eq('id', form.id);
@@ -54,19 +53,19 @@ export default function EditFormClient({ t,lang, form }: any) {
 
       <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-gray-100 dark:border-slate-800 shadow-sm mb-8">
         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Titre du formulaire</label>
-        <input 
+        <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full text-3xl font-black bg-transparent border-none focus:ring-0 p-0 dark:text-white mt-2"
         />
       </div>
 
-      {/* On passe les champs actuels au Builder */}
-      <FormBuilder 
-        initialFields={form.fields_json} 
-        onSave={handleUpdate} 
-        lang={lang} 
-        loading={loading} 
+      <FormBuilder
+        initialFields={form.fields_json}
+        onSave={handleUpdate}
+        lang={lang}
+        loading={loading}
+        formSettings={form.settings || {}}  // ← changement : passe les settings actuels
       />
     </div>
   );
