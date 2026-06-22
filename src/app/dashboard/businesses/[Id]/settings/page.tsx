@@ -14,8 +14,9 @@ export default  async function BusinessSettingPage({ params }: { params: Promise
     const lang =await getLang() as LangType;
     const supabase = await createClient();
     const businesResponse =  await supabase.from('businesses').select('*').eq('id', Number(Id))
-  
+    console.log(businesResponse)
     const business =  businesResponse.data
+
     const t= DATA[lang]
 
 
