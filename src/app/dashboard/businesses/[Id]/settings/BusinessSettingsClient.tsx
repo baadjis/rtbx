@@ -25,6 +25,7 @@ import { DEFAULT_OPENING_HOURS } from '@/lib/business-opening-hours/days'
 import RewardModal from './RewardModal'
 import LoyaltySettingsSection from './sections/LoyaltySettingsSection'
 import RewardsSection from './sections/RewardsSection'
+import LoyaltySettingsModal from './LoyaltySettingsModal'
 
 type Props = {
 
@@ -84,6 +85,8 @@ useState({
 const [rewardModalOpen,setRewardModalOpen] =
 useState(false)
 
+const [loyaltyModalOpen,setLoyaltyModalOpen] =
+useState(false)
 const [selectedReward,setSelectedReward] =
 useState<any>(null)
 
@@ -293,6 +296,19 @@ async () => {
     }
 
   )
+
+  setLoyaltyForm({
+
+  enabled:
+    loyaltySettings?.enabled ?? true,
+
+  points_per_visit:
+    loyaltySettings?.points_per_visit ?? 1,
+
+  welcome_bonus_points:
+    loyaltySettings?.welcome_bonus_points ?? 0
+
+})
 
 }
 
@@ -575,7 +591,13 @@ async (reward:any) => {
   form={loyaltyForm}
 
  
-  onEdit={handleSaveLoyaltySettings}
+  onEdit={() =>
+
+    setLoyaltyModalOpen(
+      true
+    )
+
+  }
 
   t={t}
 
@@ -696,6 +718,37 @@ async (reward:any) => {
   }
 
 />
+
+
+
+<LoyaltySettingsModal
+
+  open={
+    loyaltyModalOpen
+  }
+
+  settings={
+    loyaltyForm
+  }
+
+  t={t}
+
+  onClose={() =>
+
+    setLoyaltyModalOpen(
+      false
+    )
+
+  }
+
+  onSave={
+    handleSaveLoyaltySettings
+  }
+
+/>
+
+
+
 
     </div>
 
