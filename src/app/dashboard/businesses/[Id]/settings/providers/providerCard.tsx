@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import Image from 'next/image'
+
 import {
   CheckCircle2,
   Link2,
   Pencil
 } from 'lucide-react'
+
+import {
+  getProviderGlyph
+} from '@/lib/providers/getProviderAsset'
 
 type Props = {
 
@@ -34,38 +40,47 @@ export default function ProviderCard({
   const connected =
     !!link?.value
 
+  const glyph =
+    getProviderGlyph(provider)
+
   return (
 
     <button
+
+      type="button"
 
       onClick={onClick}
 
       className="
         w-full
         text-left
+
         p-6
+
         rounded-[2rem]
+
         border
-        transition-all
-        cursor-pointer
-
-        bg-white
-        dark:bg-slate-950
-
-        hover:-translate-y-1
 
         border-gray-100
         dark:border-slate-800
 
+        bg-white
+        dark:bg-slate-950
+
+        shadow-sm
+
+        transition-all
+
+        hover:-translate-y-1
         hover:border-indigo-200
         dark:hover:border-indigo-500/30
 
-        shadow-sm
+        cursor-pointer
       "
 
     >
 
-      {/* TOP */}
+      {/* HEADER */}
 
       <div className="
         flex
@@ -88,10 +103,18 @@ export default function ProviderCard({
           </h4>
 
           <p className="
-            text-sm
-            text-gray-500
-            dark:text-slate-400
             mt-1
+
+            text-xs
+
+            font-bold
+
+            text-gray-400
+            dark:text-slate-500
+
+            uppercase
+
+            tracking-wider
           ">
 
             {provider.field}
@@ -101,20 +124,41 @@ export default function ProviderCard({
         </div>
 
         <div className="
-          w-11 h-11
+          w-11
+          h-11
+
           rounded-2xl
+
+          bg-indigo-50
+          dark:bg-indigo-500/10
 
           flex
           items-center
           justify-center
 
-          bg-indigo-50
-          dark:bg-indigo-500/10
-
-          text-indigo-600
+          overflow-hidden
         ">
 
-          <Link2 size={18} />
+          {glyph ? (
+
+            <Image
+              src={glyph}
+              alt={provider.name}
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+
+          ) : (
+
+            <Link2
+              size={18}
+              className="
+                text-indigo-600
+              "
+            />
+
+          )}
 
         </div>
 
@@ -130,9 +174,11 @@ export default function ProviderCard({
             flex
             items-center
             gap-2
+
             text-emerald-600
-            font-bold
+
             text-sm
+            font-bold
           ">
 
             <CheckCircle2
@@ -146,9 +192,10 @@ export default function ProviderCard({
         ) : (
 
           <div className="
-            text-gray-400
-            font-bold
             text-sm
+            font-bold
+
+            text-gray-400
           ">
 
             {t.not_connected}
@@ -169,7 +216,9 @@ export default function ProviderCard({
         {connected ? (
 
           <div className="
-            px-3 py-2
+            px-3
+            py-2
+
             rounded-xl
 
             bg-gray-50
@@ -192,12 +241,12 @@ export default function ProviderCard({
 
           <div className="
             text-sm
-            text-gray-400
             italic
+
+            text-gray-400
           ">
 
             {provider.placeholder}
-
           </div>
 
         )}
@@ -213,7 +262,8 @@ export default function ProviderCard({
           items-center
           gap-2
 
-          px-4 py-2
+          px-4
+          py-2
 
           rounded-xl
 
@@ -222,11 +272,13 @@ export default function ProviderCard({
 
           text-indigo-600
 
-          font-bold
           text-sm
+          font-bold
         ">
 
-          <Pencil size={14} />
+          <Pencil
+            size={14}
+          />
 
           {connected
             ? t.edit
