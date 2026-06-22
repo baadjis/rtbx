@@ -237,7 +237,7 @@ export default function BusinessHeader({
         {/* SETTINGS */}
 
         <Link
-          href={`/dashboard/business/${business.id}/settings`}
+          href={`/dashboard/businesses/${business.id}/settings`}
           className="
             h-11
             px-4
