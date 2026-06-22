@@ -8,7 +8,7 @@ import { createClient } from "@/utils/supabase/server";
 import { getBusinessLoyaltyRewards, getBusinessLoyaltySettings } from "@/lib/business-loyalty/service";
 
 
-export  async function BusinessSettingPage({ params }: { params: Promise<{ Id: string }> }){
+export default  async function BusinessSettingPage({ params }: { params: Promise<{ Id: string }> }){
     const { Id } = await params;
 
     const lang =await getLang() as LangType;
