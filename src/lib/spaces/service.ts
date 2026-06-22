@@ -256,13 +256,16 @@ export async function deleteSpace(
 }
 
 
-export async function getMySpaces(userId: string) {
+export async function getMySpaces(userId: string,limit: number = 10,
+  offset: number = 0) {
   const { data, error } = await supabaseAdmin
     .from('spaces')
     .select('id, slug, entity_name, space_type, edit_token, avatar_url, theme_color, created_at')
     .eq('user_id', userId)
     .is('deleted_at', null)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+    ;
 
   if (error) return { data: null, error };
   return { data, error: null };
