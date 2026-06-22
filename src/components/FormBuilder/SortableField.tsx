@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import Image from 'next/image';
 import {
   GripVertical, Trash2, Plus, X, Star,
-  Upload, Loader2, Globe
+  Upload, Loader2
 } from 'lucide-react';
 import { useState } from 'react';
 import CountrySelect from '../CountrySelect';
@@ -38,29 +38,29 @@ export function SortableField({ field, index, onRemove, onUpdate, t, lang = 'fr'
 
   // Upload d'image pour image_choice → Supabase storage forms/image_choice
   const handleImageUpload = async (file: File, optIndex: number) => {
-    setUploadingIdx(optIndex);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', 'forms/image_choice');
+  setUploadingIdx(optIndex);
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'forms/image_choice'); // ← dossier dans uploads_forms
 
-      const res = await fetch('/api/storage/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
+    const res = await fetch('/api/storage/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
 
-      if (data.url) {
-        const newOpts = [...field.options];
-        newOpts[optIndex] = { ...newOpts[optIndex], image_url: data.url };
-        onUpdate(field.id, { options: newOpts });
-      }
-    } catch (err) {
-      console.error('Upload error:', err);
-    } finally {
-      setUploadingIdx(null);
+    if (data.url) {
+      const newOpts = [...field.options];
+      newOpts[optIndex] = { ...newOpts[optIndex], image_url: data.url };
+      onUpdate(field.id, { options: newOpts });
     }
-  };
+  } catch (err) {
+    console.error('Upload error:', err);
+  } finally {
+    setUploadingIdx(null);
+  }
+};
 
   return (
     <div ref={setNodeRef} style={style} className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-100 dark:border-slate-800 shadow-sm mb-4">
@@ -257,8 +257,8 @@ export function SortableField({ field, index, onRemove, onUpdate, t, lang = 'fr'
           </div>
         )}
 
-        {/* PHONE */}
-        {field.type === 'phone' && (
+  {/* PHONE */}
+  {field.type === 'phone' && (
   <div className="p-4 bg-teal-50/50 dark:bg-teal-900/10 rounded-2xl border border-teal-100 dark:border-teal-900/30">
     <CountrySelect
       country={field.phone_settings?.default_country || 'FR'}
