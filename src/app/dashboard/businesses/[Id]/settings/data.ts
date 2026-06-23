@@ -156,7 +156,18 @@ points:
   'points',
   
 
-disabled: 'Désactivé'
+disabled: 'Désactivé',
+danger_zone:
+  "Zone dangereuse",
+
+delete_business:
+  "Supprimer l'établissement",
+
+delete_business_description:
+  "Cette action est irréversible. Toutes les données associées seront définitivement supprimées.",
+
+delete_business_confirm:
+  "Êtes-vous sûr de vouloir supprimer cet établissement ?"
   
 
 
@@ -315,6 +326,18 @@ points:
   'points',
 
 
-disabled: 'Disabled'
+disabled: 'Disabled',
+danger_zone:
+  "Danger Zone",
+
+delete_business:
+  "Delete Business",
+
+delete_business_description:
+  "This action cannot be undone. All associated data will be permanently deleted.",
+
+delete_business_confirm:
+  "Are you sure you want to delete this business?",
+
     }
 }
