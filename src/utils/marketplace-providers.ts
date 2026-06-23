@@ -112,7 +112,7 @@ Record<
       'art',
       'creator',
       'jewelry',
-      'all'
+      
     ],
 
     placeholder:
@@ -139,7 +139,7 @@ Record<
     supported_business_types: [
       'retail',
       'ecommerce',
-      'all'
+      
     ],
 
     placeholder:
