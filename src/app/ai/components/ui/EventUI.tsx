@@ -25,7 +25,8 @@ const DATA={
     statatut:"Statut",
     company:"Entreprise",
     no_invitation:"Aucune invitation",
-    empty_agenda:"Agenda vide"
+    empty_agenda:"Agenda vide",
+    open_dashboard:"Ouvrir le dashboard"
 
   },
   en:{
@@ -41,7 +42,8 @@ const DATA={
     email:"Email",
     company:"Company",
     no_invitation:"No invitation",
-    empty_agenda:"Empty agenda"
+    empty_agenda:"Empty agenda",
+    open_dashboard:"Open dashboard"
 
 
 
@@ -322,6 +324,60 @@ export function AgendaList({ data ,lang='en'}: { data: any,lang?:LangType }) {
       ))}
 
       <Pagination page={page} total={items.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
+    </div>
+  );
+}
+
+
+// app/ai/components/ui/EventUI.tsx — ajouter ce composant
+export function EventCard({ data,lang }: { data: any,lang:LangType }) {
+  const event = data?.data ?? data;
+  if (!event?.id) return null;
+
+  const formatDate = (d: string) => new Date(d).toLocaleDateString('fr-FR', {
+    day: 'numeric', month: 'short', year: 'numeric',
+  });
+  const t=DATA[lang]
+  return (
+    <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            {event.is_published
+              ? <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Publié</span>
+              : <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Brouillon</span>
+            }
+            {event.category && (
+              <span className="text-[10px] text-white/25 bg-white/[0.04] px-1.5 py-0.5 rounded-full">{event.category}</span>
+            )}
+          </div>
+          <p className="text-white font-semibold text-sm">{event.title}</p>
+        </div>
+        <a href={`/dashboard/events/${event.id}`} target="_blank" rel="noopener noreferrer"
+          className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white/40 hover:text-white transition-all flex-shrink-0">
+          <ExternalLink size={12} />
+        </a>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {event.start_date && (
+          <div className="flex items-center gap-1.5 text-white/40 text-xs">
+            <Calendar size={11} className="text-indigo-400" />
+            {formatDate(event.start_date)}
+          </div>
+        )}
+        {event.location && (
+          <div className="flex items-center gap-1.5 text-white/40 text-xs">
+            <MapPin size={11} className="text-indigo-400" />
+            <span className="truncate max-w-[150px]">{event.location}</span>
+          </div>
+        )}
+      </div>
+
+      <a href={`/dashboard/events/${event.id}`} target="_blank" rel="noopener noreferrer"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-emerald-400 text-xs font-medium transition-all w-fit">
+        <ExternalLink size={12} /> {t.open_dashboard}
+      </a>
     </div>
   );
 }

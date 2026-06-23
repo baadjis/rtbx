@@ -8,38 +8,49 @@ type UIPayload = {
 } | null;
 
 // Mapping tool → type UI
-const TOOL_UI_MAP: Record<string, string> = {
-  // Shortener
+export const TOOL_UI_MAP: Record<string, string> = {
+  // Shortener — READ
   getUserShortLinks: 'short_link_list',
-  createShortLink: 'short_link_card',
-  updateShortLink: 'short_link_card',
   getShortLinkStats: 'short_link_stats',
   getShortLinkLogs: 'short_link_logs',
+  // Shortener — WRITE
+  createShortLink: 'short_link_card',
+  updateShortLink: 'short_link_card',
 
-  // Events
+  // Events — READ
   getMyEvents: 'event_list',
   searchPublicEvents: 'event_list',
   searchOrganizerEvents: 'event_list',
   getEventRegistrations: 'participants_table',
   getEventInvitations: 'invitations_table',
   getEventAgenda: 'agenda_list',
+  // Events — WRITE
+  createEvent: 'event_card',
+  updateEvent: 'event_card',
+  publishEvent: 'event_card',
 
-  // Spaces
+  // Spaces — READ
   getMySpaces: 'space_list',
   searchSpaces: 'space_list',
+  getSpaceSocialLinks: 'space_social_links',
+  // Spaces — WRITE
+  createSpace: 'space_card',
+  updateSpace: 'space_card',
 
-  
-  // Forms
-getMyForms: 'form_list',
-searchForms: 'form_list',
-getFormById: 'form_card',
-getFormResponses: 'form_responses_table',
-createForm: 'form_card',
+  // Forms — READ
+  getMyForms: 'form_list',
+  getFormById: 'form_card',
+  getFormResponses: 'form_responses_table',
+  searchForms: 'form_list',
+  // Forms — WRITE
+  createForm: 'form_card',
+  updateForm: 'form_card',
 
-// Business
-getUserBusinesses: 'business_list',
-createBusiness: 'business_card',
-updateBusiness: 'business_card',
+  // Business — READ
+  getUserBusinesses: 'business_list',
+  // Business — WRITE
+  createBusiness: 'business_card',
+  updateBusiness: 'business_card',
 };
 
 export function extractUIFromSteps(steps: any[]): UIPayload {

@@ -120,6 +120,10 @@ export async function runAgent(
     }
 
     if (!finalText) finalText = EXECUTED_TEXT[lang];
+    // Après avoir extrait finalText
+    const requiresConfirmation = /dois-je proc[eé]der|confirme[rz]?|voulez-vous|shall i proceed|should i|confirm\?/i.test(finalText);
+
+
 
     const toolNames = result.steps
       ?.flatMap(step => step.toolCalls ?? [])
@@ -129,13 +133,14 @@ export async function runAgent(
       ? extractUIFromSteps(result.steps ?? [])
       : null;
 
-    return {
-      success: true,
-      text: finalText,
-      toolCalls: toolNames,
-      usage: result.usage,
-      ui: uiPayload,
-    };
+   return {
+  success: true,
+  text: finalText,
+  toolCalls: toolNames,
+  usage: result.usage,
+  ui: uiPayload,
+  requiresConfirmation, // ← nouveau
+};
   } catch (error: any) {
     console.error(`${config.name} Agent Error:`, error);
     return {

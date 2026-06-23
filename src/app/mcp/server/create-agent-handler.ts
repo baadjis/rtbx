@@ -48,17 +48,21 @@ export function createAgentHandler(runAgent: AgentRunner) {
         userEmail: user.email ?? undefined,
         contextId: body.contextId || body.eventId || body.spaceId || body.formId || body.businessId,
         mode: body.mode || 'ui',
-        lang:body.lang ||'en'
+        lang:body.lang ||'en',
+        
       });
 
       if (!result.success) throw result.error;
 
+      
+
       return NextResponse.json({
-        success: true,
-        text: result.text,
-        ui: result.ui,
-        toolCalls: result.toolCalls,
-      });
+  success: true,
+  text: result.text,
+  ui: result.ui,
+  toolCalls: result.toolCalls,
+  requiresConfirmation: result.requiresConfirmation ?? false, // ← nouveau
+});
 
     } catch (error: any) {
       console.error('Agent Server Error:', error);

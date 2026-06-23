@@ -5,14 +5,19 @@ import { useState } from 'react';
 import { Globe, ExternalLink, Link2} from 'lucide-react';
 import Pagination from '../shared/Pagination';
 import { LangType } from '@/lib/lang/types';
+import Image from 'next/image';
 
 const PAGE_SIZE = 5;
 const DATA={
   fr:{no_space_found:"Aucun space trouvé",
-    no_link_found:"Aucun lien social"
+    no_link_found:"Aucun lien social",
+    view_profil:"Voir le profil",
+    dashbord:"Dashboard"
   },
   en:{no_space_found:"No space found",
-    no_link_found: "No social link found"
+    no_link_found: "No social link found",
+    view_profil:"View profile",
+    dashbord:"Dashbord"
   }
 }
 
@@ -44,7 +49,7 @@ export function SpaceList({ data ,lang}: { data: any,lang:LangType }) {
           <div className="w-9 h-9 rounded-xl flex-shrink-0 overflow-hidden"
             style={{ background: space.theme_color || '#4f46e5' }}>
             {space.avatar_url
-              ? <img src={space.avatar_url} alt="" className="w-full h-full object-cover" />
+              ? <Image src={space.avatar_url} alt="" className="w-full h-full object-cover" />
               : <Globe size={16} className="text-white/60 m-auto mt-2.5" />
             }
           </div>
@@ -115,6 +120,46 @@ export function SpaceSocialLinks({ data,lang }: { data: any,lang:LangType }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+
+export function SpaceCard({ data ,lang}: { data: any ,lang:LangType}) {
+  const space = data?.data ?? data;
+  const t=DATA[lang]
+  if (!space?.id) return null;
+
+  return (
+    <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl flex-shrink-0 overflow-hidden"
+          style={{ background: space.theme_color || '#4f46e5' }}>
+          {space.avatar_url
+            ? <Image src={space.avatar_url} alt="" className="w-full h-full object-cover" />
+            : <Globe size={16} className="text-white/60 m-auto mt-3" />
+          }
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-semibold text-sm">{space.entity_name || space.slug}</p>
+          <p className="text-white/30 text-xs font-mono">rtbx.space/u/{space.slug}</p>
+        </div>
+        <a href={`/u/${space.slug}`} target="_blank" rel="noopener noreferrer"
+          className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white/40 hover:text-white transition-all">
+          <ExternalLink size={12} />
+        </a>
+      </div>
+
+      <div className="flex gap-2">
+        <a href={`/u/${space.slug}`} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 rounded-xl text-violet-400 text-xs font-medium transition-all">
+          <Globe size={12} /> {t.view_profil}
+        </a>
+        <a href={`/dashboard/spaces/${space.id}`} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] rounded-xl text-white/50 hover:text-white text-xs transition-all">
+          <ExternalLink size={12} /> {t.dashbord}
+        </a>
+      </div>
     </div>
   );
 }
