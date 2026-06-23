@@ -682,15 +682,7 @@ async () => {
 
 />
 
-<BusinessDangerSection
 
-  t={t}
-
-  onDelete={
-    handleDeleteBusiness
-  }
-
-/>
 
       {/* =====================================================
           SAVE
@@ -740,6 +732,17 @@ async () => {
         }
 
       </button>
+
+
+      <BusinessDangerSection
+
+  t={t}
+
+  onDelete={
+    handleDeleteBusiness
+  }
+
+/>
 
 
       <RewardModal
