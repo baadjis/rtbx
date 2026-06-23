@@ -26,6 +26,7 @@ import RewardModal from './RewardModal'
 import LoyaltySettingsSection from './sections/LoyaltySettingsSection'
 import RewardsSection from './sections/RewardsSection'
 import LoyaltySettingsModal from './LoyaltySettingsModal'
+import BusinessDangerSection from './sections/BusinessDangerSection'
 
 type Props = {
 
@@ -452,6 +453,48 @@ async (reward:any) => {
 
 }
 
+const handleDeleteBusiness =
+async () => {
+
+  const confirmed =
+    window.confirm(
+      t.delete_business_confirm
+    )
+
+  if (!confirmed)
+    return
+
+  const response =
+    await fetch(
+
+      `/api/businesses/${business.id}`,
+
+      {
+
+        method:'DELETE'
+
+      }
+
+    )
+
+  const result =
+    await response.json()
+
+  if (!result.success) {
+
+    alert(
+      result.error
+    )
+
+    return
+
+  }
+
+  window.location.href =
+    '/dashboard/businesses'
+
+}
+
   return (
 
     <div className="
@@ -639,6 +682,16 @@ async (reward:any) => {
 
 />
 
+<BusinessDangerSection
+
+  t={t}
+
+  onDelete={
+    handleDeleteBusiness
+  }
+
+/>
+
       {/* =====================================================
           SAVE
       ===================================================== */}
@@ -718,6 +771,8 @@ async (reward:any) => {
   }
 
 />
+
+
 
 
 
