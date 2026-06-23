@@ -82,7 +82,7 @@ Record<
       'retail',
       'ecommerce',
       'brand',
-      'all'
+     
     ],
 
     placeholder:
