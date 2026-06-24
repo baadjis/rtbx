@@ -1,5 +1,9 @@
 import { z } from 'zod'
 
+export const ProviderCategorySchema = z.enum([
+  'review', 'booking', 'delivery', 'marketplace'
+]);
+
 export const businessProviderLinkSchema =
   z.object({
 
@@ -11,12 +15,7 @@ export const businessProviderLinkSchema =
       z.number(),
 
     provider_category:
-      z.enum([
-        'review',
-        'booking',
-        'delivery',
-        'marketplace'
-      ]),
+      ProviderCategorySchema,
 
     provider_id:
       z.string()

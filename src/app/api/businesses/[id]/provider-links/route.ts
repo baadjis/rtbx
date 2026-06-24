@@ -12,7 +12,7 @@ import {
 
 /**
  * =========================================================
- * POST /api/businesses/[id]/providers
+ * POST /api/businesses/[id]/provider-links
  * =========================================================
  *
  * Create / Update provider link
@@ -149,7 +149,7 @@ export async function POST(
 
 /**
  * =========================================================
- * POST /api/businesses/[id]/providers
+ * POST /api/businesses/[id]/provider-links
  * =========================================================
  *
  * get  provider links
