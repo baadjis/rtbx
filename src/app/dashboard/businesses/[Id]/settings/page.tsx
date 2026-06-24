@@ -7,6 +7,7 @@ import { DATA } from "./data";
 import { createClient } from "@/utils/supabase/server";
 import { getBusinessLoyaltyRewards, getBusinessLoyaltySettings } from "@/lib/business-loyalty/service";
 import { getBusiness } from "@/lib/businesses/service";
+import { getBusinessAppLinks } from "@/lib/business-app-links/service";
 
 
 export default  async function BusinessSettingPage({ params }: { params: Promise<{ Id: string }> }){
@@ -27,7 +28,8 @@ export default  async function BusinessSettingPage({ params }: { params: Promise
   providerLinks,
   openingHours,
   loyaltySettings,
-  rewards
+  rewards,
+  businessAppLinks
 ] = await Promise.all([
 
  
@@ -36,7 +38,8 @@ export default  async function BusinessSettingPage({ params }: { params: Promise
 
   getBusinessOpeningHours(Number(Id)),
   getBusinessLoyaltySettings(Number(Id)),
-  getBusinessLoyaltyRewards(Number(Id))
+  getBusinessLoyaltyRewards(Number(Id)),
+  getBusinessAppLinks(Number(Id))
 
 
 ])
@@ -53,6 +56,7 @@ return (
     loyaltySettings={loyaltySettings?.data || []}
     businessRewards={rewards?.data || []}
     openingHours={openingHours?.data || []}
+    businessAppLinks={businessAppLinks?.data || []}
     t={t}
     lang={lang}
     

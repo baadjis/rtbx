@@ -27,6 +27,7 @@ import LoyaltySettingsSection from './sections/LoyaltySettingsSection'
 import RewardsSection from './sections/RewardsSection'
 import LoyaltySettingsModal from './LoyaltySettingsModal'
 import BusinessDangerSection from './sections/BusinessDangerSection'
+import AppsSection from './sections/AppsSection'
 
 type Props = {
 
@@ -39,6 +40,7 @@ type Props = {
   loyaltySettings: any
 
   businessRewards: any[]
+  businessAppLinks:any[]
 
   t: any
 
@@ -51,6 +53,7 @@ export default function BusinessSettingsClient({
   business,
   providerLinks,
   openingHours,
+  businessAppLinks,
   t,
   lang,
   loyaltySettings,
@@ -67,7 +70,9 @@ export default function BusinessSettingsClient({
 
       : DEFAULT_OPENING_HOURS
 
-  )
+  );
+  const [appLinks,setAppLinks] =
+useState(businessAppLinks)
 
   const [loyaltyForm,setLoyaltyForm] =
 useState({
@@ -495,6 +500,97 @@ async () => {
 
 }
 
+
+const handleSaveApp =
+async (data: {
+
+  provider_id: string
+
+  value: string
+
+}) => {
+
+  const response =
+    await fetch(
+
+      `/api/businesses/${business.id}/app-links`,
+
+      {
+
+        method: 'POST',
+
+        headers: {
+
+          'Content-Type':
+            'application/json'
+
+        },
+
+        body:
+          JSON.stringify(
+            data
+          )
+
+      }
+
+    )
+
+  const result =
+    await response.json()
+
+  if (!result.success) {
+
+    alert(
+      result.error
+    )
+
+    return
+
+  }
+
+  setAppLinks(
+    current => {
+
+      const exists =
+        current.some(
+
+          item =>
+
+            item.provider_id ===
+            data.provider_id
+
+        )
+
+      if (exists) {
+
+        return current.map(
+
+          item =>
+
+            item.provider_id ===
+            data.provider_id
+
+              ? result.data
+
+              : item
+
+        )
+
+      }
+
+      return [
+
+        ...current,
+
+        result.data
+
+      ]
+
+    }
+  )
+
+}
+
   return (
 
     <div className="
@@ -609,6 +705,8 @@ async () => {
     
 
       />
+
+      <AppsSection links={appLinks} t={t} lang={lang} onSave={handleSaveApp}/>
 
       {/* =====================================================
           PROVIDERS
@@ -804,6 +902,8 @@ async () => {
   }
 
 />
+
+
 
 
 
