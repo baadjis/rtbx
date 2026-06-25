@@ -167,7 +167,8 @@ delete_business_description:
   "Cette action est irréversible. Toutes les données associées seront définitivement supprimées.",
 
 delete_business_confirm:
-  "Êtes-vous sûr de vouloir supprimer cet établissement ?"
+  "Êtes-vous sûr de vouloir supprimer cet établissement ?",
+apps:"Applications"
   
 
 
@@ -338,6 +339,7 @@ delete_business_description:
 
 delete_business_confirm:
   "Are you sure you want to delete this business?",
+apps:"Apps"
 
     }
 }
