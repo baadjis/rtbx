@@ -14,6 +14,7 @@ import {
   LangType
 } from '@/lib/lang/types'
 import { APP_PROVIDERS } from '@/utils/app-providers'
+import { getProviderGlyph } from '@/lib/providers/getProviderAsset'
 
 type Props = {
 
@@ -48,8 +49,11 @@ export default function AppCard({
       providerId as keyof typeof APP_PROVIDERS
     ]
 
+  
   if (!provider)
     return null
+
+   const glyph=getProviderGlyph(provider)
 
   return (
 
@@ -89,9 +93,9 @@ export default function AppCard({
           justify-center
         ">
 
-          <Image
+          {glyph?(<Image
 
-            src={`/provider_assets/${provider.folder}/full.png`}
+            src={glyph}
 
             alt={provider.label.en}
 
@@ -106,7 +110,9 @@ export default function AppCard({
 
             }}
 
-          />
+          />):( <Smartphone
+      size={22}
+    />)}
 
         </div>
 
