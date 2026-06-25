@@ -168,7 +168,19 @@ delete_business_description:
 
 delete_business_confirm:
   "Êtes-vous sûr de vouloir supprimer cet établissement ?",
-apps:"Applications"
+apps:"Applications",
+
+no_loyalty_program:
+  'Aucun programme de fidélité',
+
+create_loyalty_program:
+  'Créer un programme de fidélité',
+
+create_loyalty_program_description:
+  'Récompensez vos clients à chaque visite et encouragez leur fidélité grâce à un programme simple et efficace.',
+
+loyalty_program_active:
+  'Programme de fidélité actif',
   
 
 
@@ -339,7 +351,18 @@ delete_business_description:
 
 delete_business_confirm:
   "Are you sure you want to delete this business?",
-apps:"Apps"
+apps:"Apps",
+no_loyalty_program:
+  'No loyalty program yet',
+
+create_loyalty_program:
+  'Create Loyalty Program',
+
+create_loyalty_program_description:
+  'Reward your customers for every visit and encourage repeat business with a simple loyalty program.',
+
+loyalty_program_active:
+  'Loyalty program active',
 
     }
 }
