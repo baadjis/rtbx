@@ -277,44 +277,58 @@ country_code:
 
   }
 
-
 const handleSaveLoyaltySettings =
-async () => {
+async (
 
-  await fetch(
+  data: {
 
-    `/api/businesses/${business.id}/loyalty-settings`,
+    enabled: boolean
 
-    {
+    points_per_visit: number
 
-      method:'PUT',
+    welcome_bonus_points: number
 
-      headers:{
-        'Content-Type':
-          'application/json'
-      },
+  }
 
-      body:
-        JSON.stringify(
-          loyaltyForm
-        )
+) => {
 
-    }
+  const response =
+    await fetch(
 
+      `/api/businesses/${business.id}/loyalty-settings`,
+
+      {
+
+        method:'PUT',
+
+        headers:{
+          'Content-Type':
+            'application/json'
+        },
+
+        body:
+          JSON.stringify(
+            data
+          )
+
+      }
+
+    )
+
+  const result =
+    await response.json()
+
+  if (!result.success) {
+
+    throw new Error(
+      result.error
+    )
+
+  }
+
+  setLoyaltyForm(
+    data
   )
-
-  setLoyaltyForm({
-
-  enabled:
-    loyaltySettings?.enabled ?? true,
-
-  points_per_visit:
-    loyaltySettings?.points_per_visit ?? 1,
-
-  welcome_bonus_points:
-    loyaltySettings?.welcome_bonus_points ?? 0
-
-})
 
 }
 
