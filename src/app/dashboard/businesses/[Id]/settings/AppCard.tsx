@@ -53,7 +53,8 @@ export default function AppCard({
   if (!provider)
     return null
 
-   const glyph=getProviderGlyph(provider)
+   const glyph=getProviderGlyph(provider);
+   console.log("glyph",glyph)
 
   return (
 
