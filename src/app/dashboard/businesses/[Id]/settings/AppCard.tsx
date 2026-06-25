@@ -15,6 +15,7 @@ import {
 } from '@/lib/lang/types'
 import { APP_PROVIDERS } from '@/utils/app-providers'
 import { getProviderGlyph } from '@/lib/providers/getProviderAsset'
+import { useState } from 'react'
 
 type Props = {
 
@@ -43,18 +44,22 @@ export default function AppCard({
   onEdit
 
 }: Props) {
-
+  const [imageError,setImageError] =
+  useState(false)
   const provider =
     APP_PROVIDERS[
       providerId as keyof typeof APP_PROVIDERS
     ]
 
   
+  
+
   if (!provider)
     return null
 
    const glyph=getProviderGlyph(provider);
    console.log("glyph",glyph)
+   
 
   return (
 
@@ -80,42 +85,49 @@ export default function AppCard({
         gap-4
       ">
 
-        <div className="
-          w-14 h-14
+        <div
+  className="
+    w-14 h-14
+    rounded-2xl
+    bg-gray-50
+    dark:bg-slate-800
+    overflow-hidden
+    flex items-center
+    justify-center
+  "
+>
 
-          rounded-2xl
+  {glyph && !imageError ? (
 
-          bg-gray-50
-          dark:bg-slate-800
+    <Image
 
-          overflow-hidden
+      src={glyph}
 
-          flex items-center
-          justify-center
-        ">
+      alt={provider.label.en}
 
-          {glyph?(<Image
+      width={40}
 
-            src={glyph}
+      height={40}
 
-            alt={provider.label.en}
+      onError={() =>
 
-            width={40}
+        setImageError(
+          true
+        )
 
-            height={40}
+      }
 
-            onError={(e) => {
+    />
 
-              e.currentTarget.style.display =
-                'none'
+  ) : (
 
-            }}
-
-          />):( <Smartphone
+    <Smartphone
       size={22}
-    />)}
+    />
 
-        </div>
+  )}
+
+</div>
 
         <div>
 
