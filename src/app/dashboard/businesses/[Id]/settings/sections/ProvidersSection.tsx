@@ -5,10 +5,12 @@ import { useMemo, useState } from 'react'
 
 import ProviderCard from '../providers/providerCard'
 import ProviderModal from '../providers/ProviderModal'
+import ReviewsSection from './ReviewsSection'
 
 import {
   getProviders
 } from '@/utils/busines-types'
+import ReviewProviderPickerModal from '../providers/ReviewProviderPickerModal'
 
 type Props = {
 
@@ -53,6 +55,31 @@ export default function ProvidersSection({
       ]
     )
 
+    const [
+
+  reviewPickerOpen,
+
+  setReviewPickerOpen
+
+] = useState(false)
+
+function handleSelectReviewProvider(
+  provider: any
+) {
+
+  setReviewPickerOpen(
+    false
+  )
+
+  openProvider(
+    provider,
+    'review'
+  )
+
+}
+
+
+
   const [
     modalOpen,
     setModalOpen
@@ -77,6 +104,14 @@ export default function ProvidersSection({
     saving,
     setSaving
   ] = useState(false)
+
+
+  const reviewLinks =
+  links.filter(
+    item =>
+      item.provider_category ===
+      'review'
+  )
 
   // =====================================================
   // OPEN MODAL
@@ -276,15 +311,21 @@ export default function ProvidersSection({
 
       <div className="space-y-10">
 
-        {renderCategory(
+        <ReviewsSection
 
-          t.review_providers,
+  links={reviewLinks}
 
-          'review',
+  t={t}
 
-          providers.reviews
+  onAdd={() =>
 
-        )}
+    setReviewPickerOpen(
+      true
+    )
+
+  }
+
+/>
 
         {renderCategory(
 
@@ -347,6 +388,33 @@ export default function ProvidersSection({
         }
 
       />
+
+
+      <ReviewProviderPickerModal
+
+  open={
+    reviewPickerOpen
+  }
+
+  providers={
+    providers.reviews
+  }
+
+  t={t}
+
+  onClose={() =>
+
+    setReviewPickerOpen(
+      false
+    )
+
+  }
+
+  onSelect={
+    handleSelectReviewProvider
+  }
+
+/>
 
     </>
 
