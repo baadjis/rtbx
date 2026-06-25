@@ -2,7 +2,7 @@
 // app/ai/components/ui/BusinessUI.tsx
 'use client';
 import { useState } from 'react';
-import { Building2, ExternalLink, MapPin, Phone, Mail, Globe } from 'lucide-react';
+import { Building2, ExternalLink, MapPin, Phone, Mail, Globe, BarChart2, Star, Clock, Link2 } from 'lucide-react';
 import Pagination  from '../shared/Pagination';
 import { formatDate } from '../shared/DateFormatter';
 import { LangType } from '@/lib/lang/types';
@@ -181,6 +181,257 @@ export function BusinessCard({ data, lang = 'en' }: { data: any; lang?: LangType
       >
         <ExternalLink size={12} /> {t.open}
       </a>
+    </div>
+  );
+}
+
+
+
+// =====================================================
+// BUSINESS PROVIDER LINKS
+// =====================================================
+const PROVIDER_COLORS: Record<string, string> = {
+  review: 'from-yellow-500 to-orange-500',
+  booking: 'from-blue-500 to-cyan-500',
+  delivery: 'from-emerald-500 to-teal-500',
+  marketplace: 'from-violet-500 to-purple-600',
+};
+
+const PROVIDER_LABELS: Record<string, string> = {
+  review: 'Avis',
+  booking: 'Réservation',
+  delivery: 'Livraison',
+  marketplace: 'Marketplace',
+};
+
+export function BusinessProviderLinks({ data ,lang}: { data: any,lang:LangType }) {
+  const links: any[] = Array.isArray(data) ? data : data?.data ?? [];
+  const t = {
+    fr: {
+      empty: 'Aucun lien business trouvé',
+      open: 'Ouvrir',
+      created: 'Créé le',
+    },
+    en: {
+      empty: 'No business link found',
+      open: 'Open',
+      created: 'Created',
+    },
+  }[lang];
+
+  if (!links.length) {
+    return (
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
+        <Link2 size={24} className="text-white/20 mx-auto mb-2" />
+        <p className="text-white/30 text-sm">{t.empty}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {links.map((link: any, i: number) => (
+        <div key={i}
+          className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-4 py-3">
+          <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${PROVIDER_COLORS[link.provider_category] || 'from-gray-500 to-gray-600'} flex items-center justify-center flex-shrink-0`}>
+            <Link2 size={13} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-xs font-semibold">{link.provider_id}</p>
+            <p className="text-white/30 text-[10px]">{PROVIDER_LABELS[link.provider_category] || link.provider_category}</p>
+          </div>
+          <a href={link.value} target="_blank" rel="noopener noreferrer"
+            className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white/40 hover:text-white transition-all">
+            <ExternalLink size={12} />
+          </a>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// =====================================================
+// BUSINESS OPENING HOURS
+// =====================================================
+/*const DAYS_FR: Record<string, string> = {
+  monday: 'Lundi', tuesday: 'Mardi', wednesday: 'Mercredi',
+  thursday: 'Jeudi', friday: 'Vendredi', saturday: 'Samedi', sunday: 'Dimanche',
+};*/
+
+export function BusinessOpeningHours({ data ,lang}: { data: any,lang :LangType }) {
+  const hours: any[] = Array.isArray(data) ? data : data?.data ?? [];
+
+  const t = {
+    fr: {
+      empty: 'Aucun horaire configuré',
+      open: 'Ouvrir',
+      closed:"Fermé",
+      
+      days:{
+  monday: 'Lundi', tuesday: 'Mardi', wednesday: 'Mercredi',
+  thursday: 'Jeudi', friday: 'Vendredi', saturday: 'Samedi', sunday: 'Dimanche',
+}
+    },
+    en: {
+      empty: 'No opening hour configurated',
+      open: 'Open',
+      close: 'Close',
+      days:{
+  monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday',
+  thursday: 'Thurday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday',
+}
+    },
+  }[lang];
+  
+
+  if (!hours.length) {
+    return (
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
+        <Clock size={24} className="text-white/20 mx-auto mb-2" />
+        <p className="text-white/30 text-sm">{t.empty}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
+      {hours.map((h: any, i: number) => (
+        <div key={i}
+          className={`flex items-center justify-between px-4 py-2.5 text-xs ${
+            i < hours.length - 1 ? 'border-b border-white/[0.04]' : ''
+          }`}>
+          <span className="text-white/60 font-medium w-24">
+          {(t.days as Record<string, string>) [h?.day]|| h.day}
+          
+          </span>
+          {h.is_closed ? (
+            <span className="text-red-400/70 text-[10px]">{t.close}</span>
+          ) : (
+            <span className="text-white/80 font-mono">{h.open} → {h.close}</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// =====================================================
+// BUSINESS LOYALTY REWARDS
+// =====================================================
+export function BusinessLoyaltyRewards({ data,lang }: { data: any,lang:LangType }) {
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 5;
+  const rewards: any[] = Array.isArray(data) ? data : data?.data ?? [];
+  const paginated = rewards.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  const t = {
+    fr: {
+      empty: 'Aucune récompense',
+      disabled: 'Inactif',
+      
+    },
+    en: {
+      empty: 'No Reward',
+      disabled: 'Disabled',
+      
+    },
+  }[lang];
+
+
+  if (!rewards.length) {
+    return (
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
+        <Star size={24} className="text-white/20 mx-auto mb-2" />
+        <p className="text-white/30 text-sm">{t.empty}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {paginated.map((r: any, i: number) => (
+        <div key={i}
+          className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-4 py-3">
+          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+            <Star size={13} className="text-amber-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-xs font-semibold">{r.name}</p>
+            {r.description && <p className="text-white/30 text-[10px] truncate">{r.description}</p>}
+          </div>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className="text-amber-400 text-xs font-bold">{r.points_required}</span>
+            <span className="text-white/25 text-[10px]">pts</span>
+          </div>
+          {!r.is_active && (
+            <span className="text-[10px] text-white/25 bg-white/[0.04] px-1.5 py-0.5 rounded-full">{t.disabled}</span>
+          )}
+        </div>
+      ))}
+      <Pagination page={page} total={rewards.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
+    </div>
+  );
+}
+
+// =====================================================
+// BUSINESS LOYALTY HISTORY
+// =====================================================
+export function BusinessLoyaltyHistory({ data,lang }: { data: any,lang:LangType }) {
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 5;
+  const history: any[] = Array.isArray(data) ? data : data?.data ?? [];
+  const paginated = history.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+   const t = {
+    fr: {
+      empty: 'Aucune historique',
+      disabled: 'Inactif',
+      customer:'Client',
+      date:'Date',
+      points:'Points'
+      
+    },
+    en: {
+      empty: 'No hoistoric ',
+      disabled: 'Disabled',
+      customer:'Customer',
+      date:'Date',
+      points:'Points'
+      
+    },
+  }[lang];
+
+  if (!history.length) {
+    return (
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
+        <BarChart2 size={24} className="text-white/20 mx-auto mb-2" />
+        <p className="text-white/30 text-sm">{t.empty}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-3 gap-2 px-3 pb-1">
+        <span className="text-[10px] text-white/25 uppercase tracking-wider">{t.customer}</span>
+        <span className="text-[10px] text-white/25 uppercase tracking-wider">{t.points}</span>
+        <span className="text-[10px] text-white/25 uppercase tracking-wider">{t.date}</span>
+      </div>
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
+        {paginated.map((h: any, i: number) => (
+          <div key={i}
+            className={`grid grid-cols-3 gap-2 px-3 py-2.5 text-xs hover:bg-white/[0.04] transition-colors ${
+              i < paginated.length - 1 ? 'border-b border-white/[0.04]' : ''
+            }`}>
+            <span className="text-white/70 truncate">{h.customer_name || h.customer_id || '—'}</span>
+            <span className={`font-medium ${h.points > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {h.points > 0 ? '+' : ''}{h.points}
+            </span>
+            <span className="text-white/30">{formatDate(h.created_at)}</span>
+          </div>
+        ))}
+      </div>
+      <Pagination page={page} total={history.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
     </div>
   );
 }

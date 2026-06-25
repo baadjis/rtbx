@@ -357,7 +357,7 @@ export function validateSocialInput(
 }
 
 
-export const formatSocialUrl = (network: string, handle: string,lang:'fr'|'en') => {
+export const formatSocialUrl = (network: string, handle: string,lang:LangType) => {
   const SOCIAL_CONFIG=get_social_config(lang)
   const config = SOCIAL_CONFIG[network];
   if (!config) return handle;

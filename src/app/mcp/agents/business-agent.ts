@@ -2,42 +2,66 @@ import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { createBusinessTools } from '../tools/businesses';
 import { LangType } from '@/lib/lang/types';
  // writeKeywords: /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change|entreprise|business|société/i,
+const READ_ONLY_TOOLS = [
+  'getUserBusinesses',
+  'getBusinessProviderLinks',
+  'getBusinessOpeningHours',
+  'getBusinessLoyaltySettings',
+  'getBusinessLoyaltyRewards',
+  'getBusinessLoyaltyHistory',
+];
+
+const WRITE_TOOLS = [
+  'createBusiness',
+  'updateBusiness',
+  'upsertBusinessProviderLink',
+  'saveBusinessOpeningHours',
+  'saveBusinessLoyaltySettings',
+  'createBusinessLoyaltyReward',
+  'updateBusinessLoyaltyReward',
+  'deleteBusinessLoyaltyReward',
+];
+
+const WRITE_KEYWORDS = /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change|supprimer|delete|save|sauvegarder|configurer|setup|activer|enable/i;
+const READ_KEYWORDS = /voir|montre|liste|mes business|my business|get my|afficher|chercher|search|horaires|opening|providers|fidélité|loyalty|récompenses|rewards|historique|history/i;
 
 const businessAgentConfig: AgentConfig = {
   name: 'Business',
-  writeKeywords: /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change/i,
-  readKeywords: /voir|montre|liste|mes business|my business|get my|afficher|chercher|search|quel est|what is|mon entreprise|my company/i,
-  writeTools: ['createBusiness', 'updateBusiness'],
-  readOnlyTools: ['getUserBusinesses'],
+  writeKeywords: WRITE_KEYWORDS,
+  readKeywords: READ_KEYWORDS,
+  writeTools: WRITE_TOOLS,
+  readOnlyTools: READ_ONLY_TOOLS,
   createTools: (accessToken) => createBusinessTools(accessToken),
-  getSystemPrompt: (businessId?, lang: LangType = 'en') => {
-  if (lang === 'fr') {
-    return `Tu es un assistant spécialisé dans la gestion des businesses sur rtbx.space.
+  getSystemPrompt: (businessId?, lang: LangType= 'en') => {
+    if (lang === 'fr') {
+      return `Tu es un assistant spécialisé dans la gestion des businesses sur rtbx.space.
 ${businessId ? `Contexte actuel : Business ID ${businessId}.` : ''}
 
-WRITE (confirmation obligatoire avant d'appeler) : createBusiness, updateBusiness.
-READ (appeler directement sans confirmation) : getUserBusinesses.
+WRITE (confirmation obligatoire avant d'appeler) : createBusiness, updateBusiness, upsertBusinessProviderLink, saveBusinessOpeningHours, saveBusinessLoyaltySettings, createBusinessLoyaltyReward, updateBusinessLoyaltyReward, deleteBusinessLoyaltyReward.
 
-RÈGLES : createBusiness → user_id injecté automatiquement, ne pas le demander à l'utilisateur.
+READ (appeler directement sans confirmation) : getUserBusinesses, getBusinessProviderLinks, getBusinessOpeningHours, getBusinessLoyaltySettings, getBusinessLoyaltyRewards, getBusinessLoyaltyHistory.
+
 APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
+RÈGLES : deleteBusinessLoyaltyReward → avertir que c'est définitif. createBusiness → user_id injecté automatiquement.
 Réponds en français, sois concis.`;
-  }
+    }
 
-  return `You are an assistant specialized in business management on rtbx.space.
+    return `You are an assistant specialized in business management on rtbx.space.
 ${businessId ? `Current context: Business ID ${businessId}.` : ''}
 
-WRITE (confirmation required before calling): createBusiness, updateBusiness.
-READ (call directly without confirmation): getUserBusinesses.
+WRITE (confirmation required before calling): createBusiness, updateBusiness, upsertBusinessProviderLink, saveBusinessOpeningHours, saveBusinessLoyaltySettings, createBusinessLoyaltyReward, updateBusinessLoyaltyReward, deleteBusinessLoyaltyReward.
 
-RULES: createBusiness → user_id is injected automatically, don't ask the user for it.
-AFTER each tool: summarize the result in natural language. NEVER return raw JSON.
+READ (call directly without confirmation): getUserBusinesses, getBusinessProviderLinks, getBusinessOpeningHours, getBusinessLoyaltySettings, getBusinessLoyaltyRewards, getBusinessLoyaltyHistory.
+
+AFTER each tool: summarize in natural language. NEVER return raw JSON.
+RULES: deleteBusinessLoyaltyReward → warn it's permanent. createBusiness → user_id injected automatically.
 Reply in English, be concise.`;
-},
+  },
 };
 
 export async function runBusinessAgent(messages: Message[], options?: AgentOptions & { businessId?: string }) {
   return runAgent(messages, businessAgentConfig, {
-    lang:'en',
+    lang: 'en',
     ...options,
     contextId: options?.businessId,
   });

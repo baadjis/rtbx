@@ -8,7 +8,11 @@ import { LangType } from '@/lib/lang/types';
 // =============================================
 const WRITE_TOOLS = [
   'createSpace', 'updateSpace', 'addSpaceSocialLink', 'updateSpaceSocialLink', 'deleteSpaceSocialLink',
-  'createBusiness', 'updateBusiness',
+  'createBusiness', 'updateBusiness','getBusinessProviderLinks',
+'getBusinessOpeningHours',
+'getBusinessLoyaltySettings',
+'getBusinessLoyaltyRewards',
+'getBusinessLoyaltyHistory',
   'createShortLink', 'updateShortLink', 'deleteShortLink',
   'createEvent', 'publishEvent', 'updateEvent', 'deleteEvent', 'cancelEvent',
   'sendInvite', 'sendBadges', 'registerEvent', 'addAgendaItem', 'updateAgendaItem', 'deleteAgendaItem',
@@ -17,7 +21,12 @@ const WRITE_TOOLS = [
 
 const READ_ONLY_TOOLS = [
   'getMySpaces', 'getSpaceBySlug', 'getSpaceByToken', 'getSpaceSocialLinks', 'searchSpaces',
-  'getUserBusinesses',
+  'getUserBusinesses','upsertBusinessProviderLink',
+'saveBusinessOpeningHours',
+'saveBusinessLoyaltySettings',
+'createBusinessLoyaltyReward',
+'updateBusinessLoyaltyReward',
+'deleteBusinessLoyaltyReward',
   'getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs',
   'getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents',
   'getMyForms', 'getFormById', 'getFormResponses', 'searchForms',

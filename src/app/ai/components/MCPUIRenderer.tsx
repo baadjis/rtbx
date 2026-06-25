@@ -5,7 +5,7 @@ import { ShortLinkCard, ShortLinkList, ShortLinkStats } from './ui/ShortLinkUI';
 import { EventList, ParticipantsTable, InvitationsTable, AgendaList, EventCard } from './ui/EventUI';
 import { SpaceCard, SpaceList, SpaceSocialLinks } from './ui/SpaceUI';
 import { FormList, FormResponsesTable, FormCard } from './ui/FormUI';
-import { BusinessCard, BusinessList } from './ui/BusinessUI';
+import { BusinessCard, BusinessList, BusinessLoyaltyHistory, BusinessLoyaltyRewards, BusinessOpeningHours, BusinessProviderLinks } from './ui/BusinessUI';
 import { LangType } from '@/lib/lang/types';
 
 type UIPayload = {
@@ -52,6 +52,17 @@ case 'form_card':
   return <BusinessList data={ui.data} lang={lang} />;
 case 'business_card':
   return <BusinessCard data={ui.data} lang={lang} />;
+
+case 'business_provider_links':
+  return <BusinessProviderLinks data={ui.data} lang={lang} />;
+case 'business_opening_hours':
+  return <BusinessOpeningHours data={ui.data} lang={lang} />;
+case 'business_loyalty_rewards':
+  return <BusinessLoyaltyRewards data={ui.data} lang={lang}/>;
+case 'business_loyalty_history':
+  return <BusinessLoyaltyHistory data={ui.data}  lang={lang}/>;
+
+
 case 'event_card':
   return <EventCard data={ui.data}  lang={lang}/>;
 case 'space_card':

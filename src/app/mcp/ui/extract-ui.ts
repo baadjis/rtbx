@@ -51,6 +51,18 @@ export const TOOL_UI_MAP: Record<string, string> = {
   // Business — WRITE
   createBusiness: 'business_card',
   updateBusiness: 'business_card',
+  // Business — READ
+
+getBusinessProviderLinks: 'business_provider_links',
+getBusinessOpeningHours: 'business_opening_hours',
+getBusinessLoyaltySettings: 'business_loyalty_settings',
+getBusinessLoyaltyRewards: 'business_loyalty_rewards',
+getBusinessLoyaltyHistory: 'business_loyalty_history',
+
+// Business — WRITE
+
+upsertBusinessProviderLink: 'business_provider_links',
+createBusinessLoyaltyReward: 'business_loyalty_rewards',
 };
 
 export function extractUIFromSteps(steps: any[]): UIPayload {
