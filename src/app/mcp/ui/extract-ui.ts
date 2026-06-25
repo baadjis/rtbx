@@ -63,6 +63,8 @@ getBusinessLoyaltyHistory: 'business_loyalty_history',
 
 upsertBusinessProviderLink: 'business_provider_links',
 createBusinessLoyaltyReward: 'business_loyalty_rewards',
+getBusinessAppLinks: 'business_app_links',
+upsertBusinessAppLink: 'business_app_links',
 };
 
 export function extractUIFromSteps(steps: any[]): UIPayload {

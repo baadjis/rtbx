@@ -88,11 +88,6 @@ getUserBusinesses: tool({
   },
 }),
 
-
-
-
-
-
   // =====================================================
   // GET PROVIDER LINKS
   // =====================================================
@@ -387,6 +382,80 @@ Requires business id.`,
       return response.json();
     },
   }),
+
+  // =====================================================
+  // APP Links
+  // =====================================================
+  // GET APP LINKS
+getBusinessAppLinks: tool({
+  description: `Get all app links for a business (mobile apps, platforms).
+Call when user says: "liens app", "app links", "mes applications", "voir les apps".
+Requires business id.`,
+  inputSchema: z.object({
+    id: z.number().describe('Business ID'),
+  }),
+  execute: async (args) => {
+    const response = await fetch(`${BASE}/api/businesses/${args.id}/app-links`, {
+      method: 'GET',
+      headers: authHeaders(accessToken),
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to fetch app links');
+    }
+    return response.json();
+  },
+}),
+
+// UPSERT APP LINK
+upsertBusinessAppLink: tool({
+  description: `Add or update an app link for a business.
+Call when user says: "ajouter un lien app", "add app link", "ajouter l'app", "lier une application".
+provider_id: platform identifier (e.g. 'ios_app', 'android_app', 'web_app').
+value: the URL or store link.
+Requires business id.`,
+  inputSchema: z.object({
+    id: z.number().describe('Business ID'),
+    provider_id: z.string().describe('App platform identifier e.g. ios_app, android_app'),
+    value: z.string().describe('App URL or store link'),
+  }),
+  execute: async (args) => {
+    const { id, ...data } = args;
+    const response = await fetch(`${BASE}/api/businesses/${id}/app-links`, {
+      method: 'POST',
+      headers: authHeaders(accessToken),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to upsert app link');
+    }
+    return response.json();
+  },
+}),
+
+// DELETE APP LINK
+deleteBusinessAppLink: tool({
+  description: `Delete an app link for a business.
+Call when user says: "supprimer le lien app", "delete app link", "enlever l'application".
+Requires business id and link id.`,
+  inputSchema: z.object({
+    id: z.number().describe('Business ID'),
+    linkId: z.number().describe('App link ID to delete'),
+  }),
+  execute: async (args) => {
+    const response = await fetch(`${BASE}/api/businesses/${args.id}/app-links/${args.linkId}`, {
+      method: 'DELETE',
+      headers: authHeaders(accessToken),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to delete app link');
+    }
+    return response.json();
+  },
+}),
 
 });
 

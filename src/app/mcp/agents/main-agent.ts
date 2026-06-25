@@ -8,28 +8,34 @@ import { LangType } from '@/lib/lang/types';
 // =============================================
 const WRITE_TOOLS = [
   'createSpace', 'updateSpace', 'addSpaceSocialLink', 'updateSpaceSocialLink', 'deleteSpaceSocialLink',
-  'createBusiness', 'updateBusiness','getBusinessProviderLinks',
-'getBusinessOpeningHours',
-'getBusinessLoyaltySettings',
-'getBusinessLoyaltyRewards',
-'getBusinessLoyaltyHistory',
-  'createShortLink', 'updateShortLink', 'deleteShortLink',
-  'createEvent', 'publishEvent', 'updateEvent', 'deleteEvent', 'cancelEvent',
-  'sendInvite', 'sendBadges', 'registerEvent', 'addAgendaItem', 'updateAgendaItem', 'deleteAgendaItem',
-  'createForm', 'updateForm', 'deleteForm', 'publishForm', 'sendFormInvites',
-];
-
-const READ_ONLY_TOOLS = [
-  'getMySpaces', 'getSpaceBySlug', 'getSpaceByToken', 'getSpaceSocialLinks', 'searchSpaces',
-  'getUserBusinesses','upsertBusinessProviderLink',
+  'createBusiness', 'updateBusiness','upsertBusinessProviderLink',
 'saveBusinessOpeningHours',
 'saveBusinessLoyaltySettings',
 'createBusinessLoyaltyReward',
 'updateBusinessLoyaltyReward',
 'deleteBusinessLoyaltyReward',
+'upsertBusinessAppLink', 'deleteBusinessAppLink',
+  'createShortLink', 'updateShortLink', 'deleteShortLink',
+  'createEvent', 'publishEvent', 'updateEvent', 'deleteEvent', 'cancelEvent',
+  'sendInvite', 'sendBadges', 'registerEvent', 'addAgendaItem', 'updateAgendaItem', 'deleteAgendaItem',
+  'createForm', 'updateForm', 'deleteForm', 'publishForm', 'sendFormInvites',
+  
+];
+
+const READ_ONLY_TOOLS = [
+  'getMySpaces', 'getSpaceBySlug', 'getSpaceByToken', 'getSpaceSocialLinks', 'searchSpaces',
+  'getUserBusinesses',
+
+  'getBusinessProviderLinks',
+'getBusinessOpeningHours',
+'getBusinessLoyaltySettings',
+'getBusinessLoyaltyRewards',
+'getBusinessLoyaltyHistory',
+
   'getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs',
   'getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents',
   'getMyForms', 'getFormById', 'getFormResponses', 'searchForms',
+  'getBusinessAppLinks'
 ];
 
 const WRITE_KEYWORDS = /crée|créer|create|update|modifier|delete|supprimer|cancel|annuler|invite|send|envoyer|badge|register|inscrire|agenda|ajouter|add|publish|publier|nouveau|new|change|social/i;
@@ -51,7 +57,12 @@ const DOMAIN_READ_TOOLS: Record<string, string[]> = {
   shortener: ['getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs'],
   event: ['getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents'],
   space: ['getMySpaces', 'getSpaceBySlug', 'getSpaceSocialLinks', 'searchSpaces'],
-  business: ['getUserBusinesses'],
+  business: ['getUserBusinesses',
+  'getBusinessProviderLinks',
+'getBusinessOpeningHours',
+'getBusinessLoyaltySettings',
+'getBusinessLoyaltyRewards',
+'getBusinessLoyaltyHistory'],
   form: ['getMyForms', 'getFormById', 'getFormResponses', 'searchForms'],
 };
 

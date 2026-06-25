@@ -2,7 +2,7 @@
 // app/ai/components/ui/BusinessUI.tsx
 'use client';
 import { useState } from 'react';
-import { Building2, ExternalLink, MapPin, Phone, Mail, Globe, BarChart2, Star, Clock, Link2 } from 'lucide-react';
+import { Building2, ExternalLink, MapPin, Phone, Mail, Globe, BarChart2, Star, Clock, Link2, Smartphone } from 'lucide-react';
 import Pagination  from '../shared/Pagination';
 import { formatDate } from '../shared/DateFormatter';
 import { LangType } from '@/lib/lang/types';
@@ -432,6 +432,49 @@ export function BusinessLoyaltyHistory({ data,lang }: { data: any,lang:LangType 
         ))}
       </div>
       <Pagination page={page} total={history.length} pageSize={PAGE_SIZE} onChange={setPage}  lang={lang}/>
+    </div>
+  );
+}
+
+
+// =====================================================
+// BUSINESS APP LINKS
+// =====================================================
+export function BusinessAppLinks({ data, lang = 'en' }: { data: any; lang?: LangType }) {
+  const links: any[] = Array.isArray(data) ? data : data?.data ?? [];
+
+  const t = {
+    fr: { empty: 'Aucun lien app configuré' },
+    en: { empty: 'No app links configured' },
+  }[lang];
+
+  if (!links.length) {
+    return (
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 text-center">
+        <Smartphone size={24} className="text-white/20 mx-auto mb-2" />
+        <p className="text-white/30 text-sm">{t.empty}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {links.map((link: any, i: number) => (
+        <div key={i}
+          className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-4 py-3">
+          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+            <Smartphone size={13} className="text-indigo-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-xs font-semibold">{link.provider_id}</p>
+            <p className="text-white/30 text-[10px] truncate">{link.value}</p>
+          </div>
+          <a href={link.value} target="_blank" rel="noopener noreferrer"
+            className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white/40 hover:text-white transition-all">
+            <ExternalLink size={12} />
+          </a>
+        </div>
+      ))}
     </div>
   );
 }

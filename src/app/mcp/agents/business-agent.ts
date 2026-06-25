@@ -9,6 +9,10 @@ const READ_ONLY_TOOLS = [
   'getBusinessLoyaltySettings',
   'getBusinessLoyaltyRewards',
   'getBusinessLoyaltyHistory',
+  
+'getBusinessAppLinks',
+
+
 ];
 
 const WRITE_TOOLS = [
@@ -20,6 +24,9 @@ const WRITE_TOOLS = [
   'createBusinessLoyaltyReward',
   'updateBusinessLoyaltyReward',
   'deleteBusinessLoyaltyReward',
+ 
+'upsertBusinessAppLink',
+'deleteBusinessAppLink',
 ];
 
 const WRITE_KEYWORDS = /crée|créer|create|update|modifier|ajouter|add|nouveau|new|change|supprimer|delete|save|sauvegarder|configurer|setup|activer|enable/i;
@@ -37,9 +44,9 @@ const businessAgentConfig: AgentConfig = {
       return `Tu es un assistant spécialisé dans la gestion des businesses sur rtbx.space.
 ${businessId ? `Contexte actuel : Business ID ${businessId}.` : ''}
 
-WRITE (confirmation obligatoire avant d'appeler) : createBusiness, updateBusiness, upsertBusinessProviderLink, saveBusinessOpeningHours, saveBusinessLoyaltySettings, createBusinessLoyaltyReward, updateBusinessLoyaltyReward, deleteBusinessLoyaltyReward.
+WRITE (confirmation obligatoire avant d'appeler) : createBusiness, updateBusiness, upsertBusinessProviderLink, saveBusinessOpeningHours, saveBusinessLoyaltySettings, createBusinessLoyaltyReward, updateBusinessLoyaltyReward, deleteBusinessLoyaltyReward,upsertBusinessAppLink, deleteBusinessAppLink.
 
-READ (appeler directement sans confirmation) : getUserBusinesses, getBusinessProviderLinks, getBusinessOpeningHours, getBusinessLoyaltySettings, getBusinessLoyaltyRewards, getBusinessLoyaltyHistory.
+READ (appeler directement sans confirmation) : getUserBusinesses, getBusinessProviderLinks, getBusinessOpeningHours, getBusinessLoyaltySettings, getBusinessLoyaltyRewards, getBusinessLoyaltyHistory,getBusinessAppLinks.
 
 APRÈS chaque tool : résume le résultat en langage naturel. Ne retourne JAMAIS du JSON brut.
 RÈGLES : deleteBusinessLoyaltyReward → avertir que c'est définitif. createBusiness → user_id injecté automatiquement.
@@ -49,9 +56,9 @@ Réponds en français, sois concis.`;
     return `You are an assistant specialized in business management on rtbx.space.
 ${businessId ? `Current context: Business ID ${businessId}.` : ''}
 
-WRITE (confirmation required before calling): createBusiness, updateBusiness, upsertBusinessProviderLink, saveBusinessOpeningHours, saveBusinessLoyaltySettings, createBusinessLoyaltyReward, updateBusinessLoyaltyReward, deleteBusinessLoyaltyReward.
+WRITE (confirmation required before calling): createBusiness, updateBusiness, upsertBusinessProviderLink, saveBusinessOpeningHours, saveBusinessLoyaltySettings, createBusinessLoyaltyReward, updateBusinessLoyaltyReward, deleteBusinessLoyaltyReward, upsertBusinessAppLink, deleteBusinessAppLink.
 
-READ (call directly without confirmation): getUserBusinesses, getBusinessProviderLinks, getBusinessOpeningHours, getBusinessLoyaltySettings, getBusinessLoyaltyRewards, getBusinessLoyaltyHistory.
+READ (call directly without confirmation): getUserBusinesses, getBusinessProviderLinks, getBusinessOpeningHours, getBusinessLoyaltySettings, getBusinessLoyaltyRewards, getBusinessLoyaltyHistory, getBusinessAppLinks .
 
 AFTER each tool: summarize in natural language. NEVER return raw JSON.
 RULES: deleteBusinessLoyaltyReward → warn it's permanent. createBusiness → user_id injected automatically.
