@@ -46,24 +46,50 @@ const READ_KEYWORDS = /voir|montre|liste|mes|my|get my|afficher|chercher|search|
 
 // Dans main-agent.ts — détection de domaine
 const DOMAIN_KEYWORDS = {
-  shortener: /lien|link|url|raccourcir|shorten|short|clics|stats/i,
+  // Business en premier — mots plus spécifiques
+  business: /business|entreprise|société|company|provider|loyalty|fidélité|horaires|opening|app.?link|récompense|reward/i,
+  // Shortener — "lien court" ou "url" seuls, pas "lien provider/app"
+  shortener: /lien\s+court|short\s+link|url\s+court|raccourcir|shorten|clics|stats/i,
   event: /événement|event|agenda|participant|invitation|badge|inscrire|register/i,
   space: /space|profil|slug|social|instagram|tiktok/i,
-  business: /business|entreprise|société|company/i,
   form: /formulaire|form|réponse|response|sondage/i,
 };
 
 const DOMAIN_READ_TOOLS: Record<string, string[]> = {
-  shortener: ['getUserShortLinks', 'getShortLinkStats', 'getShortLinkLogs'],
-  event: ['getMyEvents', 'getEventRegistrations', 'getEventInvitations', 'getEventAgenda', 'searchPublicEvents', 'searchOrganizerEvents'],
-  space: ['getMySpaces', 'getSpaceBySlug', 'getSpaceSocialLinks', 'searchSpaces'],
-  business: ['getUserBusinesses',
-  'getBusinessProviderLinks',
-'getBusinessOpeningHours',
-'getBusinessLoyaltySettings',
-'getBusinessLoyaltyRewards',
-'getBusinessLoyaltyHistory'],
-  form: ['getMyForms', 'getFormById', 'getFormResponses', 'searchForms'],
+  shortener: [
+    'getUserShortLinks',
+    'getShortLinkStats',
+    'getShortLinkLogs',
+  ],
+  event: [
+    'getMyEvents',
+    'getEventRegistrations',
+    'getEventInvitations',
+    'getEventAgenda',
+    'searchPublicEvents',
+    'searchOrganizerEvents',
+  ],
+  space: [
+    'getMySpaces',
+    'getSpaceBySlug',
+    'getSpaceSocialLinks',
+    'searchSpaces',
+  ],
+  business: [
+    'getUserBusinesses',
+    'getBusinessProviderLinks',
+    'getBusinessAppLinks',
+    'getBusinessOpeningHours',
+    'getBusinessLoyaltySettings',
+    'getBusinessLoyaltyRewards',
+    'getBusinessLoyaltyHistory',
+  ],
+  form: [
+    'getMyForms',
+    'getFormById',
+    'getFormResponses',
+    'searchForms',
+  ],
 };
 
 export function getMainAgentDefaultTools(lastMessage: string, allReadTools: string[]): string[] {
