@@ -216,6 +216,17 @@ no_delivery_providers:
 
 add_delivery_platform:
   'Ajouter une plateforme de livraison',
+  marketplace_platforms:
+  'Places de marché',
+
+marketplace_platforms_description:
+  'Permettez à vos clients de retrouver votre boutique sur leurs marketplaces préférées.',
+
+no_marketplace_providers:
+  'Aucune marketplace configurée.',
+
+add_marketplace_platform:
+  'Ajouter une marketplace',
 
 
 
@@ -434,6 +445,17 @@ no_delivery_providers:
 
 add_delivery_platform:
   'Add delivery platform',
+marketplace_platforms:
+  'Marketplaces',
+
+marketplace_platforms_description:
+  'Allow customers to find your business on their favorite marketplaces.',
+
+no_marketplace_providers:
+  'No marketplace configured.',
+
+add_marketplace_platform:
+  'Add marketplace',
 
 
     }

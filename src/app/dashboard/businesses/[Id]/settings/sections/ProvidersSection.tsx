@@ -15,6 +15,8 @@ import BookingSection from './BookingSection'
 import BookingProviderPickerModal from '../providers/BookingProviderPickerModal'
 import DeliverySection from './DeliverySection'
 import DeliveryProviderPickerModal from '../providers/DeliveryProviderPickerModal'
+import MarketplaceSection from './MarketplaceSection'
+import MarketplaceProviderPickerModal from '../providers/MarketplaceProviderPickerModal'
 
 type Props = {
 
@@ -83,6 +85,14 @@ const [
 
 ] = useState(false)
 
+const [
+
+  marketplacePickerOpen,
+
+  setMarketplacePickerOpen
+
+] = useState(false)
+
 function handleSelectReviewProvider(
   provider: any
 ) {
@@ -147,6 +157,13 @@ function handleSelectReviewProvider(
       'delivery'
   )
 
+
+  const marketplaceLinks =
+  links.filter(
+    item =>
+      item.provider_category ===
+      'marketplace'
+  )
   // =====================================================
   // OPEN MODAL
   // =====================================================
@@ -255,6 +272,21 @@ function handleSelectDeliveryProvider(
   openProvider(
     provider,
     'delivery'
+  )
+
+}
+
+function handleSelectMarketplaceProvider(
+  provider: any
+) {
+
+  setMarketplacePickerOpen(
+    false
+  )
+
+  openProvider(
+    provider,
+    'marketplace'
   )
 
 }
@@ -426,16 +458,21 @@ function handleSelectDeliveryProvider(
 
 />
        
+<MarketplaceSection
 
-        {renderCategory(
+  links={marketplaceLinks}
 
-          t.marketplace_providers,
+  t={t}
 
-          'marketplace',
+  onAdd={() =>
 
-          providers.marketplaces
+    setMarketplacePickerOpen(
+      true
+    )
 
-        )}
+  }
+
+/>
 
       </div>
 
@@ -544,6 +581,33 @@ function handleSelectDeliveryProvider(
 
   onSelect={
     handleSelectDeliveryProvider
+  }
+
+/>
+
+
+<MarketplaceProviderPickerModal
+
+  open={
+    marketplacePickerOpen
+  }
+
+  providers={
+    providers.marketplaces
+  }
+
+  t={t}
+
+  onClose={() =>
+
+    setMarketplacePickerOpen(
+      false
+    )
+
+  }
+
+  onSelect={
+    handleSelectMarketplaceProvider
   }
 
 />
