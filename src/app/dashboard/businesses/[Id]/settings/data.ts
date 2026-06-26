@@ -205,6 +205,18 @@ no_booking_providers:
 add_booking_platform:
   'Ajouter une plateforme de réservation',
 
+  delivery_platforms:
+  'Plateformes de livraison',
+
+delivery_platforms_description:
+  'Permettez à vos clients de commander via leurs plateformes de livraison préférées.',
+
+no_delivery_providers:
+  'Aucune plateforme de livraison configurée.',
+
+add_delivery_platform:
+  'Ajouter une plateforme de livraison',
+
 
 
 
@@ -410,6 +422,18 @@ no_booking_providers:
 
 add_booking_platform:
   'Add booking platform',
+
+delivery_platforms:
+  'Delivery platforms',
+
+delivery_platforms_description:
+  'Allow customers to order using their preferred delivery platforms.',
+
+no_delivery_providers:
+  'No delivery platform configured.',
+
+add_delivery_platform:
+  'Add delivery platform',
 
 
     }

@@ -13,6 +13,8 @@ import {
 import ReviewProviderPickerModal from '../providers/ReviewProviderPickerModal'
 import BookingSection from './BookingSection'
 import BookingProviderPickerModal from '../providers/BookingProviderPickerModal'
+import DeliverySection from './DeliverySection'
+import DeliveryProviderPickerModal from '../providers/DeliveryProviderPickerModal'
 
 type Props = {
 
@@ -73,6 +75,14 @@ const [
 
 ] = useState(false)
 
+const [
+
+  deliveryPickerOpen,
+
+  setDeliveryPickerOpen
+
+] = useState(false)
+
 function handleSelectReviewProvider(
   provider: any
 ) {
@@ -128,6 +138,13 @@ function handleSelectReviewProvider(
     item =>
       item.provider_category ===
       'booking'
+  )
+
+  const deliveryLinks =
+  links.filter(
+    item =>
+      item.provider_category ===
+      'delivery'
   )
 
   // =====================================================
@@ -223,6 +240,21 @@ function handleSelectReviewProvider(
   openProvider(
     provider,
     'booking'
+  )
+
+}
+
+function handleSelectDeliveryProvider(
+  provider: any
+) {
+
+  setDeliveryPickerOpen(
+    false
+  )
+
+  openProvider(
+    provider,
+    'delivery'
   )
 
 }
@@ -377,6 +409,22 @@ function handleSelectReviewProvider(
   }
 
 />
+
+<DeliverySection
+
+  links={deliveryLinks}
+
+  t={t}
+
+  onAdd={() =>
+
+    setDeliveryPickerOpen(
+      true
+    )
+
+  }
+
+/>
        
 
         {renderCategory(
@@ -470,6 +518,32 @@ function handleSelectReviewProvider(
 
   onSelect={
     handleSelectBookingProvider
+  }
+
+/>
+
+<DeliveryProviderPickerModal
+
+  open={
+    deliveryPickerOpen
+  }
+
+  providers={
+    providers.delivery
+  }
+
+  t={t}
+
+  onClose={() =>
+
+    setDeliveryPickerOpen(
+      false
+    )
+
+  }
+
+  onSelect={
+    handleSelectDeliveryProvider
   }
 
 />
