@@ -181,6 +181,18 @@ create_loyalty_program_description:
 
 loyalty_program_active:
   'Programme de fidélité actif',
+add_review_platform: 'Ajouter une plateforme d’avis',
+
+review_platforms: 'Plateformes d’avis',
+
+review_platforms_description:
+  'Permettez à vos visiteurs de consulter et de publier des avis sur vos plateformes préférées.',
+
+no_review_providers:
+  "Aucune plateforme d'avis configurée.",
+
+manage_platforms:
+  'Gérer les plateformes',
   
 
 
@@ -363,6 +375,20 @@ create_loyalty_program_description:
 
 loyalty_program_active:
   'Loyalty program active',
+
+  add_review_platform: 'Add review platform',
+
+review_platforms: 'Review platforms',
+
+review_platforms_description:
+  'Allow visitors to view and leave reviews on your preferred platforms.',
+
+no_review_providers:
+  'No review platform configured.',
+
+manage_platforms:
+  'Manage platforms',
+
 
     }
 }
