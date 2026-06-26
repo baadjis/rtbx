@@ -11,6 +11,8 @@ import {
   getProviders
 } from '@/utils/busines-types'
 import ReviewProviderPickerModal from '../providers/ReviewProviderPickerModal'
+import BookingSection from './BookingSection'
+import BookingProviderPickerModal from '../providers/BookingProviderPickerModal'
 
 type Props = {
 
@@ -63,6 +65,14 @@ export default function ProvidersSection({
 
 ] = useState(false)
 
+const [
+
+  bookingPickerOpen,
+
+  setBookingPickerOpen
+
+] = useState(false)
+
 function handleSelectReviewProvider(
   provider: any
 ) {
@@ -111,6 +121,13 @@ function handleSelectReviewProvider(
     item =>
       item.provider_category ===
       'review'
+  )
+
+  const bookingLinks =
+  links.filter(
+    item =>
+      item.provider_category ===
+      'booking'
   )
 
   // =====================================================
@@ -193,6 +210,22 @@ function handleSelectReviewProvider(
     }
 
   }
+
+
+  function handleSelectBookingProvider(
+  provider: any
+) {
+
+  setBookingPickerOpen(
+    false
+  )
+
+  openProvider(
+    provider,
+    'booking'
+  )
+
+}
 
   // =====================================================
   // CATEGORY
@@ -327,25 +360,24 @@ function handleSelectReviewProvider(
 
 />
 
-        {renderCategory(
+<BookingSection
 
-          t.booking_providers,
+  links={
+    bookingLinks
+  }
 
-          'booking',
+  t={t}
 
-          providers.bookings
+  onAdd={() =>
 
-        )}
+    setBookingPickerOpen(
+      true
+    )
 
-        {renderCategory(
+  }
 
-          t.delivery_providers,
-
-          'delivery',
-
-          providers.delivery
-
-        )}
+/>
+       
 
         {renderCategory(
 
@@ -412,6 +444,32 @@ function handleSelectReviewProvider(
 
   onSelect={
     handleSelectReviewProvider
+  }
+
+/>
+
+<BookingProviderPickerModal
+
+  open={
+    bookingPickerOpen
+  }
+
+  providers={
+    providers.bookings
+  }
+
+  t={t}
+
+  onClose={() =>
+
+    setBookingPickerOpen(
+      false
+    )
+
+  }
+
+  onSelect={
+    handleSelectBookingProvider
   }
 
 />

@@ -193,7 +193,17 @@ no_review_providers:
 
 manage_platforms:
   'Gérer les plateformes',
-  
+  booking_platforms:
+  'Plateformes de réservation',
+
+booking_platforms_description:
+  'Permettez à vos clients de réserver facilement via leurs plateformes préférées.',
+
+no_booking_providers:
+  'Aucune plateforme de réservation configurée.',
+
+add_booking_platform:
+  'Ajouter une plateforme de réservation',
 
 
 
@@ -388,6 +398,18 @@ no_review_providers:
 
 manage_platforms:
   'Manage platforms',
+
+  booking_platforms:
+  'Booking platforms',
+
+booking_platforms_description:
+  'Allow customers to book easily using their preferred booking platforms.',
+
+no_booking_providers:
+  'No booking platform configured.',
+
+add_booking_platform:
+  'Add booking platform',
 
 
     }
