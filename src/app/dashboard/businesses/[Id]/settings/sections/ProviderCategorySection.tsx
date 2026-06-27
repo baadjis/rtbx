@@ -7,7 +7,7 @@ import {
   Pencil
 } from 'lucide-react'
 
-import ProviderCard from '../providers/ProviderCard'
+import ProviderCard from '../providers/providerCard'
 
 type Props = {
 
