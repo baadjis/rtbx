@@ -3,20 +3,15 @@
 
 import { useMemo, useState } from 'react'
 
-import ProviderCard from '../providers/providerCard'
+
 import ProviderModal from '../providers/ProviderModal'
-import ReviewsSection from './ReviewsSection'
+
 
 import {
   getProviders
 } from '@/utils/busines-types'
-import ReviewProviderPickerModal from '../providers/ReviewProviderPickerModal'
-import BookingSection from './BookingSection'
-import BookingProviderPickerModal from '../providers/BookingProviderPickerModal'
-import DeliverySection from './DeliverySection'
-import DeliveryProviderPickerModal from '../providers/DeliveryProviderPickerModal'
-import MarketplaceSection from './MarketplaceSection'
-import MarketplaceProviderPickerModal from '../providers/MarketplaceProviderPickerModal'
+
+import ProviderCategorySection from './ProviderCategorySection'
 
 type Props = {
 
@@ -50,125 +45,103 @@ export default function ProvidersSection({
 
 }: Props) {
 
-  const providers =
-    useMemo(
-      () =>
-        getProviders(
-          business.business_type
-        ),
-      [
-        business.business_type
-      ]
-    )
+const [
 
-    const [
+  modalOpen,
 
-  reviewPickerOpen,
-
-  setReviewPickerOpen
+  setModalOpen
 
 ] = useState(false)
 
 const [
 
-  bookingPickerOpen,
+  selectedCategory,
 
-  setBookingPickerOpen
+  setSelectedCategory
 
-] = useState(false)
-
-const [
-
-  deliveryPickerOpen,
-
-  setDeliveryPickerOpen
-
-] = useState(false)
+] = useState('')
 
 const [
 
-  marketplacePickerOpen,
+  selectedProviders,
 
-  setMarketplacePickerOpen
+  setSelectedProviders
+
+] = useState<any[]>([])
+
+const [
+
+  saving,
+
+  setSaving
 
 ] = useState(false)
 
-function handleSelectReviewProvider(
-  provider: any
-) {
+const modalConfig = {
 
-  setReviewPickerOpen(
-    false
-  )
+  review: {
 
-  openProvider(
-    provider,
-    'review'
-  )
+    title:
+      t.review_providers,
 
-}
+    description:
+      t.review_providers_description
 
+  },
 
+  booking: {
 
-  const [
-    modalOpen,
-    setModalOpen
-  ] = useState(false)
+    title:
+      t.booking_providers,
 
-  const [
-    selectedProvider,
-    setSelectedProvider
-  ] = useState<any>(null)
+    description:
+      t.booking_providers_description
 
-  const [
-    selectedCategory,
-    setSelectedCategory
-  ] = useState('')
+  },
 
-  const [
-    providerValue,
-    setProviderValue
-  ] = useState('')
+  delivery: {
 
-  const [
-    saving,
-    setSaving
-  ] = useState(false)
+    title:
+      t.delivery_providers,
 
+    description:
+      t.delivery_providers_description
 
-  const reviewLinks =
-  links.filter(
-    item =>
-      item.provider_category ===
-      'review'
-  )
+  },
 
-  const bookingLinks =
-  links.filter(
-    item =>
-      item.provider_category ===
-      'booking'
-  )
+  marketplace: {
 
-  const deliveryLinks =
-  links.filter(
-    item =>
-      item.provider_category ===
-      'delivery'
-  )
+    title:
+      t.marketplace_providers,
 
+    description:
+      t.marketplace_providers_description
 
-  const marketplaceLinks =
-  links.filter(
-    item =>
-      item.provider_category ===
-      'marketplace'
-  )
+  }
+
+}[selectedCategory]
+
+const providers = useMemo(
+
+  () =>
+
+    getProviders(
+      business.business_type
+    ),
+
+  [
+
+    business.business_type
+
+  ]
+
+)
+ 
   // =====================================================
   // OPEN MODAL
   // =====================================================
 
-  function openProvider(
+  /*function openProvider(
 
     provider: any,
 
@@ -204,23 +177,29 @@ function handleSelectReviewProvider(
 
     setModalOpen(true)
 
-  }
+  }*/
 
   // =====================================================
   // SAVE
   // =====================================================
 
-  async function handleSave() {
+  const handleSave = async (
 
-    if (
-      !selectedProvider
-    ) {
-      return
-    }
+  values: {
+
+    provider_id: string
+
+    value: string
+
+  }[]
+
+) => {
+
+  try {
 
     setSaving(true)
 
-    try {
+    for (const item of values) {
 
       await onSave({
 
@@ -228,25 +207,29 @@ function handleSelectReviewProvider(
           selectedCategory,
 
         provider_id:
-          selectedProvider.id,
+          item.provider_id,
 
         value:
-          providerValue
+          item.value
 
       })
 
-      setModalOpen(false)
-
-    } finally {
-
-      setSaving(false)
-
     }
+
+    setModalOpen(false)
 
   }
 
+  finally {
 
-  function handleSelectBookingProvider(
+    setSaving(false)
+
+  }
+
+}
+
+
+ /* function handleSelectBookingProvider(
   provider: any
 ) {
 
@@ -289,118 +272,13 @@ function handleSelectMarketplaceProvider(
     'marketplace'
   )
 
-}
+}*/
 
   // =====================================================
   // CATEGORY
   // =====================================================
 
-  function renderCategory(
-
-    title: string,
-
-    category: string,
-
-    items: any[]
-
-  ) {
-
-    if (
-      !items?.length
-    ) {
-      return null
-    }
-
-    return (
-
-      <div className="space-y-4">
-
-        <h3 className="
-          text-xl
-          font-black
-          text-gray-900
-          dark:text-white
-        ">
-
-          {title}
-
-        </h3>
-
-        <div className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-3
-          gap-4
-        ">
-
-          {items.map(
-            (
-              provider
-            ) => {
-
-              const link =
-                links.find(
-
-                  (
-                    item
-                  ) =>
-
-                    item.provider_id ===
-                    provider.id
-
-                )
-
-              return (
-
-                <ProviderCard
-
-                  key={
-                    provider.id
-                  }
-
-                  category={
-                    category
-                  }
-
-                  provider={
-                    provider
-                  }
-
-                  link={
-                    link
-                  }
-
-                  business={
-                    business
-                  }
-
-                  t={t}
-
-                  onClick={() =>
-                    openProvider(
-
-                      provider,
-
-                      category
-
-                    )
-                  }
-
-                />
-
-              )
-
-            }
-          )}
-
-        </div>
-
-      </div>
-
-    )
-
-  }
+  
 
   return (
 
@@ -408,209 +286,160 @@ function handleSelectMarketplaceProvider(
 
       <div className="space-y-10">
 
-        <ReviewsSection
+       <ProviderCategorySection
 
-  links={reviewLinks}
+  title={t.review_providers}
+
+  description={t.review_providers_description}
+
+  category="review"
+
+  providers={providers.reviews}
+
+  links={links}
+
+  business={business}
 
   t={t}
 
-  onAdd={() =>
+  onEdit={() => {
 
-    setReviewPickerOpen(
-      true
+    setSelectedCategory('review')
+
+    setSelectedProviders(
+      providers.reviews
     )
 
-  }
+    setModalOpen(true)
+
+  }}
 
 />
+<ProviderCategorySection
 
-<BookingSection
+  title={t.booking_providers}
 
-  links={
-    bookingLinks
-  }
+  description={t.booking_providers_description}
+
+  category="booking"
+
+  providers={providers.bookings}
+
+  links={links}
+
+  business={business}
 
   t={t}
 
-  onAdd={() =>
+  onEdit={() => {
 
-    setBookingPickerOpen(
-      true
+    setSelectedCategory('booking')
+
+    setSelectedProviders(
+      providers.bookings
     )
 
-  }
+    setModalOpen(true)
+
+  }}
 
 />
+<ProviderCategorySection
 
-<DeliverySection
+  title={t.delivery_providers}
 
-  links={deliveryLinks}
+  description={t.delivery_providers_description}
+
+  category="delivery"
+
+  providers={providers.delivery}
+
+  links={links}
+
+  business={business}
 
   t={t}
 
-  onAdd={() =>
+  onEdit={() => {
 
-    setDeliveryPickerOpen(
-      true
+    setSelectedCategory('delivery')
+
+    setSelectedProviders(
+      providers.delivery
     )
 
-  }
+    setModalOpen(true)
+
+  }}
 
 />
-       
-<MarketplaceSection
+<ProviderCategorySection
 
-  links={marketplaceLinks}
+  title={t.marketplace_providers}
+
+  description={t.marketplace_providers_description}
+
+  category="marketplace"
+
+  providers={providers.marketplaces}
+
+  links={links}
+
+  business={business}
 
   t={t}
 
-  onAdd={() =>
+  onEdit={() => {
 
-    setMarketplacePickerOpen(
-      true
+    setSelectedCategory('marketplace')
+
+    setSelectedProviders(
+      providers.marketplaces
     )
 
-  }
+    setModalOpen(true)
+
+  }}
 
 />
 
       </div>
 
-      <ProviderModal
+     <ProviderModal
 
-        open={modalOpen}
+  open={modalOpen}
 
-        provider={
-          selectedProvider
-        }
+  title={
+    modalConfig?.title ?? ''
+  }
 
-        value={
-          providerValue
-        }
+  description={
+    modalConfig?.description ?? ''
+  }
 
-        onChange={
-          setProviderValue
-        }
-
-        loading={saving}
-
-        t={t}
-
-        onClose={() =>
-          setModalOpen(false)
-        }
-
-        onSave={
-          handleSave
-        }
-
-      />
-
-
-      <ReviewProviderPickerModal
-
-  open={
-    reviewPickerOpen
+  category={
+    selectedCategory
   }
 
   providers={
-    providers.reviews
+    selectedProviders
   }
+
+  links={links}
+
+  loading={saving}
 
   t={t}
 
   onClose={() =>
-
-    setReviewPickerOpen(
-      false
-    )
-
+    setModalOpen(false)
   }
 
-  onSelect={
-    handleSelectReviewProvider
-  }
+  onSave={handleSave}
 
 />
 
-<BookingProviderPickerModal
-
-  open={
-    bookingPickerOpen
-  }
-
-  providers={
-    providers.bookings
-  }
-
-  t={t}
-
-  onClose={() =>
-
-    setBookingPickerOpen(
-      false
-    )
-
-  }
-
-  onSelect={
-    handleSelectBookingProvider
-  }
-
-/>
-
-<DeliveryProviderPickerModal
-
-  open={
-    deliveryPickerOpen
-  }
-
-  providers={
-    providers.delivery
-  }
-
-  t={t}
-
-  onClose={() =>
-
-    setDeliveryPickerOpen(
-      false
-    )
-
-  }
-
-  onSelect={
-    handleSelectDeliveryProvider
-  }
-
-/>
-
-
-<MarketplaceProviderPickerModal
-
-  open={
-    marketplacePickerOpen
-  }
-
-  providers={
-    providers.marketplaces
-  }
-
-  t={t}
-
-  onClose={() =>
-
-    setMarketplacePickerOpen(
-      false
-    )
-
-  }
-
-  onSelect={
-    handleSelectMarketplaceProvider
-  }
-
-/>
+      
 
     </>
 

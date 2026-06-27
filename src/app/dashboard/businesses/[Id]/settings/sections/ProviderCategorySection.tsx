@@ -2,7 +2,12 @@
 
 'use client'
 
-import { Plus, Pencil } from 'lucide-react'
+import {
+  Plus,
+  Pencil
+} from 'lucide-react'
+
+import ProviderCard from '../providers/ProviderCard'
 
 type Props = {
 
@@ -10,17 +15,17 @@ type Props = {
 
   description: string
 
-  emptyTitle: string
+  category: string
 
-  addLabel: string
-
-  manageLabel: string
-
-  icon: React.ReactNode
+  providers: any[]
 
   links: any[]
 
-  onAdd: () => void
+  business: any
+
+  t: any
+
+  onEdit: () => void
 
 }
 
@@ -30,31 +35,38 @@ export default function ProviderCategorySection({
 
   description,
 
-  emptyTitle,
+  category,
 
-  addLabel,
-
-  manageLabel,
-
-  icon,
+  providers,
 
   links,
 
-  onAdd
+  business,
+
+  t,
+
+  onEdit
 
 }: Props) {
 
-  const configuredLinks =
-    links.filter(
+  const configuredProviders =
 
-      item =>
+    providers.filter(
 
-        item.value?.trim()
+      provider =>
+
+        links.some(
+
+          link =>
+
+            link.provider_id ===
+              provider.id &&
+
+            !!link.value
+
+        )
 
     )
-
-  const hasProviders =
-    configuredLinks.length > 0
 
   return (
 
@@ -71,6 +83,8 @@ export default function ProviderCategorySection({
       p-8
 
       shadow-sm
+
+      space-y-8
     ">
 
       {/* HEADER */}
@@ -78,36 +92,16 @@ export default function ProviderCategorySection({
       <div className="
         flex
         items-center
-        gap-4
-
-        mb-8
+        justify-between
+        gap-6
       ">
-
-        <div className="
-          w-14
-          h-14
-
-          rounded-2xl
-
-          bg-indigo-50
-          dark:bg-indigo-500/10
-
-          text-indigo-600
-
-          flex
-          items-center
-          justify-center
-        ">
-
-          {icon}
-
-        </div>
 
         <div>
 
           <h2 className="
             text-2xl
             font-black
+
             text-gray-900
             dark:text-white
           ">
@@ -117,7 +111,8 @@ export default function ProviderCategorySection({
           </h2>
 
           <p className="
-            text-sm
+            mt-2
+
             text-gray-500
             dark:text-slate-400
           ">
@@ -127,210 +122,177 @@ export default function ProviderCategorySection({
           </p>
 
         </div>
+
+        <button
+
+          onClick={onEdit}
+
+          className="
+            px-5
+            py-3
+
+            rounded-2xl
+
+            bg-indigo-600
+            hover:bg-indigo-700
+
+            text-white
+
+            font-black
+
+            flex
+            items-center
+            gap-2
+
+            transition-all
+          "
+
+        >
+
+          {
+
+            configuredProviders.length
+              ? (
+                <>
+                  <Pencil size={18} />
+                  {t.manage}
+                </>
+              )
+              : (
+                <>
+                  <Plus size={18} />
+                  {t.add}
+                </>
+              )
+
+          }
+
+        </button>
 
       </div>
 
       {/* EMPTY */}
 
-      {!hasProviders && (
+      {
 
-        <div className="
-          rounded-[2rem]
-
-          border-2
-          border-dashed
-
-          border-gray-200
-          dark:border-slate-700
-
-          p-10
-
-          text-center
-        ">
+        configuredProviders.length === 0 && (
 
           <div className="
-            flex
-            justify-center
+            rounded-[2rem]
 
-            text-indigo-600
+            border-2
+            border-dashed
+            border-gray-200
+            dark:border-slate-700
 
-            mb-5
+            p-12
+
+            text-center
           ">
 
-            {icon}
+            <p className="
+              text-lg
+              font-black
+
+              text-gray-900
+              dark:text-white
+            ">
+
+              {t.no_provider_configured}
+
+            </p>
+
+            <p className="
+              mt-3
+
+              text-gray-500
+            ">
+
+              {t.add_provider_description}
+
+            </p>
 
           </div>
 
-          <h3 className="
-            text-xl
-            font-black
+        )
 
-            text-gray-900
-            dark:text-white
-          ">
-
-            {emptyTitle}
-
-          </h3>
-
-          <p className="
-            mt-3
-
-            text-gray-500
-            dark:text-slate-400
-          ">
-
-            {description}
-
-          </p>
-
-          <button
-
-            onClick={onAdd}
-
-            className="
-              mt-6
-
-              px-6
-              py-4
-
-              rounded-2xl
-
-              bg-indigo-600
-              hover:bg-indigo-700
-
-              text-white
-
-              font-black
-
-              flex
-              items-center
-              gap-2
-
-              mx-auto
-
-              transition-all
-            "
-
-          >
-
-            <Plus size={18} />
-
-            {addLabel}
-
-          </button>
-
-        </div>
-
-      )}
+      }
 
       {/* CONFIGURED */}
 
-      {hasProviders && (
+      {
 
-        <div className="space-y-4">
+        configuredProviders.length > 0 && (
 
           <div className="
             grid
+            grid-cols-1
             md:grid-cols-2
-            gap-4
+            gap-5
           ">
 
-            {configuredLinks.map(
+            {
 
-              link => (
+              configuredProviders.map(
 
-                <div
+                provider => {
 
-                  key={link.id}
+                  const link =
 
-                  className="
-                    p-5
+                    links.find(
 
-                    rounded-2xl
+                      item =>
 
-                    bg-gray-50
-                    dark:bg-slate-800
-                  "
+                        item.provider_id ===
+                        provider.id
 
-                >
+                    )
 
-                  <p className="
-                    font-black
+                  return (
 
-                    text-gray-900
-                    dark:text-white
-                  ">
+                    <ProviderCard
 
-                    {
+                      key={
+                        provider.id
+                      }
 
-                      link.provider_name ||
+                      category={
+                        category
+                      }
 
-                      link.provider_id
+                      provider={
+                        provider
+                      }
 
-                    }
+                      business={
+                        business
+                      }
 
-                  </p>
+                      link={
+                        link
+                      }
 
-                  <p className="
-                    mt-1
+                      t={t}
 
-                    text-sm
+                      onClick={
+                        onEdit
+                      }
 
-                    text-gray-500
+                    />
 
-                    truncate
-                  ">
+                  )
 
-                    {link.value}
-
-                  </p>
-
-                </div>
+                }
 
               )
 
-            )}
+            }
 
           </div>
 
-          <button
+        )
 
-            onClick={onAdd}
-
-            className="
-              w-full
-
-              py-4
-
-              rounded-2xl
-
-              bg-indigo-600
-              hover:bg-indigo-700
-
-              text-white
-
-              font-black
-
-              flex
-              items-center
-              justify-center
-              gap-2
-
-              transition-all
-            "
-
-          >
-
-            <Pencil size={18} />
-
-            {manageLabel}
-
-          </button>
-
-        </div>
-
-      )}
+      }
 
     </div>
 

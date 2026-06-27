@@ -229,6 +229,13 @@ add_marketplace_platform:
   'Ajouter une marketplace',
 
 
+  manage: "Gérer",
+  add: "Ajouter",
+  no_provider_configured: "Aucun fournisseur configuré",
+  add_provider_description: "Configurez un ou plusieurs fournisseurs pour cette catégorie."
+
+
+
 
 
     },
@@ -456,6 +463,14 @@ no_marketplace_providers:
 
 add_marketplace_platform:
   'Add marketplace',
+
+
+  
+manage: "Manage",
+  add: "Add",
+  no_provider_configured: "No provider configured yet",
+  add_provider_description: "Configure one or more providers for this category."
+
 
 
     }
