@@ -431,7 +431,7 @@ export default function ProviderModal({
                             }
 
                             alt={
-                              provider.label.en
+                              provider.name
                             }
 
                             width={36}
@@ -499,9 +499,7 @@ export default function ProviderModal({
 
                           {
 
-                            provider.label.fr ??
-
-                            provider.label.en
+                            provider.name
 
                           }
 
