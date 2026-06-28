@@ -13,6 +13,18 @@ import {
 
 import ProviderCategorySection from './ProviderCategorySection'
 
+import {
+
+  Star,
+
+  Calendar,
+
+  Bike,
+
+  ShoppingBag
+
+} from 'lucide-react'
+
 type Props = {
 
   business: any
@@ -291,6 +303,7 @@ function handleSelectMarketplaceProvider(
   title={t.review_providers}
 
   description={t.review_providers_description}
+  icon={<Star size={24} />}
 
   category="review"
 
@@ -321,6 +334,7 @@ function handleSelectMarketplaceProvider(
   title={t.booking_providers}
 
   description={t.booking_providers_description}
+  icon={<Calendar size={24} />}
 
   category="booking"
 
@@ -351,6 +365,8 @@ function handleSelectMarketplaceProvider(
   title={t.delivery_providers}
 
   description={t.delivery_providers_description}
+
+  icon={<Bike size={24} />}
 
   category="delivery"
 
@@ -383,6 +399,8 @@ function handleSelectMarketplaceProvider(
   description={t.marketplace_providers_description}
 
   category="marketplace"
+
+  icon={<ShoppingBag size={24} />}
 
   providers={providers.marketplaces}
 

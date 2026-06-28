@@ -14,6 +14,7 @@ type Props = {
   title: string
 
   description: string
+   icon: React.ReactNode
 
   category: string
 
@@ -34,6 +35,7 @@ export default function ProviderCategorySection({
   title,
 
   description,
+  icon,
 
   category,
 
@@ -96,32 +98,59 @@ export default function ProviderCategorySection({
         gap-6
       ">
 
-        <div>
+        <div className="
+    flex
+    items-center
+    gap-4
+  ">
 
-          <h2 className="
-            text-2xl
-            font-black
+    <div className="
+      w-14
+      h-14
 
-            text-gray-900
-            dark:text-white
-          ">
+      rounded-2xl
 
-            {title}
+      bg-indigo-50
+      dark:bg-indigo-500/10
 
-          </h2>
+      text-indigo-600
 
-          <p className="
-            mt-2
+      flex
+      items-center
+      justify-center
+    ">
 
-            text-gray-500
-            dark:text-slate-400
-          ">
+      {icon}
 
-            {description}
+    </div>
 
-          </p>
+    <div>
 
-        </div>
+      <h2 className="
+        text-2xl
+        font-black
+        text-gray-900
+        dark:text-white
+      ">
+
+        {title}
+
+      </h2>
+
+      <p className="
+        mt-1
+        text-sm
+        text-gray-500
+        dark:text-slate-400
+      ">
+
+        {description}
+
+      </p>
+
+    </div>
+
+  </div>
 
         <button
 
