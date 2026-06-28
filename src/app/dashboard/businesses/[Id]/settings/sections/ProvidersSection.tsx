@@ -286,7 +286,7 @@ function handleSelectMarketplaceProvider(
 
       <div className="space-y-10">
 
-       <ProviderCategorySection
+       { providers.bookings.length >0 &&<ProviderCategorySection
 
   title={t.review_providers}
 
@@ -314,8 +314,9 @@ function handleSelectMarketplaceProvider(
 
   }}
 
-/>
-<ProviderCategorySection
+/>}
+
+{providers.bookings.length >0 && <ProviderCategorySection
 
   title={t.booking_providers}
 
@@ -343,8 +344,9 @@ function handleSelectMarketplaceProvider(
 
   }}
 
-/>
-<ProviderCategorySection
+/>}
+
+{providers.delivery.length >0 &&<ProviderCategorySection
 
   title={t.delivery_providers}
 
@@ -372,8 +374,9 @@ function handleSelectMarketplaceProvider(
 
   }}
 
-/>
-<ProviderCategorySection
+/>}
+
+{providers.marketplaces.length >0 && <ProviderCategorySection
 
   title={t.marketplace_providers}
 
@@ -401,7 +404,7 @@ function handleSelectMarketplaceProvider(
 
   }}
 
-/>
+/>}
 
       </div>
 
