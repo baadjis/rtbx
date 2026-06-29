@@ -10,72 +10,127 @@ import {
 
 import {
 
-  Smartphone
+  Smartphone,
+
+  Plus,
+
+  Pencil
 
 } from 'lucide-react'
 
-
-
 import AppCard from '../AppCard'
 import AppModal from '../AppModal'
-
-import {
-
-  LangType
-
-} from '@/lib/lang/types'
-import { APP_PROVIDERS } from '@/utils/app-providers'
+import { LangType } from '@/lib/lang/types'
 
 type Props = {
 
-  links: any[]
+  providers: any[]
 
-  t: any
+  apps: any[]
 
-  lang: LangType
+  t: any,
+  lang:LangType,
 
   onSave: (
-    data: {
-
-      provider_id: string
-
-      value: string
-
-    }
-  ) => Promise<void>
+    values:{
+      provider_id:string
+      value:string
+    }[]
+  )=>Promise<void>
 
 }
 
 export default function AppsSection({
 
-  links,
+  providers,
+
+  apps,
 
   t,
-
   lang,
 
   onSave
 
-}: Props) {
+}:Props){
 
   const [
 
-    selectedProvider,
+    modalOpen,
 
-    setSelectedProvider
+    setModalOpen
 
-  ] = useState<string | null>(
-    null
-  )
+  ]=useState(false)
 
-  return (
+  const [
+
+    saving,
+
+    setSaving
+
+  ]=useState(false)
+
+  const configuredApps=
+
+    providers.filter(
+
+      provider=>
+
+        apps.some(
+
+          app=>
+
+            app.provider_id===
+
+            provider.id &&
+
+            !!app.value
+
+        )
+
+    )
+
+  async function handleSave(
+
+    values:{
+
+      provider_id:string
+
+      value:string
+
+    }[]
+
+  ){
+
+    try{
+
+      setSaving(true)
+
+      await onSave(
+        values
+      )
+
+      setModalOpen(false)
+
+    }
+
+    finally{
+
+      setSaving(false)
+
+    }
+
+  }
+
+  return(
 
     <>
 
       <div className="
-        bg-white dark:bg-slate-900
+        bg-white
+        dark:bg-slate-900
 
-        border border-gray-100
+        border
+        border-gray-100
         dark:border-slate-800
 
         rounded-[3rem]
@@ -84,154 +139,257 @@ export default function AppsSection({
 
         shadow-sm
 
-        space-y-6
+        space-y-8
       ">
 
+        {/* HEADER */}
+
         <div className="
-          flex items-center
-          gap-4
+          flex
+          items-center
+          justify-between
         ">
 
           <div className="
-            w-14 h-14
-
-            rounded-2xl
-
-            bg-indigo-50
-            dark:bg-indigo-500/10
-
-            text-indigo-600
-
-            flex items-center
-            justify-center
+            flex
+            items-center
+            gap-4
           ">
 
-            <Smartphone />
+            <div className="
+              w-14
+              h-14
 
-          </div>
+              rounded-2xl
 
-          <div>
+              bg-indigo-50
+              dark:bg-indigo-500/10
 
-            <h2 className="
-              text-2xl
-              font-black
+              text-indigo-600
+
+              flex
+              items-center
+              justify-center
             ">
 
-              {t.apps}
+              <Smartphone size={24}/>
 
-            </h2>
+            </div>
+
+            <div>
+
+              <h2 className="
+                text-2xl
+                font-black
+
+                text-gray-900
+                dark:text-white
+              ">
+
+                {t.mobile_apps}
+
+              </h2>
+
+              <p className="
+                mt-1
+
+                text-sm
+
+                text-gray-500
+                dark:text-slate-400
+              ">
+
+                {t.mobile_apps_description}
+
+              </p>
+
+            </div>
 
           </div>
+
+          <button
+
+            onClick={()=>
+
+              setModalOpen(true)
+
+            }
+
+            className="
+              px-5
+              py-3
+
+              rounded-2xl
+
+              bg-indigo-600
+
+              text-white
+
+              font-black
+
+              flex
+              items-center
+              gap-2
+            "
+
+          >
+
+            {
+
+              configuredApps.length
+
+              ?<>
+
+                <Pencil size={18}/>
+
+                {t.manage}
+
+              </>
+
+              :<>
+
+                <Plus size={18}/>
+
+                {t.add}
+
+              </>
+
+            }
+
+          </button>
 
         </div>
 
-        <div className="
-          grid
-          gap-4
-        ">
+        {
 
-          {
+          configuredApps.length===0
 
-            Object.values(
-              APP_PROVIDERS
-            ).map(
+          ?(
 
-              provider => {
+            <div className="
+              rounded-[2rem]
 
-                const link =
-                  links.find(
+              border-2
+              border-dashed
 
-                    item =>
+              border-gray-200
+              dark:border-slate-700
 
-                      item.provider_id ===
-                      provider.id
+              p-12
 
-                  )
+              text-center
+            ">
 
-                return (
+              <p className="
+                text-lg
+                font-black
+              ">
 
-                  <AppCard
+                {t.no_app_configured}
 
-                    key={
-                      provider.id
-                    }
+              </p>
 
-                    providerId={
-                      provider.id
-                    }
+              <p className="
+                mt-2
 
-                    value={
-                      link?.value
-                    }
+                text-gray-500
+              ">
 
-                    lang={lang}
+                {t.add_app_description}
 
-                    t={t}
+              </p>
 
-                    onEdit={() =>
+            </div>
 
-                      setSelectedProvider(
-                        provider.id
+          )
+
+          :(
+
+            <div className="
+              grid
+              md:grid-cols-2
+              gap-5
+            ">
+
+              {
+
+                configuredApps.map(
+
+                  provider=>{
+
+                    const app=
+
+                      apps.find(
+
+                        item=>
+
+                          item.provider_id===
+
+                          provider.id
+
                       )
 
-                    }
+                    return(
 
-                  />
+                      <AppCard
+
+                        key={
+                          provider.id
+                        }
+
+                        providerId={
+                          provider.id
+                        }
+
+                        value={
+                          app?.value
+                        }
+
+                        lang={lang}
+
+                        t={t}
+
+                        
+
+                      />
+
+                    )
+
+                  }
 
                 )
 
               }
 
-            )
+            </div>
 
-          }
+          )
 
-        </div>
+        }
 
       </div>
 
-      {
+      <AppModal
 
-        selectedProvider && (
+        open={modalOpen}
 
-          <AppModal
+        providers={providers}
 
-            open
+        apps={apps}
 
-            providerId={
-              selectedProvider
-            }
+        t={t}
 
-            value={
-              links.find(
+        loading={saving}
 
-                item =>
+        onClose={()=>
 
-                  item.provider_id ===
-                  selectedProvider
+          setModalOpen(false)
 
-              )?.value
-            }
+        }
 
-            t={t}
+        onSave={handleSave}
 
-            onClose={() =>
-
-              setSelectedProvider(
-                null
-              )
-
-            }
-
-            onSave={
-              onSave
-            }
-
-          />
-
-        )
-
-      }
+      />
 
     </>
 

@@ -5,42 +5,47 @@
 import {
 
   useEffect,
+
   useState
 
 } from 'react'
 
+import Image from 'next/image'
+
 import {
 
-  X,
-  Smartphone
+  Smartphone,
+
+  X
 
 } from 'lucide-react'
-import { APP_PROVIDERS } from '@/utils/app-providers'
 
+import {
 
+  getProviderGlyph
+
+} from '@/lib/providers/getProviderAsset'
 
 type Props = {
 
   open: boolean
 
-  providerId: string
+  providers: any[]
 
-  value?: string
+  apps: any[]
 
   t: any
+
+  loading?: boolean
 
   onClose: () => void
 
   onSave: (
-    data: {
-
-      provider_id: string
-
-      value: string
-
-    }
-
-  ) => Promise<void>
+    values:{
+      provider_id:string
+      value:string
+    }[]
+  )=>Promise<void>
 
 }
 
@@ -48,179 +53,564 @@ export default function AppModal({
 
   open,
 
-  providerId,
+  providers,
 
-  value,
+  apps,
 
   t,
+
+  loading=false,
 
   onClose,
 
   onSave
 
-}: Props) {
+}:Props){
 
-  const [url,setUrl] =
-    useState('')
+  const [
 
-  const [loading,setLoading] =
-    useState(false)
+    values,
 
-  useEffect(() => {
+    setValues
 
-    if (!open)
+  ]=useState<
+    Record<string,string>
+  >({})
+
+  const [
+
+    imageError,
+
+    setImageError
+
+  ]=useState<
+    Record<string,boolean>
+  >({})
+
+  const [
+
+    saving,
+
+    setSaving
+
+  ]=useState(false)
+
+  // =======================================
+  // INIT
+  // =======================================
+
+  useEffect(()=>{
+
+    if(!open)
       return
 
-    setUrl(
-      value || ''
+    const initial:
+      Record<string,string>={}
+
+    providers.forEach(
+
+      provider=>{
+
+        const existing=
+
+          apps.find(
+
+            item=>
+
+              item.provider_id===
+
+              provider.id
+
+          )
+
+        initial[
+          provider.id
+        ]=
+
+          existing?.value??
+
+          ''
+
+      }
+
     )
 
-  }, [
+    setValues(
+      initial
+    )
+
+    setImageError({})
+
+  },[
 
     open,
-    value
+
+    providers,
+
+    apps
 
   ])
 
-  if (!open)
-    return null
+  // =======================================
+  // CHANGE
+  // =======================================
 
-  const provider =
-    APP_PROVIDERS[
-      providerId as keyof typeof APP_PROVIDERS
-    ]
+  function handleChange(
 
-  async function handleSubmit() {
+    providerId:string,
 
-    try {
+    value:string
 
-      setLoading(true)
+  ){
 
-      await onSave({
+    setValues(
 
-        provider_id:
-          providerId,
+      prev=>({
 
-        value:
-          url
+        ...prev,
+
+        [providerId]:
+          value
 
       })
 
+    )
+
+  }
+
+  // =======================================
+  // SAVE
+  // =======================================
+
+  async function handleSave(){
+
+    try{
+
+      setSaving(true)
+
+      await onSave(
+
+        providers.map(
+
+          provider=>({
+
+            provider_id:
+              provider.id,
+
+            value:
+
+              values[
+                provider.id
+              ]??
+
+              ''
+
+          })
+
+        )
+
+      )
+
       onClose()
 
-    } finally {
+    }
 
-      setLoading(false)
+    finally{
+
+      setSaving(false)
 
     }
 
   }
 
+  if(!open)
+    return null
+
   return (
 
+  <div className="
+    fixed
+    inset-0
+    z-50
+
+    bg-black/50
+
+    flex
+    items-center
+    justify-center
+
+    p-4
+  ">
+
     <div className="
-      fixed inset-0 z-50
+      w-full
+      max-w-3xl
 
-      bg-black/50
+      max-h-[90vh]
 
-      flex items-center
-      justify-center
+      overflow-hidden
 
-      p-4
+      bg-white
+      dark:bg-slate-900
+
+      rounded-[2.5rem]
+
+      border
+      border-gray-100
+      dark:border-slate-800
+
+      shadow-2xl
+
+      flex
+      flex-col
     ">
 
+      {/* HEADER */}
+
       <div className="
-        w-full
-        max-w-lg
+        flex
+        items-start
+        justify-between
 
-        bg-white
-        dark:bg-slate-900
+        p-8
 
-        rounded-[2.5rem]
+        border-b
+        border-gray-100
+        dark:border-slate-800
+      ">
+
+        <div>
+
+          <h2 className="
+            text-3xl
+            font-black
+
+            text-gray-900
+            dark:text-white
+          ">
+
+            {t.mobile_apps}
+
+          </h2>
+
+          <p className="
+            mt-2
+
+            text-gray-500
+            dark:text-slate-400
+          ">
+
+            {t.mobile_apps_description}
+
+          </p>
+
+        </div>
+
+        <button
+
+          onClick={onClose}
+
+          className="
+            w-12
+            h-12
+
+            rounded-xl
+
+            bg-gray-100
+            dark:bg-slate-800
+
+            flex
+            items-center
+            justify-center
+          "
+
+        >
+
+          <X size={18} />
+
+        </button>
+
+      </div>
+
+      {/* BODY */}
+
+      <div className="
+        flex-1
+
+        overflow-y-auto
 
         p-8
 
         space-y-6
       ">
 
-        <div className="
-          flex items-center
-          justify-between
-        ">
+        {
 
-          <div className="
-            flex items-center
-            gap-3
-          ">
+          providers.map(
 
-            <Smartphone />
+            provider => {
 
-            <h2 className="
-              text-xl
-              font-black
-            ">
+              const glyph =
+                getProviderGlyph(
+                  provider
+                )
 
-              {provider?.label?.en}
+              return (
 
-            </h2>
+                <div
 
-          </div>
+                  key={
+                    provider.id
+                  }
 
-          <button
-            onClick={onClose}
-          >
+                  className="
+                    flex
+                    items-center
 
-            <X />
+                    gap-5
 
-          </button>
+                    p-5
 
-        </div>
+                    rounded-[2rem]
 
-        <input
+                    bg-gray-50
+                    dark:bg-slate-800
+                  "
 
-          value={url}
+                >
 
-          onChange={(e) =>
-            setUrl(
-              e.target.value
-            )
-          }
+                  {/* ICON */}
 
-          placeholder="https://"
+                  <div className="
+                    w-14
+                    h-14
 
-          className="
-            w-full
+                    rounded-2xl
 
-            px-5 py-4
+                    bg-white
+                    dark:bg-slate-900
 
-            rounded-2xl
+                    flex
+                    items-center
+                    justify-center
 
-            bg-gray-50
-            dark:bg-slate-800
+                    overflow-hidden
 
-            border-none
-          "
+                    shrink-0
+                  ">
 
-        />
+                    {
+
+                      glyph &&
+                      !imageError[
+                        provider.id
+                      ]
+
+                      ? (
+
+                        <Image
+
+                          src={glyph}
+
+                          alt={
+                            provider.name?.en ??
+
+                            provider.name
+                          }
+
+                          width={36}
+
+                          height={36}
+
+                          onError={() =>
+
+                            setImageError(
+
+                              prev => ({
+
+                                ...prev,
+
+                                [
+
+                                  provider.id
+
+                                ]: true
+
+                              })
+
+                            )
+
+                          }
+
+                        />
+
+                      )
+
+                      : (
+
+                        <Smartphone
+
+                          size={22}
+
+                          className="
+                            text-slate-400
+                          "
+
+                        />
+
+                      )
+
+                    }
+
+                  </div>
+
+                  {/* CONTENT */}
+
+                  <div className="
+                    flex-1
+
+                    space-y-2
+                  ">
+
+                    <h3 className="
+                      font-black
+
+                      text-gray-900
+                      dark:text-white
+                    ">
+
+                      {
+
+                        typeof provider.name ===
+                        'string'
+
+                          ? provider.name
+
+                          : provider.name?.fr ??
+
+                            provider.name?.en
+
+                      }
+
+                    </h3>
+
+                    <input
+
+                      type="url"
+
+                      value={
+
+                        values[
+                          provider.id
+                        ] ??
+
+                        ''
+
+                      }
+
+                      onChange={(e)=>
+
+                        handleChange(
+
+                          provider.id,
+
+                          e.target.value
+
+                        )
+
+                      }
+
+                      placeholder={
+                        t.enter_app_url
+                      }
+
+                      className="
+                        w-full
+
+                        px-4
+                        py-3
+
+                        rounded-xl
+
+                        bg-white
+                        dark:bg-slate-900
+
+                        border
+                        border-gray-200
+                        dark:border-slate-700
+
+                        outline-none
+                      "
+
+                    />
+
+                  </div>
+
+                </div>
+
+              )
+
+            }
+
+          )
+
+        }
+
+      </div>
+
+      {/* FOOTER */}
+
+      <div className="
+        p-8
+
+        border-t
+        border-gray-100
+        dark:border-slate-800
+
+        flex
+        justify-end
+        gap-4
+      ">
 
         <button
 
-          onClick={
-            handleSubmit
-          }
+          onClick={onClose}
+
+          className="
+            px-6
+            py-3
+
+            rounded-2xl
+
+            bg-gray-100
+            dark:bg-slate-800
+
+            font-black
+          "
+
+        >
+
+          {t.cancel}
+
+        </button>
+
+        <button
+
+          onClick={handleSave}
 
           disabled={
+            saving ||
             loading
           }
 
           className="
-            w-full
-
-            py-4
+            px-8
+            py-3
 
             rounded-2xl
 
             bg-indigo-600
+            hover:bg-indigo-700
 
             text-white
 
@@ -231,11 +621,13 @@ export default function AppModal({
 
           {
 
+            saving ||
+
             loading
 
               ? t.saving
 
-              : t.save
+              : t.save_changes
 
           }
 
@@ -245,6 +637,6 @@ export default function AppModal({
 
     </div>
 
-  )
+  </div>
 
-}
+)}

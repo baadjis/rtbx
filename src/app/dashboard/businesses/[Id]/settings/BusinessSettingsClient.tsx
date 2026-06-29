@@ -28,6 +28,7 @@ import RewardsSection from './sections/RewardsSection'
 import LoyaltySettingsModal from './LoyaltySettingsModal'
 import BusinessDangerSection from './sections/BusinessDangerSection'
 import AppsSection from './sections/AppsSection'
+import { APP_PROVIDERS } from '@/utils/app-providers'
 
 type Props = {
 
@@ -515,93 +516,110 @@ async () => {
 }
 
 
-const handleSaveApp =
-async (data: {
+const handleAppSave = async (
 
-  provider_id: string
+  values: {
 
-  value: string
+    provider_id: string
 
-}) => {
+    value: string
 
-  const response =
-    await fetch(
+  }[]
 
-      `/api/businesses/${business.id}/app-links`,
+) => {
 
-      {
+  try {
 
-        method: 'POST',
+    setLoading(true)
 
-        headers: {
+    const updatedLinks = [
 
-          'Content-Type':
-            'application/json'
+      ...appLinks
 
-        },
+    ]
 
-        body:
-          JSON.stringify(
-            data
-          )
+    for (const item of values) {
+
+      await fetch(
+
+        `/api/businesses/${business.id}/app-links`,
+
+        {
+
+          method: 'POST',
+
+          headers: {
+
+            'Content-Type':
+              'application/json'
+
+          },
+
+          body: JSON.stringify({
+
+            provider_id:
+              item.provider_id,
+
+            value:
+              item.value
+
+          })
+
+        }
+
+      )
+
+      const index =
+
+        updatedLinks.findIndex(
+
+          app =>
+
+            app.provider_id ===
+            item.provider_id
+
+        )
+
+      if (index >= 0) {
+
+        updatedLinks[index] = {
+
+          ...updatedLinks[index],
+
+          value:
+            item.value
+
+        }
 
       }
 
+      else {
+
+        updatedLinks.push({
+
+          provider_id:
+            item.provider_id,
+
+          value:
+            item.value
+
+        })
+
+      }
+
+    }
+
+    setAppLinks(
+      updatedLinks
     )
-
-  const result =
-    await response.json()
-
-  if (!result.success) {
-
-    alert(
-      result.error
-    )
-
-    return
 
   }
 
-  setAppLinks(
-    current => {
+  finally {
 
-      const exists =
-        current.some(
+    setLoading(false)
 
-          item =>
-
-            item.provider_id ===
-            data.provider_id
-
-        )
-
-      if (exists) {
-
-        return current.map(
-
-          item =>
-
-            item.provider_id ===
-            data.provider_id
-
-              ? result.data
-
-              : item
-
-        )
-
-      }
-
-      return [
-
-        ...current,
-
-        result.data
-
-      ]
-
-    }
-  )
+  }
 
 }
 
@@ -719,8 +737,18 @@ async (data: {
     
 
       />
+      
+      <AppsSection
 
-      <AppsSection links={appLinks} t={t} lang={lang} onSave={handleSaveApp}/>
+  providers={Object.values(APP_PROVIDERS)}
+
+  apps={appLinks}
+
+  t={t}
+  lang={lang}
+  onSave={handleAppSave}
+
+/>
 
       {/* =====================================================
           PROVIDERS

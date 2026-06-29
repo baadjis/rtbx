@@ -5,17 +5,24 @@
 import Image from 'next/image'
 
 import {
-  Smartphone,
-  Pencil
+  Smartphone
 } from 'lucide-react'
 
+import {
+  useState
+} from 'react'
 
 import {
   LangType
 } from '@/lib/lang/types'
-import { APP_PROVIDERS } from '@/utils/app-providers'
-import { getProviderGlyph } from '@/lib/providers/getProviderAsset'
-import { useState } from 'react'
+
+import {
+  APP_PROVIDERS
+} from '@/utils/app-providers'
+
+import {
+  getProviderGlyph
+} from '@/lib/providers/getProviderAsset'
 
 type Props = {
 
@@ -27,8 +34,6 @@ type Props = {
 
   t: any
 
-  onEdit: () => void
-
 }
 
 export default function AppCard({
@@ -39,34 +44,40 @@ export default function AppCard({
 
   lang,
 
-  t,
-
-  onEdit
+  t
 
 }: Props) {
-  const [imageError,setImageError] =
-  useState(false)
+
   const provider =
+
     APP_PROVIDERS[
       providerId as keyof typeof APP_PROVIDERS
     ]
 
-  
-  
+  const [
+
+    imageError,
+
+    setImageError
+
+  ] = useState(false)
 
   if (!provider)
     return null
 
-   const glyph=getProviderGlyph(provider);
-   console.log("glyph",glyph)
-   
+  const glyph =
+    getProviderGlyph(
+      provider
+    )
 
   return (
 
     <div className="
-      bg-white dark:bg-slate-900
+      bg-white
+      dark:bg-slate-900
 
-      border border-gray-100
+      border
+      border-gray-100
       dark:border-slate-800
 
       rounded-[2rem]
@@ -75,119 +86,136 @@ export default function AppCard({
 
       shadow-sm
 
-      flex items-center
-      justify-between
+      flex
+      items-center
       gap-4
     ">
 
+      {/* ICON */}
+
       <div className="
-        flex items-center
-        gap-4
+        w-14
+        h-14
+
+        rounded-2xl
+
+        bg-gray-50
+        dark:bg-slate-800
+
+        flex
+        items-center
+        justify-center
+
+        overflow-hidden
+
+        shrink-0
       ">
 
-        <div
-  className="
-    w-14 h-14
-    rounded-2xl
-    bg-gray-50
-    dark:bg-slate-800
-    overflow-hidden
-    flex items-center
-    justify-center
-  "
->
+        {
 
-  {glyph && !imageError ? (
+          glyph &&
+          !imageError
 
-    <Image
+            ? (
 
-      src={glyph}
+              <Image
 
-      alt={provider.label.en}
+                src={glyph}
 
-      width={40}
+                alt={
 
-      height={40}
+                  provider.label?.en ??
 
-      onError={() =>
+                  provider.label
 
-        setImageError(
-          true
-        )
+                }
 
-      }
+                width={40}
 
-    />
+                height={40}
 
-  ) : (
+                onError={()=>
 
-    <Smartphone
-      size={22}
-    />
+                  setImageError(
+                    true
+                  )
 
-  )}
+                }
 
-</div>
+              />
 
-        <div>
+            )
 
-          <h3 className="
-            font-black
+            : (
 
-            text-gray-900
-            dark:text-white
-          ">
+              <Smartphone
 
-            {provider.label[lang]}
+                size={22}
 
-          </h3>
+                className="
+                  text-slate-400
+                "
 
-          <p className="
-            text-sm
-            text-gray-500
-          ">
+              />
 
-            {
+            )
 
-              value
-
-                ? t.configured
-
-                : t.not_configured
-
-            }
-
-          </p>
-
-        </div>
+        }
 
       </div>
 
-      <button
+      {/* CONTENT */}
 
-        onClick={onEdit}
+      <div className="
+        flex-1
+        min-w-0
+      ">
 
-        className="
-          px-4 py-3
-
-          rounded-xl
-
-          bg-indigo-600
-          text-white
-
-          flex items-center
-          gap-2
-
+        <h3 className="
           font-black
-        "
 
-      >
+          text-gray-900
+          dark:text-white
+        ">
 
-        <Pencil size={16} />
+          {
 
-        {t.edit}
+            typeof provider.label ===
+            'string'
 
-      </button>
+              ? provider.label
+
+              : provider.label?.[
+                  lang
+                ] ??
+
+                provider.label?.en
+
+          }
+
+        </h3>
+
+        <p className="
+          mt-2
+
+          text-sm
+
+          text-gray-500
+
+          truncate
+        ">
+
+          {
+
+            value ||
+
+            t.not_configured
+
+          }
+
+        </p>
+
+      </div>
 
     </div>
 
