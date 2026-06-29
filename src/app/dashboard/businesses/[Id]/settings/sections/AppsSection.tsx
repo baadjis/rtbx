@@ -186,7 +186,7 @@ export default function AppsSection({
                 dark:text-white
               ">
 
-                {t.mobile_apps}
+                {t.apps}
 
               </h2>
 
@@ -350,7 +350,7 @@ export default function AppsSection({
                         t={t}
 
                         
-
+                       
                       />
 
                     )

@@ -2,6 +2,8 @@ export const DATA={
     fr:{
         // FR
 
+cancel:'Annuler',
+
 settings: 'Paramètres',
 
 manage_business_settings:
@@ -232,16 +234,23 @@ add_marketplace_platform:
   manage: "Gérer",
   add: "Ajouter",
   no_provider_configured: "Aucun fournisseur configuré",
-  add_provider_description: "Configurez un ou plusieurs fournisseurs pour cette catégorie."
+  add_provider_description: "Configurez un ou plusieurs fournisseurs pour cette catégorie.",
 
+  mobile_apps:'Application',
+  mobile_apps_description:'Ajouter des liens de plateform pour télécharger votre application',
+  no_app_configured: "Aucun lien d'application n'est configuré",
+  add_app_description:"Permettez aux usagers de télécharger votre application si votre business en dispose",
+  not_configured:"Pas configuré",
+  enter_app_url:'Entrer le lien de l\'application ',
 
-
+   
 
 
     },
     en:{
           // EN
 
+  cancel:'Cancel',
 settings: 'Settings',
 
 manage_business_settings:
@@ -469,8 +478,15 @@ add_marketplace_platform:
 manage: "Manage",
   add: "Add",
   no_provider_configured: "No provider configured yet",
-  add_provider_description: "Configure one or more providers for this category."
+  add_provider_description: "Configure one or more providers for this category.",
+  mobile_apps:'Application',
+  mobile_apps_description:'Add plateform link to download your business app',
+  no_app_configured: "No App link configured yet",
+  add_app_description:"Allow aux users to download your business app if there is one",
+  not_configured:"Not configured",
+  enter_app_url:'Enter app url'
 
+  
 
 
     }
