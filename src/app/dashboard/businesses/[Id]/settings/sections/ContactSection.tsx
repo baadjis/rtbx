@@ -13,7 +13,7 @@ export default function ContactSection({
   setForm,
    handleSave,
   dirty,
-  saved,
+  saved=false,
   loading,
   
   t
@@ -24,7 +24,7 @@ export default function ContactSection({
 
   setForm: any
   handleSave:any
-  dirty:any
+  dirty:boolean
   saved:boolean
   loading:boolean
 

@@ -22,7 +22,7 @@ export default function LocationSection({
 
   setForm: any
   handleSave:any
-  dirty:any
+  dirty:boolean
   saved:boolean
   loading:boolean
 

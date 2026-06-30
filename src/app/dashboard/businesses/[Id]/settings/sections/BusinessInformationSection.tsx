@@ -35,7 +35,7 @@ export default function BusinessInformationSection({
 
   setForm: any
   handleSave:any
-  dirty: any
+  dirty: boolean
   saved: boolean
   loading:boolean
 
