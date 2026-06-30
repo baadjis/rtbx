@@ -25,6 +25,7 @@ import {
   getProviderGlyph
 
 } from '@/lib/providers/getProviderAsset'
+import { LangType } from '@/lib/lang/types'
 
 type Props = {
 
@@ -34,7 +35,8 @@ type Props = {
 
   apps: any[]
 
-  t: any
+  t: any,
+  lang:LangType,
 
   loading?: boolean
 
@@ -58,6 +60,7 @@ export default function AppModal({
   apps,
 
   t,
+  lang='en',
 
   loading=false,
 
@@ -413,9 +416,7 @@ export default function AppModal({
                           src={glyph}
 
                           alt={
-                            provider.name?.en ??
-
-                            provider.name
+                            provider.label[lang]
                           }
 
                           width={36}
@@ -481,14 +482,12 @@ export default function AppModal({
 
                       {
 
-                        typeof provider.name ===
+                        typeof provider.label ===
                         'string'
 
-                          ? provider.name
+                          ? provider.label
 
-                          : provider.name?.fr ??
-
-                            provider.name?.en
+                          : provider.name[lang] 
 
                       }
 

@@ -380,6 +380,7 @@ export default function AppsSection({
         t={t}
 
         loading={saving}
+        lang={lang}
 
         onClose={()=>
 
