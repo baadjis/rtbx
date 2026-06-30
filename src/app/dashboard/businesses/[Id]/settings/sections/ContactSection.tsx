@@ -5,11 +5,17 @@ import {
   Phone,
   Globe
 } from 'lucide-react'
+import SectionSaveButton from './SectionSaveButton'
 
 export default function ContactSection({
 
   form,
   setForm,
+   handleSave,
+  dirty,
+  saved,
+  loading,
+  
   t
 
 }: {
@@ -17,6 +23,10 @@ export default function ContactSection({
   form: any
 
   setForm: any
+  handleSave:any
+  dirty:any
+  saved:boolean
+  loading:boolean
 
   t: any
 
@@ -249,6 +259,24 @@ export default function ContactSection({
         </div>
 
       </div>
+
+      <SectionSaveButton
+
+   loading={loading}
+
+   dirty={dirty}
+
+   saved={saved}
+
+   label={t.save_changes}
+
+   savingLabel={t.saving}
+
+   savedLabel={t.saved}
+
+   onClick={handleSave}
+
+/>
 
     </div>
 

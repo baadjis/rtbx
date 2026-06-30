@@ -147,6 +147,27 @@ country_code:
   const [loading, setLoading] =
     useState(false)
 
+  const businessDirty =
+  form.name !== business.name ||
+  form.description !== business.description ||
+  form.business_type !== business.business_type
+
+const contactDirty =
+  form.phone !== business.phone ||
+  form.email !== business.email ||
+  form.website !== business.website
+
+const locationDirty =
+  form.address !== business.address ||
+  form.city !== business.city ||
+  form.postal_code !== business.postal_code ||
+  form.country !== business.country ||
+  form.country_code !== business.country_code
+
+const brandingDirty =
+  form.avatar_url !== business.avatar_url ||
+  form.theme_color !== business.theme_color
+
   // =====================================================
   // SAVE
   // =====================================================
@@ -705,6 +726,12 @@ const handleAppSave = async (
 
         t={t}
         lang={lang}
+        dirty={businessDirty}
+        handleSave={handleSave}
+        loading={loading}
+        saved={false}
+      
+
 
       />
 
@@ -719,6 +746,10 @@ const handleAppSave = async (
         setForm={setForm}
 
         t={t}
+        handleSave={handleSave}
+        dirty={contactDirty}
+        loading={loading}
+        saved={false}
     
 
       />
@@ -732,6 +763,11 @@ const handleAppSave = async (
         form={form}
 
         setForm={setForm}
+
+        handleSave={handleSave}
+        dirty={contactDirty}
+        loading={loading}
+        saved={false}
 
         t={t}
     
@@ -824,54 +860,7 @@ const handleAppSave = async (
 
 
 
-      {/* =====================================================
-          SAVE
-      ===================================================== */}
-
-      <button
-
-        onClick={
-          handleSave
-        }
-
-        disabled={
-          loading
-        }
-
-        className="
-          w-full
-          py-5
-          rounded-[2rem]
-          bg-indigo-600
-          hover:bg-indigo-700
-          text-white
-          font-black
-          text-lg
-          border-none
-          cursor-pointer
-          flex items-center
-          justify-center
-          gap-3
-          shadow-xl
-          shadow-indigo-200
-          transition-all
-        "
-
-      >
-
-        <Save size={20} />
-
-        {
-
-          loading
-
-            ? t.saving
-
-            : t.save_changes
-
-        }
-
-      </button>
+     
 
 
       <BusinessDangerSection

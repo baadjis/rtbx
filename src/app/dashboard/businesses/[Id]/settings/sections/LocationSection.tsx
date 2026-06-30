@@ -4,11 +4,16 @@ import { MapPin } from 'lucide-react'
 
 import BusinessLocation
 from '@/app/dashboard/businesses/create/BusinessLocation'
+import SectionSaveButton from './SectionSaveButton'
 
 export default function LocationSection({
 
   form,
   setForm,
+  handleSave,
+  dirty,
+  saved=false,
+  loading,
   t
 
 }: {
@@ -16,6 +21,10 @@ export default function LocationSection({
   form: any
 
   setForm: any
+  handleSave:any
+  dirty:any
+  saved:boolean
+  loading:boolean
 
   t: any
 
@@ -117,6 +126,24 @@ export default function LocationSection({
 
         t={t}
 
+      />
+
+      <SectionSaveButton
+      
+         loading={loading}
+      
+         dirty={dirty}
+      
+         saved={saved}
+      
+         label={t.save_changes}
+      
+         savingLabel={t.saving}
+      
+         savedLabel={t.saved}
+      
+         onClick={handleSave}
+      
       />
 
     </div>

@@ -14,19 +14,30 @@ import {
 }
 from '@/utils/busines-types'
 import { LangType } from '@/lib/lang/types'
+import SectionSaveButton from './SectionSaveButton'
 
 export default function BusinessInformationSection({
 
   form,
   setForm,
+  handleSave,
+  dirty,
+  saved=false,
+  loading,
   t,
-  lang
+  lang,
+  
+
 
 }: {
 
   form: any
 
   setForm: any
+  handleSave:any
+  dirty: any
+  saved: boolean
+  loading:boolean
 
   t: any
 
@@ -379,6 +390,24 @@ export default function BusinessInformationSection({
         </div>
 
       </div>
+
+      <SectionSaveButton
+
+   loading={loading}
+
+   dirty={dirty}
+
+   saved={saved}
+
+   label={t.save_changes}
+
+   savingLabel={t.saving}
+
+   savedLabel={t.saved}
+
+   onClick={handleSave}
+
+/>
 
     </div>
 
