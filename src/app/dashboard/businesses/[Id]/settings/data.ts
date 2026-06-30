@@ -205,7 +205,7 @@ no_booking_providers:
   'Aucune plateforme de réservation configurée.',
 
 add_booking_platform:
-  'Configurer une  ou plusieurs plateforme de réservation',
+  'Configurer une  ou plusieurs plateformes de réservation',
 
   delivery_platforms:
   'Plateformes de livraison',
