@@ -26,6 +26,7 @@ import {
 
 } from '@/lib/providers/getProviderAsset'
 import { LangType } from '@/lib/lang/types'
+import { getAppProviderLabel } from '@/utils/app-providers'
 
 type Props = {
 
@@ -357,6 +358,7 @@ export default function AppModal({
                 getProviderGlyph(
                   provider
                 )
+              const label=  getAppProviderLabel(provider.id,lang)
 
               return (
 
@@ -416,7 +418,7 @@ export default function AppModal({
                           src={glyph}
 
                           alt={
-                            provider.label[lang]
+                            label
                           }
 
                           width={36}
@@ -482,12 +484,7 @@ export default function AppModal({
 
                       {
 
-                        typeof provider.label ===
-                        'string'
-
-                          ? provider.label
-
-                          : provider.name[lang] 
+                         label
 
                       }
 
