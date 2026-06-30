@@ -14,6 +14,7 @@ type Props = {
   title: string
 
   description: string
+  config_description:string
    icon: React.ReactNode
 
   category: string
@@ -35,6 +36,7 @@ export default function ProviderCategorySection({
   title,
 
   description,
+  config_description,
   icon,
 
   category,
@@ -237,7 +239,7 @@ export default function ProviderCategorySection({
               text-gray-500
             ">
 
-              {t.add_provider_description}
+              {config_description}
 
             </p>
 
