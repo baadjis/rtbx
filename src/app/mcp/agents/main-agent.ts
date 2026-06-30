@@ -2,6 +2,8 @@
 import { runAgent, AgentConfig, AgentOptions, Message } from './run-agent';
 import { getAllTools } from '../tools';
 import { LangType } from '@/lib/lang/types';
+import { detectDomain } from './domain-detection';
+import { classifier } from '../classifier';
 
 // =============================================
 // TOOLS CATEGORIES — main agent (tous domaines)
@@ -118,7 +120,19 @@ const mainAgentConfig: AgentConfig = {
   readOnlyTools: READ_ONLY_TOOLS,
 
   defaultTools: READ_ONLY_TOOLS, // ← par défaut READ only, économise ~50% tokens
-  getDefaultTools: (lastMessage) => getMainAgentDefaultTools(lastMessage, READ_ONLY_TOOLS),
+  getDefaultTools: (lastMessage: string) => {
+  const domain = detectDomain(lastMessage);
+
+  if (!domain) return READ_ONLY_TOOLS; // rien détecté → tout en lecture
+
+  const domains = Array.isArray(domain) ? domain : [domain];
+  const allMatchedTools = domains.flatMap(d => {
+    const result = classifier.predict(lastMessage, d);
+    return result.confidence >= 0.5 ? result.tools : [];
+  });
+
+  return allMatchedTools.length > 0 ? allMatchedTools : READ_ONLY_TOOLS;
+},
   createTools: (accessToken, userId, userEmail) => getAllTools(accessToken, userId, userEmail),
   getSystemPrompt: (_contextId?, lang: LangType = 'en') => {
     if (lang === 'fr') {
