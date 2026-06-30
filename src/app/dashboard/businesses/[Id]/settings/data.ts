@@ -205,7 +205,7 @@ no_booking_providers:
   'Aucune plateforme de réservation configurée.',
 
 add_booking_platform:
-  'Ajouter une plateforme de réservation',
+  'Configurer une  ou plusieurs plateforme de réservation',
 
   delivery_platforms:
   'Plateformes de livraison',
@@ -217,7 +217,7 @@ no_delivery_providers:
   'Aucune plateforme de livraison configurée.',
 
 add_delivery_platform:
-  'Ajouter une plateforme de livraison',
+  'Ajouter une ou plusieurs plateformes de livraison',
   marketplace_platforms:
   'Places de marché',
 
@@ -228,7 +228,7 @@ no_marketplace_providers:
   'Aucune marketplace configurée.',
 
 add_marketplace_platform:
-  'Ajouter une marketplace',
+  'Configurer une  ou plusieurs plateformes  de marketplace',
 
 
   manage: "Gérer",
@@ -448,7 +448,7 @@ no_booking_providers:
   'No booking platform configured.',
 
 add_booking_platform:
-  'Add booking platform',
+  'Configure booking platforms',
 
 delivery_platforms:
   'Delivery platforms',
@@ -460,7 +460,7 @@ no_delivery_providers:
   'No delivery platform configured.',
 
 add_delivery_platform:
-  'Add delivery platform',
+  'Configure delivery platforms',
 marketplace_platforms:
   'Marketplaces',
 
@@ -471,7 +471,7 @@ no_marketplace_providers:
   'No marketplace configured.',
 
 add_marketplace_platform:
-  'Add marketplace',
+  'Configure marketplace platforms',
 
 
   
