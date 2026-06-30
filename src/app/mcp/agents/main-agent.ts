@@ -128,7 +128,7 @@ const mainAgentConfig: AgentConfig = {
   const domains = Array.isArray(domain) ? domain : [domain];
   const allMatchedTools = domains.flatMap(d => {
     const result = classifier.predict(lastMessage, d);
-    return result.confidence >= 0.5 ? result.tools : [];
+    return result.confidence >= 0.65 ? result.tools : [];
   });
 
   return allMatchedTools.length > 0 ? allMatchedTools : READ_ONLY_TOOLS;
