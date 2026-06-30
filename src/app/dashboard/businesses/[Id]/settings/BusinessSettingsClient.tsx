@@ -144,9 +144,17 @@ country_code:
 
     })
 
-  const [loading, setLoading] =
-    useState(false)
-
+  const [savingSection, setSavingSection] = useState<
+  | 'business'
+  | 'contact'
+  | 'location'
+  | 'hours'
+  | 'loyalty'
+  | 'rewards'
+  | 'providers'
+  | 'apps'
+  | null
+>(null)
   const businessDirty =
   form.name !== business.name ||
   form.description !== business.description ||
@@ -173,11 +181,15 @@ const brandingDirty =
   // =====================================================
 
   const handleSave =
-  async () => {
+  async ( section:
+    | 'business'
+    | 'contact'
+    | 'location'
+    | 'hours') => {
 
     try {
 
-      setLoading(true)
+       setSavingSection(section)
 
       // BUSINESS
 
@@ -257,7 +269,7 @@ const brandingDirty =
 
     } finally {
 
-      setLoading(false)
+      setSavingSection(null)
 
     }
 
@@ -274,7 +286,8 @@ const brandingDirty =
     value: string
 
   }) => {
-
+    try {
+      setSavingSection('providers')
     await fetch(
 
       `/api/businesses/${business.id}/provider-links`,
@@ -295,7 +308,9 @@ const brandingDirty =
 
       }
 
-    )
+    )} finally{
+    setSavingSection(null)
+    }
 
   }
 
@@ -313,7 +328,8 @@ async (
   }
 
 ) => {
-
+  try{ 
+  setSavingSection('loyalty')
   const response =
     await fetch(
 
@@ -350,17 +366,21 @@ async (
 
   setLoyaltyForm(
     data
-  )
+  ) }finally{
+    setSavingSection(null)
+  }
 
 }
 
 const handleSaveReward =
 async (data:any) => {
-
+  try{
+    setSavingSection('rewards')
+ 
   if (
     selectedReward
   ) {
-
+  
     const response =
       await fetch(
 
@@ -452,6 +472,9 @@ async (data:any) => {
     }
 
   }
+}finally{
+   setSavingSection('rewards')
+}
 
 }
 
@@ -551,7 +574,7 @@ const handleAppSave = async (
 
   try {
 
-    setLoading(true)
+     setSavingSection('apps')
 
     const updatedLinks = [
 
@@ -638,7 +661,7 @@ const handleAppSave = async (
 
   finally {
 
-    setLoading(false)
+       setSavingSection(null)
 
   }
 
@@ -727,8 +750,16 @@ const handleAppSave = async (
         t={t}
         lang={lang}
         dirty={businessDirty}
-        handleSave={handleSave}
-        loading={loading}
+        handleSave={()=>
+
+  handleSave(
+    'business'
+  )
+
+}
+        loading={
+  savingSection === 'business'
+}
         saved={false}
       
 
@@ -746,9 +777,18 @@ const handleAppSave = async (
         setForm={setForm}
 
         t={t}
-        handleSave={handleSave}
+        handleSave={()=>
+
+  handleSave(
+    'contact'
+  )
+
+}
+        
         dirty={contactDirty}
-        loading={loading}
+        loading={
+  savingSection === 'contact'
+}
         saved={false}
     
 
@@ -764,9 +804,19 @@ const handleAppSave = async (
 
         setForm={setForm}
 
-        handleSave={handleSave}
+        handleSave={()=>
+
+  handleSave(
+    'location'
+  )
+
+}
+
+       
         dirty={locationDirty}
-        loading={loading}
+        loading={
+  savingSection === 'location'
+}
         saved={false}
 
         t={t}
