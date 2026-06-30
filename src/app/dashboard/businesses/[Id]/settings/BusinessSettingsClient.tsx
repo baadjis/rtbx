@@ -765,7 +765,7 @@ const handleAppSave = async (
         setForm={setForm}
 
         handleSave={handleSave}
-        dirty={contactDirty}
+        dirty={locationDirty}
         loading={loading}
         saved={false}
 
