@@ -302,7 +302,7 @@ function handleSelectMarketplaceProvider(
 
   title={t.review_providers}
 
-  description={t.review_providers_description}
+  description={t.review_platforms_description}
   icon={<Star size={24} />}
 
   category="review"
@@ -333,7 +333,7 @@ function handleSelectMarketplaceProvider(
 
   title={t.booking_providers}
 
-  description={t.booking_providers_description}
+  description={t.booking_platforms_description}
   icon={<Calendar size={24} />}
 
   category="booking"
@@ -364,7 +364,7 @@ function handleSelectMarketplaceProvider(
 
   title={t.delivery_providers}
 
-  description={t.delivery_providers_description}
+  description={t.delivery_platforms_description}
 
   icon={<Bike size={24} />}
 
@@ -396,7 +396,7 @@ function handleSelectMarketplaceProvider(
 
   title={t.marketplace_providers}
 
-  description={t.marketplace_providers_description}
+  description={t.marketplace_platforms_description}
 
   category="marketplace"
 
