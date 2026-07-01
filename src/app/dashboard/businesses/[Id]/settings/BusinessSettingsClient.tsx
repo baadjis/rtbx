@@ -158,12 +158,12 @@ country_code:
   const businessDirty =
   form.name !== business.name ||
   form.description !== business.description ||
-  form.business_type !== business.business_type
+  form.business_type !== business.business_type || (form.name!=='' && form.description!=='' && form.business_type!=='')
 
 const contactDirty =
   form.phone !== business.phone ||
   form.email !== business.email ||
-  form.website !== business.website
+  form.website !== business.website || (form.phone!=='' && form.email!=='' && form.website!=='')
 
 const locationDirty =
   form.address !== business.address ||
@@ -171,6 +171,7 @@ const locationDirty =
   form.postal_code !== business.postal_code ||
   form.country !== business.country ||
   form.country_code !== business.country_code
+  || (form.address!='' && form.city!='' && form.country!='' && form.postal_code!='')
 
 const brandingDirty =
   form.avatar_url !== business.avatar_url ||
