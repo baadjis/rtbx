@@ -804,25 +804,15 @@ const handleAppSave = async (
 
         setForm={setForm}
 
-        handleSave={()=>
+        handleSave={()=>handleSave('location')}
 
-  handleSave(
-    'location'
-  )
-
-}
-
-       
         dirty={locationDirty}
         loading={
-  savingSection === 'location'
-}
+           savingSection === 'location'}
         saved={false}
 
-        t={t}
-    
-
-      />
+         t={t}
+    />
       
       <AppsSection
 
