@@ -49,6 +49,11 @@ type Props = {
 
 }
 
+const same = (
+  a: any,
+  b: any
+) => (a ?? '') === (b ?? '')
+
 export default function BusinessSettingsClient({
 
   business,
@@ -156,23 +161,36 @@ country_code:
   | null
 >(null)
   const businessDirty =
-  form.name !== business.name ||
-  form.description !== business.description ||
-  form.business_type !== business.business_type||
-  form.avatar_url !== business.avatar_url ||
-  form.theme_color !== business.theme_color
+
+  !same(form.name, business.name) ||
+
+  !same(form.description, business.description) ||
+
+  !same(form.business_type, business.business_type) ||
+
+  !same(form.avatar_url, business.avatar_url) ||
+
+  !same(form.theme_color, business.theme_color)
 
 const contactDirty =
-  form.phone !== business.phone ||
-  form.email !== business.email ||
-  form.website !== business.website
+
+  !same(form.phone, business.phone) ||
+
+  !same(form.email, business.email) ||
+
+  !same(form.website, business.website)
 
 const locationDirty =
-  form.address !== business.address ||
-  form.city !== business.city ||
-  form.postal_code !== business.postal_code ||
-  form.country !== business.country ||
-  form.country_code !== business.country_code
+
+  !same(form.address, business.address) ||
+
+  !same(form.city, business.city) ||
+
+  !same(form.postal_code, business.postal_code) ||
+
+  !same(form.country, business.country) ||
+
+  !same(form.country_code, business.country_code)
 
 const brandingDirty =
   form.avatar_url !== business.avatar_url ||
