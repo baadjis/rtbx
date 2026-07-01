@@ -45,8 +45,7 @@ export default function SectionSaveButton({
   return(
 
     <div className="
-      flex
-      justify-end
+      
       pt-8
     ">
 
@@ -63,7 +62,7 @@ export default function SectionSaveButton({
         onClick={onClick}
 
         className="
-          min-w-[180px]
+        
 
           px-6
           py-4
