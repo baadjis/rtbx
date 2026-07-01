@@ -63,7 +63,7 @@ export default function SectionSaveButton({
 
         className="
         
-
+          w-full
           px-6
           py-4
 
