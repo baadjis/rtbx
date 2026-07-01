@@ -158,7 +158,9 @@ country_code:
   const businessDirty =
   form.name !== business.name ||
   form.description !== business.description ||
-  form.business_type !== business.business_type
+  form.business_type !== business.business_type||
+  form.avatar_url !== business.avatar_url ||
+  form.theme_color !== business.theme_color
 
 const contactDirty =
   form.phone !== business.phone ||
