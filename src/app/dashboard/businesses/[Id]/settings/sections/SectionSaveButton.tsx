@@ -64,7 +64,7 @@ export default function SectionSaveButton({
         className="
         
 
-          px-6
+          
           py-4
 
           rounded-2xl
