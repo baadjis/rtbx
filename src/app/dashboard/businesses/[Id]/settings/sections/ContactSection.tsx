@@ -274,7 +274,7 @@ export default function ContactSection({
 
    savedLabel={t.saved}
 
-   onClick={handleSave}
+   onClick={()=>handleSave('contact')}
 
 />
 

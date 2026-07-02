@@ -405,7 +405,7 @@ export default function BusinessInformationSection({
 
    savedLabel={t.saved}
 
-   onClick={handleSave}
+   onClick={()=>handleSave('business')}
 
 />
 
