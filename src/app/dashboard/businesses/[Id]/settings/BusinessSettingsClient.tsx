@@ -212,7 +212,7 @@ const brandingDirty =
        setSavingSection(section)
 
       // BUSINESS
-
+       console.log(form)
       const response =
         await fetch(
 
