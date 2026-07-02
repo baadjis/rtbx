@@ -242,7 +242,7 @@ const brandingDirty =
         await response.json()
 
       if (!result.success) {
-
+        console.error(result.error)
         alert(
           result.error
         )
