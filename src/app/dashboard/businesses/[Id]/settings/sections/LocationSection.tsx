@@ -142,7 +142,7 @@ export default function LocationSection({
       
          savedLabel={t.saved}
       
-         onClick={handleSave}
+         onClick={()=>handleSave('location')}
       
       />
 
