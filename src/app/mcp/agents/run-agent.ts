@@ -49,6 +49,60 @@ const EXECUTED_TEXT = {
   en: "I executed the action. Here's the result:",
 };
 
+
+const IS_CONFIRMATION = /^(oui|yes|confirme|confirm|proceed|ok|go ahead|valide)/i;
+const IS_CANCEL = /^(non|no|annule|cancel|stop|annuler)/i;
+
+const CRITICAL_TOOLS = new Set([
+  'deleteEvent', 'cancelEvent', 'deleteAgendaItem',
+  'deleteShortLink', 'deleteForm',
+  'deleteSpace', 'deleteSpaceSocialLink',
+  'deleteBusinessLoyaltyReward', 'deleteBusinessAppLink',
+]);
+
+const SENSITIVE_TOOLS = new Set([
+  'publishEvent', 'sendInvite', 'sendBadges',
+  'publishForm', 'sendFormInvites',
+]);
+
+
+ const CONFIRMATION_MSG: Record<LangType, Record<string, string>> = {
+    fr: {
+      deleteEvent: 'supprimer cet événement définitivement',
+      cancelEvent: 'annuler cet événement',
+      publishEvent: 'publier cet événement',
+      sendInvite: 'envoyer les invitations',
+      sendBadges: 'envoyer les badges à tous les participants',
+      publishForm: 'publier ce formulaire',
+      sendFormInvites: 'envoyer ce formulaire par email',
+      deleteForm: 'supprimer ce formulaire',
+      deleteSpace: 'supprimer ce Space',
+      deleteShortLink: 'supprimer ce lien court',
+      deleteBusinessLoyaltyReward: 'supprimer cette récompense fidélité',
+      deleteBusinessAppLink: 'supprimer ce lien app',
+    },
+    en: {
+      deleteEvent: 'permanently delete this event',
+      cancelEvent: 'cancel this event',
+      publishEvent: 'publish this event',
+      sendInvite: 'send the invitations',
+      sendBadges: 'send badges to all participants',
+      publishForm: 'publish this form',
+      sendFormInvites: 'send this form by email',
+      deleteForm: 'delete this form',
+      deleteSpace: 'delete this Space',
+      deleteShortLink: 'delete this short link',
+      deleteBusinessLoyaltyReward: 'delete this loyalty reward',
+      deleteBusinessAppLink: 'delete this app link',
+    },
+  };
+
+function requiresConfirmationCheck(toolName: string): boolean {
+  return CRITICAL_TOOLS.has(toolName) || SENSITIVE_TOOLS.has(toolName);
+}
+
+
+
 export async function runAgent(
   messages: Message[],
   config: AgentConfig,
@@ -77,18 +131,39 @@ export async function runAgent(
     console.log('allTools keys:', Object.keys(allTools));
 
     const lastMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
-    const tools = getAgentRelevantTools(
-      allTools,
-      config.writeKeywords,
-      config.readKeywords,
-      config.writeTools,
-      config.readOnlyTools,
-      lastMessage,
-      config?.getDefaultTools ? config.getDefaultTools(lastMessage) : config.defaultTools,
-      config.name.toLowerCase(),
-    );
+    const { tools, classifyResult } = getAgentRelevantTools(
+  allTools,
+  config.writeKeywords,
+  config.readKeywords,
+  config.writeTools,
+  config.readOnlyTools,
+  lastMessage,
+  config?.getDefaultTools ? config.getDefaultTools(lastMessage) : config.defaultTools,
+  config.name.toLowerCase(),
+);
     //console.log(tools)
     console.log(`${config.name} tools tokens ~`, JSON.stringify(tools).length / 4);
+    const criticalTool = classifyResult && classifyResult.confidence >= 0.65
+  ? classifyResult.tools.find(t => requiresConfirmationCheck(t))
+  : null;
+
+if (criticalTool) {
+  // ... retourner confirmation
+  const action = CONFIRMATION_MSG[lang][criticalTool] || criticalTool;
+  const text = lang === 'fr'
+    ? `Je vais **${action}**. Dois-je procéder ?`
+    : `I'm about to **${action}**. Shall I proceed?`;
+
+  return {
+    success: true,
+    text,
+    ui: null,
+    requiresConfirmation: true,
+    pendingTool: criticalTool,
+    suggestions: [],
+  };
+}
+
 
     const result = await generateText({
       model: defaultModel,
