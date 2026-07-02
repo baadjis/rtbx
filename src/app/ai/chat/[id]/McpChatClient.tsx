@@ -33,7 +33,10 @@ const CONTEXT_SUGGESTIONS: Record<string, string[]> = {
     'mcp_suggestion_add_contact',
     'mcp_suggestion_update_address',
     'mcp_suggestion_add_logo',
-    'mcp_suggestion_view_my_businesses'
+    'mcp_suggestion_view_my_businesses',
+    'mcp_suggestion_add_provider_link',
+    'mcp_suggestion_setup_loyalty',
+   'mcp_suggestion_view_opening_hours',
   ],
   shortener: [
     'mcp_suggestion_create_another_link',
@@ -77,6 +80,7 @@ const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
 const [currentContext, setCurrentContext] = useState<string>('general');
 const [entityId, setEntityId] = useState<string | null>(null); // ← nouveau
 const [inputFocused, setInputFocused] = useState(false);
+const [pendingTool, setPendingTool] = useState<string | null>(null);
 
 const chatEndRef = useRef<HTMLDivElement>(null);
 const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -154,10 +158,14 @@ const getAgentEndpoint = (context: string): string => {
 };
 
 // Body commun pour tous les fetches
-const buildRequestBody = (msgs: Message[]) => ({
+const buildRequestBody = (msgs: Message[], pTool?: string | null) => ({
   messages: msgs,
   lang,
-  ...(currentContext === 'event' && entityId ? { eventId: entityId } : {}), // ← nouveau
+  ...(currentContext === 'event' && entityId ? { eventId: entityId } : {}),
+  ...(currentContext === 'space' && entityId ? { spaceId: entityId } : {}),
+  ...(currentContext === 'form' && entityId ? { formId: entityId } : {}),
+  ...(currentContext === 'business' && entityId ? { businessId: entityId } : {}),
+  ...(pTool ? { pendingTool: pTool } : {}),
 });
 
 const sendMessage = async () => {
@@ -196,6 +204,8 @@ const sendMessage = async () => {
     }
 
     const data = await response.json();
+    if (data.pendingTool) setPendingTool(data.pendingTool);
+     else setPendingTool(null);
 
     const toolNames: string[] = data.toolCalls ?? [];
     const ctx = detectContextFromTools(toolNames);
@@ -203,7 +213,7 @@ const sendMessage = async () => {
       setCurrentContext(ctx);
       updateChatContext(ctx);
     }
-
+     
     const assistantMessage: Message = {
       role: 'assistant',
       content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
@@ -216,7 +226,6 @@ const sendMessage = async () => {
     setMessages(withAssistant);
     saveMessages(withAssistant);
     setPendingConfirmation(assistantMessage.isConfirmation ? assistantMessage.pendingAction : null);
-
   } catch {
     const withError = [...newMessages, {
       role: 'assistant' as const,
@@ -240,10 +249,15 @@ const handleConfirmation = async (confirmed: boolean) => {
   saveMessages(newMessages);
 
   try {
-    const response = await fetch(getAgentEndpoint(currentContext), {
+     const response = await fetch(getAgentEndpoint(currentContext), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildRequestBody(buildContextMessages(messages, confirmMessage))),
+      body: JSON.stringify(
+        buildRequestBody(
+          buildContextMessages(messages, confirmMessage),
+          confirmed ? pendingTool : null // ← passer pendingTool seulement si confirmed
+        )
+      ),
     });
 
     if (!response.ok) {
@@ -278,6 +292,7 @@ const handleConfirmation = async (confirmed: boolean) => {
   } finally {
     setPendingConfirmation(null);
     setIsLoading(false);
+    setPendingTool(null);
   }
 };
 

@@ -20,7 +20,7 @@ export type AgentConfig = {
   defaultTools?: string[];
   getDefaultTools?: (lastMessage: string) => string[];
   createTools: (accessToken?: string, userId?: string, userEmail?: string) => any;
-  getSystemPrompt: (contextId?: string, lang?: 'fr' | 'en') => string;
+  getSystemPrompt: (contextId?: string, lang?: LangType) => string;
 };
 
 export type AgentOptions = {
@@ -32,6 +32,7 @@ export type AgentOptions = {
   contextId?: string;
   mode?: 'ui' | 'text';
   lang?: LangType; // ← nouveau
+  pendingTool?: string;
     
 };
 
@@ -52,7 +53,7 @@ export async function runAgent(
   config: AgentConfig,
   options?: AgentOptions
 ) {
-  const lang = options?.lang ?? 'fr';
+  const lang = options?.lang ?? 'en';
 
   try {
     const sanitizedMessages = messages.map((msg, index) => {

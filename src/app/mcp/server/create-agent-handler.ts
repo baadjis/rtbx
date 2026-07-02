@@ -41,27 +41,27 @@ export function createAgentHandler(runAgent: AgentRunner) {
       }
 
       const result = await runAgent(body.messages, {
-        temperature: body.temperature || mcpConfig.temperature,
-        maxSteps: body.maxSteps || mcpConfig.maxSteps,
-        accessToken: session?.access_token,
-        userId: user.id,
-        userEmail: user.email ?? undefined,
-        contextId: body.contextId || body.eventId || body.spaceId || body.formId || body.businessId,
-        mode: body.mode || 'ui',
-        lang:body.lang ||'en',
-        
-      });
+  temperature: body.temperature || mcpConfig.temperature,
+  maxSteps: body.maxSteps || mcpConfig.maxSteps,
+  accessToken: session?.access_token,
+  userId: user.id,
+  userEmail: user.email ?? undefined,
+  contextId: body.contextId || body.eventId || body.spaceId || body.formId || body.businessId,
+  mode: body.mode || 'ui',
+  lang: body.lang || 'en',
+  pendingTool: body.pendingTool ?? undefined, // ← nouveau
+});
 
       if (!result.success) throw result.error;
 
       
 
-      return NextResponse.json({
+     return NextResponse.json({
   success: true,
   text: result.text,
   ui: result.ui,
-  toolCalls: result.toolCalls,
-  requiresConfirmation: result.requiresConfirmation ?? false, // ← nouveau
+  requiresConfirmation: result.requiresConfirmation ?? false,
+  pendingTool: result.pendingTool ?? null, // ← nouveau
 });
 
     } catch (error: any) {
