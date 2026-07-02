@@ -38,7 +38,7 @@
 
 
 // app/mcp/agents/releventTools.ts
-import { classifier } from '../classifier';
+/*import { classifier } from '../classifier';
 
 export const getAgentRelevantTools = (
   allTools: any,
@@ -90,4 +90,72 @@ export const getAgentRelevantTools = (
   }
 
   return allTools;
+};*/
+
+
+
+import { classifier } from '../classifier';
+import type { ClassifyResult } from '../classifier/core';
+
+type RelevantToolsResult = {
+  tools: any;
+  classifyResult: ClassifyResult | null;
+};
+
+export const getAgentRelevantTools = (
+  allTools: any,
+  writeKeywords: RegExp,
+  readKeywords: RegExp,
+  writeTools: string[],
+  readOnlyTools: string[],
+  lastMessage: string,
+  defaultTools?: string[],
+  agentName?: string,
+): RelevantToolsResult => {
+
+  let classifyResult: ClassifyResult | null = null;
+
+  if (agentName) {
+    classifyResult = classifier.predict(lastMessage, agentName);
+    console.log(`🧠 Classifier [${agentName}]: ${classifyResult.intent} (${classifyResult.confidence}) → ${classifyResult.tools}`);
+
+    if (classifyResult.confidence >= 0.65 && classifyResult.tools.length > 0) {
+      const filtered = Object.fromEntries(
+        Object.entries(allTools).filter(([key]) => classifyResult!.tools.includes(key))
+      );
+      if (Object.keys(filtered).length > 0) {
+        return { tools: filtered, classifyResult };
+      }
+    }
+    console.log(`⚠️ Classifier confidence faible (${classifyResult.confidence}) → fallback`);
+  }
+
+  // Fallback regex
+  const lowerMessage = lastMessage.toLowerCase().trim();
+
+  if (readKeywords.test(lowerMessage)) {
+    return {
+      tools: Object.fromEntries(
+        Object.entries(allTools).filter(([key]) =>
+          (defaultTools || readOnlyTools).includes(key)
+        )
+      ),
+      classifyResult,
+    };
+  }
+
+  if (writeKeywords.test(lowerMessage)) {
+    return { tools: allTools, classifyResult };
+  }
+
+  if (defaultTools?.length) {
+    return {
+      tools: Object.fromEntries(
+        Object.entries(allTools).filter(([key]) => defaultTools.includes(key))
+      ),
+      classifyResult,
+    };
+  }
+
+  return { tools: allTools, classifyResult };
 };
