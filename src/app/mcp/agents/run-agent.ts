@@ -5,6 +5,7 @@ import { mcpConfig } from '../core/config';
 import { extractUIFromSteps } from '../ui/extract-ui';
 import { getAgentRelevantTools } from './releventTools';
 import { generateText, stepCountIs } from 'ai';
+import { getPostActionSuggestions } from '../ui/post-action-suggestions';
 
 export type Message = {
   role: 'user' | 'assistant' | 'system';
@@ -134,7 +135,7 @@ export async function runAgent(
     const uiPayload = options?.mode !== 'text'
       ? extractUIFromSteps(result.steps ?? [])
       : null;
-
+    const suggestions = getPostActionSuggestions(toolNames, lang);
    return {
   success: true,
   text: finalText,
@@ -142,6 +143,8 @@ export async function runAgent(
   usage: result.usage,
   ui: uiPayload,
   requiresConfirmation, // ← nouveau
+  suggestions
+  
 };
   } catch (error: any) {
     console.error(`${config.name} Agent Error:`, error);

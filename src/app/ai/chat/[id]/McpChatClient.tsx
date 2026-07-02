@@ -5,6 +5,7 @@ import { Send, Sparkles, Bot, CheckCircle, XCircle, Zap } from 'lucide-react';
 import type { LangType } from '@/lib/lang/types';
 import { Data } from '../../data';
 import MCPUIRenderer from '../../components/MCPUIRenderer';
+import MessageActions from '../../components/MessageAction';
 //import MCPUIRenderer from '../components/MCPUIRenderer';
 
 type Message = {
@@ -13,6 +14,7 @@ type Message = {
   isConfirmation?: boolean;
   ui?: { type: string; data: any } | null;
   pendingAction?: any;
+  suggestions?:any[]
 };
 
 const MAX_HISTORY = 10;
@@ -215,12 +217,13 @@ const sendMessage = async () => {
     }
      
     const assistantMessage: Message = {
-      role: 'assistant',
-      content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
-      ui: data.ui || null, // ← nouveau
-      isConfirmation: data.requiresConfirmation || false,
-      pendingAction: data.pendingAction || null,
-    };
+  role: 'assistant',
+  content: data.text || t.mcp_error || "Désolé, je n'ai pas pu répondre.",
+  ui: data.ui || null,
+  isConfirmation: data.requiresConfirmation || false,
+  pendingAction: data.pendingAction || null,
+  suggestions: data.suggestions ?? [], // ← nouveau
+};
 
     const withAssistant = [...newMessages, assistantMessage];
     setMessages(withAssistant);
@@ -243,7 +246,9 @@ const handleConfirmation = async (confirmed: boolean) => {
   setIsLoading(true);
 
   const userResponse = confirmed ? 'Oui, confirme et procède.' : 'Non, annule.';
-  const confirmMessage: Message = { role: 'user', content: userResponse };
+  const confirmMessage: Message = { role: 'user', content: userResponse 
+
+  };
   const newMessages = [...messages, confirmMessage];
   setMessages(newMessages);
   saveMessages(newMessages);
@@ -307,6 +312,18 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
   }
 };
 
+const handleRetry = useCallback(() => {
+  const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
+  if (!lastUserMsg || isLoading) return;
+  // Supprimer le dernier message assistant
+  const withoutLast = messages.slice(0, -1);
+  setMessages(withoutLast);
+  saveMessages(withoutLast);
+  // Remettre le message dans l'input
+  setInput(lastUserMsg.content);
+  inputRef.current?.focus();
+}, [messages, isLoading, saveMessages]);
+
 const handleSuggestionClick = (suggestion: string) => {
   setInput(suggestion);
   inputRef.current?.focus();
@@ -355,49 +372,59 @@ const handleSuggestionClick = (suggestion: string) => {
         {!isEmptyChat && (
           <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
             {messages.map((msg, i) => (
-              <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Bot size={14} className="text-white" />
-                  </div>
-                )}
-                <div className={`flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
-                  <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'bg-indigo-600 text-white rounded-tr-sm'
-                      : 'bg-white/[0.06] text-white/90 rounded-tl-sm border border-white/[0.06]'
-                  }`}>
-                    
-                    
-                    
-                    {msg.role === 'assistant' && msg.ui ? (
-  <MCPUIRenderer ui={msg.ui}  lang={lang}/>
-):(<p className="whitespace-pre-wrap">{msg.content}</p>)}
-                  </div>
+  <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+    {msg.role === 'assistant' && (
+      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <Bot size={14} className="text-white" />
+      </div>
+    )}
 
-                  {msg.isConfirmation && (
-                    <div className="flex gap-2 w-full">
-                      <button
-                        onClick={() => handleConfirmation(true)}
-                        disabled={isLoading}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-medium transition-all disabled:opacity-50"
-                      >
-                        <CheckCircle size={14} />
-                        Confirmer
-                      </button>
-                      <button
-                        onClick={() => handleConfirmation(false)}
-                        disabled={isLoading}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl text-red-400 text-xs font-medium transition-all disabled:opacity-50"
-                      >
-                        <XCircle size={14} />
-                        Annuler
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+    {/* ← ajouter group ici */}
+    <div className={`group flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
+      <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+        msg.role === 'user'
+          ? 'bg-indigo-600 text-white rounded-tr-sm'
+          : 'bg-white/[0.06] text-white/90 rounded-tl-sm border border-white/[0.06]'
+      }`}>
+        {msg.role === 'assistant' && msg.ui ? (
+          <MCPUIRenderer ui={msg.ui} lang={lang} />
+        ) : (
+          <p className="whitespace-pre-wrap">{msg.content}</p>
+        )}
+      </div>
+
+      {/* Confirmation buttons — inchangé */}
+      {msg.isConfirmation && (
+        <div className="flex gap-2 w-full">
+          <button
+            onClick={() => handleConfirmation(true)}
+            disabled={isLoading}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-medium transition-all disabled:opacity-50"
+          >
+            <CheckCircle size={14} /> Confirmer
+          </button>
+          <button
+            onClick={() => handleConfirmation(false)}
+            disabled={isLoading}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl text-red-400 text-xs font-medium transition-all disabled:opacity-50"
+          >
+            <XCircle size={14} /> Annuler
+          </button>
+        </div>
+      )}
+
+      {/* ← MessageActions — seulement pour assistant */}
+      {msg.role === 'assistant' && !msg.isConfirmation && (
+        <MessageActions
+          content={msg.content}
+          suggestions={msg.suggestions ?? []}
+          onSuggestionClick={handleSuggestionClick}
+          onRetry={i === messages.length - 1 ? handleRetry : undefined}
+        />
+      )}
+    </div>
+  </div>
+))}
 
             {isLoading && (
               <div className="flex gap-3 justify-start">

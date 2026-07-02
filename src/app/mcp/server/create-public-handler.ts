@@ -28,7 +28,9 @@ export function createPublicAgentHandler(runAgent: AgentRunner) {
       const result = await runAgent(body.messages, {
         mode: 'text', // ← toujours text pour les clients externes
         contextId: body.contextId || body.eventId,
-        lang:body.lang||'en'
+        lang:body.lang||'en',
+        pendingTool: body.pendingTool,
+       
         // Pas d'accessToken — les clients externes n'ont pas de session Supabase
       });
 
@@ -39,6 +41,8 @@ export function createPublicAgentHandler(runAgent: AgentRunner) {
         text: result.text,
         toolCalls: result.toolCalls,
         usage: result.usage,
+         suggestions: result.suggestions ?? [],
+      
         // ui toujours null en mode text
       });
 

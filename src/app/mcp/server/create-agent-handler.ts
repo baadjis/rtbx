@@ -62,6 +62,7 @@ export function createAgentHandler(runAgent: AgentRunner) {
   ui: result.ui,
   requiresConfirmation: result.requiresConfirmation ?? false,
   pendingTool: result.pendingTool ?? null, // ← nouveau
+  suggestions: result.suggestions ?? [],
 });
 
     } catch (error: any) {
