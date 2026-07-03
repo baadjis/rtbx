@@ -5,7 +5,7 @@ import { Send, Sparkles, Bot, CheckCircle, XCircle, Zap } from 'lucide-react';
 import type { LangType } from '@/lib/lang/types';
 import { Data } from '../../data';
 import MCPUIRenderer from '../../components/MCPUIRenderer';
-import MessageActions from '../../components/MessageAction';
+import MessageActions, { UserMessageActions } from '../../components/MessageAction';
 //import MCPUIRenderer from '../components/MCPUIRenderer';
 
 type Message = {
@@ -312,15 +312,29 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
   }
 };
 
-const handleRetry = useCallback(() => {
-  const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
-  if (!lastUserMsg || isLoading) return;
-  // Supprimer le dernier message assistant
-  const withoutLast = messages.slice(0, -1);
-  setMessages(withoutLast);
-  saveMessages(withoutLast);
-  // Remettre le message dans l'input
-  setInput(lastUserMsg.content);
+const handleEdit = useCallback((userIndex: number) => {
+  setInput(messages[userIndex].content);
+  inputRef.current?.focus();
+}, [messages]);
+
+const handleRetry = useCallback((assistantIndex: number) => {
+  if (isLoading) return;
+
+  // Trouver le message user juste avant ce message assistant
+  const prevUserMsg = messages
+    .slice(0, assistantIndex)
+    .reverse()
+    .find(m => m.role === 'user');
+
+  if (!prevUserMsg) return;
+
+  // Supprimer ce message assistant et tout ce qui suit
+  const truncated = messages.slice(0, assistantIndex);
+  setMessages(truncated);
+  saveMessages(truncated);
+
+  // Remettre le message user dans l'input pour le renvoyer
+  setInput(prevUserMsg.content);
   inputRef.current?.focus();
 }, [messages, isLoading, saveMessages]);
 
@@ -379,48 +393,51 @@ const handleSuggestionClick = (suggestion: string) => {
       </div>
     )}
 
-    {/* ← ajouter group ici */}
-    <div className={`group flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
+    <div className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[75%]`}>
       <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
         msg.role === 'user'
           ? 'bg-indigo-600 text-white rounded-tr-sm'
           : 'bg-white/[0.06] text-white/90 rounded-tl-sm border border-white/[0.06]'
       }`}>
-        {msg.role === 'assistant' && msg.ui ? (
-          <MCPUIRenderer ui={msg.ui} lang={lang} />
-        ) : (
-          <p className="whitespace-pre-wrap">{msg.content}</p>
-        )}
+        {msg.role === 'assistant' && msg.ui
+          ? <MCPUIRenderer ui={msg.ui} lang={lang} />
+          : <p className="whitespace-pre-wrap">{msg.content}</p>
+        }
       </div>
 
-      {/* Confirmation buttons — inchangé */}
+      {/* Confirmation buttons */}
       {msg.isConfirmation && (
         <div className="flex gap-2 w-full">
-          <button
-            onClick={() => handleConfirmation(true)}
-            disabled={isLoading}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-medium transition-all disabled:opacity-50"
-          >
-            <CheckCircle size={14} /> Confirmer
+          <button onClick={() => handleConfirmation(true)} disabled={isLoading}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-emerald-400 text-xs font-medium transition-all disabled:opacity-50">
+            <CheckCircle size={14} /> {t.confirm}
           </button>
-          <button
-            onClick={() => handleConfirmation(false)}
-            disabled={isLoading}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl text-red-400 text-xs font-medium transition-all disabled:opacity-50"
-          >
-            <XCircle size={14} /> Annuler
+          <button onClick={() => handleConfirmation(false)} disabled={isLoading}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium transition-all disabled:opacity-50">
+            <XCircle size={14} />{t.cancel}
           </button>
         </div>
       )}
 
-      {/* ← MessageActions — seulement pour assistant */}
-      {msg.role === 'assistant' && !msg.isConfirmation && (
-        <MessageActions
+      {/* ← Actions sous chaque message */}
+      {msg.role === 'user' ? (
+        // Message USER — copy + retry + edit
+        <UserMessageActions
           content={msg.content}
-          suggestions={msg.suggestions ?? []}
-          onSuggestionClick={handleSuggestionClick}
-          onRetry={i === messages.length - 1 ? handleRetry : undefined}
+          onRetry={() => handleRetry(i)}
+          onEdit={() => handleEdit(i)}
+          t={t}
         />
+      ) : (
+        // Message ASSISTANT — copy + suggestions
+        !msg.isConfirmation && (
+          <MessageActions
+            content={msg.content}
+            suggestions={msg.suggestions ?? []}
+            onSuggestionClick={handleSuggestionClick}
+            t={t}
+          />
+        )
       )}
     </div>
   </div>

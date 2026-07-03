@@ -21,18 +21,24 @@ fr: {
   mcp_suggestion_update_space: "Modifier mon Space actuel",
   mcp_suggestion_add_social: "Ajouter mes réseaux sociaux",
   mcp_suggestion_change_theme: "Changer le thème de mon Space",
+
   mcp_suggestion_update_business: "Mettre à jour mon Business",
    mcp_suggestion_view_my_businesses: "Voir mes Business",
   mcp_suggestion_add_contact: "Ajouter mes informations de contact",
-  mcp_suggestion_view_links: "Voir mes liens courts",
-  mcp_suggestion_view_stats: "Voir les statistiques d'un lien",
-  mcp_suggestion_analyze_link: "Analyser les performances d'un lien",
+ 
+mcp_suggestion_add_provider_link: 'Ajouter un lien business',
+mcp_suggestion_setup_loyalty: 'Configurer le programme fidélité',
+mcp_suggestion_view_opening_hours: 'Voir mes horaires',
+
 
   
   mcp_suggestion_update_address: "Mettre à jour mon adresse",
   mcp_suggestion_add_logo: "Ajouter un logo",
 
   // Suggestions quand on parle de Shortener
+    mcp_suggestion_view_links: "Voir mes liens courts",
+  mcp_suggestion_view_stats: "Voir les statistiques d'un lien",
+  mcp_suggestion_analyze_link: "Analyser les performances d'un lien",
   mcp_suggestion_create_another_link: "Créer un autre lien court",
   mcp_suggestion_view_my_links: "Voir mes liens existants",
   mcp_suggestion_view_link_stats: "Voir les statistiques d'un lien",
@@ -61,7 +67,12 @@ ai_new_chat: "Nouveau chat",
   ai_context_space_desc: "Gérer vos profils publics",
   ai_start_new_chat:"Commencez une nouvelle conversation",
   ai_no_chat_yet:"Aucun chat pour le moment",
-  ai_settins:"Paramètres"
+  ai_settins:"Paramètres",
+  cancel:'Annuler',
+  confirm:'Confirmer',
+  retry:'Réssayer',
+  copy:'Copier',
+  edit:'Modifier'
 
 },
 
@@ -86,9 +97,16 @@ en: {
   mcp_suggestion_update_space: "Update my current Space",
   mcp_suggestion_add_social: "Add my social networks",
   mcp_suggestion_change_theme: "Change my Space theme",
+
+
   mcp_suggestion_update_business: "Update my Business",
   mcp_suggestion_view_my_businesses: "View my Businesses",
+  
+mcp_suggestion_add_provider_link: 'Add a business link',
+mcp_suggestion_setup_loyalty: 'Setup loyalty program',
+mcp_suggestion_view_opening_hours: 'View opening hours',
 
+  
   mcp_suggestion_add_contact: "Add my contact information",
   mcp_suggestion_view_links: "View my short links",
   mcp_suggestion_view_stats: "View link statistics",
@@ -125,7 +143,12 @@ ai_new_chat: "New Chat",
   ai_context_space_desc: "Manage your public profiles",
   ai_start_new_chat:"Start a new conversation",
   ai_no_chat_yet:"No conversation yet",
-  ai_settings:"Settings"
+  ai_settings:"Settings",
+  cancel:'Cancel',
+  confirm:'Confirm',
+  retry:'Retry',
+  copy:'Copy',
+  edit:'Edit'
 
 },
 } as const;

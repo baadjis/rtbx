@@ -1,14 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/ai/components/MessageActions.tsx
 'use client';
 import { useState } from 'react';
-import { Copy, CheckCheck, RotateCcw } from 'lucide-react';
+import { Copy, CheckCheck, RotateCcw, Pencil } from 'lucide-react';
 
 type Props = {
   content: string;
   onRetry?: () => void;
   suggestions?: string[];
   onSuggestionClick?: (s: string) => void;
-  lang?: 'fr' | 'en';
+  t:any
+};
+
+type UserActionsProps = {
+  content: string;
+  onRetry?: () => void;
+  onEdit?: () => void;
+  t:any
 };
 
 export default function MessageActions({
@@ -16,6 +24,7 @@ export default function MessageActions({
   onRetry,
   suggestions = [],
   onSuggestionClick,
+  t
 }: Props) {
   const [copied, setCopied] = useState(false);
 
@@ -26,7 +35,7 @@ export default function MessageActions({
   };
 
   return (
-    <div className="space-y-2 mt-2">
+    <div className="space-y-2 mt-1">
       {/* Suggestions chips */}
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -42,12 +51,11 @@ export default function MessageActions({
         </div>
       )}
 
-      {/* Actions — copy + retry */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        {/* Copy */}
+      {/* Actions — toujours visibles, pas seulement au hover */}
+      <div className="flex items-center gap-1">
         <button
           onClick={handleCopy}
-          className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/25 hover:text-white/60 transition-all"
+          className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/30 hover:text-white/70 transition-all"
           title="Copier"
         >
           {copied
@@ -56,17 +64,65 @@ export default function MessageActions({
           }
         </button>
 
-        {/* Retry */}
         {onRetry && (
           <button
             onClick={onRetry}
-            className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/25 hover:text-white/60 transition-all"
-            title="Réessayer"
+            className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/30 hover:text-white/70 transition-all"
+            title={t.retry}
           >
             <RotateCcw size={13} />
           </button>
         )}
       </div>
+    </div>
+  );
+}
+
+
+export function UserMessageActions({ content, onRetry, onEdit ,t}: UserActionsProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="flex items-center gap-1 mt-0.5">
+      {/* Copy */}
+      <button
+        onClick={handleCopy}
+        className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/25 hover:text-white/60 transition-all"
+        title={t.copy}
+      >
+        {copied
+          ? <CheckCheck size={12} className="text-emerald-400" />
+          : <Copy size={12} />
+        }
+      </button>
+
+      {/* Retry — renvoyer ce message */}
+      {onRetry && (
+        <button
+          onClick={onRetry}
+          className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/25 hover:text-white/60 transition-all"
+          title={t.retry}
+        >
+          <RotateCcw size={12} />
+        </button>
+      )}
+
+      {/* Edit — remettre dans l'input pour modifier */}
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          className="p-1.5 rounded-lg hover:bg-white/[0.08] text-white/25 hover:text-white/60 transition-all"
+          title={t.edit}
+        >
+          <Pencil size={12} />
+        </button>
+      )}
     </div>
   );
 }
