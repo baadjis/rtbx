@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CheckCircle2, Loader2, Send, ArrowRight, ArrowLeft, Star } from 'lucide-react'
 import PhoneField from '@/components/PhoneField'
 import Image from 'next/image'
@@ -229,6 +229,23 @@ export default function FormRenderer({ form, lang, t, origin }: any) {
   const fields = form.fields_json || []
   const mode = form.settings?.mode || 'classic'
   const isAnimated = mode === 'animated'
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+// Au mount — créer une entrée "started"
+useEffect(() => {
+  const trackStart = async () => {
+    const res = await fetch(`/api/forms/${form.id}/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        metadata: { userAgent: navigator.userAgent, language: lang }
+      })
+    });
+    const data = await res.json();
+    if (data.id) setSessionId(data.id); // ← garder l'id pour le submit
+  };
+  trackStart();
+}, []);
 
   const updateAnswer = (label: string, value: any) => {
     setAnswers(prev => ({ ...prev, [label]: value }))
@@ -243,6 +260,7 @@ export default function FormRenderer({ form, lang, t, origin }: any) {
         body: JSON.stringify({
           answers,
           origin,
+          session_id: sessionId,
           metadata: { userAgent: navigator.userAgent, language: lang },
         }),
       })

@@ -12,11 +12,11 @@ export default async function FormAdminPage({ params }: { params: Promise<{ id: 
   if (!user) redirect('/login');
 
   const { data: form } = await supabase
-    .from('forms')
-    .select('*, form_responses(*)')
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .single();
+  .from('forms')
+  .select('*, form_responses(id, answers_json, origin, metadata, submitted_at, started_at, created_at)')
+  .eq('id', id)
+  .eq('user_id', user.id)
+  .single();
 
   if (!form) redirect('/dashboard/forms');
 

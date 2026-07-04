@@ -199,42 +199,47 @@ export async function submitFormResponse(
 
   const fields: any[] = form.fields_json || [];
   const answers = parsed.data.answers;
-
   let respondentEmail: string | null = null;
   let respondentName: string | null = null;
 
   for (const field of fields) {
-    // Fix : chercher par label (clé réelle), pas par id
     const value = answers[field.label];
     if (value === undefined || value === null || value === '') continue;
-
-    if (field.type === 'email') {
-      respondentEmail = String(value);
-    }
-
-    if (
-      field.type === 'text' &&
-      /nom|name|prénom|firstname|prenom/i.test(field.label || '')
-    ) {
+    if (field.type === 'email') respondentEmail = String(value);
+    if (field.type === 'text' && /nom|name|prénom|firstname|prenom/i.test(field.label || '')) {
       respondentName = String(value);
-    }
-
-    // Bonus : capter aussi phone si présent, utile pour identifier le répondant
-    if (field.type === 'phone' && !respondentName) {
-      // optionnel, pas obligatoire
     }
   }
 
+  const responseData = {
+    answers_json: answers,
+    origin: parsed.data.origin,
+    metadata: parsed.data.metadata,
+    user_id: userId || null,
+    respondent_email: respondentEmail,
+    respondent_name: respondentName,
+    submitted_at: new Date().toISOString(),
+  };
+
+  // Si session_id fourni → update la ligne "started" existante
+  if (parsed.data.session_id) {
+    const { error } = await supabase
+      .from('form_responses')
+      .update(responseData)
+      .eq('id', parsed.data.session_id)
+      .eq('form_id', formId); // sécurité
+
+    if (error) return { data: null, error };
+    return { data: { submitted: true }, error: null };
+  }
+
+  // Sinon → insert normal (fallback si pas de session_id)
   const { error } = await supabase
     .from('form_responses')
     .insert([{
       form_id: formId,
-      answers_json: answers,
-      origin: parsed.data.origin,
-      metadata: parsed.data.metadata,
-      user_id: userId || null,
-      respondent_email: respondentEmail,
-      respondent_name: respondentName,
+      ...responseData,
+      started_at: new Date().toISOString(),
     }]);
 
   if (error) return { data: null, error };

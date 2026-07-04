@@ -30,6 +30,7 @@ export const formSubmitSchema = z.object({
   answers: z.record(z.string(), z.any()),
   metadata: z.record(z.string(), z.any()).optional().default({}),
   origin: z.string().optional().default('direct'),
+  session_id: z.string().uuid().optional()
 });
 
 export const formSearchSchema = z.object({
